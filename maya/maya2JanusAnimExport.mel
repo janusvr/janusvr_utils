@@ -1,0 +1,209 @@
+// writes out a baked (rigid body) maya animation using position, rot, scale of objects over time (using js) in janusVR format.
+// ks: 12 jan 2016 janus VR Inc. use at your own risk (PLEASE SAVE YOUR maya file before using this script).
+//	
+// known issues:
+//	- the maya OBJ export creates the entire material lib for every selected mesh, not just the materials used by the selected object.
+//		this is a redundant waste but does not impact usability.
+//  - the janusvr objects output are not hier. so they can be driven by js at present.
+//	- also make sure you set a keyframe on the xform for all exported objects (because the xforms are temporarily zeroed out so the exported obj is in local space for the mayaExport.
+//
+
+
+
+global proc maya2JanusAnimExport(int $sf, int $ef, int $by, int $anim)	//start frame, end frame, by frame, first anim selected objects are animated, rest are static
+{
+	// Define Your File Paths  and other parameters
+	string $filePath = "maya2JanusAnim.html" ;  
+	string $fileJS = "maya2JanusAnim.js" ;  
+	int $floor=1;
+	// end of params
+
+	string $cur[]=`ls -sl`;
+	if (!size($cur))
+		return;
+	if ($anim<0)
+		$anim=size($cur);	// if anim -ve animate all objects otherwise the first $anim.
+		
+	int $nfr=($ef-$sf+1)/$by;
+	currentTime -e $sf;
+
+	string $janusHeader= "<html>\n<head>\n<title>maya2janusAnim</title>\n</head>\n<body>\n<FireBoxRoom>\n<Assets>\n";
+	string $janusFooter="</Room>\n</FireBoxRoom>\n</body>\n</html>\n";
+
+
+	$fileId = `fopen $filePath "w"` ;  
+  	fprint $fileId ($janusHeader) ;  
+
+	for ($obj in $cur)	// export obj files in local space by zeroing out the xform, add to html file as asset
+	{
+		$objfile=$obj+".obj";
+		select $obj;
+		float $pos[3]=`getAttr ($obj+".t")`;
+		float $scl[3]=`getAttr ($obj+".s")`;
+		float $rot[3]=`getAttr ($obj+".r")`;
+
+		setAttr .t 0 0 0;
+		setAttr .r 0 0 0;
+		setAttr .s 1 1 1;		
+		file -force -options "groups=1;ptgroups=1;materials=1;smoothing=1;normals=1" -typ "OBJexport" -pr -es $objfile;
+
+		select $obj;
+		setAttr .t $pos[0] $pos[1] $pos[2];
+		setAttr .r $rot[0] $rot[1] $rot[2];
+		setAttr .s $scl[0] $scl[1] $scl[2];		
+
+	
+		fprint $fileId ("<AssetObject id=\""+$obj+"\" src=\""+$objfile+"\" mtl=\""+$obj+".mtl\"/>\n");
+	}
+
+	if ($anim==0)	// if some objects are animated add a js asset script			
+		fprint $fileId ("</Assets>\n");
+	else
+		fprint $fileId ("<AssetScript src=\""+$fileJS+"\"/>\n</Assets>\n");
+
+	if ($floor)	//make a floor for the room if desired
+		fprint $fileId ("<Room use_local_asset=\"room_plane\" col=\"1.000 1.000 1.000\">\n");
+	else
+		fprint $fileId ("<Room use_local_asset=\"room_plane\" visible=\"false\" col=\"1.000 1.000 1.000\">\n");
+
+	currentTime -e $sf;
+	for ($obj in $cur)	// write out xforms for all objects to html file
+	{
+		float $pos[3]=`getAttr ($obj+".t")`;
+		float $scale[3]=`getAttr ($obj+".s")`;
+		select $obj;
+		setAttr ($obj+".t") 0 0 0;
+		setAttr ($obj+".s") 1 1 1;
+		float $m[16]=`xform -q -m`;
+		fprint $fileId ("<Object js_id=\""+$obj+"\" id=\""+$obj+"\"  pos=\"");
+		fprint $fileId ($pos[0]+" "+$pos[1]+" "+$pos[2]+"\"");
+		fprint $fileId (" scale=\""+$scale[0]+" "+$scale[1]+" "+$scale[2]+"\"");
+		
+		fprint $fileId (" xdir=\""+($m[0])+" "+($m[1])+" "+($m[2])+"\"");
+		fprint $fileId (" ydir=\""+($m[4])+" "+($m[5])+" "+($m[6])+"\"");
+		fprint $fileId (" zdir=\""+($m[8])+" "+($m[9])+" "+($m[10])+"\"/>\n");
+
+		setAttr ($obj+".t") $pos[0] $pos[1] $pos[2];
+		setAttr ($obj+".s") $scale[0] $scale[1] $scale[2];
+		
+	}
+	fprint $fileId ($janusFooter) ;  
+
+	// Close File  
+	fclose $fileId ;  	//close out html file
+	
+	if ($anim==0)
+		return;
+	
+	$fileId = `fopen $fileJS "w"` ;  //output js file
+
+	fprint $fileId ("var objcnt="+$anim+";\n");
+	fprint $fileId ("var frcnt="+$nfr+";\n");
+
+	fprint $fileId ("var anim_data =[");
+	int $nocomma=1;
+	for ($i=$sf;$i<=$ef;$i+=$by)	// write out animation data into an array for the first $anim objects in selection
+	{
+		currentTime -e $i;
+		for ($j=0;$j<$anim;$j++)
+		{
+			$obj=$cur[$j];
+			float $pos[3]=`getAttr ($obj+".t")`;
+			//float $rot[3]=`getAttr ($obj+".r")`;
+			float $scale[3]=`getAttr ($obj+".s")`;
+			select $obj;
+			setAttr ($obj+".t") 0 0 0;
+			setAttr ($obj+".s") 1 1 1;
+			float $m[16]=`xform -q -m`;
+			
+			if ($nocomma)
+				$nocomma=0;
+			else
+				fprint $fileId ",";
+			fprint $fileId ($pos[0]+","+$pos[1]+","+$pos[2]+","+$m[0]+","+$m[1]+","+$m[2]+","+$m[4]+","+$m[5]+","+$m[6]+","+$m[8]+","+$m[9]+","+$m[10]+","+$scale[0]+","+$scale[1]+","+$scale[2]);	
+			//fprint $fileId ($m[12]+","+$m[13]+","+$m[14]+","+$m[0]+","+$m[1]+","+$m[2]+","+$m[4]+","+$m[5]+","+$m[6]+","+$m[8]+","+$m[9]+","+$m[10]+","+$scale[0]+","+$scale[1]+","+$scale[2]);	
+
+		}
+		//fprint $fileId "\n";
+	}
+	fprint $fileId "];\nvar objarr =[";
+	$nocomma=1;
+	for ($j=0;$j<$anim;$j++)			// write out an array of object id strings
+	{
+		$obj=$cur[$j];
+		if ($nocomma)
+			$nocomma=0;
+		else
+			fprint $fileId ",";
+		fprint $fileId ("\""+$obj+"\"");
+	}
+	fprint $fileId "];\n";
+	
+	//cycle through animation data in a room update function
+	
+	fprint $fileId "var globalTime = 0.0;\nvar globalFrame=0;\nvar index;\nroom.update = function(delta_time) {\n";
+	fprint $fileId "// 25fps means globalTime*25 gives frame count\n";
+	fprint $fileId "globalFrame=Math.round(0.025*globalTime)%frcnt;\n";
+	fprint $fileId "globalTime += delta_time;\n";
+	fprint $fileId ("for (i=0;i<objcnt;i++)\n{\n");
+	fprint $fileId ("room.objects[objarr[i]].pos.x=anim_data[globalFrame*15*objcnt+15*i];\n");
+	fprint $fileId ("room.objects[objarr[i]].pos.y=anim_data[globalFrame*15*objcnt+15*i+1];\n");
+	fprint $fileId ("room.objects[objarr[i]].pos.z=anim_data[globalFrame*15*objcnt+15*i+2];\n");
+
+	fprint $fileId ("room.objects[objarr[i]].xdir.x=anim_data[globalFrame*15*objcnt+15*i+3];\n");
+	fprint $fileId ("room.objects[objarr[i]].xdir.y=anim_data[globalFrame*15*objcnt+15*i+4];\n");
+	fprint $fileId ("room.objects[objarr[i]].xdir.z=anim_data[globalFrame*15*objcnt+15*i+5];\n");
+
+	fprint $fileId ("room.objects[objarr[i]].ydir.x=anim_data[globalFrame*15*objcnt+15*i+6];\n");
+	fprint $fileId ("room.objects[objarr[i]].ydir.y=anim_data[globalFrame*15*objcnt+15*i+7];\n");
+	fprint $fileId ("room.objects[objarr[i]].ydir.z=anim_data[globalFrame*15*objcnt+15*i+8];\n");
+
+	fprint $fileId ("room.objects[objarr[i]].zdir.x=anim_data[globalFrame*15*objcnt+15*i+9];\n");
+	fprint $fileId ("room.objects[objarr[i]].zdir.y=anim_data[globalFrame*15*objcnt+15*i+10];\n");
+	fprint $fileId ("room.objects[objarr[i]].zdir.z=anim_data[globalFrame*15*objcnt+15*i+11];\n");
+
+	fprint $fileId ("room.objects[objarr[i]].scale.x=anim_data[globalFrame*15*objcnt+15*i+12];\n");
+	fprint $fileId ("room.objects[objarr[i]].scale.y=anim_data[globalFrame*15*objcnt+15*i+13];\n");
+	fprint $fileId ("room.objects[objarr[i]].scale.z=anim_data[globalFrame*15*objcnt+15*i+14];\n");
+
+	fprint $fileId "}\n}";
+
+	fclose $fileId ;  
+}
+
+global proc flattenAnimation()
+{
+	// if a number of baked animated objects have an xform hier. above them, that is non zero, you can flatten them 
+	// by making a duplicate hier. call it mydup (so it has the same namespace below
+	// select all the animated objects and launch this script
+	
+	string $cur[]=`ls -sl`;
+	for ($i=0;$i<=300;$i++)	//or whatever time range
+	{
+		currentTime -e $i;
+		for ($obj in $cur)
+		{
+			select $obj;
+			$new=`duplicate`;
+			parent -w $new[0];	// make a copy, freeze xform it
+
+			$res=`getAttr ($new[0]+".t")`;
+			string $attr= "mydup|" + $obj + ".t";
+			setAttr $attr $res[0] $res[1] $res[2];
+			setKeyframe -breakdown 0 -hierarchy none -controlPoints 0 -shape 0 $attr;
+
+			$res=`getAttr ($new[0]+".r")`;
+			string $attr= "pool|" + $obj + ".r";
+			setAttr $attr $res[0] $res[1] $res[2];
+			setKeyframe -breakdown 0 -hierarchy none -controlPoints 0 -shape 0 $attr;
+
+			$res=`getAttr ($new[0]+".s")`;
+			string $attr= "pool|" + $obj + ".s";
+			setAttr $attr $res[0] $res[1] $res[2];
+			setKeyframe -breakdown 0 -hierarchy none -controlPoints 0 -shape 0 $attr;
+
+			delete $new[0];
+		}
+	}
+}
+
