@@ -1,0 +1,6 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/unreal/JanusExporter/Intermediate/Build/Win64/UE4Editor
+/unreal/JanusExporter/Binaries/Win64
