@@ -20,5 +20,5 @@ public:
 	// End of TCommand<> interface
 
 public:
-	TSharedPtr<FUICommandInfo> TestCommand;
+	//TSharedPtr<FUICommandInfo> TestCommand;
 };

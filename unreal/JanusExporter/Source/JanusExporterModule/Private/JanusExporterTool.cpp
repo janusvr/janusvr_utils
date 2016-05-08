@@ -18,7 +18,7 @@
 
 #include <fbxsdk.h>
 
-#define LOCTEXT_NAMESPACE "DemoTools"
+#define LOCTEXT_NAMESPACE "JanusExporter"
 
 UJanusExporterTool::UJanusExporterTool()
 	: Super(FObjectInitializer::Get())

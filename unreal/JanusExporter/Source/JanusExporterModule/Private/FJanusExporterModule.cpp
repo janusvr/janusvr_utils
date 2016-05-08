@@ -6,7 +6,7 @@
 #include "JanusCommands.h"
 #include "JanusExporterStyle.h"
 
-#define LOCTEXT_NAMESPACE "DemoTools"
+#define LOCTEXT_NAMESPACE "JanusExporter"
 
 //class FDemoEditorExtensionsEditorModule : public IModuleInterface
 class FJanusExporterModule : public IModuleInterface
@@ -49,23 +49,23 @@ void FJanusExporterModule::StartupModule()
 
 		CommandList->Append(LevelEditorModule.GetGlobalLevelEditorActions());
 
-		CommandList->MapAction(
+		/*CommandList->MapAction(
 			FJanusCommands::Get().TestCommand,
 			FExecuteAction::CreateStatic(&FJanusExporterModule::HandleTestCommandExcute),
 			FCanExecuteAction::CreateStatic(&FJanusExporterModule::HandleTestCommandCanExcute)
-			);
+			);*/
 
 		struct Local
 		{
-			static void AddToolbarCommands(FToolBarBuilder& ToolbarBuilder)
+			/*static void AddToolbarCommands(FToolBarBuilder& ToolbarBuilder)
 			{
 				ToolbarBuilder.AddToolBarButton(FJanusCommands::Get().TestCommand);
-			}
+			}*/
 
 			static void AddMenuCommands(FMenuBuilder& MenuBuilder)
 			{
-				MenuBuilder.AddSubMenu(LOCTEXT("DemoTools", "Demo Tools"),
-					LOCTEXT("DemoToolsTooltip", "List of tools"),
+				MenuBuilder.AddSubMenu(LOCTEXT("JanusExporter", "Janus Exporter"),
+					LOCTEXT("JanusExporterTooltip", "Janus Exporter tools"),
 					FNewMenuDelegate::CreateStatic(&FJanusExporterModule::CreateToolListMenu)
 					);
 			}
@@ -79,13 +79,13 @@ void FJanusExporterModule::StartupModule()
 			FMenuExtensionDelegate::CreateStatic(&Local::AddMenuCommands));
 		LevelEditorModule.GetMenuExtensibilityManager()->AddExtender(MenuExtender);
 
-		TSharedRef<FExtender> ToolbarExtender(new FExtender());
+		/*TSharedRef<FExtender> ToolbarExtender(new FExtender());
 		ToolbarExtender->AddToolBarExtension(
 			TEXT("Game"),
 			EExtensionHook::After,
 			CommandList.ToSharedRef(),
 			FToolBarExtensionDelegate::CreateStatic(&Local::AddToolbarCommands));
-		LevelEditorModule.GetToolBarExtensibilityManager()->AddExtender(ToolbarExtender);
+		LevelEditorModule.GetToolBarExtensibilityManager()->AddExtender(ToolbarExtender);*/
 	}
 }
 

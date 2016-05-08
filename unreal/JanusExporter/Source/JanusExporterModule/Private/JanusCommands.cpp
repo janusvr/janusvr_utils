@@ -1,7 +1,7 @@
 #include "FJanusExporterModulePrivatePCH.h"
 #include "JanusCommands.h"
 
-#define LOCTEXT_NAMESPACE "DemoTools"
+#define LOCTEXT_NAMESPACE "JanusExporter"
 
 void FJanusCommands::RegisterCommands()
 {
