@@ -1,0 +1,19 @@
+{
+	"FileVersion" : 3,
+	"FriendlyName" : "Janus Exporter",
+	"Version" : 1,
+	"VersionName" : "1.0",
+	"CreatedBy" : "Janus VR, Inc.",
+	"CreatedByURL" : "http://janusvr.com",
+	"EngineVersion" : "4.7.0",
+	"Description" : "Janus VR Scene Exporter",
+	"Category" : "Exporter",
+	"EnabledByDefault" : true,
+	"Modules" :
+	[		
+		{
+			"Name" : "JanusExporterModule",
+			"Type" : "Editor"
+		}
+	]
+}
