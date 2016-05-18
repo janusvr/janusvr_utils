@@ -1,0 +1,94 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>JanusVR Interface Chatlog</title>
+  <meta name="description" content="Chatlog Interface for JanusVR">
+  <meta name="author" content="JanusVR Inc.">
+ 
+  
+  <script>
+  
+  <!-- When enter is pressed -->
+ function sendmessagewithenter() {
+ 
+ 
+  var keyPressed = event.keyCode || event.which;
+
+         if(keyPressed==13)
+        {
+
+		<!--unfocus field-->
+		window.janus.chatsend(document.getElementById("entryform").value); //send chat message value
+		document.getElementById("entryform").value=""; //blank out entry form
+		document.getElementById("entryform").blur();
+			
+        }
+		
+
+		
+ }
+  
+  
+  
+  
+
+  //populate the chatlog
+  var previouslength = 0;
+  
+  setInterval(
+  function() {
+  
+
+  if (window.janus.chat.length != previouslength) //if the length of the janus chatlog array is larger than the last known array size
+   {
+    var chtlog = document.getElementById("messagecontainer"); //grab the element we're going to be appending this new message to
+	
+	
+	//create main message container
+   	var msgcontainer = document.createElement("div"); //initialize a new message
+	msgcontainer.className  = "item"; //set the class name 
+	msgcontainer.setAttribute('id', "message"+window.janus.chat.length); //set the message id to message plus the current length
+	msgcontainer.innerHTML = window.janus.chat[window.janus.chat.length-1];
+	chtlog.appendChild(msgcontainer); //append this message to the chatlog container
+   
+    window.scrollTo(0,document.body.scrollHeight);
+    previouslength = window.janus.chat.length;
+   }
+  
+  
+  
+  }
+  ,100
+  
+  );
+  
+  
+  
+  
+    </script>
+  
+  
+  <link rel="stylesheet" type="text/css" href="../../skins/emerald/emeraldgenericwindow.css">
+  
+</head>
+
+<body >
+
+<div class="entryform"   ><input onkeydown="sendmessagewithenter()" id="entryform" type="text" placeholder="Click here or press T to chat as User513."> </input>  </div>
+
+
+<div class="chatlog" id="chatlog"> 
+
+	<div class="messagecontainer" id="messagecontainer">
+
+
+	</div>
+
+
+</div>
+
+
+<audio id="sound1" src="../../sounds/chat.wav" preload="auto"></audio>
+</body>
+</html>

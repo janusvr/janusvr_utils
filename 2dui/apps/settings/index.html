@@ -1,0 +1,387 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>JanusVR Interface Settings Menu</title>
+  <meta name="description" content="JanusVR Interface Settings Menu">
+  <meta name="author" content="JanusVR Inc.">
+  <script src="../../scripts/tabs.js"></script>
+  
+  <script>
+
+
+  
+  window.onload = function () {
+  
+  tabSelect("avatartabcontainer","avatartabbutton")
+  window.onresize()
+  }
+
+  
+  
+   window.onresize = function(event) { //make sure the window area stays a consistent size
+
+ console.log("calc(100% - "+document.getElementById("tabrow").offsetHeight+"px)"	);
+
+ 
+ if (document.getElementById("tabrow").offsetWidth >= 200) //if you change the 200 here, also change the min-width of the window containing it. this is to prevent flicker when vertically resizing a minimally (width) sized window
+ {
+document.getElementById("windowarea").style.height = "calc(100% - "+(document.getElementsByClassName("tabrow")[0].offsetHeight+3)+"px)";	
+ }
+};
+  
+
+  
+    </script>
+  
+  
+  <link rel="stylesheet" type="text/css" href="../../skins/emerald/emeraldgenericwindow.css">
+  
+</head>
+
+<body >
+
+<div class="windowcontainer">
+
+<div class="tabrow unselectable" id="tabrow">
+
+	<div class="tabbutton" id="avatartabbutton" onmousedown="tabSelect('avatartabcontainer','avatartabbutton')">AVATAR</div></li>
+	<div class="tabbutton" id="servertabbutton" onmousedown="tabSelect('servertabcontainer','servertabbutton')">SERVER</div></li>
+	<div class="tabbutton" id="inputtabbutton" onmousedown="tabSelect('inputtabcontainer','inputtabbutton')" >INPUT</div></li>
+	<div class="tabbutton" >GRAPHICS</div></li>
+	<div class="tabbutton" >INTERFACE</div></li>
+	<div class="tabbutton" >DEVELOPER</div></li>
+	<div class="tabbutton" >MISC</div>
+
+</div>
+
+
+<div class="windowarea unselectable" id="windowarea">
+
+		<div class="tabcontainer" id="servertabcontainer">
+					<div class='header'>PRESENCE</div>
+
+					<form class='item lightup' action='' >
+					<span>
+					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<b>Multiplayer</b>
+					<br>
+					<hr>
+					Unchecking this box will disconnect you from all presence servers.
+					You will not be able to see other users until this setting is re-enabled.
+					</span>
+					<br>
+					</form>
+
+					<form class='item lightup' action='' >
+					<span>
+					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<b>Fallback Server</b>
+					<br>
+					<hr>
+					The default presence server to use when the room creator has not specified their own.
+					</span>
+					<br>
+					</form>
+
+
+					<form class='item lightup' action='' >
+					<span>
+					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<b>Fallback Server Port</b>
+					<br>
+					<hr>
+					The default presence server port to use when the room creator has not specified their own.
+					</span>
+					<br>
+					</form>
+
+
+
+					<form class='item lightup' action='' >
+					<span>
+					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<b>Fallback Server Poll Rate</b>
+					<br>
+					<hr>
+					How fast the client polls the fallback server.
+					</span>
+					<br>
+					</form>
+
+
+					<div class='header'>PRIVACY</div>
+
+
+					<form class='item lightup' action='' >
+					<span>
+					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<b>Anonymous Statistics</b>
+					<br>
+					<hr>
+					By leaving this checked, you're helping the devs figure out when and why certain bugs occur,
+					and how to best improve JanusVR in the future. We really appreciate it!
+					</span>
+					<br>
+					</form>
+
+					</div>
+
+					
+					
+					
+					
+					
+					
+				<div class="tabcontainer" id="avatartabcontainer">
+					<div class='header'>VISUAL</div>
+
+					<form class='item lightup' action='' >
+					<span>
+					<b>Display Name</b>
+					<input  type='text' class="longerinput" name='test' value='SlipperySalmon420'>
+
+					</span>
+					<br>
+					<hr>
+					The name that other people recognise you as.
+					</form>	
+
+					<form class='item lightup' action='' >
+					<span>
+					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<b>Avatar Lighting</b>
+					<br>
+					<hr>
+					Toggles between full bright and fully lit. 
+					</span>
+					<br>
+					</form>
+
+
+					<form class='item lightup' action='' >
+					<span>
+					<b>Avatar Scale</b>
+					<input  type='text' name='test' value='1 1 1'>
+
+					</span>
+					<br>
+					<hr>
+					Three numbers that scale your avatar on the x y and z axes. Default is 1 1 1.
+					</form>		
+
+
+					<div class='header'>NETWORK</div>
+
+
+
+					<form class='item lightup' action='' >
+					<span>
+					<b>Avatar URL</b>
+					<input class="longerinput" type='text' name='test' value='http://janusvr.com/default.dae'>
+
+					</span>
+					<br>
+					<hr>
+					The URL where your avatar model is located.
+					</form>							
+					
+
+
+
+					<form class='item lightup' action='' >
+					<span>
+					<b>Avatar URL</b>
+					<input class="longerinput" type='text' name='test' value='http://janusvr.com/default.mtl'>
+
+					</span>
+					<br>
+					<hr>
+					If you're using an OBJ file as your avatar, you can link the .mtl file here.
+					</form>		
+
+				</div>
+					
+					
+					
+			
+				<div class="tabcontainer" id="inputtabcontainer">
+					<div class='header'>DEVICE</div>
+
+					<form class='item lightup' action='' >
+					<span>
+					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<b>Leap Motion on HMD</b>
+					<br>
+					<hr>
+					Whether or not your Leap Motion is located on your HMD, or on your desk.
+					</span>
+					<br>
+					</form>
+
+					<form class='item lightup' action='' >
+					<span>
+					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<b>Invert Pitch</b>
+					<br>
+					<hr>
+					Inverses your vertical look direction.
+					</span>
+					<br>
+					</form>
+
+
+					<form class='item lightup' action='' >
+					<span>
+					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<b>Comfort Mode</b>
+					<br>
+					<hr>
+					When enabled, the gamepad will turn you incrementally rather than smoothly.
+					</span>
+					<br>
+					</form>
+
+
+					<div class='header'>KEY BINDINGS</div>
+
+
+					<form class='item lightup' action='' >
+					<span>
+					<b>Jump</b>
+					<input  type='text' name='test' value='SPACE'>
+
+					</span>
+					<br>
+					</form>		
+
+					<form class='item lightup' action='' >
+					<span>
+					<b>Walk Forwards</b>
+					<input  type='text' name='test' value='W'>
+
+					</span>
+					<br>
+					</form>						
+
+					<form class='item lightup' action='' >
+					<span>
+					<b>Walk Backwards</b>
+					<input  type='text' name='test' value='S'>
+
+					</span>
+					<br>
+					</form>		
+
+					<form class='item lightup' action='' >
+					<span>
+					<b>Walk Left</b>
+					<input  type='text' name='test' value='A'>
+
+					</span>
+					<br>
+					</form>			
+
+					<form class='item lightup' action='' >
+					<span>
+					<b>Walk Right</b>
+					<input  type='text' name='test' value='D'>
+
+					</span>
+					<br>
+					</form>			
+
+					<form class='item lightup' action='' >
+					<span>
+					<b>Run</b>
+					<input  type='text' name='test' value='SHIFT'>
+
+					</span>
+					<br>
+					</form>			
+					
+					<form class='item lightup' action='' >
+					<span>
+					<b>Spawn Portal</b>
+					<input  type='text' name='test' value='TAB'>
+
+					</span>
+					<br>
+					</form>				
+
+					<form class='item lightup' action='' >
+					<span>
+					<b>Completely Mess Up The Room</b>
+					<input  type='text' name='test' value='G'>
+
+					</span>
+					<br>
+					</form>							
+					
+				</div>
+										
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+		</div>			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+</div>
+
+
+
+</body>
+</html>

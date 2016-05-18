@@ -1,0 +1,132 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>JanusVR Interface Settings Menu</title>
+  <meta name="description" content="JanusVR Interface Settings Menu">
+  <meta name="author" content="JanusVR Inc.">
+ <script src="../../scripts/tabs.js"></script>
+  
+  <script>
+
+
+
+  
+  window.onload = function () {
+  
+  tabSelect("maptabcontainer","maptabbutton")
+  window.onresize()
+  }
+
+  
+  
+   window.onresize = function(event) { //make sure the window area stays a consistent size
+
+ console.log("calc(100% - "+document.getElementById("tabrow").offsetHeight+"px)"	);
+
+ 
+ if (document.getElementById("tabrow").offsetWidth >= 200) //if you change the 200 here, also change the min-width of the window containing it. this is to prevent flicker when vertically resizing a minimally (width) sized window
+ {
+document.getElementById("windowarea").style.height = "calc(100% - "+(document.getElementsByClassName("tabrow")[0].offsetHeight+3)+"px)";	
+ }
+ 
+};
+  
+
+  
+    </script>
+  
+  
+  <link rel="stylesheet" type="text/css" href="../../skins/emerald/emeraldgenericwindow.css">
+  
+</head>
+
+<body style=" background-color:  rgba(84, 84, 84, 0.4);">
+
+<div class="windowcontainer">
+
+<div class="tabrow unselectable" id="tabrow"  style="background-color:  rgba(84, 84, 84, 1);">
+
+	<div class="tabbutton" id="maptabbutton" onmousedown="tabSelect('maptabcontainer','maptabbutton')">LOCAL</div></li>
+	<div class="tabbutton" id="historytabbutton" onmousedown="tabSelect('historytabcontainer','historytabbutton')">HISTORY</div></li>
+
+</div>
+
+
+<div class="windowarea unselectable" id="windowarea">
+
+		<div class="tabcontainer" id="maptabcontainer">
+				
+
+		</div>
+					
+		<div class="tabcontainer" id="historytabcontainer">
+				
+
+		</div>
+					
+										
+		
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+		</div>			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+</div>
+
+
+
+</body>
+</html>
