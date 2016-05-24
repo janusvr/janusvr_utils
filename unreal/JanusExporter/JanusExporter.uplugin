@@ -5,7 +5,7 @@
 	"VersionName" : "1.0",
 	"CreatedBy" : "Janus VR, Inc.",
 	"CreatedByURL" : "http://janusvr.com",
-	"EngineVersion" : "4.7.0",
+	"EngineVersion" : "4.11.2",
 	"Description" : "Janus VR Scene Exporter",
 	"Category" : "Exporter",
 	"EnabledByDefault" : true,

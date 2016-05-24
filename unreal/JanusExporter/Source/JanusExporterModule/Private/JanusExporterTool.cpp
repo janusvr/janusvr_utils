@@ -2,6 +2,7 @@
 #include "JanusExporterTool.h"
 #include "ScopedTransaction.h"
 #include "EngineUtils.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
 #include "Editor/UnrealEd/Public/ObjectTools.h"
 #include "Editor/UnrealEd/Public/EditorDirectories.h"
 #include "Editor/MainFrame/Public/Interfaces/IMainFrameModule.h"
@@ -11,6 +12,13 @@
 #include "Editor/UnrealEd/Classes/Exporters/TextureExporterTGA.h"
 #include "Editor/UnrealEd/Public/BusyCursor.h"
 #include "Runtime/Engine/Public/ImageUtils.h"
+#include "Runtime/Engine/Public/TextureResource.h"
+#include "Runtime/Engine/Public/CanvasTypes.h"
+#include "Runtime/Engine/Classes/Engine/TextureRenderTarget2D.h"
+#include "Runtime/Engine/Public/TextureResource.h"
+#include "Runtime/Engine/Classes/Materials/MaterialInstanceDynamic.h"
+#include "Runtime/Engine/Public/HitProxies.h"
+#include "Developer/MaterialUtilities/Public/MaterialUtilities.h"
 
 #define private public   // POG = Programacao Orientada a Gambiarra
 #include "Editor/UnrealEd/Private/FbxExporter.h"
@@ -171,13 +179,49 @@ void ExportPNG(UTexture* Texture, FString RootFolder)
 	FFileHelper::SaveArrayToFile(PNGData, *TexPath);
 }
 
-float Absolute(float Value)
+void ExportPNG(FString& Path, TArray<FColor> ColorData, int Width, int Height)
 {
-	if (Value < 0)
+	TArray<uint8> PNGData;
+	FImageUtils::CompressImageArray(Width, Height, ColorData, PNGData);
+	FFileHelper::SaveArrayToFile(PNGData, *Path);
+}
+
+void ExportBMP(FString& Path, TArray<FColor> ColorData, int Width, int Height)
+{
+	FFileHelper::CreateBitmap(*Path, Width, Height, ColorData.GetData());
+}
+
+void ExportMaterial(FString& Folder, UMaterialInterface* Material, TArray<FString>* ExportedTextures)
+{
+	check(Material);
+
+	TEnumAsByte<EBlendMode> BlendMode = Material->GetBlendMode();
+	bool bIsValidMaterial = FMaterialUtilities::SupportsExport((EBlendMode)(BlendMode), EMaterialProperty::MP_BaseColor);
+
+	if (bIsValidMaterial)
 	{
-		Value *= -1;
+		TArray<FColor> ColorData;
+		FIntPoint Size;
+		FMaterialUtilities::ExportMaterialProperty(Material, EMaterialProperty::MP_BaseColor, ColorData, Size);
+
+		FString MatName = Material->GetName();
+		FString Path = MatName + "_BaseColor";
+		ExportedTextures->Add(Path);
+
+		Path = Folder + "/" + Path + ".png";
+
+		// for some reason it's all transparent, so change the alpha
+		int ColorElements = Size.X * Size.Y;
+		for (int i = 0; i < ColorElements; i++)
+		{
+			FColor Color = ColorData[i];
+			Color.A = 255;
+			ColorData[i] = Color;
+		}
+
+		ExportPNG(Path, ColorData, Size.X, Size.Y);
+		//ExportBMP(Path, ColorData, Size.X, Size.Y);
 	}
-	return Value;
 }
 
 FVector ChangeSpace(FVector Vector)
@@ -187,20 +231,39 @@ FVector ChangeSpace(FVector Vector)
 
 FVector ChangeSpaceScalar(FVector Vector)
 {
-	return FVector(Absolute(Vector.Y), Absolute(Vector.Z), Absolute(Vector.X));
+	return FVector(Vector.Y, Vector.Z, Vector.X);
+}
+
+float Abs(float Value)
+{
+	if (Value < 0)
+	{
+		return Value * -1;
+	}
+	return Value;
+}
+
+FVector GetSignVector(FVector Vector)
+{
+	return FVector(Vector.X > 0 ? 1 : -1, Vector.Y > 0 ? 1 : -1, Vector.Z > 0 ? 1 : -1);
+}
+
+FVector Abs(FVector Vector)
+{
+	return FVector(Abs(Vector.X), Abs(Vector.Y), Abs(Vector.Z));
 }
 
 void UJanusExporterTool::Export()
 {
 	TArray<UObject*> ObjectsToExport;
-	const bool SkipRedirectors = false;
 
-	FString root = FString(ExportPath); // copy so we dont mess with the original reference
+	FString Root = FString(ExportPath); // copy so we dont mess with the original reference
 	FString index = "<html><head><title>Unreal Export</title></head><body><FireBoxRoom><Assets>";
 
-	TArray<AActor*> actorsExp;
+	TArray<AActor*> ActorsExported;
 	TArray<UStaticMesh*> StaticMeshesExp;
-	TArray<UTexture*> TexturesExp;
+	TArray<FString> TexturesExp;
+	TArray<FString> MaterialsExported;
 
 	for (TObjectIterator<AActor> Itr; Itr; ++Itr)
 	{
@@ -210,48 +273,59 @@ void UJanusExporterTool::Export()
 		{
 			continue;
 		}
+		
+		ActorsExported.Add(Actor);
 
-		actorsExp.Add(Actor);
-
-		TArray<UStaticMeshComponent*> staticMeshes;
-		Actor->GetComponents<UStaticMeshComponent>(staticMeshes);
-		for (int32 i = 0; i < staticMeshes.Num(); i++)
+		TArray<UStaticMeshComponent*> StaticMeshes;
+		Actor->GetComponents<UStaticMeshComponent>(StaticMeshes);
+		for (int32 i = 0; i < StaticMeshes.Num(); i++)
 		{
-			UStaticMeshComponent* Component = staticMeshes[i];
-			UStaticMesh *mesh = Component->StaticMesh;
-			if (!mesh || StaticMeshesExp.Contains(mesh))
+			UStaticMeshComponent* Component = StaticMeshes[i];
+			UStaticMesh *Mesh = Component->StaticMesh;
+			if (!Mesh)
 			{
 				continue;
 			}
 
-			StaticMeshesExp.Add(mesh);
-
-			ExportFBX(mesh, root);
-
-			TArray<UMaterialInterface*> mats = mesh->Materials;
-			for (int32 j = 0; j < mats.Num(); j++)
+			if (!StaticMeshesExp.Contains(Mesh))
 			{
-				UMaterialInterface* mat = mats[j];
-				if (!mat)
+				StaticMeshesExp.Add(Mesh);
+				ExportFBX(Mesh, Root);
+			}
+
+			TArray<UMaterialInterface*> Materials = Component->GetMaterials();
+			for (int32 j = 0; j < Materials.Num(); j++)
+			{
+				UMaterialInterface* Material = Materials[j];
+				if (!Material)
 				{
 					continue;
 				}
 
-				TArray<UTexture*> OutTextures;
-				mat->GetUsedTextures(OutTextures, EMaterialQualityLevel::Type::High, false, ERHIFeatureLevel::SM5, true);
-
-				for (int32 n = 0; n < OutTextures.Num(); n++)
+				if (Material->GetClass()->IsChildOf(UMaterialInstance::StaticClass()))
 				{
-					UTexture* tex = OutTextures[n];
+					UMaterialInstance* Instance = Cast<UMaterialInstance>(Material);
+					FString MatName = Instance->GetName();
 
-					if (TexturesExp.Contains(tex))
+					if (MaterialsExported.Contains(MatName))
 					{
 						continue;
 					}
 
-					TexturesExp.Add(tex);
+					MaterialsExported.Add(MatName);
+					ExportMaterial(Root, Material, &TexturesExp);
+				}
+				else
+				{
+					FString MatName = Material->GetName();
 
-					ExportPNG(tex, root);
+					if (MaterialsExported.Contains(MatName))
+					{
+						continue;
+					}
+
+					MaterialsExported.Add(MatName);
+					ExportMaterial(Root, Material, &TexturesExp);
 				}
 			}
 		}
@@ -261,9 +335,9 @@ void UJanusExporterTool::Export()
 
 	for (int32 i = 0; i < TexturesExp.Num(); i++)
 	{
-		UTexture *tex = TexturesExp[i];
+		FString Path = TexturesExp[i];
 
-		index.Append("<AssetImage id=\"" + tex->GetName() + "\" src=\"" + tex->GetName() + ".png" + "\"/>");
+		index.Append("<AssetImage id=\"" + Path + "\" src=\"" + Path + ".png" + "\"/>");
 		index.Append("\n");
 	}
 
@@ -279,96 +353,85 @@ void UJanusExporterTool::Export()
 
 	index.Append("</Assets><Room>");
 
-	for (int32 i = 0; i < actorsExp.Num(); i++)
+	for (int32 i = 0; i < ActorsExported.Num(); i++)
 	{
-		AActor *actor = actorsExp[i];
+		AActor *Actor = ActorsExported[i];
 
-		if (actor->IsHiddenEd())
+		if (Actor->IsHiddenEd())
 		{
 			continue;
 		}
 
-		TArray<UStaticMeshComponent*> staticMeshes;
-		actor->GetComponents<UStaticMeshComponent>(staticMeshes);
-		for (int32 i = 0; i < staticMeshes.Num(); i++)
+		TArray<UStaticMeshComponent*> StaticMeshes;
+		Actor->GetComponents<UStaticMeshComponent>(StaticMeshes);
+		for (int32 i = 0; i < StaticMeshes.Num(); i++)
 		{
-			UStaticMeshComponent* Component = staticMeshes[i];
-			UStaticMesh *mesh = Component->StaticMesh;
-			if (!mesh)
+			UStaticMeshComponent* Component = StaticMeshes[i];
+			UStaticMesh *Mesh = Component->StaticMesh;
+			if (!Mesh)
 			{
 				continue;
 			}
 
 			FString ImageID = "";
 
-			TArray<UMaterialInterface*> mats = mesh->Materials;
-			for (int32 j = 0; j < mats.Num(); j++)
+			TArray<UMaterialInterface*> Materials = Component->GetMaterials();
+			for (int32 j = 0; j < Materials.Num(); j++)
 			{
-				UMaterialInterface* Material = mats[j];
+				UMaterialInterface* Material = Materials[j];
 				if (!Material)
 				{
 					continue;
 				}
-
-				TArray<UTexture*> OutTextures;
-				Material->GetUsedTextures(OutTextures, EMaterialQualityLevel::Type::High, false, ERHIFeatureLevel::SM5, true);
-
-				for (int32 n = 0; n < OutTextures.Num(); n++)
-				{
-					UTexture* Texture = OutTextures[n];
-					if (Texture->CompressionSettings == TextureCompressionSettings::TC_Default)
-					{
-						ImageID = Texture->GetName();
-					}
-					break;
-				}
+				ImageID = Material->GetName() + "_BaseColor";
+				break;
 			}
 
 			if (ImageID == "")
 			{
-				index.Append("<Object collision_id=\"" + mesh->GetName() + "\" id=\"" + mesh->GetName() + "\" lighting=\"true\" pos=\"");
+				index.Append("<Object collision_id=\"" + Mesh->GetName() + "\" id=\"" + Mesh->GetName() + "\" lighting=\"true\" pos=\"");
 			}
 			else
 			{
-				index.Append("<Object collision_id=\"" + mesh->GetName() + "\" id=\"" + mesh->GetName() + "\" image_id=\"" + ImageID + "\"  lighting=\"true\" pos=\"");
+				index.Append("<Object collision_id=\"" + Mesh->GetName() + "\" id=\"" + Mesh->GetName() + "\" image_id=\"" + ImageID + "\"  lighting=\"true\" pos=\"");
 			}
 
-			FRotator rot = actor->GetActorRotation();
-			FVector xdir = rot.RotateVector(FVector::RightVector);
-			FVector ydir = rot.RotateVector(FVector::UpVector);
-			FVector zdir = rot.RotateVector(FVector::ForwardVector);
+			FRotator Rot = Actor->GetActorRotation();
+			FVector XDir = Rot.RotateVector(FVector::RightVector);
+			FVector YDir = Rot.RotateVector(FVector::UpVector);
+			FVector ZDir = Rot.RotateVector(FVector::ForwardVector);
 
-			FVector pos = actor->GetActorLocation() * UniformScale;
-			FVector sca = actor->GetActorScale() * UniformScale;
+			FVector Pos = Actor->GetActorLocation() * UniformScale;
+			FVector Sca = Actor->GetActorScale();
 
-			pos = ChangeSpace(pos);
-			sca = ChangeSpaceScalar(sca);
+			Pos = ChangeSpace(Pos);
+			Sca = ChangeSpaceScalar(Sca) * UniformScale;
+			//Sca = Abs(Sca);
 
-			xdir = ChangeSpace(xdir);
-			ydir = ChangeSpace(ydir);
-			zdir = ChangeSpace(zdir);
-
-			// Unreal Engine uses a left-handed, z-up world coordinate system
-			// Unity 3D uses a left-handed, y-up world coordinate system.
-
-			/*xdir.Y *= -1;
-			ydir.Y *= -1;
-			zdir.Y *= -1;
-			pos.Y *= -1;*/
-
-			index.Append(FString::SanitizeFloat(pos.X) + " " + FString::SanitizeFloat(pos.Y) + " " + FString::SanitizeFloat(pos.Z));
+			XDir = ChangeSpace(XDir);
+			YDir = ChangeSpace(YDir);
+			ZDir = ChangeSpace(ZDir);
+			FVector Sign = GetSignVector(Sca);
+			/*XDir *= Sign;
+			YDir *= Sign;
+			ZDir *= Sign;*/ // cull_face = front
+			index.Append(FString::SanitizeFloat(Pos.X) + " " + FString::SanitizeFloat(Pos.Y) + " " + FString::SanitizeFloat(Pos.Z));
+			if (Sca.X < 0 || Sca.Y < 0 || Sca.Z < 0)
+			{
+				index.Append("\" cull_face=\"front");
+			}
 
 			index.Append("\" scale=\"");
-			index.Append(FString::SanitizeFloat(sca.X) + " " + FString::SanitizeFloat(sca.Y) + " " + FString::SanitizeFloat(sca.Z));
+			index.Append(FString::SanitizeFloat(Sca.X) + " " + FString::SanitizeFloat(Sca.Y) + " " + FString::SanitizeFloat(Sca.Z));
 
 			index.Append("\" xdir=\"");
-			index.Append(FString::SanitizeFloat(xdir.X) + " " + FString::SanitizeFloat(xdir.Y) + " " + FString::SanitizeFloat(xdir.Z));
+			index.Append(FString::SanitizeFloat(XDir.X) + " " + FString::SanitizeFloat(XDir.Y) + " " + FString::SanitizeFloat(XDir.Z));
 
 			index.Append("\" ydir=\"");
-			index.Append(FString::SanitizeFloat(ydir.X) + " " + FString::SanitizeFloat(ydir.Y) + " " + FString::SanitizeFloat(ydir.Z));
+			index.Append(FString::SanitizeFloat(YDir.X) + " " + FString::SanitizeFloat(YDir.Y) + " " + FString::SanitizeFloat(YDir.Z));
 
 			index.Append("\" zdir=\"");
-			index.Append(FString::SanitizeFloat(zdir.X) + " " + FString::SanitizeFloat(zdir.Y) + " " + FString::SanitizeFloat(zdir.Z));
+			index.Append(FString::SanitizeFloat(ZDir.X) + " " + FString::SanitizeFloat(ZDir.Y) + " " + FString::SanitizeFloat(ZDir.Z));
 
 			index.Append("\" />");
 
@@ -379,8 +442,8 @@ void UJanusExporterTool::Export()
 	index.Append("\n");
 	index.Append("</Room></FireBoxRoom></body></html>");
 
-	FString indexPath = FString(ExportPath).Append("index.html");
-	FFileHelper::SaveStringToFile(index, *indexPath);
+	FString IndexPath = FString(ExportPath).Append("index.html");
+	FFileHelper::SaveStringToFile(index, *IndexPath);
 }
 
 #undef LOCTEXT_NAMESPACE

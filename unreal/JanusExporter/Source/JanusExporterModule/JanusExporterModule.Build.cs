@@ -21,7 +21,8 @@ public class JanusExporterModule : ModuleRules
 				"Engine",
 				"Slate",
 				"UnrealEd",
-                "UElibPNG"
+                "UElibPNG",
+                "MaterialUtilities"
             }
 		);
 		
@@ -30,9 +31,10 @@ public class JanusExporterModule : ModuleRules
 				"InputCore",
 				"SlateCore",
 				"PropertyEditor",
-				"LevelEditor"
-			}
-		);
+				"LevelEditor",
+                "MaterialUtilities"
+            }
+        );
 
         AddThirdPartyPrivateStaticDependencies(Target, "FBX");
     }

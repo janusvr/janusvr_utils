@@ -6,7 +6,7 @@
 #include "JanusCommands.h"
 #include "JanusExporterStyle.h"
 
-#define LOCTEXT_NAMESPACE "JanusExporter"
+#define LOCTEXT_NAMESPACE "Janus Exporter"
 
 //class FDemoEditorExtensionsEditorModule : public IModuleInterface
 class FJanusExporterModule : public IModuleInterface
