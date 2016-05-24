@@ -1,0 +1,339 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>JanusVR Interface Chatlog</title>
+  <meta name="description" content="Chatlog Interface for JanusVR">
+  <meta name="author" content="JanusVR Inc.">
+ 
+  
+  <script>
+
+
+function openjavascript() {
+
+document.getElementById("javascript").style.visibility= "visible";
+document.getElementById("rendering").style.visibility = "hidden";
+
+document.getElementById("renderingbutton").className = ""
+document.getElementById("javascriptbutton").className = "selected"
+}
+
+function openrendering() {
+
+document.getElementById("javascript").style.visibility= "hidden";
+document.getElementById("rendering").style.visibility = "visible";
+
+document.getElementById("renderingbutton").className = "selected"
+document.getElementById("javascriptbutton").className = ""
+}
+
+  
+    </script>
+  
+  
+  <style>
+  body {
+  background-color: #545454;
+  padding:0 0;
+  margin: 0 0;
+  overflow:hidden;
+  }
+  
+ @font-face {
+    font-family: "Montserrat";
+    src: url(../../skins/emerald/Montserrat-Regular.ttf);
+} 
+  
+  @font-face {
+    font-family: "Swis721 BT";
+    src: url(../../skins/emerald/swiss.ttf);
+}
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+
+}
+
+li {
+    float: left;
+}
+
+li button {
+    display: block;
+
+    text-align: center;
+
+    text-decoration: none;
+	  font-family: "Montserrat";
+	  
+	  
+	  font-size: 12px;
+  background-color: #545454;
+ border-style:none;
+  color: #E4E4E4;
+  font-family: "Montserrat";
+  padding: 10px 10px;
+
+  margin-right:0vw;
+
+
+  overflow:hidden;  
+	  
+	  
+	  
+}
+
+
+/* Change the link color to #111 (black) on hover */
+li button:hover {
+    background-color: #7F7F7F;
+	cursor:hand;
+}
+
+li button:focus {
+
+ outline:0;
+
+}
+
+.inventoryarea {
+position:absolute;
+border-color: #E4E4E4;
+border-style: solid solid solid solid;
+  overflow: auto;
+height: 80%;
+padding: 8px 8px;
+height: calc(100% - 57px);
+}
+  
+  .item{
+  
+  background-color: #494949;
+  margin: 8px 0;
+  height:70px;
+  }
+  
+  .item img
+  {
+  
+  height:100%;
+
+	
+  }
+  
+  .item span {
+  
+ top:50%;
+ font-family: "Swis721 BT";
+  color: #E4E4E4; 
+  }
+  
+  .unselectable {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* IE/Edge */
+  user-select: none;           /* non-prefixed version, currently
+                                  not supported by any browser */
+								  cursor:default;
+}  
+
+li .selected {
+
+  background-color: #E4E4E4;
+   color: #545454;
+	  
+	  
+	  
+}
+
+
+.infotitle {
+  font-family: "Montserrat";
+color:#0EE05A;
+
+
+}
+
+.infocontent {
+
+    font-family: "Swis721 BT";
+	color: white;
+
+}
+
+.infocontainer {
+
+	margin-bottom:8px;
+}
+
+  </style>
+  
+</head>
+
+<body >
+
+<div class="inventory">
+
+<ul class="unselectable">
+  <li><button id="renderingbutton" class="selected" onclick="openrendering()">RENDERING</a></li>
+  <li><button id="javascriptbutton" onclick="openjavascript()">JAVASCRIPT</a></li>
+
+</ul>
+
+
+<div class="inventoryarea"  id="rendering" >
+
+	<ul>
+
+		<li class="infocontainer">
+			<span class="infotitle">* But Dizzket... a 2D interface?!</span>
+			<br>
+			<span class="infocontent">The idea behind this interface is to give 
+			content developers, those of which who spend most of their time multitasking, an easy desktop interface for Janus, as well as a fresh coat of paint.</span>
+		</li>
+
+				<li class="infocontainer">
+			<span class="infotitle">* What's wrong with the current interface?</span>
+			<br>
+			<span class="infocontent">There's nothing wrong with it for VR mode, but it's made for consuming content, and assumes you're wearing an oculus rift. This UI was born out of the worldbuilding team's needs. We've been
+			needing a 'desktop friendly' mode for a long time, considering how often we jump between blender, photoshop, slack, mumble, illustrator, sketchup, etc. We can have both.</span>
+		</li>		
+		
+		
+		<li class="infocontainer">
+			<span class="infotitle">* I'm a busy guy... How do we get this in so I can forget about it?</span>
+			<br>
+			<span class="infocontent">This whole thing is written in html, css and js. Just plop a transparent webkit window over Janus, add some UI javascript functions for when you click on buttons (mentioned in the Javascript
+			tab) and it's pretty much done. By the way, this would instantly port over to mobile and a Janus web client!</span>
+		</li>		
+		
+
+				
+		<li class="infocontainer">
+			<span class="infotitle">* Give me one more good reason to throw this in or you're fired.</span>
+			<br>
+			<span class="infocontent">Slow down, slow down! Alright, here's one... creating a really good 3D interface framework will take us a long time. The 3D interface should
+			take advantage of things specific to VR, and not try to be some sort of frankenstein that makes sacrifices in the name of compatibility. All windows are modular components
+			which we can reuse later, and it'll be fast as hell to prototype new systems and features (like inventory) via webkit. It'll also give our more abstract features, like the G key, a place to
+			exist for the people that really need it.</span>
+		</li>			
+	
+			<li class="infocontainer">
+			<span class="infotitle">* tl;dr</span>
+			<br>
+			<span class="infocontent">Devs need more efficiency on the 2D. Throw this on a transparent webkit over Janus and it's in.</span>
+		</li>			
+	
+	</ul>
+
+
+</div>
+
+
+
+<div class="inventoryarea" id="javascript" style="visibility:hidden;">
+
+	<ul>
+
+		<li>
+			<span class="infotitle">* uh what javascript stuff do you need then</span>
+			<br>
+			<span class="infocontent"> Oh, uh... so we could have a 'janus' scope in the webkit javascript that only the ui could access, with stuff like the following...</span>
+			<br>
+			<br>
+			<span class="infotitle">* Functions?</span>
+						<br>
+			<span class="infocontent"> *janus.uifocus(boolean) - Whether or not the user is using the UI, or walking around in Janus. ESC would release mouse focus, and clicking an empty portion of
+			the interface would allow the user to walk around again.</span>
+			<br>
+			<br>	
+			<span class="infocontent"> *janus.navback() - Teleports to the next page.</span>
+			<br>
+			<br>	
+			<span class="infocontent"> *janus.navforward() - Teleports to the last page.</span>
+			<br>
+			<br>				
+			<span class="infocontent"> *janus.navhome() - Teleports to the homepage sans portal. In the future, the pocket space.</span>
+			<br>
+			<br>	
+			<span class="infocontent"> *janus.goto(url,portal) - Teleports to the argument "url". If portal is 0, no portal spawns, and 1 spawns a portal.</span>
+			<br>
+			<br>
+			<span class="infocontent"> *janus.saveroom() - Saves the room.</span>
+			<br>
+			<br>
+			<span class="infocontent"> *janus.quit() - Quits.</span>
+			<br>
+			<br>	
+			<span class="infocontent"> *janus.reset() - Resets.</span>
+			<br>
+			<br>			
+	
+			<span class="infotitle">* Properties?</span>
+			<br>		
+			<span class="infocontent"> *janus.networkstatus - Returns the current status, 0 for offline, 1 for connecting, 2 for online and 3 for error. </span>
+			<br>
+			<br>			
+			<span class="infocontent"> *janus.networkerror - If janus.networkstatus returns a 3, returns varying error states, from name taken to whatever.</span>
+			<br>
+			<br>
+			<span class="infocontent"> *room.locked - Not within janus scope. Returns whether or not the room is locked.</span>
+			<br>
+			<br>	
+			<span class="infocontent"> *room.tricount - Not within janus scope. Returns triangle count in the room</span>
+			<br>
+			<br>				
+			<span class="infocontent"> *janus.chatlog - An array of chatlog messages. Not in room scope since you can receive messages from any subscribed room.</span>
+			<br>
+				<br>		
+				
+			<span class="infocontent"> *room.loadpercentage - A floating point number from 0 to 1 describing what percentage the room has finished loading.</span>
+			<br>
+				<br>					
+				
+				
+			
+			<span class="infotitle">* Temporary functions?</span>     	<br>
+			<span class="infocontent"> The windowing system probably won't make it into v1, so the buttons at the bottom of the screen will just open branches
+			of the esc menu for now.  </span>
+			<br><br>	
+			<span class="infocontent"> *janus.openbookmarks() - Basically what it sounds like. Opens the 3d bookmarks menu. </span>
+			<br>
+			<br>			
+			<span class="infocontent"> *janus.opensettings()</span>
+			<br>
+			<br>
+			<span class="infocontent"> *janus.openroomcodeeditor()</span>
+			<br>
+			<br>
+			<span class="infocontent"> *janus.openbrowser()</span>
+			<br>
+			<br>
+			<span class="infocontent"> *janus.openavatarmenu()</span>
+			<br>
+			<br>
+			<span class="infocontent"> *janus.openchatlog() - I might actually code in the chatlog for v1, so this is a 'just in case' thing.</span>
+			<br>
+			<br>
+			<span class="infocontent"> And that's it!</span>
+			<br>
+			<br>			
+						
+			</li>
+
+
+	</ul>
+
+
+</div>
+</div>
+
+
+
+</body>
+</html>

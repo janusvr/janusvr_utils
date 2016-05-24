@@ -1,0 +1,883 @@
+  <!--
+                                             
+                                           
+                                           
+                   .:;;,`                  
+                `;;;;;;;;;;                
+               ;;;;;;;;;;;;;,              
+              ;;;;;;;;;;;;;;;;             
+             ;;;;;;;;;;;;;;;;;:            
+         `,,;;;;;;;;;;;;;;;;;;;:`;         
+        .   ;;;;;;;;;;;;;;;;;;;   :        
+            `;;;;;;;;;;;;;;;;;;    :       
+       ;     ;;;;;;;;;;;;;;;;;,            
+       `     ;;;;;;;;;;;;;;;;;      :      
+      `      :;;;;;;;;;;;;;;;;      ,      
+      :      .;;;;;;;;;;;;;;;;             
+      :       ;;;;;;;;;;;;;;;;             
+      :       ;;;;;;;;;;;;;;;:             
+      ;       ;;;;;;;;;;;;;;;`             
+      :       ;;;;;;;;;;;;;;;       `      
+      :       .;;;;;;;;;;;;;;              
+     `         ;;;;;;;;;;;;;;        :     
+     .         ;;;;;;;;;;;;;`         .    
+    ,          :;;;;;;;;;;;;          .             JANUSVR: THE WORLD INSIDE THE WEB
+    :           ;;;;;;;;;;;;               
+    ,           ;;;;;;;;;;;`          ,    
+     ,          `;;;;;;;;;;          ,     
+      .          ;;;;;;;;;           .     
+      :           ;;;;;;;:                 
+      ;           .;;;;;;                  
+      ,            ;;;;;,           `      
+                   ;;;;;`           ;      
+       :           ;;;;;           .       
+        `;,,,`     ;;;;;      ,,,:,        
+              `    ;;;;;     ,             
+              :    ;;;;;                   
+              ,    ,;;;;    .              
+                    ;;;;    ;              
+               ,    ;;;,    `              
+               ,    ;;;    .               
+                ``;`    ,, :               
+                                           
+                                           
+                                        
+	-->
+  
+  
+
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>JanusVR Interface</title>
+  <meta name="description" content="Interface for JanusVR">
+  <meta name="author" content="JanusVR Inc.">
+  <link rel="stylesheet" type="text/css" href="skins/emerald/emerald.css">
+  <script>
+  
+  
+  
+  
+var progressx = 0;
+  
+  <!-- Noise when you click on buttons. -->
+  clickSound = function() {
+  document.getElementById('sound1').play();
+  }
+
+   closesound = function() {
+  document.getElementById('closesound').play();
+  }  
+     dragonsound = function() {
+  document.getElementById('dragon').play();
+  }  
+     dragoffsound = function() {
+  document.getElementById('dragoff').play();
+  }  
+      shadesound = function() {
+  document.getElementById('shadesound').play();
+  }   
+       notifysound = function() {
+  
+  document.getElementById('notifysound').play();
+
+    
+  
+  }    
+<!-- Menu List -->
+
+function togglemenulist(closeornot) {
+
+ 
+ if (document.getElementById("menulist").style.visibility == "visible")
+ {
+ clickSound()
+ }
+if (document.getElementById("menulist").style.visibility == "visible" || closeornot=="true")
+{
+ document.getElementById("menulist").style.visibility = "hidden"
+
+ 
+ 
+}
+else
+{
+ document.getElementById("menulist").style.visibility = "visible"
+ clickSound()
+}
+
+}
+  
+<!-- Progress bar.-->
+setInterval(
+function()
+{ 
+
+	var progbar = document.getElementById("progressbar");	
+	progressx = window.janus.roomprogress*200;
+
+	
+if (progressx < 200)
+{
+ 
+document.getElementById("progressbar").style.backgroundSize = ""+progressx+"% 100%";
+document.getElementById("contain").style.opacity = "1";
+}
+else
+{
+document.getElementById("contain").style.opacity = "";
+}
+
+
+
+}
+, 50);
+ 
+ 
+ 
+ <!-- Windowing System. -->
+ 
+ var clicked = new Array(); <!--Establish array that keeps track of which windows have had their titlebars clicked on.-->
+ var mousex;
+ var mousey;
+ var highestwindow = -1; //every time you click a window, it'll become higher than the last one
+ var activeobject;
+ var winx;
+ var winy;
+
+ 
+ function clickwindow(ele) {
+
+ dragonsound();
+ highestwindow += 1;
+ele.style.zIndex = highestwindow.toString();
+document.getElementById(ele.id+"_resizer").style.zIndex = highestwindow.toString();
+
+
+activeobject = ele;
+clicked[ele] = true;
+mousex = event.clientX; 
+mousey = event.clientY;
+
+ele.style.backgroundColor = '#4C4C4C';
+
+ 
+ var dragaid = document.getElementById(ele.id.replace(' ','&nbsp;')+"_dragaid");
+ dragaid.style.width = "100%";
+ dragaid.style.height = "100%";
+ 
+ 
+ }
+ 
+  function unclickwindow(ele) { <!-- Happens on mouse up.-->
+dragoffsound();
+clicked[ele] = false;
+
+ele.style.backgroundColor = '#3F3F3F';
+
+
+ var dragaid = document.getElementById(ele.id.replace(' ','&nbsp;')+"_dragaid");
+
+ dragaid.style.width = "0";
+ dragaid.style.height = "0";
+ }
+ 
+   function movewindow(ele) {
+
+if ( (clicked[ele] == true) && (ele == activeobject) ) { 
+
+
+   winx = (ele.offsetLeft + (event.clientX - mousex)); //return new position in px
+   winy = (ele.offsetTop + (event.clientY - mousey)); //same here
+   
+   ele.style.left = (winx*100 / document.documentElement.clientWidth)+"vw"; //convert that px value into vw so that windows move with screen readjustment
+   ele.style.top = (winy*100 / document.documentElement.clientHeight)+"vh"; //convert that px value into vh so that windows move with screen readjustment
+   
+   	mousex = event.clientX; 
+	mousey = event.clientY; 
+	
+	var brdr = document.getElementById(ele.id+"_resizer");
+	var div = document.getElementById(ele.id);
+	var wind = document.getElementById(ele.id+"_windowarea");
+	
+
+		
+	setResizeHandlePosition(brdr,div,wind);
+
+	
+
+	
+   }
+   
+ }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ //window resizing
+ 
+ 
+ 
+ var resizehandlegrabbed = new Array(); //keep track of which resize handles are grabbed
+ 
+ function clickresize(brdr,div) {
+ 
+ 
+ resizehandlegrabbed[brdr.id] = true;
+ 
+	var raid = document.getElementById(div.id+"_resizeaid")
+ 
+ 
+ 			raid.style.width = "100%";
+			raid.style.height = "100%";
+
+			 highestwindow +=1; //increase the highest window number
+			 div.style.zIndex = highestwindow;
+
+			
+
+			}
+ 
+ function unclickresize(brdr,raid) {
+ 
+  resizehandlegrabbed[brdr.id] =  false;
+ 			raid.style.width = "0";
+			raid.style.height = "0";
+ }
+ 
+ 
+ function resizewindow(titlebarid) {
+ 
+ 
+var wind = document.getElementById(titlebarid.id+"_windowarea"); 
+var brdr =  document.getElementById(titlebarid.id+"_resizer"); 
+ 
+ 
+ if (resizehandlegrabbed[brdr.id] ==  true)
+ {
+ 
+ var xsize = event.clientX-(titlebarid.offsetLeft);
+ var ysize = event.clientY-(titlebarid.offsetTop+32);
+ 
+ var xsize2 = (xsize*100 / document.documentElement.clientWidth)+"vw"; 
+ var ysize2 = (ysize*100 / document.documentElement.clientHeight)+"vh"; 
+ 
+ wind.style.width = xsize2;
+ wind.style.height = ysize2;
+ 
+ 
+ 
+ //reset the handled position after the scale
+ setResizeHandlePosition(brdr,titlebarid,wind);
+ }
+ 
+ 
+ }
+ 
+ //probably do the same thing did for window moving and create a 'resize aid' to help with the resizing
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+<!--Window close button-->
+
+function closeWindow(callerid,winid)
+{
+		document.getElementById(winid).remove();
+		document.getElementById(winid+"_resizer").remove();
+			
+			
+			if (callerid != "null")
+			{
+			callerid.style.borderColor = "";
+			
+			}
+				closesound();
+}
+ 
+ 
+ function shadeWindow(callerid,winid,shademe,titlebarid)
+{
+		if (document.getElementById(shademe).style.visibility == "")
+		{
+		document.getElementById(shademe).style.visibility = "hidden";
+
+		document.getElementById(titlebarid.id+"_resizer").style.visibility = "hidden";
+		}
+		else
+		{
+		document.getElementById(shademe).style.visibility = "";		
+		document.getElementById(titlebarid.id+"_resizer").style.visibility = "";
+		}
+		
+		shadesound();
+}
+ 
+ 
+ <!-- Window Toggle Button System -->
+
+ 
+ function toggleWindow(callerid,width,height,title,page,spawnx,spawny) { //set callerid to null if there is no element calling this function
+ 
+ 
+ 
+ var winid= 'window_'+title.replace(/ /g,'&nbsp;');
+ 
+	if (document.getElementById(winid)!=null)
+		{
+		closeWindow(callerid,winid);
+		}
+		else
+		{
+			 clickSound() 
+			 <!--Set calling element's border colour to green.-->
+			 
+			 if (callerid != "null")
+			 {
+			
+			 callerid.style.borderColor = "#0EE05A";
+			 }
+			 highestwindow +=1; //increase the highest window number
+			 
+			 
+			 			 			 <!--Create border-->
+			 var brdr = document.createElement("div");
+			brdr.className  = "resizehandle";
+			brdr.setAttribute('id', "window_"+title.replace(/ /g,'&nbsp;')+"_resizer");
+			brdr.style.zIndex = highestwindow;
+			
+			
+			//create the titlebar element first so we can pass it into the resizewindow function
+			var div = document.createElement("div");
+			brdr.onmousemove = function() { resizewindow(div) };
+			brdr.onmousedown = function() { clickresize(brdr,div) };
+			brdr.onmouseup = function() { unclickresize(brdr) };
+			document.body.appendChild(brdr);
+
+ 
+			 
+			 
+			 <!--Create titlebar (element is created up there)-->
+
+			div.className  = "titlebar";
+			div.onmousedown  = function(){clickwindow(this)};
+			div.onmouseup  = function(){unclickwindow(this)};
+			div.onmousemove  = function(){movewindow(this)};
+			div.style.left = spawnx;
+			div.style.top = spawny;
+			
+			div.style.zIndex = highestwindow;
+			div.setAttribute('id', winid); //set the id of this window to window_windowtitlewithspacesremoved
+			document.body.appendChild(div);
+			 
+						 
+
+			 
+			 
+			 <!--Create window title-->
+			  var span = document.createElement("span");
+			 span.innerHTML = title.toUpperCase();
+
+			div.appendChild(span);
+
+			
+			<!--Create window drag aid-->
+			var aid = document.createElement("div");
+			aid.onmousemove  = function(){movewindow(this.parentElement)};
+			aid.onmouseup  = function(){unclickwindow(this.parentElement)};
+			aid.style.position = "fixed";
+			aid.style.width = "0";
+			aid.style.height = "0";
+			aid.style.left = "0";
+			aid.style.top = "0";
+			aid.style.zIndex = "2222222222" <!-- We want this to be basically above everything.-->
+			aid.setAttribute('id', "window_"+title.replace(/ /g,'&nbsp;')+"_dragaid");
+			div.appendChild(aid);
+			
+			
+			
+			<!--Create window resize aid-->
+			var raid = document.createElement("div");
+			raid.onmousemove  = function(){resizewindow(div)};
+			raid.onmouseup  = function(){unclickresize(brdr,raid)};
+			raid.style.position = "fixed";
+			raid.style.width = "0";
+			raid.style.height = "0";
+			raid.style.left = "0";
+			raid.style.top = "0";
+			raid.style.zIndex = "2222222222" <!-- We want this to be basically above everything.-->
+			raid.setAttribute('id', "window_"+title.replace(/ /g,'&nbsp;')+"_resizeaid");
+			div.appendChild(raid);
+			
+			
+			
+			
+
+			<!--Create closebutton-->
+			 var div2 = document.createElement("div");
+			div2.className  = "closebutton";
+			div2.onmousedown = function() { closeWindow(callerid,winid); };
+
+			span.appendChild(div2);
+
+			<!--Create shadebutton-->
+			 var sb = document.createElement("div");
+			sb.className  = "shadebutton";
+			sb.onmousedown = function() { shadeWindow(callerid,winid,'window_'+title.replace(/ /g,'&nbsp;')+'_windowarea',div) };
+
+			span.appendChild(sb);
+
+			<!--Create Window-->
+			 
+			  var wind = document.createElement("div");
+			wind.className  = "wind";
+			
+			wind.style.width = (width*100 / document.documentElement.clientWidth)+"vw"; 
+			wind.style.height = (height*100 / document.documentElement.clientHeight)+"vh"; 
+			
+			
+			
+			wind.setAttribute('id', "window_"+title.replace(/ /g,'&nbsp;')+"_windowarea");
+			div.appendChild(wind);
+			 
+			//set resize handle to window's bottom and left (basically grab window left and top and add their width/height to get this.)
+			setResizeHandlePosition(brdr,div,wind);
+			
+
+			 
+			 
+			  <!--Create Iframe-->
+			 var frame = document.createElement("iframe");
+			frame.src = page;
+
+			wind.appendChild(frame);
+ 
+
+ 
+ 
+ 
+ 
+		}
+ 
+ }
+ 
+ function setResizeHandlePosition(brdr,div,wind) {
+ 
+ 			brdr.style.top = ((div.offsetTop+wind.offsetHeight)+8)+"px" ;
+			brdr.style.left = ((div.offsetLeft+wind.offsetWidth)-brdr.offsetWidth+6)+"px" ;
+ 
+ 
+ }
+ 
+ //on window resize, recalculate all the resize handle locations
+ window.onresize = function(event) {
+
+	var rhandles = document.getElementsByClassName("resizehandle"); //return all resize handles
+	
+	var i;
+	for (i=0;i<rhandles.length;i++)
+	{
+	
+
+	var ele = rhandles[i].id.substring(0,rhandles[i].id.length-8); //get the main titlebar name by literally slicing off the length of the word _resizer because i'm lazy and it's 2 am
+	var brdr = document.getElementById(ele+"_resizer");
+	var div = document.getElementById(ele);
+	var wind = document.getElementById(ele+"_windowarea");
+	
+
+		
+	setResizeHandlePosition(brdr,div,wind);
+	
+	//are you happy now? think about all the work i went through to make sure resize handles stick to their respective windows on page resize
+	// >:C
+	}
+	
+	
+};
+ 
+ 
+ 
+ 
+  function shadeColor(color, percent) {
+
+    var R = parseInt(color.substring(1,3),16);
+    var G = parseInt(color.substring(3,5),16);
+    var B = parseInt(color.substring(5,7),16);
+
+    R = parseInt(R * (100 + percent) / 100);
+    G = parseInt(G * (100 + percent) / 100);
+    B = parseInt(B * (100 + percent) / 100);
+
+    R = (R<255)?R:255;  
+    G = (G<255)?G:255;  
+    B = (B<255)?B:255;  
+
+    var RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
+    var GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
+    var BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
+
+    return "#"+RR+GG+BB;
+}
+ 
+ 
+ 
+ 
+ 
+ 
+ <!-- hide notification -->
+ 
+ function hidenotification() {
+ 
+ document.getElementById("notificationcontainer").style.visibility = "hidden";
+ closesound();
+ 
+ }
+
+  function shownotification(text,image,executeonclick,bgcolor) {
+ notifysound();
+ document.getElementById("notificationbg").style.backgroundColor = bgcolor;
+  document.getElementById("notificationbg").style.borderRightColor = shadeColor(bgcolor,80);
+
+ document.getElementById("notificationtext").innerHTML   = text;
+ document.getElementById("notificationimage").src = image;
+  document.getElementById("notificationcontainer").style.visibility = "visible";
+  <!--Later executeonclick can perform an action or something-->
+ }
+
+ 
+
+ 
+ 
+ <!-- Save room -->
+ 
+ function saveroom() {
+ 
+ var savefilename = window.janus.saveroom();
+ shownotification('You just saved the webspace to <b>'+savefilename+'</b> and your clipboard.','notifications/xml.png',"null","#455947");
+
+ 
+ 
+ }
+ 
+ function clickBack() {
+ 
+ clickSound()
+
+ window.janus.navback();
+
+ }
+  function clickForwards() {
+ 
+ clickSound()
+
+ window.janus.navforward();
+
+ }
+ 
+
+  <!-- Sync room -->
+ 
+ function syncroom() {
+ 
+
+ shownotification('You just synchronized everyone in this room with any objects you placed before they entered.','notifications/sync.png',"null","#455947");
+ window.janus.sync();
+
+ 
+ 
+ }
+ 
+  function quitjanus() {
+ 
+
+
+ window.janus.quit();
+
+ 
+ 
+ }
+ 
+ <!-- Go button -->
+ 
+ function gotoroom() {
+ 
+ var progbar = document.getElementById("progressbar");
+ 
+ switch(progbar.value.toLowerCase()) <!--Determine if debug string or URL to visit.--> 
+	{
+	case "debug://tailtoddle":
+	toggleWindow("null",500,400,"TAMMY GARS MA TAIL TODDLE","https://www.youtube.com/embed/heV-ccihSuI?autoplay=true&loop=1","40vw","35vh");
+	break;
+	case "debug://rosebud":
+	shownotification("Do you canoe?","notifications/call.png","null","#455947");
+	break;
+	case "debug://implement":
+	toggleWindow("null",500,400," 10 WEIRD TRICKS TO IMPLEMENTING THIS UI.","apps/implement/index.html","40vw","35vh");
+	break;
+	case "debug://aesthetic":
+	shownotification("<marquee style='color:pink'>【<b>ＪＡＮＵＳＶＲ</b>】メタバースへようこそ</marquee>","notifications/logo2.png","null","#442332");
+	toggleWindow('null',500,400,'AESTHETIC','https://www.youtube.com/embed/cU8HrO7XuiE?autoplay=true&loop=1','40vw','35vh');
+	break;
+	case "debug://captainschair":
+	toggleWindow("null",500,400," CAPTAIN'S CHAIR","apps/captainschair/index.html","40vw","35vh");
+	break;
+	default:
+	window.janus.launchurl(document.getElementById("progressbar").value,0);
+	}
+
+ }
+ 
+<!-- When enter is pressed -->
+ function gotoroomenter() {
+  var keyPressed = event.keyCode || event.which;
+
+         if(keyPressed==13)
+        {
+			gotoroom()
+		
+		<!--unfocus field-->
+		var progbar = document.getElementById("progressbar");		 
+		progbar.blur();
+		
+			
+        }
+		
+
+		
+ }
+ 
+ 
+ 
+ 
+  window.onload = function() { 
+
+
+shownotification('Welcome to JanusVR! Press <b>ESC</b> to interact with the HUD.','notifications/logo.png',"null","#455947");
+toggleWindow(document.getElementById("chatlogbutton"),400,200,'CHAT LOG','apps/chatlog/index.html','79vw','70vh')
+
+  };
+  
+
+  var previousroomurl;
+//UPDATING HUD STATUS IN REAL TIME ====================================================================================================================================
+  setInterval(function() {
+   //change janus url based on what room you're in
+    
+  if (window.janus.currenturl != previousroomurl)
+  {
+  document.getElementById("progressbar").value = window.janus.currenturl;
+  }
+
+ previousroomurl = window.janus.currenturl;
+  
+  
+  
+  //update statistic counters
+
+	//if room is locked or unlocked change locked display
+	 
+	switch(window.janus.networkstatus) {
+    case 0:
+        document.getElementById("onlinestatus").innerHTML = "OFFLINE";
+        break;
+    case 1:
+        document.getElementById("onlinestatus").innerHTML = "...";
+        break;
+    case 2:
+        document.getElementById("onlinestatus").innerHTML = "ONLINE";
+        break;	
+    case -1:
+        document.getElementById("onlinestatus").innerHTML = "ERROR";
+        break;				
+    default:
+        document.getElementById("onlinestatus").innerHTML = "ERROR";
+}
+	 
+	 
+	//set player count and tricount
+    document.getElementById("playercountstatus").innerHTML = window.janus.playercount;
+    document.getElementById("polystatus").innerHTML = window.janus.tricount;
+	
+	
+	//if room is locked or unlocked change locked display
+	if (window.janus.locked == 0)
+	{
+    document.getElementById("lockedstatus").innerHTML = "UNLOCKED";
+	document.getElementById("lockedstatus").style.color = "";
+	document.getElementById("lockedstatus").style.borderColor = "";
+	}
+	else
+	{
+    document.getElementById("lockedstatus").innerHTML = "LOCKED";	 
+	document.getElementById("lockedstatus").style.color = "#E27979";
+	document.getElementById("lockedstatus").style.borderColor = "#E27979";	
+	}
+  
+  
+  
+  
+}, 10);
+//END UPDATING HUD STATUS IN REAL TIME ====================================================================================================================================
+
+  </script>
+
+</head>
+
+<body class="unselectable" >
+
+
+
+<div class="navbar unselectable" id="contain" onmouseleave="togglemenulist('true')">
+	<div class="container " >
+
+		<div >
+			<button title="Menu" class="containerbutton miscbutton" onclick="togglemenulist()"></button>
+			<button title="Back" class="containerbutton backbutton" onclick="clickBack()"></button>
+			<button title="Forwards" class="containerbutton forwardsbutton" onclick="clickForwards()"></button>
+			<button title="Go to Landing Space" class="containerbutton pocketbutton" onclick="toggleWindow(this,500,256,'HIS BOY, ELROY','https://www.youtube.com/embed/FyinD6ZDqeg?autoplay=1','50vw','50vh')"></button>		
+		</div>
+
+	</div>
+
+	<div class="urlcontainer" >
+		
+		<div >
+
+			<input onkeydown="gotoroomenter()" class="inputfield" id="progressbar" type="text"  value="error" />
+
+
+			
+			
+			
+		</div>
+		
+	</div>
+	
+	
+		<!--Go button and portal button-->
+				<button class="inputbutton" id="gobutton" onclick="gotoroom()">GO</button>
+
+	
+	
+	
+			<div class="menulist unselectable" id="menulist" onclick="togglemenulist('true')" >
+			<ul>
+			<li class="menulistbutton"  onclick="toggleWindow(this,600,350,'SETTINGS','apps/settings/index.html','50vw','50vh')"> SETTINGS </li>		
+			
+			<li class="menulistbutton" onclick="saveroom()"> SAVE </li>
+			<li class="menulistbutton" onclick="syncroom()"> SYNC PEERS </li>			
+			<li class="menulistbuttongray" onclick=" shownotification('Sorry, but this is a locked webspace. Try going somewhere else, maybe?','notifications/error.png','null','#442332')" >ROOM CODE</li>		
+			<li class="menulistbutton" onclick="quitjanus()" > QUIT </li>				
+			</ul>
+			</div>
+
+	
+ 
+
+ 
+	
+	
+	
+</div>
+
+
+<div class="window" > 
+</div>
+
+
+
+
+<div class="stat statisticleft unselectable" id="onlinestatus" title="Connected to babylon.vrsites.com">
+
+</div>
+
+<div class="stat statisticleft2 unselectable" id="playercountstatus" title="Number of users nearby.">
+
+</div>
+
+
+<div class="stat statisticright unselectable" id="polystatus" title="Number of polygons being rendered.">
+
+</div>
+
+
+<div class="stat statisticright2 unselectable" id="lockedstatus" title="Room has disabled editing.">
+
+</div>
+
+<div class="quickbar unselectable">
+
+
+<button title="Inventory" id="inventorybutton" class="quickinventory" onclick="toggleWindow(this,500,256,'INVENTORY','apps/inventory/index.html','50vw','50vh')" > </button>
+
+<button title="2D Browser" id="websurfacebutton" class="quickbrowser" onclick="toggleWindow(this,500,256,'BROWSER','https://duckduckgo.com/','50vw','50vh')" > </button>
+
+<button title="2D Browser" id="websurfacebutton" class="quickmap" onclick="toggleWindow(this,300,300,'MAP','apps/map/index.html','80vw','10vh')" > </button>
+
+<button title="Toggle Chatlog" id="chatlogbutton" class="quickchatlog" onclick="toggleWindow(this,400,200,'CHAT LOG','apps/chatlog/index.html','70vw','60vh')" ></button>
+
+</div>
+
+
+
+<div class="notificationcontainer" id="notificationcontainer" >
+	<div class="notificationicon" id="notificationbg">
+	<img id="notificationimage" src="notifications/logo.png" />
+	</div>
+
+	<div class="notification">
+	<div class="closebutton notifbutton" style="padding-top:0px;padding-right:0px;" onclick=" hidenotification()" 	></div>	
+	<div class=" notifbuttonright notifbutton" style="padding-top:0px;padding-right:0px;" onclick=" hidenotification()" 	></div>
+	<div class="notifbuttonleft notifbutton" style="padding-top:0px;padding-right:0px;" onclick=" hidenotification()" 	></div>
+
+
+	<div class="notificationtext" id="notificationtext"></div>
+	</div>
+
+
+</div>
+
+
+
+
+
+
+<audio id="notifysound" src="sounds\notify.wav" preload="auto"></audio>
+
+<audio id="shadesound" src="sounds\shade.wav" preload="auto"></audio>
+<audio id="closesound" src="sounds\closewin.wav" preload="auto"></audio>
+<audio id="sound1" src="sounds\click.wav" preload="auto"></audio>
+
+<audio id="dragon" src="sounds\dragon.wav" preload="auto"></audio>
+<audio id="dragoff" src="sounds\dragoff.wav" preload="auto"></audio>
+
+
+</body>
+</html>
