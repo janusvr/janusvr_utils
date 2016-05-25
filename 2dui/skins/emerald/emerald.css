@@ -36,7 +36,7 @@ position: fixed;
 
 
   margin: 0 0;
-  width: 20.5vw;
+  width: 232px;
   padding: 4px 0;
  overflow:hidden;
 	text-align:center;
@@ -114,10 +114,20 @@ position: fixed;
   
   
   
+  .tooltip{
+  position: absolute;
+  background-color: black;
+  color:white;
+  visibility:hidden;
+  overflow:visible;
+  font-family: "Swis721 BT";
+  z-index:22222222222222;
+  }
   
   
-  
-  
+  .tooltip b {
+   color:#0EE05A;
+  }
   
   
   
@@ -133,7 +143,7 @@ position: fixed;
 
 
   margin: 0 0;
-  width: 23.5vw;
+
   padding: 4px 0;
  overflow:hidden;
 	text-align:center;
@@ -145,13 +155,13 @@ position: fixed;
   .container {
   
   
-width:150px;
+width: 256px;
   }
   
   .containerbutton{
   
-  width:30px !important;
-  max-width:30px;
+  width:48px !important;
+
   height:39px;
   }
 
@@ -168,7 +178,7 @@ width:150px;
   
   
   .containerbutton {
-    width:4.25vw;
+    width:48px;
 	padding: 10px 0;
 	  height:39px;
   }
@@ -194,7 +204,7 @@ width:150px;
   }
 
  .navbar{
-   opacity: 0.3;
+   opacity: 0.65;
   transition: opacity .2s ease-in-out;
  
  }
@@ -219,8 +229,8 @@ width:150px;
   font-family: "Montserrat";
   padding: 10px 10px;
   border-radius: 10px 10px;
-  margin-right:0.5vw;
-  max-width:6vw;
+  margin-right: 5px;
+
 
   text-align:center;
   overflow:hidden;
@@ -329,7 +339,7 @@ user-select: none;
   
   .quickbar {
   transition: opacity .2s ease-in-out;
- opacity: 0.25;
+ opacity: 0.65;
  width: 450px;
  padding: 10px 0.5vw;
 
@@ -470,7 +480,7 @@ right:116px;
    
   .stat:hover {
   
-  background-color: rgba(0,0,0,0.3)
+  background-color: rgba(0,0,0,0.75)
   
   }
     .stat {
@@ -593,7 +603,7 @@ right:116px;
 
 
   body {
-  
+  background-color: rgba(0,x0,0,0);
   overflow:hidden;
   }
   
@@ -823,7 +833,7 @@ visibility: hidden;
 left:16px;
 top:64px;
 position:absolute;
-opacity: 0.5;
+opacity: 0.65;
 transition: opacity .2s ease-in-out;
 cursor:default;
 }

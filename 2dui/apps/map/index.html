@@ -9,13 +9,26 @@
   
   <script>
 
+    
+  function strip(html)
+{
+var tmp = document.createElement("DIV");
+tmp.innerHTML = html;
+return tmp.textContent || tmp.innerText;
+}
+  
+  
+  
 
-
+  function clickSound() {
+  document.getElementById('sound1').play();
+  }
   
   window.onload = function () {
-  
+  setScale(10)
   tabSelect("maptabcontainer","maptabbutton")
   window.onresize()
+  
   }
 
   
@@ -32,7 +45,184 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
  
 };
   
+  
+  var previousplayerlength;
+  
+  function updatePlayers() {
 
+  }
+
+	var scale= 10;
+	var xview=0;
+	var zview=0;
+	
+	
+	
+
+	
+  //update map
+   setInterval(function() {
+   
+   
+   
+   //if a new player enters the room, create a dot for them
+
+   document.getElementById("scalereader").innerHTML = "("+scale+"0%)";
+
+	
+   var i;
+   for (i=0;i<window.janus.playerlist.length;i++)
+   {
+  
+   //if this id exists, position it
+  if (document.getElementById("player"+i)) 
+    {
+	
+
+	var posx= window.janus.playerlist[i].pos.x*scale ;
+	var posz= window.janus.playerlist[i].pos.z*scale ;
+	
+	
+	if (i ==0)
+	{
+	
+	 //center of the view is player's position plus half the width of the div
+     xview = (posx)+((document.getElementById("map").offsetWidth)*0.5);
+     zview = (posz)+((document.getElementById("map").offsetHeight)*0.5);
+
+	 //alert(window.janus.playerlist[i].pos.x+"is where you are and the div size is"+document.getElementById("map").offsetWidth)
+	}
+	else
+	{
+		 //apply username if not main player
+	 //trim long userids
+	 var useridstring =  window.janus.playerlist[i].userid;
+	 var useridstringlength = 16;
+	var trimmedString = useridstring.length > useridstringlength ? 
+                    useridstring.substring(0, useridstringlength - 3) + "..." : 
+                    useridstring;	 
+					
+					
+	 //update namecard with userid
+	document.getElementById("playername"+i).innerHTML = strip(trimmedString);
+	
+	}
+
+	var mywidth= (2*scale);
+	var myheight= (2*scale);
+	
+	document.getElementById("player"+i).style.width = mywidth+"px";
+	document.getElementById("player"+i).style.height = myheight+"px";
+	
+	 //set specific player's position 
+     document.getElementById("player"+i).style.left = (-((posx)-xview))+"px";
+     document.getElementById("player"+i).style.top = (-((posz)-zview))+"px";
+	
+
+
+	
+	
+	
+	
+	//alert(document.getElementById("player"+i).style.left+"   "+document.getElementById("player"+i).style.top)
+ 
+	}
+	else   //else create it
+	{
+	
+		//create marker
+		if (i ==0)
+		{
+			var div2 = document.createElement("div");
+			div2.className  = "mapicon mapuser";
+			div2.id = "player"+i
+			document.getElementById("map").appendChild(div2);
+		}
+		else
+		{
+			var div2 = document.createElement("div");
+			div2.className  = "mapiconother mapuser";
+			div2.id = "player"+i
+			document.getElementById("map").appendChild(div2);	
+		}
+		//create name
+			var div3 = document.createElement("div");
+			div3.className  = "mapiconname";
+			div3.id = "playername"+i
+			div3.innerHTML = "";
+			div2.appendChild(div3);
+	
+	
+	
+	}
+	
+
+
+	
+	}
+	
+	
+	var mapbackground= "url(../../backgrounds/grid.png)";
+	//var mapbackground= "url(../../backgrounds/numred.jpg)";	
+	var mapsizex=2*scale;
+	var mapsizey=2*scale;
+	
+	//custom images
+	//var mapsizex=565*(scale*0.1);
+	//var mapsizey=450*(scale*0.1);
+		
+	document.getElementById("map").style.backgroundImage = mapbackground;
+	
+	
+		//set background scale and position
+	document.getElementById("map").style.backgroundPosition  = -(((0)-xview))+"px "+(-(((0)-zview))+"px");
+
+	document.getElementById("map").style.backgroundSize  = (mapsizex)+"px "+(mapsizey)+"px";
+    document.getElementById("map").style.backgroundAttachment = "fixed";
+	
+	
+	
+	//scan through all the map icons and make sure there's a player correlated with it. if there isn't, delete it.
+	var mpiconz = document.getElementsByClassName("mapuser")
+	
+	var it;
+	
+	for (it=0;it<document.getElementsByClassName("mapuser").length;it++) //iterate through all map icons
+	{
+	
+	var currentcheck = document.getElementsByClassName("mapuser")[it] //current map icon we're iterating through
+
+	// alert(window.janus.playerlist.length)
+
+		if (window.janus.playerlist[currentcheck.id.match(/\d+/g)] == null) //if this player doesn't exist
+		{
+		//delete their market
+		//alert("removing "+currentcheck.id.match(/\d+/g))
+		currentcheck.remove();
+		}
+	
+	
+	}
+	
+	
+	
+	
+	
+   
+
+   }, 20)
+   
+   
+   
+   function setScale(value) {
+
+   scale = value;
+   }
+   
+
+   
+   
+   
   
     </script>
   
@@ -45,20 +235,40 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 <div class="windowcontainer">
 
-<div class="tabrow unselectable" id="tabrow"  style="background-color:  rgba(84, 84, 84, 1);">
+<div class="tabrow unselectable" id="tabrow"  style="background-color:  rgba(84, 84, 84, 1);z-index:3;">
 
-	<div class="tabbutton" id="maptabbutton" onmousedown="tabSelect('maptabcontainer','maptabbutton')">LOCAL</div></li>
-	<div class="tabbutton" id="historytabbutton" onmousedown="tabSelect('historytabcontainer','historytabbutton')">HISTORY</div></li>
+	<div class="tabbutton" id="maptabbutton" onmousedown="tabSelect('maptabcontainer','maptabbutton')">MAP</div>
+	<!--<div class="tabbutton" id="historytabbutton" onmousedown="tabSelect('historytabcontainer','historytabbutton')">HISTORY</div>-->
 
 </div>
 
 
 <div class="windowarea unselectable" id="windowarea">
 
+
+
+
+
 		<div class="tabcontainer" id="maptabcontainer">
+			
+			
+			<div class="map" id="map" style="height:100%;width:100%;">
+			<span class="subtleinfo" id="scalereader" style="right:0px;position:absolute;"></span>
+			
+			</div>
+				
+							<div id="bottombar" class="bottombar" style="background-color:rgba(0,0,0,0);border-top-width:0;border-bottom-width:0;margin-bottom:16px;margin-left:16px;width:calc(100% - 32px)">
 				
 
+				
+<input type="range" id="myRange" value="10" style="width:100%;" onChange="setScale(this.value)" min="1" max="15">
 		</div>
+		
+		
+		
+		
+		
+		
 					
 		<div class="tabcontainer" id="historytabcontainer">
 				
@@ -126,7 +336,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 		
 </div>
 
-
+<audio id="sound1" src="..\..\sounds\click.wav" preload="auto"></audio>
 
 </body>
 </html>

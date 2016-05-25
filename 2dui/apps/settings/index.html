@@ -9,12 +9,73 @@
   
   <script>
 
+  function setDefaults() {
 
+
+  //set all the default booleans
+  document.getElementById("multiplayertoggle").checked = parent.window.janus.getsetting('multiplayer');
+  document.getElementById("statisticstoggle").checked =  parent.window.janus.getsetting('sessiontracking');
+  document.getElementById("selfavatartoggle").checked =  parent.window.janus.getsetting('selfavatar');
+  document.getElementById("invertpitchtoggle").checked =  parent.window.janus.getsetting('invertpitch');
+  document.getElementById("mousepitchtoggle").checked =  parent.window.janus.getsetting('mousepitch');
+  document.getElementById("gamepadtoggle").checked =  parent.window.janus.getsetting('gamepad');
+  document.getElementById("portalhotkeystoggle").checked =  parent.window.janus.getsetting('portalhotkeys');
+  document.getElementById("decoupleheadtoggle").checked =  parent.window.janus.getsetting('decouplehead');
+  document.getElementById("comfortmodetoggle").checked =  parent.window.janus.getsetting('comfortmode');
+  document.getElementById("leapmotionhmdtoggle").checked =  parent.window.janus.getsetting('leapmotionhmd');
+  document.getElementById("antialiasingtoggle").checked =  parent.window.janus.getsetting('antialiasing');
+  document.getElementById("assetimagestoggle").checked =  parent.window.janus.getsetting('assetimages');
+  document.getElementById("assetshaderstoggle").checked =  parent.window.janus.getsetting('assetshaders');
+  document.getElementById("crosshairtoggle").checked =  parent.window.janus.getsetting('crosshair');
+  document.getElementById("soundstoggle").checked =  parent.window.janus.getsetting('sounds');
+  document.getElementById("editmodetoggle").checked =  parent.window.janus.getsetting('editmode');
+  document.getElementById("downloadcachetoggle").checked =  parent.window.janus.getsetting('downloadcache');
+  document.getElementById("jsdebuggertoggle").checked =  parent.window.janus.getsetting('jsdebugger');
+  document.getElementById("avatarlightingtoggle").checked = parent.window.janus.avatarlighting;
+
+  //set all the default values
+  document.getElementById("displaynameform").value =  parent.window.janus.userid;
+
+  document.getElementById("fovslider").value =  parent.window.janus.getsetting('fov');  
+  document.getElementById("fovslidernumber").innerHTML =  parent.window.janus.getsetting('fov');
+  
+  document.getElementById("maxmemoryslider").value =  parent.window.janus.getsetting('maxmemory');  
+  document.getElementById("maxmemoryslidernumber").innerHTML =  parent.window.janus.getsetting('maxmemory')+"MB";
+    
+  
+   document.getElementById("rotationspeedslider").value =  parent.window.janus.getsetting('rotationspeed');  
+  document.getElementById("rotationspeedslidernumber").innerHTML =  parent.window.janus.getsetting('rotationspeed');
+     
+  
+  
+  
+  
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   window.onload = function () {
   
   tabSelect("avatartabcontainer","avatartabbutton")
   window.onresize()
+  setDefaults() 
   }
 
   
@@ -48,10 +109,10 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 	<div class="tabbutton" id="avatartabbutton" onmousedown="tabSelect('avatartabcontainer','avatartabbutton')">AVATAR</div></li>
 	<div class="tabbutton" id="servertabbutton" onmousedown="tabSelect('servertabcontainer','servertabbutton')">SERVER</div></li>
 	<div class="tabbutton" id="inputtabbutton" onmousedown="tabSelect('inputtabcontainer','inputtabbutton')" >INPUT</div></li>
-	<div class="tabbutton" >GRAPHICS</div></li>
-	<div class="tabbutton" >INTERFACE</div></li>
-	<div class="tabbutton" >DEVELOPER</div></li>
-	<div class="tabbutton" >MISC</div>
+	<div class="tabbutton" id="graphicstabbutton" onmousedown="tabSelect('graphicstabcontainer','graphicstabbutton')" >GRAPHICS</div></li>
+	<div class="tabbutton" id="interfacetabbutton" onmousedown="tabSelect('interfacetabcontainer','interfacetabbutton')" >INTERFACE</div></li>
+	<div class="tabbutton" id="developertabbutton" onmousedown="tabSelect('developertabcontainer','developertabbutton')" >DEVELOPER</div></li>
+
 
 </div>
 
@@ -59,11 +120,11 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 <div class="windowarea unselectable" id="windowarea">
 
 		<div class="tabcontainer" id="servertabcontainer">
-					<div class='header'>PRESENCE</div>
+					<div class='header' > PRESENCE</div>
 
-					<form class='item lightup' action='' >
+					<div class='item lightup' >
 					<span>
-					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<input class="myCheckbox" id="multiplayertoggle" type='checkbox' onchange="window.janus.setsetting('multiplayer', this.checked); " > 
 					<b>Multiplayer</b>
 					<br>
 					<hr>
@@ -71,51 +132,51 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					You will not be able to see other users until this setting is re-enabled.
 					</span>
 					<br>
-					</form>
+					</div>
 
-					<form class='item lightup' action='' >
+					<div class='item lightup' >
 					<span>
-					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<input class="myCheckbox" type='checkbox'  >
 					<b>Fallback Server</b>
 					<br>
 					<hr>
 					The default presence server to use when the room creator has not specified their own.
 					</span>
 					<br>
-					</form>
+					</div>
 
 
-					<form class='item lightup' action='' >
+					<div class='item lightup' >
 					<span>
-					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<input class="myCheckbox" type='checkbox'  >
 					<b>Fallback Server Port</b>
 					<br>
 					<hr>
 					The default presence server port to use when the room creator has not specified their own.
 					</span>
 					<br>
-					</form>
+					</div>
 
 
 
-					<form class='item lightup' action='' >
+					<div class='item lightup' >
 					<span>
-					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<input class="myCheckbox" type='checkbox'  >
 					<b>Fallback Server Poll Rate</b>
 					<br>
 					<hr>
 					How fast the client polls the fallback server.
 					</span>
 					<br>
-					</form>
+					</div>
 
 
 					<div class='header'>PRIVACY</div>
 
 
-					<form class='item lightup' action='' >
+					<div class='item lightup' >
 					<span>
-					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<input class="myCheckbox" type='checkbox' id="statisticstoggle" onchange="window.janus.setsetting('sessiontracking', this.checked); "   >
 					<b>Anonymous Statistics</b>
 					<br>
 					<hr>
@@ -123,7 +184,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					and how to best improve JanusVR in the future. We really appreciate it!
 					</span>
 					<br>
-					</form>
+					</div>
 
 					</div>
 
@@ -136,69 +197,90 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 				<div class="tabcontainer" id="avatartabcontainer">
 					<div class='header'>VISUAL</div>
 
-					<form class='item lightup' action='' >
+					<div class='item lightup' >
 					<span>
 					<b>Display Name</b>
-					<input  type='text' class="longerinput" name='test' value='SlipperySalmon420'>
+					<input  type='text' class="longerinput" id="displaynameform"  onchange="window.janus.userid=this.value;"  >
 
 					</span>
 					<br>
 					<hr>
-					The name that other people recognise you as.
-					</form>	
+					The name associated with your avatar and chat messages.
+					</div>	
 
-					<form class='item lightup' action='' >
+					<div class='item lightup' >
 					<span>
-					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<input class="myCheckbox" type='checkbox' id="avatarlightingtoggle" onchange="window.janus.avatarlighting=this.checked;"  >
 					<b>Avatar Lighting</b>
 					<br>
 					<hr>
 					Toggles between full bright and fully lit. 
 					</span>
 					<br>
-					</form>
+					</div>
 
+					
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="selfavatartoggle" onchange="window.janus.setsetting('selfavatar', this.checked); "  >
+					<b>First Person Avatar</b>
+					<br>
+					<hr>
+					Ability to see your own avatar.
+					</span>
+					<br>
+					</div>					
 
-					<form class='item lightup' action='' >
+					<div class='item lightup' >
 					<span>
 					<b>Avatar Scale</b>
-					<input  type='text' name='test' value='1 1 1'>
+					<input  type='text'  value='1 1 1'>
 
 					</span>
 					<br>
 					<hr>
-					Three numbers that scale your avatar on the x y and z axes. Default is 1 1 1.
-					</form>		
+					How large your avatar is.
+					</div>		
+
+					
+					<div class='item lightup' >
+
+					<div class="resetavatarbutton" onclick="parent.window.janus.resetavatar()" >RESET AVATAR</div>
+
+					</div>
+				
+					
+					
+					
+
+					<div class='header'>RESOURCES</div>
 
 
-					<div class='header'>NETWORK</div>
 
-
-
-					<form class='item lightup' action='' >
+					<div class='item lightup' >
 					<span>
 					<b>Avatar URL</b>
-					<input class="longerinput" type='text' name='test' value='http://janusvr.com/default.dae'>
+					<input class="longerinput" type='text'  value='http://janusvr.com/default.dae'>
 
 					</span>
 					<br>
 					<hr>
 					The URL where your avatar model is located.
-					</form>							
+					</div>							
 					
 
 
 
-					<form class='item lightup' action='' >
+					<div class='item lightup' >
 					<span>
 					<b>Avatar URL</b>
-					<input class="longerinput" type='text' name='test' value='http://janusvr.com/default.mtl'>
+					<input class="longerinput" type='text'  value='http://janusvr.com/default.mtl'>
 
 					</span>
 					<br>
 					<hr>
 					If you're using an OBJ file as your avatar, you can link the .mtl file here.
-					</form>		
+					</div>		
 
 				</div>
 					
@@ -208,133 +290,405 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 				<div class="tabcontainer" id="inputtabcontainer">
 					<div class='header'>DEVICE</div>
 
-					<form class='item lightup' action='' >
-					<span>
-					<input class="myCheckbox" type='checkbox' name='test' value='test'>
-					<b>Leap Motion on HMD</b>
-					<br>
-					<hr>
-					Whether or not your Leap Motion is located on your HMD, or on your desk.
-					</span>
-					<br>
-					</form>
 
-					<form class='item lightup' action='' >
+
+					<div class='item lightup' >
 					<span>
-					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<input class="myCheckbox" type='checkbox' id="invertpitchtoggle"   onchange="window.janus.setsetting('invertpitch', this.checked); " >
 					<b>Invert Pitch</b>
 					<br>
 					<hr>
 					Inverses your vertical look direction.
 					</span>
 					<br>
-					</form>
+					</div>
+					
+					
 
-
-					<form class='item lightup' action='' >
+					<div class='item lightup' >
 					<span>
-					<input class="myCheckbox" type='checkbox' name='test' value='test'>
+					<input class="myCheckbox" type='checkbox'  id="mousepitchtoggle" onchange="window.janus.setsetting('mousepitch', this.checked); "  >
+					<b>Vertical Mouselook</b>
+					<br>
+					<hr>
+					Whether or not you can look up and down with the mouse.
+					</span>
+					<br>
+					</div>					
+
+	
+
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='range' id="rotationspeedslider" min="50" max="100" oninput="window.janus.setsetting('rotationspeed', this.value); document.getElementById('rotationspeedslidernumber').innerHTML=this.value;" >
+					<b>Rotation Speed: </b><span id="rotationspeedslidernumber"></span>
+					<br>
+					<hr>
+					How quickly you rotate.
+					</span>
+					<br>
+					</div>		
+
+
+	
+					
+					
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="gamepadtoggle" onchange="window.janus.setsetting('gamepad', this.checked); "  >
+					<b>Gamepad</b>
+					<br>
+					<hr>
+					When enabled, gamepad will work with JanusVR.
+					</span>
+					<br>
+					</div>					
+					
+					
+					
+					
+
+
+					<div class='header'>KEY BINDINGS</div>
+
+					
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="portalhotkeystoggle" onchange="window.janus.setsetting('portalhotkeys', this.checked); "  >
+					<b>Hotkeys</b>
+					<br>
+					<hr>
+					Whether or not to use JanusVR hotkeys.
+					</span>
+					<br>
+					</div>	
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+<!-- This will come in the future!
+					<div class='item lightup' >
+					<span>
+					<b>Jump</b>
+					<input  type='text'  value='SPACE'>
+
+					</span>
+					<br>
+					</div>		
+
+					<div class='item lightup' >
+					<span>
+					<b>Walk Forwards</b>
+					<input  type='text'  value='W'>
+
+					</span>
+					<br>
+					</div>						
+
+					<div class='item lightup' >
+					<span>
+					<b>Walk Backwards</b>
+					<input  type='text'  value='S'>
+
+					</span>
+					<br>
+					</div>		
+
+					<div class='item lightup' >
+					<span>
+					<b>Walk Left</b>
+					<input  type='text'  value='A'>
+
+					</span>
+					<br>
+					</div>			
+
+					<div class='item lightup' >
+					<span>
+					<b>Walk Right</b>
+					<input  type='text'  value='D'>
+
+					</span>
+					<br>
+					</div>			
+
+					<div class='item lightup' >
+					<span>
+					<b>Run</b>
+					<input  type='text'  value='SHIFT'>
+
+					</span>
+					<br>
+					</div>			
+					
+					<div class='item lightup' >
+					<span>
+					<b>Spawn Portal</b>
+					<input  type='text'  value='TAB'>
+
+					</span>
+					<br>
+					</div>				
+
+					<div class='item lightup' >
+					<span>
+					<b>???</b>
+					<input  type='text'  value='G'>
+
+					</span>
+					<br>
+					</div>							
+					
+					-->
+					
+					
+					
+					
+					
+					
+					
+					<div class='header'>VR</div>
+					
+					
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="decoupleheadtoggle" onchange="window.janus.setsetting('decouplehead', this.checked); " >
+					<b>Decouple Head</b>
+					<br>
+					<hr>
+					When enabled, head and torso rotate separately. This only applies when you're wearing a VR device.
+					</span>
+					<br>
+					</div>					
+					
+					
+
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="comfortmodetoggle" onchange="window.janus.setsetting('comfortmode', this.checked); "  >
 					<b>Comfort Mode</b>
 					<br>
 					<hr>
 					When enabled, the gamepad will turn you incrementally rather than smoothly.
 					</span>
 					<br>
-					</form>
-
-
-					<div class='header'>KEY BINDINGS</div>
-
-
-					<form class='item lightup' action='' >
-					<span>
-					<b>Jump</b>
-					<input  type='text' name='test' value='SPACE'>
-
-					</span>
-					<br>
-					</form>		
-
-					<form class='item lightup' action='' >
-					<span>
-					<b>Walk Forwards</b>
-					<input  type='text' name='test' value='W'>
-
-					</span>
-					<br>
-					</form>						
-
-					<form class='item lightup' action='' >
-					<span>
-					<b>Walk Backwards</b>
-					<input  type='text' name='test' value='S'>
-
-					</span>
-					<br>
-					</form>		
-
-					<form class='item lightup' action='' >
-					<span>
-					<b>Walk Left</b>
-					<input  type='text' name='test' value='A'>
-
-					</span>
-					<br>
-					</form>			
-
-					<form class='item lightup' action='' >
-					<span>
-					<b>Walk Right</b>
-					<input  type='text' name='test' value='D'>
-
-					</span>
-					<br>
-					</form>			
-
-					<form class='item lightup' action='' >
-					<span>
-					<b>Run</b>
-					<input  type='text' name='test' value='SHIFT'>
-
-					</span>
-					<br>
-					</form>			
+					</div>					
 					
-					<form class='item lightup' action='' >
+					
+					
+					<div class='item lightup' >
 					<span>
-					<b>Spawn Portal</b>
-					<input  type='text' name='test' value='TAB'>
-
+					<input class="myCheckbox" type='checkbox' id="leapmotionhmdtoggle" onchange="window.janus.setsetting('leapmotionhmd', this.checked); " >
+					<b>Leap Motion on HMD</b>
+					<br>
+					<hr>
+					Whether or not your Leap Motion is located on your HMD. If this is unchecked, we'll assume it's on your desk.
 					</span>
 					<br>
-					</form>				
-
-					<form class='item lightup' action='' >
-					<span>
-					<b>Completely Mess Up The Room</b>
-					<input  type='text' name='test' value='G'>
-
-					</span>
-					<br>
-					</form>							
+					</div>					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
 					
 				</div>
+				
 										
 					
 					
 					
 					
 					
+		
+			
+				<div class="tabcontainer" id="graphicstabcontainer">
+					<div class='header'>RENDERING</div>
+
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="antialiasingtoggle" onchange="window.janus.setsetting('antialiasing', this.checked); " >
+					<b>Antialiasing (4xMSAA)</b>
+					<br>
+					<hr>
+					Whether or not to antialias the screen.
+					</span>
+					<br>
+					</div>
+
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='range' id="fovslider" min="50" max="100" oninput="window.janus.setsetting('fov', this.value); document.getElementById('fovslidernumber').innerHTML=this.value;" >
+					<b>Field of View: </b><span id="fovslidernumber"></span>
+					<br>
+					<hr>
+					How wide your field of vision is.
+					</span>
+					<br>
+					</div>					
+					
+					
+					<div class='header'>CONTENT</div>					
+					
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="assetimagestoggle" onchange="window.janus.setsetting('assetimages', this.checked); "  >
+					<b>AssetImages</b>
+					<br>
+					<hr>
+					Whether or not to render assetimages.
+					</span>
+					<br>
+					</div>
+
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="assetshaderstoggle" onchange="window.janus.setsetting('assetshaders', this.checked); "  >
+					<b>Custom AssetShaders</b>
+					<br>
+					<hr>
+					Whether or not to allow websites to define their own custom shaders.
+					</span>
+					<br>
+					</div>
+					
+					
+				</div>					
 					
 					
 					
 					
+				<div class="tabcontainer" id="interfacetabcontainer">
+					<div class='header'>VISUAL</div>
+
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="crosshairtoggle" onchange="window.janus.setsetting('crosshair', this.checked); "  >
+					<b>Crosshairs</b>
+					<br>
+					<hr>
+					Whether or not to render the crosshairs.
+					</span>
+					<br>
+					</div>
+
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='checkbox'  >
+					<b>Hide UI on Unfocus</b>
+					<br>
+					<hr>
+					When unchecked, the UI will be hidden when not in use.
+					</span>
+					<br>
+					</div>					
 					
 					
 					
 					
+					<div class='header'>AUDIO</div>					
+					
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="soundstoggle" onchange="window.janus.setsetting('sounds', this.checked); " >
+					<b>Interface Sounds</b>
+					<br>
+					<hr>
+					Whether or not to play audio when performing certain actions.
+					</span>
+					<br>
+					</div>
+
 					
 					
+				</div>					
+										
+					
+					
+					
+				<div class="tabcontainer" id="developertabcontainer">
+					<div class='header'>BUILDING</div>
+
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="editmodetoggle" onchange="window.janus.setsetting('editmode', this.checked); "  >
+					<b>Edit Mode</b>
+					<br>
+					<hr>
+					When checked, enables advanced building options.
+					</span>
+					<br>
+					</div>
+
+					<div class='header'>SYSTEM</div>					
+			
+
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="downloadcachetoggle" onchange="window.janus.setsetting('downloadcache', this.checked); "  >
+					<b>Cache Content</b>
+					<br>
+					<hr>
+					Whether or not JanusVR should cache places you've visited. Keeping this checked decreases loading times upon multiple visits.
+					</span>
+					<br>
+					</div>
+
+
+
+			
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='range' id="maxmemoryslider" min="1024" max="8192" oninput="window.janus.setsetting('maxmemory', this.value); document.getElementById('maxmemoryslidernumber').innerHTML=this.value+'MB';" >
+					<b>Maximum Memory Usage: </b><span id="maxmemoryslidernumber"></span>
+					<br>
+					<hr>
+					The amount of memory dedicated to using JanusVR.
+					</span>
+					<br>
+					</div>
+						
+
+
+
+	
+					<div class='header'>SCRIPTING</div>					
+					
+					<div class='item lightup' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="jsdebuggertoggle" onchange="window.janus.setsetting('jsdebugger', this.checked); " >
+					<b>Javascript Debugger</b>
+					<br>
+					<hr>
+					Whether or not you should be able to see the pop out Javascript Debugger.
+					</span>
+					<br>
+					</div>
+
+
+					
+				</div>					
+													
 					
 					
 					
