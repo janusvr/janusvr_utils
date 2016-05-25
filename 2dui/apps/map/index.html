@@ -133,8 +133,6 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 	
 	
-	
-	
 	//alert(document.getElementById("player"+i).style.left+"   "+document.getElementById("player"+i).style.top)
  
 	}
@@ -222,7 +220,10 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 	
 	
 	
-	
+	//css transform the whole map based on player position
+	var angle = Math.atan2(parent.window.janus.playerlist[0].zdir.z,parent.window.janus.playerlist[0].zdir.x) * 180.0 / Math.PI;
+
+	 document.getElementById("map").style.webkitTransform = "rotate("+(-(angle-90))+"deg)";
 	
    
 
@@ -265,11 +266,11 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 
 
-		<div class="tabcontainer" id="maptabcontainer">
+		<div class="tabcontainer" id="maptabcontainer" style="overflow:hidden;">
 			
-			
-			<div class="map" id="map" style="height:100%;width:100%;">
 			<span class="subtleinfo" id="scalereader" style="right:0px;position:absolute;"></span>
+			<div class="map" id="map" style="height:100%;width:100%;">
+			
 			
 			</div>
 				
