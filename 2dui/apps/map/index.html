@@ -73,22 +73,26 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
    var i;
    for (i=0;i<window.janus.playerlist.length;i++)
    {
+   
+   	var mywidth= (4*scale);
+	var myheight= (4*scale);
+   
   
    //if this id exists, position it
   if (document.getElementById("player"+i)) 
     {
 	
 
-	var posx= window.janus.playerlist[i].pos.x*scale ;
-	var posz= window.janus.playerlist[i].pos.z*scale ;
+	var posx= (window.janus.playerlist[i].pos.x)*scale ;
+	var posz= (window.janus.playerlist[i].pos.z)*scale ;
 	
 	
 	if (i ==0)
 	{
 	
 	 //center of the view is player's position plus half the width of the div
-     xview = (posx)+((document.getElementById("map").offsetWidth)*0.5);
-     zview = (posz)+((document.getElementById("map").offsetHeight)*0.5);
+     xview = (posx)+((document.getElementById("map").offsetWidth-mywidth)*0.5);
+     zview = (posz)+((document.getElementById("map").offsetHeight-myheight)*0.5);
 
 	 //alert(window.janus.playerlist[i].pos.x+"is where you are and the div size is"+document.getElementById("map").offsetWidth)
 	}
@@ -108,8 +112,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 	
 	}
 
-	var mywidth= (2*scale);
-	var myheight= (2*scale);
+
 	
 	document.getElementById("player"+i).style.width = mywidth+"px";
 	document.getElementById("player"+i).style.height = myheight+"px";
@@ -117,7 +120,15 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 	 //set specific player's position 
      document.getElementById("player"+i).style.left = (-((posx)-xview))+"px";
      document.getElementById("player"+i).style.top = (-((posz)-zview))+"px";
-	
+	 //and their namecard
+	 document.getElementById("playername"+i).style.left = (-((posx)-xview))+"px";
+     document.getElementById("playername"+i).style.top = ((-((posz)-zview))-16)+"px";
+	 
+
+
+	 var angle = Math.atan2(parent.window.janus.playerlist[i].zdir.z,parent.window.janus.playerlist[i].zdir.x) * 180.0 / Math.PI;
+
+	 document.getElementById("player"+i).style.webkitTransform = "rotate("+angle+"deg)";
 
 
 	
@@ -150,7 +161,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 			div3.className  = "mapiconname";
 			div3.id = "playername"+i
 			div3.innerHTML = "";
-			div2.appendChild(div3);
+			document.getElementById("map").appendChild(div3);
 	
 	
 	
@@ -199,6 +210,11 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 		//delete their market
 		//alert("removing "+currentcheck.id.match(/\d+/g))
 		currentcheck.remove();
+		
+		var numofname = currentcheck.id.replace(/\D/g, '');
+		
+		document.getElementById("playername"+numofname).remove();
+		
 		}
 	
 	
