@@ -126,10 +126,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" id="multiplayertoggle" type='checkbox' onchange="window.janus.setsetting('multiplayer', this.checked); " > 
 					<b>Multiplayer</b>
-					<br>
-					<hr>
-					Unchecking this box will disconnect you from all presence servers.
-					You will not be able to see other users until this setting is re-enabled.
+
 					</span>
 					<br>
 					</div>
@@ -138,9 +135,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox'  >
 					<b>Fallback Server</b>
-					<br>
-					<hr>
-					The default presence server to use when the room creator has not specified their own.
+
 					</span>
 					<br>
 					</div>
@@ -150,9 +145,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox'  >
 					<b>Fallback Server Port</b>
-					<br>
-					<hr>
-					The default presence server port to use when the room creator has not specified their own.
+
 					</span>
 					<br>
 					</div>
@@ -163,9 +156,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox'  >
 					<b>Fallback Server Poll Rate</b>
-					<br>
-					<hr>
-					How fast the client polls the fallback server.
+
 					</span>
 					<br>
 					</div>
@@ -178,10 +169,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox' id="statisticstoggle" onchange="window.janus.setsetting('sessiontracking', this.checked); "   >
 					<b>Anonymous Statistics</b>
-					<br>
-					<hr>
-					By leaving this checked, you're helping the devs figure out when and why certain bugs occur,
-					and how to best improve JanusVR in the future. We really appreciate it!
+
 					</span>
 					<br>
 					</div>
@@ -203,18 +191,14 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<input  type='text' class="longerinput" id="displaynameform"  onchange="window.janus.userid=this.value;"  >
 
 					</span>
-					<br>
-					<hr>
-					The name associated with your avatar and chat messages.
+
 					</div>	
 
 					<div class='item lightup' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="avatarlightingtoggle" onchange="window.janus.avatarlighting=this.checked;"  >
 					<b>Avatar Lighting</b>
-					<br>
-					<hr>
-					Toggles between full bright and fully lit. 
+
 					</span>
 					<br>
 					</div>
@@ -224,9 +208,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox' id="selfavatartoggle" onchange="window.janus.setsetting('selfavatar', this.checked); "  >
 					<b>First Person Avatar</b>
-					<br>
-					<hr>
-					Ability to see your own avatar.
+
 					</span>
 					<br>
 					</div>					
@@ -237,9 +219,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<input  type='text'  value='1 1 1'>
 
 					</span>
-					<br>
-					<hr>
-					How large your avatar is.
+
 					</div>		
 
 					
@@ -263,9 +243,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<input class="longerinput" type='text'  value='http://janusvr.com/default.dae'>
 
 					</span>
-					<br>
-					<hr>
-					The URL where your avatar model is located.
+
 					</div>							
 					
 
@@ -277,9 +255,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<input class="longerinput" type='text'  value='http://janusvr.com/default.mtl'>
 
 					</span>
-					<br>
-					<hr>
-					If you're using an OBJ file as your avatar, you can link the .mtl file here.
+
 					</div>		
 
 				</div>
@@ -296,9 +272,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox' id="invertpitchtoggle"   onchange="window.janus.setsetting('invertpitch', this.checked); " >
 					<b>Invert Pitch</b>
-					<br>
-					<hr>
-					Inverses your vertical look direction.
+
 					</span>
 					<br>
 					</div>
@@ -309,9 +283,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox'  id="mousepitchtoggle" onchange="window.janus.setsetting('mousepitch', this.checked); "  >
 					<b>Vertical Mouselook</b>
-					<br>
-					<hr>
-					Whether or not you can look up and down with the mouse.
+
 					</span>
 					<br>
 					</div>					
@@ -320,11 +292,9 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item lightup' >
 					<span>
-					<input class="myCheckbox" type='range' id="rotationspeedslider" min="50" max="100" oninput="window.janus.setsetting('rotationspeed', this.value); document.getElementById('rotationspeedslidernumber').innerHTML=this.value;" >
+					<input class="myslider" type='range' id="rotationspeedslider" min="50" max="100" oninput="window.janus.setsetting('rotationspeed', this.value); document.getElementById('rotationspeedslidernumber').innerHTML=this.value;" >
 					<b>Rotation Speed: </b><span id="rotationspeedslidernumber"></span>
-					<br>
-					<hr>
-					How quickly you rotate.
+
 					</span>
 					<br>
 					</div>		
@@ -337,9 +307,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox' id="gamepadtoggle" onchange="window.janus.setsetting('gamepad', this.checked); "  >
 					<b>Gamepad</b>
-					<br>
-					<hr>
-					When enabled, gamepad will work with JanusVR.
+
 					</span>
 					<br>
 					</div>					
@@ -355,10 +323,8 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item lightup' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="portalhotkeystoggle" onchange="window.janus.setsetting('portalhotkeys', this.checked); "  >
-					<b>Hotkeys</b>
-					<br>
-					<hr>
-					Whether or not to use JanusVR hotkeys.
+					<b>Advanced Hotkeys</b>
+
 					</span>
 					<br>
 					</div>	
@@ -466,9 +432,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox' id="decoupleheadtoggle" onchange="window.janus.setsetting('decouplehead', this.checked); " >
 					<b>Decouple Head</b>
-					<br>
-					<hr>
-					When enabled, head and torso rotate separately. This only applies when you're wearing a VR device.
+
 					</span>
 					<br>
 					</div>					
@@ -479,9 +443,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox' id="comfortmodetoggle" onchange="window.janus.setsetting('comfortmode', this.checked); "  >
 					<b>Comfort Mode</b>
-					<br>
-					<hr>
-					When enabled, the gamepad will turn you incrementally rather than smoothly.
+
 					</span>
 					<br>
 					</div>					
@@ -492,9 +454,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox' id="leapmotionhmdtoggle" onchange="window.janus.setsetting('leapmotionhmd', this.checked); " >
 					<b>Leap Motion on HMD</b>
-					<br>
-					<hr>
-					Whether or not your Leap Motion is located on your HMD. If this is unchecked, we'll assume it's on your desk.
+
 					</span>
 					<br>
 					</div>					
@@ -529,20 +489,16 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox' id="antialiasingtoggle" onchange="window.janus.setsetting('antialiasing', this.checked); " >
 					<b>Antialiasing (4xMSAA)</b>
-					<br>
-					<hr>
-					Whether or not to antialias the screen.
+
 					</span>
 					<br>
 					</div>
 
 					<div class='item lightup' >
 					<span>
-					<input class="myCheckbox" type='range' id="fovslider" min="50" max="100" oninput="window.janus.setsetting('fov', this.value); document.getElementById('fovslidernumber').innerHTML=this.value;" >
+					<input class="myslider" type='range' id="fovslider" min="50" max="120" oninput="window.janus.setsetting('fov', this.value); document.getElementById('fovslidernumber').innerHTML=this.value;" >
 					<b>Field of View: </b><span id="fovslidernumber"></span>
-					<br>
-					<hr>
-					How wide your field of vision is.
+
 					</span>
 					<br>
 					</div>					
@@ -554,9 +510,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox' id="assetimagestoggle" onchange="window.janus.setsetting('assetimages', this.checked); "  >
 					<b>AssetImages</b>
-					<br>
-					<hr>
-					Whether or not to render assetimages.
+
 					</span>
 					<br>
 					</div>
@@ -565,9 +519,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox' id="assetshaderstoggle" onchange="window.janus.setsetting('assetshaders', this.checked); "  >
 					<b>Custom AssetShaders</b>
-					<br>
-					<hr>
-					Whether or not to allow websites to define their own custom shaders.
+
 					</span>
 					<br>
 					</div>
@@ -585,9 +537,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox' id="crosshairtoggle" onchange="window.janus.setsetting('crosshair', this.checked); "  >
 					<b>Crosshairs</b>
-					<br>
-					<hr>
-					Whether or not to render the crosshairs.
+
 					</span>
 					<br>
 					</div>
@@ -596,9 +546,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox'  >
 					<b>Hide UI on Unfocus</b>
-					<br>
-					<hr>
-					When unchecked, the UI will be hidden when not in use.
+
 					</span>
 					<br>
 					</div>					
@@ -612,9 +560,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox' id="soundstoggle" onchange="window.janus.setsetting('sounds', this.checked); " >
 					<b>Interface Sounds</b>
-					<br>
-					<hr>
-					Whether or not to play audio when performing certain actions.
+
 					</span>
 					<br>
 					</div>
@@ -633,9 +579,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox' id="editmodetoggle" onchange="window.janus.setsetting('editmode', this.checked); "  >
 					<b>Edit Mode</b>
-					<br>
-					<hr>
-					When checked, enables advanced building options.
+
 					</span>
 					<br>
 					</div>
@@ -647,9 +591,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox' id="downloadcachetoggle" onchange="window.janus.setsetting('downloadcache', this.checked); "  >
 					<b>Cache Content</b>
-					<br>
-					<hr>
-					Whether or not JanusVR should cache places you've visited. Keeping this checked decreases loading times upon multiple visits.
+
 					</span>
 					<br>
 					</div>
@@ -659,11 +601,9 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 			
 					<div class='item lightup' >
 					<span>
-					<input class="myCheckbox" type='range' id="maxmemoryslider" min="1024" max="8192" oninput="window.janus.setsetting('maxmemory', this.value); document.getElementById('maxmemoryslidernumber').innerHTML=this.value+'MB';" >
+					<input class="myslider" type='range' id="maxmemoryslider" min="1024" max="8192" oninput="window.janus.setsetting('maxmemory', this.value); document.getElementById('maxmemoryslidernumber').innerHTML=this.value+'MB';" >
 					<b>Maximum Memory Usage: </b><span id="maxmemoryslidernumber"></span>
-					<br>
-					<hr>
-					The amount of memory dedicated to using JanusVR.
+
 					</span>
 					<br>
 					</div>
@@ -678,9 +618,9 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<span>
 					<input class="myCheckbox" type='checkbox' id="jsdebuggertoggle" onchange="window.janus.setsetting('jsdebugger', this.checked); " >
 					<b>Javascript Debugger</b>
-					<br>
-					<hr>
-					Whether or not you should be able to see the pop out Javascript Debugger.
+
+
+
 					</span>
 					<br>
 					</div>

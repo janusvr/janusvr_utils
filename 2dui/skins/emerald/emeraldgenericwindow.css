@@ -29,7 +29,11 @@ li {
   
   .item span input {
   float:right;
-width:100px;
+
+  }
+  
+  .myslider {
+  width: 50% !important;
   }
   
  .longerinput
