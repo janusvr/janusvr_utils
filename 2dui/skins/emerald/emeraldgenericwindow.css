@@ -29,13 +29,33 @@ li {
   
   .item span input {
   float:right;
-width:100px;
+
+  }
+  
+  .myslider {
+  width: 50% !important;
   }
   
  .longerinput
  {
  width: 200px !important; 
  }
+ 
+.subtleinfo
+{
+font-family:"Montserrat";
+color:#848484;
+
+}
+
+#entryform {
+width:100%;
+background-color: rgba(0,0,0,0.1);
+border-style: none;
+  font-family: "Swis721 BT";
+  color:white;
+}
+ 
  
 
        .entryform {
@@ -49,8 +69,48 @@ width:100px;
 
   }
 
+
+.rightimage {
+      width: 50%;
+    float: right;
+
+   height:100%;
+   background-size:contain;
+      background-position: center; 
+	  max-width:300px;
+	    background-repeat: no-repeat;
+}
+
+.mousehand {
+cursor:hand;
+
+}
+
+.left {
+    float: none; /* not needed, just for clarification */
+   
+    /* the next props are meant to keep this block independent from the other floated one */
+    width: auto;
+    overflow: hidden;
+}​​
+  
+  textarea {
+resize: none;
+
+}
   
   
+ .textinput{
+ width:100%;
+ height:100%; border-style: none !important;
+ position:fixed;
+  resize: none;
+  background-color: rgba(0,0,0,0);
+  color:white;
+   font-family: "Swis721 BT";
+   text-decoration: none !important;
+ } 
+ 
   
 .messagecontainer {
 overflow:auto;
@@ -146,6 +206,116 @@ overflow:hidden;
 
 }
 
+
+
+
+.button {
+
+  font-family: "Montserrat";
+  color:white;
+max-width:64px;
+  font-size: 12px;
+ background-color:#545454;
+height:calc(100% - 0px);
+text-align: center;
+vertical-align: middle;
+padding: 8px 8px;
+margin: 4px 4px;
+margin-left: 2px;
+}
+
+
+
+
+.button:hover {
+
+    background-color: #7F7F7F;
+	cursor:hand;
+
+}
+
+.button:active {
+
+ background-color:#8F8F8F;
+
+}
+
+
+
+
+
+.resetavatarbutton {
+
+  font-family: "Montserrat";
+  color:white;
+
+
+ background-color:#6F6F6F;
+
+
+border-radius:5px;
+text-align: center;
+vertical-align: middle;
+padding-top:16px;
+padding-bottom:16px;
+border-color: white;
+border-style: solid;
+border-width:2px;
+margin-left:64px;
+margin-right:64px;
+margin-top:4px;
+margin-bottom:4px;
+}
+
+
+
+
+.resetavatarbutton:hover {
+
+    background-color: #7F7F7F;
+	cursor:hand;
+
+}
+
+.resetavatarbutton:active {
+
+ background-color:#8F8F8F;
+
+}
+
+
+
+
+
+.bottombar {
+
+bottom:0;
+position:absolute;
+background-color:#3F3F3F;
+width:100%;
+border-top-style:solid;
+border-top-width:2px;
+border-top-color:#3F3F3F;
+
+border-bottom-style:solid;
+border-bottom-width:2px;
+border-bottom-color:#3F3F3F;
+
+
+}
+
+
+.mapiconname {
+text-align:center;
+font-family: "Swis721 BT";
+color:white;
+    text-shadow: -1px 0 #545454, 0 1px #545454, 1px 0 #545454, 0 -1px #545454;
+bottom:24px;
+position:absolute;
+font-weight: bold;
+}
+
+
 .item {
 
 
@@ -162,6 +332,15 @@ margin-bottom: 0;
 
 }
 
+
+
+input {
+
+background-color: #6F6F6F;
+border-style: none;
+color:white;
+}
+
 li .selected {
 
   background-color: #E4E4E4;
@@ -171,3 +350,137 @@ li .selected {
 	  
 }
 
+
+
+
+.mapicon {
+z-index:222;
+border-color:white;
+background-image: url("mapicon1.png");
+background-position: center;
+background-size:cover;
+position:absolute;
+text-align:center;
+}
+
+.mapiconother {
+
+border-color:white;
+background-image: url("mapicon2.png");
+background-position: center;
+background-size:cover;
+position:absolute;
+text-align:center;
+}
+
+.inventoryimage {
+display: absolute;
+height:100%;
+}
+
+.bookmarkitemcontainer {
+height:64px;
+
+}
+
+.inventorytext {
+float:left;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  margin: 7.8px 0;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4.4px;
+  cursor: pointer;
+  box-shadow: 2.3px 2.3px 2.6px rgba(0, 0, 0, 0), 0px 0px 2.3px rgba(13, 13, 13, 0);
+  background: #87898e;
+  border-radius: 5.1px;
+  border: 0px solid #010101;
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0), 0px 0px 1px rgba(13, 13, 13, 0);
+  border: 2px solid #00d000;
+  height: 20px;
+  width: 30px;
+  border-radius: 0px;
+  background: #00ff00;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -7.8px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #c9cacc;
+}
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 4.4px;
+  cursor: pointer;
+  box-shadow: 2.3px 2.3px 2.6px rgba(0, 0, 0, 0), 0px 0px 2.3px rgba(13, 13, 13, 0);
+  background: #87898e;
+  border-radius: 5.1px;
+  border: 0px solid #010101;
+}
+input[type=range]::-moz-range-thumb {
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0), 0px 0px 1px rgba(13, 13, 13, 0);
+  border: 2px solid #00d000;
+  height: 20px;
+  width: 30px;
+  border-radius: 0px;
+  background: #00ff00;
+  cursor: pointer;
+}
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 4.4px;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+  background: #494a4d;
+  border: 0px solid #010101;
+  border-radius: 10.2px;
+  box-shadow: 2.3px 2.3px 2.6px rgba(0, 0, 0, 0), 0px 0px 2.3px rgba(13, 13, 13, 0);
+}
+input[type=range]::-ms-fill-upper {
+  background: #87898e;
+  border: 0px solid #010101;
+  border-radius: 10.2px;
+  box-shadow: 2.3px 2.3px 2.6px rgba(0, 0, 0, 0), 0px 0px 2.3px rgba(13, 13, 13, 0);
+}
+input[type=range]::-ms-thumb {
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0), 0px 0px 1px rgba(13, 13, 13, 0);
+  border: 2px solid #00d000;
+  height: 20px;
+  width: 30px;
+  border-radius: 0px;
+  background: #00ff00;
+  cursor: pointer;
+  height: 4.4px;
+}
+input[type=range]:focus::-ms-fill-lower {
+  background: #87898e;
+}
+input[type=range]:focus::-ms-fill-upper {
+  background: #c9cacc;
+}

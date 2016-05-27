@@ -2,57 +2,264 @@
 <head>
   <meta charset="utf-8">
 
-  <title>JanusVR Interface Chatlog</title>
-  <meta name="description" content="Chatlog Interface for JanusVR">
+  <title>JanusVR Interface Settings Menu</title>
+  <meta name="description" content="JanusVR Interface Settings Menu">
   <meta name="author" content="JanusVR Inc.">
- 
+  <script src="../../scripts/tabs.js"></script>
   
   <script>
 
+  
 
+   
+  
+  
+
+  
+    function showimage(idofobj)
+  {
+
+  idofobj = idofobj.id;   
+  idofobj = idofobj.replace( /\D+/g, '');
+   
+
+  //set the thumbnail
+  document.getElementById("rightimage").style.backgroundImage = "url("+bookmarkthumbs[idofobj]+"),url(../../images/nopreview.png)"
+  
+  
+  
+
+
+  };
+  
+  
+  function launchurl(idofobj){
+  
+    idofobj = idofobj.id;
+    idofobj = idofobj.replace( /\D+/g, '');
+  	window.janus.launchurl(bookmarkurls[idofobj],0);
+	
+  }
+  
+ 
+  
+  
+  window.onload = function () {
+  
+  
+  
+  tabSelect("bookmarktabcontainer","bookmarktabbutton")
+  window.onresize()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+  }
+
+  var bookmarkurls;
+  var bookmarkthumbs;
+  
+  
+  
+  
+function createBookmarks() {
+
+  //create bookmarks list
+    
+   bookmarkurls = window.janus.bookmarkurl.slice();
+   bookmarkthumbs = window.janus.bookmarkthumb.slice();
+       
+
+   var mycolumn = document.getElementById("bookmarkscolumn"); //grab the element we're going to be appending bookmark items to
+   var bookmarkitem = new Array();  
+   var i;
+   
+  for (i=0;i<bookmarkurls.length;i++)
+  {	
+	//create bookmark item
+   	bookmarkitem[i] = document.createElement("div"); //initialize a new message
+	bookmarkitem[i].className  += "item lightup mousehand bookmarkitem"; //set the class name 
+
+	bookmarkitem[i].innerHTML = bookmarkurls[i]
+
+	var currentiteration = i;
+	bookmarkitem[i].id = "bookmarkitem"+i;
+
+
+	bookmarkitem[i].onmouseover = function(arg) {
+										return function() {
+											showimage(bookmarkitem[arg])
+												}
+												}(i);
+	
+
+	bookmarkitem[i].onmousedown = function(arg) {
+										return function() {
+											launchurl(bookmarkitem[arg])
+												}
+												}(i);
+	
+		
+
+	mycolumn.appendChild(bookmarkitem[i]); //append this item to the bookmark container
+    
+  }
+  
+  
+
+}
+
+function clearBookmarks() {
+var myNode = document.getElementById("bookmarkscolumn");
+while (myNode.firstChild) {
+    myNode.removeChild(myNode.firstChild);
+}
+};
+  
+  
+   window.onresize = function(event) { //make sure the window area stays a consistent size
+
+ console.log("calc(100% - "+document.getElementById("tabrow").offsetHeight+"px)"	);
+
+ 
+ if (document.getElementById("tabrow").offsetWidth >= 200) //if you change the 200 here, also change the min-width of the window containing it. this is to prevent flicker when vertically resizing a minimally (width) sized window
+ {
+document.getElementById("windowarea").style.height = "calc(100% - "+(document.getElementsByClassName("tabrow")[0].offsetHeight+3)+"px)";	
+ }
+};
+  
+  
+  //dynamically update bookmarks if length of bookmarks list changes
+  
+    var previousbookmarkslength;
+
+  setInterval(function() { //if the room changes, refresh the code in the editor
+
+  if (window.janus.bookmarkurl.length != previousbookmarkslength)
+  {
+  clearBookmarks()
+  }
+
+  previousbookmarkslength = window.janus.bookmarkurl.length;
+  
+  
+  },100);
+  
+  
+ //check if there are no bookmark listings and populate them if so
+ 
+   setInterval(function() { 
+
+var classexists = document.getElementsByClassName('bookmarkitem');
+
+if (classexists .length <= 0)
+	{
+     createBookmarks();
+    }
+
+  
+  },1);
 
   
     </script>
   
   
-  <link rel="stylesheet" type="text/css" href="../../skins/emerald/emeraldinventory.css">
+  <link rel="stylesheet" type="text/css" href="../../skins/emerald/emeraldgenericwindow.css">
   
 </head>
 
 <body >
 
-<div class="inventory">
+<div class="windowcontainer">
 
-<ul class="unselectable">
-  <li><button class="selected">POCKET</a></li>
-  <li><button >ROOM</a></li>
-  <li><button >SEARCH</a></li>
+<div class="tabrow unselectable" id="tabrow">
 
-</ul>
+	<div class="tabbutton" id="bookmarktabbutton" onmousedown="tabSelect('bookmarktabcontainer','bookmarktabbutton')">BOOKMARKS</div></li>
 
 
-<div class="inventoryarea unselectable" >
-
-	<div class="item">
-	<img src="test.png" />
-	<span class="unselectable">Sexy Cube</span>
-	</div>
-
-	<div class="item">
-	<img src="test.png" />
-	</div>
-
-	<div class="item">
-	<img src="test.png" />
-	</div> 
-
-	<div class="item">
-	<img src="test.png" />
-	</div>
 </div>
 
 
+<div class="windowarea unselectable" id="windowarea">
 
+		<div class="tabcontainer" id="bookmarktabcontainer" style="height:100%;">
+
+			
+		
+		
+
+		<div class="rightimage" id="rightimage" >
+        
+		</div>
+		
+		
+		<div class="left" id="bookmarkscolumn" style="height:100%;overflow:auto;">
+        
+
+		
+		
+		</div>			
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+		</div>			
+
+
+
+
+
+
+
+
+
+
+
+				
+				
+				
+					
+				</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
 </div>
 
 

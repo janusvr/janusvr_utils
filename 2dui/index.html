@@ -57,7 +57,12 @@
   <link rel="stylesheet" type="text/css" href="skins/emerald/emerald.css">
   <script>
   
-  
+    function strip(html)
+{
+var tmp = document.createElement("DIV");
+tmp.innerHTML = html;
+return tmp.textContent || tmp.innerText;
+}
   
   
 var progressx = 0;
@@ -116,9 +121,8 @@ function()
 { 
 
 	var progbar = document.getElementById("progressbar");	
-	progressx = window.janus.roomprogress*200;
+	progressx = (window.janus.roomprogress())*200;
 
-	
 if (progressx < 200)
 {
  
@@ -638,9 +642,6 @@ function closeWindow(callerid,winid)
 	case "debug://rosebud":
 	shownotification("Do you canoe?","notifications/call.png","null","#455947");
 	break;
-	case "debug://implement":
-	toggleWindow("null",500,400," 10 WEIRD TRICKS TO IMPLEMENTING THIS UI.","apps/implement/index.html","40vw","35vh");
-	break;
 	case "debug://aesthetic":
 	shownotification("<marquee style='color:pink'>【<b>ＪＡＮＵＳＶＲ</b>】メタバースへようこそ</marquee>","notifications/logo2.png","null","#442332");
 	toggleWindow('null',500,400,'AESTHETIC','https://www.youtube.com/embed/cU8HrO7XuiE?autoplay=true&loop=1','40vw','35vh');
@@ -680,22 +681,22 @@ function closeWindow(callerid,winid)
 
 
 shownotification('Welcome to JanusVR! Press <b>ESC</b> to interact with the HUD.','notifications/logo.png',"null","#455947");
-toggleWindow(document.getElementById("chatlogbutton"),400,200,'CHAT LOG','apps/chatlog/index.html','79vw','70vh')
+toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/chatlog/index.html','1vw','65vh')
 
   };
   
-
+  var opacityoftooltip;
   var previousroomurl;
 //UPDATING HUD STATUS IN REAL TIME ====================================================================================================================================
   setInterval(function() {
    //change janus url based on what room you're in
     
-  if (window.janus.currenturl != previousroomurl)
+  if (window.janus.currenturl() != previousroomurl)
   {
-  document.getElementById("progressbar").value = window.janus.currenturl;
+  document.getElementById("progressbar").value = window.janus.currenturl();
   }
 
- previousroomurl = window.janus.currenturl;
+ previousroomurl = window.janus.currenturl();
   
   
   
@@ -705,46 +706,133 @@ toggleWindow(document.getElementById("chatlogbutton"),400,200,'CHAT LOG','apps/c
 	 
 	switch(window.janus.networkstatus) {
     case 0:
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('You are <b>offline</b>.')}
         document.getElementById("onlinestatus").innerHTML = "OFFLINE";
         break;
     case 1:
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Attempting to connect...')}	
         document.getElementById("onlinestatus").innerHTML = "...";
         break;
     case 2:
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('You are <b>online</b>.')}	
         document.getElementById("onlinestatus").innerHTML = "ONLINE";
-        break;	
-    case -1:
-        document.getElementById("onlinestatus").innerHTML = "ERROR";
         break;				
     default:
         document.getElementById("onlinestatus").innerHTML = "ERROR";
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Error.')}		
 }
 	 
 	 
 	//set player count and tricount
-    document.getElementById("playercountstatus").innerHTML = window.janus.playercount;
-    document.getElementById("polystatus").innerHTML = window.janus.tricount;
+    	document.getElementById("playercountstatus").innerHTML = window.janus.playercount-1;
 	
+	if ((window.janus.playercount-1) == 1)
+	{
+	document.getElementById("playercountstatuscontainer").onmousemove = function()  {showtooltip('<b>'+(window.janus.playerlist.length-1)+'</b> person nearby.')}
+	}
+	else
+	{
+	document.getElementById("playercountstatuscontainer").onmousemove = function() {showtooltip('<b>'+(window.janus.playerlist.length-1)+'</b> people nearby.')}
+
+	}
+	
+	
+	
+    document.getElementById("polystatus").innerHTML = window.janus.tricount();
+	document.getElementById("polycountstatuscontainer").onmousemove = function()  {showtooltip('<b>'+(window.janus.tricount())+'</b> polygons here.')}
 	
 	//if room is locked or unlocked change locked display
-	if (window.janus.locked == 0)
+	
+	if (window.janus.locked() == 0)
 	{
     document.getElementById("lockedstatus").innerHTML = "UNLOCKED";
 	document.getElementById("lockedstatus").style.color = "";
 	document.getElementById("lockedstatus").style.borderColor = "";
+	document.getElementById("lockedstatus").onmousemove = function() {showtooltip('You may <b>edit</b> here.')}	
 	}
 	else
 	{
     document.getElementById("lockedstatus").innerHTML = "LOCKED";	 
-	document.getElementById("lockedstatus").style.color = "#E27979";
-	document.getElementById("lockedstatus").style.borderColor = "#E27979";	
+	document.getElementById("lockedstatus").style.color = "#F88E8E";
+	document.getElementById("lockedstatus").style.borderColor = "#F88E8E";	
+	document.getElementById("lockedstatus").onmousemove = function() {showtooltip('Cannot <b>edit</b> here.')}		
 	}
+  
+  
+  
+  
+  //when an iframe is being used, bring its window to the top
+  
+  if (document.activeElement.tagName == "IFRAME")
+  {
+  
+  if (document.activeElement.parentElement.parentElement.style.zIndex < highestwindow)
+  {
+  highestwindow +=1;
+  document.activeElement.parentElement.parentElement.style.zIndex = highestwindow;
+  }
+
+  
+  
+  }
+  
+  //when the tooltip is shown, steadily increase its opacity, and when it isn't shown, hide it
+  
+  if (document.getElementById("tooltip").style.visibility == "visible")
+  {
+   opacityoftooltip += 0.025;
+
+  }
+  else 
+  {
+  
+    opacityoftooltip = -0.75;
+  }
+  
+  document.getElementById("tooltip").style.opacity = opacityoftooltip+"";
   
   
   
   
 }, 10);
+
 //END UPDATING HUD STATUS IN REAL TIME ====================================================================================================================================
+
+
+function showtooltip(whattoshow) {
+
+document.getElementById("tooltip").style.visibility = "visible";
+document.getElementById("tooltip").innerHTML = whattoshow;
+
+
+
+if (( (event.clientX-(document.getElementById("tooltip").offsetWidth*0.5)) > 0) )
+{
+document.getElementById("tooltip").style.left = (event.clientX-(document.getElementById("tooltip").offsetWidth*0.5))+"px";
+}
+
+
+
+if (event.clientY > window.innerHeight*0.5)
+{
+document.getElementById("tooltip").style.top = ((event.clientY-32)-(document.getElementById("tooltip").offsetHeight*0.5))+"px";
+}
+else
+{
+document.getElementById("tooltip").style.top = ((event.clientY+16)+(document.getElementById("tooltip").offsetHeight*0.5))+"px";
+}
+//height
+
+
+}
+
+function hidetooltip() {
+document.getElementById("tooltip").style.visibility = "";
+document.getElementById("tooltip").innerHTML = "";
+
+}
+
+
 
   </script>
 
@@ -758,10 +846,10 @@ toggleWindow(document.getElementById("chatlogbutton"),400,200,'CHAT LOG','apps/c
 	<div class="container " >
 
 		<div >
-			<button title="Menu" class="containerbutton miscbutton" onclick="togglemenulist()"></button>
-			<button title="Back" class="containerbutton backbutton" onclick="clickBack()"></button>
-			<button title="Forwards" class="containerbutton forwardsbutton" onclick="clickForwards()"></button>
-			<button title="Go to Landing Space" class="containerbutton pocketbutton" onclick="toggleWindow(this,500,256,'HIS BOY, ELROY','https://www.youtube.com/embed/FyinD6ZDqeg?autoplay=1','50vw','50vh')"></button>		
+			<button onmousemove="showtooltip('Main Menu')" onmouseout="hidetooltip()" class="containerbutton miscbutton" onclick="togglemenulist()"></button>
+			<button onmousemove="showtooltip('Back')" onmouseout="hidetooltip()" class="containerbutton backbutton" onclick="clickBack()"></button>
+			<button onmousemove="showtooltip('Forwards')" onmouseout="hidetooltip()"  class="containerbutton forwardsbutton" onclick="clickForwards()"></button>
+			<button onmousemove="showtooltip('Go to Landing Space')" onmouseout="hidetooltip()"  class="containerbutton pocketbutton" onclick="toggleWindow(this,500,256,'HIS BOY, ELROY','https://www.youtube.com/embed/FyinD6ZDqeg?autoplay=1','50vw','50vh')"></button>		
 		</div>
 
 	</div>
@@ -782,28 +870,26 @@ toggleWindow(document.getElementById("chatlogbutton"),400,200,'CHAT LOG','apps/c
 	
 	
 		<!--Go button and portal button-->
+
 				<button class="inputbutton" id="gobutton" onclick="gotoroom()">GO</button>
 
-	
 	
 	
 			<div class="menulist unselectable" id="menulist" onclick="togglemenulist('true')" >
 			<ul>
 			<li class="menulistbutton"  onclick="toggleWindow(this,600,350,'SETTINGS','apps/settings/index.html','50vw','50vh')"> SETTINGS </li>		
-			
+				
 			<li class="menulistbutton" onclick="saveroom()"> SAVE </li>
 			<li class="menulistbutton" onclick="syncroom()"> SYNC PEERS </li>			
-			<li class="menulistbuttongray" onclick=" shownotification('Sorry, but this is a locked webspace. Try going somewhere else, maybe?','notifications/error.png','null','#442332')" >ROOM CODE</li>		
-			<li class="menulistbutton" onclick="quitjanus()" > QUIT </li>				
+			<li class="menulistbutton" onclick="toggleWindow(this,600,350,'EDITOR','apps/roomcode/index.html','50vw','50vh')" >EDITOR</li>		
+		
+			<li class="menulistbutton"  onclick="  	shownotification('The interface has been hidden. Press <b>ESC</b> to bring it back.','notifications/invisible.png','null','#455947')          "> HIDE UI </li>	
+		<li class="menulistbutton" onclick="quitjanus()" > QUIT </li>				
 			</ul>
 			</div>
 
 	
- 
 
- 
-	
-	
 	
 </div>
 
@@ -814,34 +900,36 @@ toggleWindow(document.getElementById("chatlogbutton"),400,200,'CHAT LOG','apps/c
 
 
 
-<div class="stat statisticleft unselectable" id="onlinestatus" title="Connected to babylon.vrsites.com">
+<div class="stat statisticleft unselectable" id="onlinestatus" onmouseout="hidetooltip()">
 
 </div>
 
-<div class="stat statisticleft2 unselectable" id="playercountstatus" title="Number of users nearby.">
-
+<div class="stat statisticleft2 unselectable"  id="playercountstatuscontainer"  onmouseout="hidetooltip()" >
+<span id="playercountstatus"></span>
+<img src='skins\emerald\icons\staticon.png' style='width:15px;height:22px;float:right;padding-right:8px;' />
 </div>
 
 
-<div class="stat statisticright unselectable" id="polystatus" title="Number of polygons being rendered.">
-
+<div class="stat statisticright unselectable"  id="polycountstatuscontainer" onmouseout="hidetooltip()" >
+<span id="polystatus" ></span>
+<img src="skins\emerald\icons\triicon.png" style="width:20px;height:17px;float:right;padding-right:8px;" />
 </div>
 
 
-<div class="stat statisticright2 unselectable" id="lockedstatus" title="Room has disabled editing.">
+<div class="stat statisticright2 unselectable" id="lockedstatus"  onmouseout="hidetooltip()"  >
 
 </div>
 
 <div class="quickbar unselectable">
 
 
-<button title="Inventory" id="inventorybutton" class="quickinventory" onclick="toggleWindow(this,500,256,'INVENTORY','apps/inventory/index.html','50vw','50vh')" > </button>
+<button  id="inventorybutton" onmousemove="showtooltip('Inventory')" onmouseout="hidetooltip()" class="quickinventory" onclick="toggleWindow(this,500,256,'INVENTORY','apps/inventory/index.html','50vw','50vh')" > </button>
 
-<button title="2D Browser" id="websurfacebutton" class="quickbrowser" onclick="toggleWindow(this,500,256,'BROWSER','https://duckduckgo.com/','50vw','50vh')" > </button>
+<button id="websurfacebutton" onmousemove="showtooltip('Browser')" onmouseout="hidetooltip()" class="quickbrowser" onclick="toggleWindow(this,500,256,'BROWSER','https://duckduckgo.com/','50vw','50vh')" > </button>
 
-<button title="2D Browser" id="websurfacebutton" class="quickmap" onclick="toggleWindow(this,300,300,'MAP','apps/map/index.html','80vw','10vh')" > </button>
+<button  id="radarbutton" onmousemove="showtooltip('Radar')" onmouseout="hidetooltip()" class="quickmap" onclick="toggleWindow(this,300,300,'RADAR','apps/map/index.html','80vw','10vh')" > </button>
 
-<button title="Toggle Chatlog" id="chatlogbutton" class="quickchatlog" onclick="toggleWindow(this,400,200,'CHAT LOG','apps/chatlog/index.html','70vw','60vh')" ></button>
+<button id="chatlogbutton" onmousemove="showtooltip('Chatlog')" onmouseout="hidetooltip()" class="quickchatlog" onclick="toggleWindow(this,90,230,'CHAT LOG','apps/chatlog/index.html','1vw','65vh')" ></button>
 
 </div>
 
@@ -867,7 +955,11 @@ toggleWindow(document.getElementById("chatlogbutton"),400,200,'CHAT LOG','apps/c
 
 
 
+ 
 
+ <div class="tooltip" id="tooltip">Error.</div>
+	
+	
 
 <audio id="notifysound" src="sounds\notify.wav" preload="auto"></audio>
 

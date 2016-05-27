@@ -36,13 +36,13 @@ position: fixed;
 
 
   margin: 0 0;
-  width: 20.5vw;
+  width: 232px;
   padding: 4px 0;
  overflow:hidden;
 	text-align:center;
   float:left;
   display:inline-block;
- height:39px;
+ height:42px;
   }
   
   
@@ -114,10 +114,24 @@ position: fixed;
   
   
   
+  .tooltip{
+  position: absolute;
+  background-color: #545454;
+  color:white;
+  visibility:hidden;
+  overflow:visible;
+  font-family: "Swis721 BT";
+  z-index:22222222222222;
+  padding: 4px 4px;
+  border-color:white;
+  border-width:1px;
+  border-style:solid;
+  }
   
   
-  
-  
+  .tooltip b {
+   color:#0EE05A;
+  }
   
   
   
@@ -133,25 +147,25 @@ position: fixed;
 
 
   margin: 0 0;
-  width: 23.5vw;
-  padding: 4px 0;
+
+
  overflow:hidden;
 	text-align:center;
   float:left;
   display:inline-block;
- height:39px;
+ height:42px;
   }
   
   .container {
   
   
-width:150px;
+width: 256px;
   }
   
   .containerbutton{
   
-  width:30px !important;
-  max-width:30px;
+  width:48px !important;
+
   height:39px;
   }
 
@@ -168,9 +182,9 @@ width:150px;
   
   
   .containerbutton {
-    width:4.25vw;
+    width:48px;
 	padding: 10px 0;
-	  height:39px;
+	  height:42px;
   }
   
   
@@ -186,15 +200,15 @@ width:150px;
 
   margin: 0 0;
   width: 35vw;
-  padding: 4px 0;
-  
+  padding: 6px 0;
+
   float:left;
   display:inline-block;
-  height:39px;
+  height:38px;
   }
 
  .navbar{
-   opacity: 0.3;
+   opacity: 0.65;
   transition: opacity .2s ease-in-out;
  
  }
@@ -211,16 +225,17 @@ width:150px;
   button {
   
   font-size: 12px;
-  background-color: #3F3F3F;
-  border-style: solid;
+  background-color: #545454;
+  border-radius: 5px;
+  border-style: none;
   border-width: 2px;
   border-color: #E4E4E4;
   color: #E4E4E4;
   font-family: "Montserrat";
   padding: 10px 10px;
-  border-radius: 10px 10px;
-  margin-right:0.5vw;
-  max-width:6vw;
+
+  margin-right: 5px;
+
 
   text-align:center;
   overflow:hidden;
@@ -251,7 +266,7 @@ width:150px;
 
   font-size: 12px;
   background-color: #455947;
-  border-style: solid;
+  border-style: none;
   border-width: 2px;
   border-color: #0EE05A;
   color: #E4E4E4;
@@ -276,11 +291,11 @@ width:150px;
   .inputbutton {
   
     width:64px;
-	padding: 10px 0;
+
   background-color: #0EE05A;
  color:#455947;
   font-family: "Montserrat";
- margin-top:4px;
+ margin-top:6px;
  border-radius: 0px;
  border-color: #0EE05A;
  margin-right:0px;
@@ -303,9 +318,9 @@ width:150px;
   
   }
   
-  
 
-  
+
+
   
   
   
@@ -329,7 +344,7 @@ user-select: none;
   
   .quickbar {
   transition: opacity .2s ease-in-out;
- opacity: 0.25;
+ opacity: 0.65;
  width: 450px;
  padding: 10px 0.5vw;
 
@@ -361,7 +376,7 @@ user-select: none;
 
   font-size: 12px;
   background-color: #3F3F3F;
-  border-style: solid;
+  border-style: none;
   border-width: 2px;
   border-color: #E4E4E4;
   color: #E4E4E4;
@@ -389,7 +404,7 @@ user-select: none;
 bottom: 0;
 margin: 10px 10px;
 border-color: white;
-border-style: solid;
+border-style: none;
 border-width: 2px;
 width:96px;
 
@@ -411,7 +426,7 @@ height:22px;
 bottom: 0;
 margin: 10px 10px;
 border-color: white;
-border-style: solid;
+border-style: none;
 border-width: 2px;
 width:96px;
 cursor: hand;
@@ -434,7 +449,7 @@ right:0px;
   left: 122px;
   margin: 10px 10px;
   border-color: white;
-  border-style: solid;
+border-style: none;
   border-width: 2px;
   width:96px;
   text-align:center;
@@ -454,7 +469,7 @@ right:0px;
 bottom: 0;
 margin: 10px 10px;
 border-color: white;
-border-style: solid;
+border-style: none;
 border-width: 2px;
 width:96px;
 cursor: hand;
@@ -470,12 +485,12 @@ right:116px;
    
   .stat:hover {
   
-  background-color: rgba(0,0,0,0.3)
+    background-color: rgba(84,84,84,0.95)
   
   }
     .stat {
   
-  background-color: rgba(0,0,0,0.5)
+  background-color: rgba(84,84,84,0.75)
   
   }
   
@@ -503,6 +518,12 @@ right:116px;
 }  
   
   
+  #gobutton {
+  
+  margin-top:8px;
+  
+  }
+  
     /* Windowing System */
 	
 	.titlebar .wind {
@@ -524,25 +545,20 @@ right:116px;
   border-bottom-style: solid;
   border-right-style: solid;
   border-width: 6px;
-	opacity: 0.1;
+	opacity: 0.35;
   cursor: nw-resize;
     padding: 0 0 0 0;
+  border-color: #0EE05A #0EE05A;
+  color:#0EE05A;
 
   width: 24px;
   height: 24px;
-  rgba(0, 0, 0, 0);
-  color:#545454;
   position:absolute; 
   overflow: hidden;
 
   } 
   
-  
-  .resizehandle:hover {
-  
-  color: #5F5F5F;
-  
-  }
+
   
 
   
@@ -593,7 +609,7 @@ right:116px;
 
 
   body {
-  
+  background-color: rgba(0,x0,0,0);
   overflow:hidden;
   }
   
@@ -677,13 +693,14 @@ right:116px;
   z-Index:2222222222;
   width:256px;
   background-color:#3F3F3F;
-  top:54px;
+  top:58px;
   float:left;
 
   position:absolute;
   width: 150px;
   border-style: solid;
   border-color: #E4E4E4;
+  border-width:1px;
     font-family: "Montserrat";
   color: white;
   visibility: hidden;
@@ -708,7 +725,7 @@ right:116px;
  
 	  
 	  background-color:#4F4F4F;
-	  margin: 8px 8px;
+	
 	  
 	  
 }
@@ -820,10 +837,10 @@ max-height:100%;
 
 .notificationcontainer {
 visibility: hidden;
-left:16px;
+left:8px;
 top:64px;
 position:absolute;
-opacity: 0.5;
+opacity: 0.65;
 transition: opacity .2s ease-in-out;
 cursor:default;
 }
