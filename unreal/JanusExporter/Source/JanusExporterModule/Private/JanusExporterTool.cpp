@@ -2,7 +2,9 @@
 #include "JanusExporterTool.h"
 #include "ScopedTransaction.h"
 #include "EngineUtils.h"
+#include "Runtime/Engine/Classes/Components/StaticMeshComponent.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
+#include "Runtime/Engine/Public/LightMap.h"
 #include "Editor/UnrealEd/Public/ObjectTools.h"
 #include "Editor/UnrealEd/Public/EditorDirectories.h"
 #include "Editor/MainFrame/Public/Interfaces/IMainFrameModule.h"
@@ -193,12 +195,13 @@ void ExportBMP(FString& Path, TArray<FColor> ColorData, int Width, int Height)
 
 void ExportMaterial(FString& Folder, UMaterialInterface* Material, TArray<FString>* ExportedTextures)
 {
+#if CUSTOM_UNREAL  // needs custom Unreal source code to export materials, as the API is broken (until I manage to push my modifications to the main repo that is)
 	check(Material);
 
 	TEnumAsByte<EBlendMode> BlendMode = Material->GetBlendMode();
 	bool bIsValidMaterial = FMaterialUtilities::SupportsExport((EBlendMode)(BlendMode), EMaterialProperty::MP_BaseColor);
 
-	if (bIsValidMaterial)
+	//if (bIsValidMaterial)
 	{
 		TArray<FColor> ColorData;
 		FIntPoint Size;
@@ -212,16 +215,15 @@ void ExportMaterial(FString& Folder, UMaterialInterface* Material, TArray<FStrin
 
 		// for some reason it's all transparent, so change the alpha
 		int ColorElements = Size.X * Size.Y;
+		FColor* First = ColorData.GetData();
 		for (int i = 0; i < ColorElements; i++)
 		{
-			FColor Color = ColorData[i];
-			Color.A = 255;
-			ColorData[i] = Color;
+			First[i].A = 255;
 		}
 
 		ExportPNG(Path, ColorData, Size.X, Size.Y);
-		//ExportBMP(Path, ColorData, Size.X, Size.Y);
 	}
+#endif
 }
 
 FVector ChangeSpace(FVector Vector)
@@ -258,7 +260,7 @@ void UJanusExporterTool::Export()
 	TArray<UObject*> ObjectsToExport;
 
 	FString Root = FString(ExportPath); // copy so we dont mess with the original reference
-	FString index = "<html><head><title>Unreal Export</title></head><body><FireBoxRoom><Assets>";
+	FString Index = "<html>\n\t<head>\n\t\t<title>Unreal Export</title>\n\t</head>\n\t<body>\n\t\t<FireBoxRoom>\n\t\t\t<Assets>";
 
 	TArray<AActor*> ActorsExported;
 	TArray<UStaticMesh*> StaticMeshesExp;
@@ -269,11 +271,17 @@ void UJanusExporterTool::Export()
 	{
 		AActor *Actor = *Itr;
 
+		FString Name = Actor->GetName();
+		/*if (!Name.StartsWith("SM_Floor_R"))
+		{
+			continue;
+		}*/
+
 		if (Actor->IsHiddenEd())
 		{
 			continue;
 		}
-		
+
 		ActorsExported.Add(Actor);
 
 		TArray<UStaticMeshComponent*> StaticMeshes;
@@ -285,6 +293,25 @@ void UJanusExporterTool::Export()
 			if (!Mesh)
 			{
 				continue;
+			}
+
+			if (Component->LODData.Num() > 0)
+			{
+				FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
+				FLightMap* LightMap = LODInfo->LightMap;
+				if (LightMap != NULL)
+				{
+					FLightMap2D* LightMap2D = LightMap->GetLightMap2D();
+					UTexture2D* Texture = LightMap2D->GetTexture(0); // 0 = HQ LightMap
+					FString TexName = Texture->GetName();
+					if (TexturesExp.Contains(TexName))
+					{
+						continue;
+					}
+
+					TexturesExp.Add(TexName);
+					ExportPNG(Texture, Root);
+				}
 			}
 
 			if (!StaticMeshesExp.Contains(Mesh))
@@ -302,56 +329,35 @@ void UJanusExporterTool::Export()
 					continue;
 				}
 
-				if (Material->GetClass()->IsChildOf(UMaterialInstance::StaticClass()))
+				FString MatName = Material->GetName();
+
+				if (MaterialsExported.Contains(MatName))
 				{
-					UMaterialInstance* Instance = Cast<UMaterialInstance>(Material);
-					FString MatName = Instance->GetName();
-
-					if (MaterialsExported.Contains(MatName))
-					{
-						continue;
-					}
-
-					MaterialsExported.Add(MatName);
-					ExportMaterial(Root, Material, &TexturesExp);
+					continue;
 				}
-				else
-				{
-					FString MatName = Material->GetName();
 
-					if (MaterialsExported.Contains(MatName))
-					{
-						continue;
-					}
-
-					MaterialsExported.Add(MatName);
-					ExportMaterial(Root, Material, &TexturesExp);
-				}
+				MaterialsExported.Add(MatName);
+				ExportMaterial(Root, Material, &TexturesExp);
 			}
 		}
 	}
 
-	index.Append("\n");
+	// Models before textures so we can start showing the scene faster (textures take too long to load)
+	for (int32 i = 0; i < StaticMeshesExp.Num(); i++)
+	{
+		UStaticMesh *mesh = StaticMeshesExp[i];
+
+		Index.Append("\n\t\t\t\t<AssetObject id=\"" + mesh->GetName() + "\" src=\"" + mesh->GetName() + ".fbx\" />");
+	}
 
 	for (int32 i = 0; i < TexturesExp.Num(); i++)
 	{
 		FString Path = TexturesExp[i];
 
-		index.Append("<AssetImage id=\"" + Path + "\" src=\"" + Path + ".png" + "\"/>");
-		index.Append("\n");
+		Index.Append("\n\t\t\t\t<AssetImage id=\"" + Path + "\" src=\"" + Path + ".png" + "\"/>");
 	}
 
-	index.Append("\n");
-
-	for (int32 i = 0; i < StaticMeshesExp.Num(); i++)
-	{
-		UStaticMesh *mesh = StaticMeshesExp[i];
-
-		index.Append("<AssetObject id=\"" + mesh->GetName() + "\" src=\"" + mesh->GetName() + ".fbx\" />");
-		index.Append("\n");
-	}
-
-	index.Append("</Assets><Room>");
+	Index.Append("\n\t\t\t</Assets>\n\t\t\t<Room>");
 
 	for (int32 i = 0; i < ActorsExported.Num(); i++)
 	{
@@ -372,7 +378,6 @@ void UJanusExporterTool::Export()
 			{
 				continue;
 			}
-
 			FString ImageID = "";
 
 			TArray<UMaterialInterface*> Materials = Component->GetMaterials();
@@ -389,11 +394,11 @@ void UJanusExporterTool::Export()
 
 			if (ImageID == "")
 			{
-				index.Append("<Object collision_id=\"" + Mesh->GetName() + "\" id=\"" + Mesh->GetName() + "\" lighting=\"true\" pos=\"");
+				Index.Append("\n\t\t\t\t<Object collision_id=\"" + Mesh->GetName() + "\" id=\"" + Mesh->GetName() + "\" lighting=\"true\" pos=\"");
 			}
 			else
 			{
-				index.Append("<Object collision_id=\"" + Mesh->GetName() + "\" id=\"" + Mesh->GetName() + "\" image_id=\"" + ImageID + "\"  lighting=\"true\" pos=\"");
+				Index.Append("\n\t\t\t\t<Object collision_id=\"" + Mesh->GetName() + "\" id=\"" + Mesh->GetName() + "\" tex0=\"" + ImageID + "\"  lighting=\"true\" pos=\"");
 			}
 
 			FRotator Rot = Actor->GetActorRotation();
@@ -406,44 +411,38 @@ void UJanusExporterTool::Export()
 
 			Pos = ChangeSpace(Pos);
 			Sca = ChangeSpaceScalar(Sca) * UniformScale;
-			//Sca = Abs(Sca);
 
 			XDir = ChangeSpace(XDir);
 			YDir = ChangeSpace(YDir);
 			ZDir = ChangeSpace(ZDir);
 			FVector Sign = GetSignVector(Sca);
-			/*XDir *= Sign;
-			YDir *= Sign;
-			ZDir *= Sign;*/ // cull_face = front
-			index.Append(FString::SanitizeFloat(Pos.X) + " " + FString::SanitizeFloat(Pos.Y) + " " + FString::SanitizeFloat(Pos.Z));
+			
+			Index.Append(FString::SanitizeFloat(Pos.X) + " " + FString::SanitizeFloat(Pos.Y) + " " + FString::SanitizeFloat(Pos.Z));
 			if (Sca.X < 0 || Sca.Y < 0 || Sca.Z < 0)
 			{
-				index.Append("\" cull_face=\"front");
+				Index.Append("\" cull_face=\"front");
 			}
 
-			index.Append("\" scale=\"");
-			index.Append(FString::SanitizeFloat(Sca.X) + " " + FString::SanitizeFloat(Sca.Y) + " " + FString::SanitizeFloat(Sca.Z));
+			Index.Append("\" scale=\"");
+			Index.Append(FString::SanitizeFloat(Sca.X) + " " + FString::SanitizeFloat(Sca.Y) + " " + FString::SanitizeFloat(Sca.Z));
 
-			index.Append("\" xdir=\"");
-			index.Append(FString::SanitizeFloat(XDir.X) + " " + FString::SanitizeFloat(XDir.Y) + " " + FString::SanitizeFloat(XDir.Z));
+			Index.Append("\" xdir=\"");
+			Index.Append(FString::SanitizeFloat(XDir.X) + " " + FString::SanitizeFloat(XDir.Y) + " " + FString::SanitizeFloat(XDir.Z));
 
-			index.Append("\" ydir=\"");
-			index.Append(FString::SanitizeFloat(YDir.X) + " " + FString::SanitizeFloat(YDir.Y) + " " + FString::SanitizeFloat(YDir.Z));
+			Index.Append("\" ydir=\"");
+			Index.Append(FString::SanitizeFloat(YDir.X) + " " + FString::SanitizeFloat(YDir.Y) + " " + FString::SanitizeFloat(YDir.Z));
 
-			index.Append("\" zdir=\"");
-			index.Append(FString::SanitizeFloat(ZDir.X) + " " + FString::SanitizeFloat(ZDir.Y) + " " + FString::SanitizeFloat(ZDir.Z));
+			Index.Append("\" zdir=\"");
+			Index.Append(FString::SanitizeFloat(ZDir.X) + " " + FString::SanitizeFloat(ZDir.Y) + " " + FString::SanitizeFloat(ZDir.Z));
 
-			index.Append("\" />");
-
-			index.Append("\n");
+			Index.Append("\" />");
 		}
 	}
 
-	index.Append("\n");
-	index.Append("</Room></FireBoxRoom></body></html>");
+	Index.Append("\n\t\t\t</Room>\n\t\t</FireBoxRoom>\n\t</body>\n</html>");
 
 	FString IndexPath = FString(ExportPath).Append("index.html");
-	FFileHelper::SaveStringToFile(index, *IndexPath);
+	FFileHelper::SaveStringToFile(Index, *IndexPath);
 }
 
 #undef LOCTEXT_NAMESPACE

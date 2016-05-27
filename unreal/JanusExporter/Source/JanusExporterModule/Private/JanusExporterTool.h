@@ -13,9 +13,6 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, Category = "Settings")
-		UMaterialInterface* TestMaterial;
-
-	UPROPERTY(EditAnywhere, Category = "Settings")
 		FString ExportPath;
 
 	UPROPERTY(EditAnywhere, Category = "Settings")

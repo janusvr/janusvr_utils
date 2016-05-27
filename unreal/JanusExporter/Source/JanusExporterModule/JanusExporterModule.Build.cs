@@ -28,11 +28,12 @@ public class JanusExporterModule : ModuleRules
 		
 		PrivateDependencyModuleNames.AddRange(
 			new string[] {
-				"InputCore",
+                "Engine",
+                "InputCore",
 				"SlateCore",
 				"PropertyEditor",
 				"LevelEditor",
-                "MaterialUtilities"
+                "MaterialUtilities",
             }
         );
 
