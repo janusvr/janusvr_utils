@@ -218,6 +218,14 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 	
 	}
 	
+	//make sure map always stays circular
+	
+	
+
+	document.getElementById("map").style.maxWidth = document.getElementById("map").offsetHeight+"px";
+	document.getElementById("map").style.minWidth = document.getElementById("map").offsetHeight+"px";
+	
+		
 	
 	
 	//css transform the whole map based on player position
@@ -225,6 +233,8 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 	 document.getElementById("map").style.webkitTransform = "rotate("+(-(angle-90))+"deg)";
 	
+	
+
    
 
    }, 20)
@@ -269,7 +279,9 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 		<div class="tabcontainer" id="maptabcontainer" style="overflow:hidden;">
 			
 			<span class="subtleinfo" id="scalereader" style="right:0px;position:absolute;"></span>
-			<div class="map" id="map" style="height:100%;width:100%;">
+			
+			
+			<div class="map" id="map" >
 			
 			
 			</div>

@@ -380,6 +380,7 @@ function closeWindow(callerid,winid)
 			
 			//create the titlebar element first so we can pass it into the resizewindow function
 			var div = document.createElement("div");
+			
 			brdr.onmousemove = function() { resizewindow(div) };
 			brdr.onmousedown = function() { clickresize(brdr,div) };
 			brdr.onmouseup = function() { unclickresize(brdr) };
@@ -710,16 +711,20 @@ toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/ch
         document.getElementById("onlinestatus").innerHTML = "OFFLINE";
         break;
     case 1:
-		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Attempting to connect...')}	
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Connecting to <b>'+window.janus.roomserver+'</b>')}	
         document.getElementById("onlinestatus").innerHTML = "...";
         break;
     case 2:
-		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('You are <b>online</b>.')}	
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Connected to <b>'+window.janus.roomserver+'</b>.')}	
         document.getElementById("onlinestatus").innerHTML = "ONLINE";
         break;				
-    default:
+    case -1:
         document.getElementById("onlinestatus").innerHTML = "ERROR";
-		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Error.')}		
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip(window.janus.networkerror)}		
+		break;
+	default:
+	    document.getElementById("onlinestatus").innerHTML = "????";
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Something went wrong with the client.')}		
 }
 	 
 	 
@@ -728,11 +733,11 @@ toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/ch
 	
 	if ((window.janus.playercount-1) == 1)
 	{
-	document.getElementById("playercountstatuscontainer").onmousemove = function()  {showtooltip('<b>'+(window.janus.playerlist.length-1)+'</b> person nearby.')}
+	document.getElementById("playercountstatuscontainer").onmousemove = function()  {showtooltip('<b>'+(window.janus.playerlist.length-1)+'</b> person here.')}
 	}
 	else
 	{
-	document.getElementById("playercountstatuscontainer").onmousemove = function() {showtooltip('<b>'+(window.janus.playerlist.length-1)+'</b> people nearby.')}
+	document.getElementById("playercountstatuscontainer").onmousemove = function() {showtooltip('<b>'+(window.janus.playerlist.length-1)+'</b> people here.')}
 
 	}
 	
@@ -810,16 +815,20 @@ if (( (event.clientX-(document.getElementById("tooltip").offsetWidth*0.5)) > 0) 
 {
 document.getElementById("tooltip").style.left = (event.clientX-(document.getElementById("tooltip").offsetWidth*0.5))+"px";
 }
+else
+{
+document.getElementById("tooltip").style.left = "0px";
+}
 
 
 
 if (event.clientY > window.innerHeight*0.5)
 {
-document.getElementById("tooltip").style.top = ((event.clientY-32)-(document.getElementById("tooltip").offsetHeight*0.5))+"px";
+document.getElementById("tooltip").style.top = ((event.clientY-32)-(document.getElementById("tooltip").offsetHeight*0.75))+"px";
 }
 else
 {
-document.getElementById("tooltip").style.top = ((event.clientY+16)+(document.getElementById("tooltip").offsetHeight*0.5))+"px";
+document.getElementById("tooltip").style.top = ((event.clientY+16)+(document.getElementById("tooltip").offsetHeight*0.75))+"px";
 }
 //height
 
@@ -849,7 +858,7 @@ document.getElementById("tooltip").innerHTML = "";
 			<button onmousemove="showtooltip('Main Menu')" onmouseout="hidetooltip()" class="containerbutton miscbutton" onclick="togglemenulist()"></button>
 			<button onmousemove="showtooltip('Back')" onmouseout="hidetooltip()" class="containerbutton backbutton" onclick="clickBack()"></button>
 			<button onmousemove="showtooltip('Forwards')" onmouseout="hidetooltip()"  class="containerbutton forwardsbutton" onclick="clickForwards()"></button>
-			<button onmousemove="showtooltip('Go to Landing Space')" onmouseout="hidetooltip()"  class="containerbutton pocketbutton" onclick="toggleWindow(this,500,256,'HIS BOY, ELROY','https://www.youtube.com/embed/FyinD6ZDqeg?autoplay=1','50vw','50vh')"></button>		
+			<button onmousemove="showtooltip('Go to Landing Space')" onmouseout="hidetooltip()"  class="containerbutton pocketbutton" ></button>		
 		</div>
 
 	</div>
