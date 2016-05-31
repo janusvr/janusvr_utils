@@ -115,31 +115,7 @@ else
 
 }
   
-<!-- Progress bar.-->
-setInterval(
-function()
-{ 
 
-	var progbar = document.getElementById("progressbar");	
-	progressx = (window.janus.roomprogress())*200;
-
-if (progressx < 200)
-{
- 
-document.getElementById("progressbar").style.backgroundSize = ""+progressx+"% 100%";
-document.getElementById("contain").style.opacity = "1";
-}
-else
-{
-document.getElementById("contain").style.opacity = "";
-}
-
-
-
-}
-, 50);
- 
- 
  
  <!-- Windowing System. -->
  
@@ -511,7 +487,7 @@ function closeWindow(callerid,winid)
 	{
 	
 
-	var ele = rhandles[i].id.substring(0,rhandles[i].id.length-8); //get the main titlebar name by literally slicing off the length of the word _resizer because i'm lazy and it's 2 am
+	var ele = rhandles[i].id.substring(0,rhandles[i].id.length-8); 
 	var brdr = document.getElementById(ele+"_resizer");
 	var div = document.getElementById(ele);
 	var wind = document.getElementById(ele+"_windowarea");
@@ -519,9 +495,7 @@ function closeWindow(callerid,winid)
 
 		
 	setResizeHandlePosition(brdr,div,wind);
-	
-	//are you happy now? think about all the work i went through to make sure resize handles stick to their respective windows on page resize
-	// >:C
+
 	}
 	
 	
@@ -640,6 +614,11 @@ function closeWindow(callerid,winid)
 	case "debug://tailtoddle":
 	toggleWindow("null",500,400,"TAMMY GARS MA TAIL TODDLE","https://www.youtube.com/embed/heV-ccihSuI?autoplay=true&loop=1","40vw","35vh");
 	break;
+	
+	case "debug://version":
+	shownotification("You are using JanusVR v"+window.janus.version,"notifications/logo.png","null","#455947");
+	break;	
+	
 	case "debug://rosebud":
 	shownotification("Do you canoe?","notifications/call.png","null","#455947");
 	break;
@@ -681,7 +660,7 @@ function closeWindow(callerid,winid)
   window.onload = function() { 
 
 
-shownotification('Welcome to JanusVR! Press <b>ESC</b> to interact with the HUD.','notifications/logo.png',"null","#455947");
+shownotification('Welcome to JanusVR v'+window.janus.version+'! Press <b>ESC</b> to interact with the HUD.','notifications/logo.png',"null","#455947");
 toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/chatlog/index.html','1vw','65vh')
 
   };
@@ -709,21 +688,26 @@ toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/ch
     case 0:
 		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('You are <b>offline</b>.')}
         document.getElementById("onlinestatus").innerHTML = "OFFLINE";
+		document.getElementById("onlinestatus").style.color = "#F88E8E";
         break;
     case 1:
 		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Connecting to <b>'+window.janus.roomserver+'</b>')}	
         document.getElementById("onlinestatus").innerHTML = "...";
+		document.getElementById("onlinestatus").style.color = "";
         break;
     case 2:
 		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Connected to <b>'+window.janus.roomserver+'</b>.')}	
         document.getElementById("onlinestatus").innerHTML = "ONLINE";
+		document.getElementById("onlinestatus").style.color = "";
         break;				
     case -1:
         document.getElementById("onlinestatus").innerHTML = "ERROR";
+		document.getElementById("onlinestatus").style.color = "#F88E8E";		
 		document.getElementById("onlinestatus").onmousemove = function() {showtooltip(window.janus.networkerror)}		
 		break;
 	default:
 	    document.getElementById("onlinestatus").innerHTML = "????";
+		document.getElementById("onlinestatus").style.color = "#F88E8E";
 		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Something went wrong with the client.')}		
 }
 	 
@@ -795,6 +779,28 @@ toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/ch
   }
   
   document.getElementById("tooltip").style.opacity = opacityoftooltip+"";
+  
+  
+  //progressbar
+  
+  	var progbar = document.getElementById("progressbar");	
+	progressx = (window.janus.roomprogress())*200;
+
+	document.getElementById("progressbar").style.backgroundSize = ""+progressx+"% 100%";
+	
+if (progressx < 200)
+{
+document.getElementById("contain").style.opacity = "1";
+}
+else
+{
+document.getElementById("contain").style.opacity = "";
+}
+
+  
+  
+  
+  
   
   
   
