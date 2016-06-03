@@ -57,6 +57,29 @@
   <link rel="stylesheet" type="text/css" href="skins/emerald/emerald.css">
   <script>
   
+ function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+  
     function strip(html)
 {
 var tmp = document.createElement("DIV");
@@ -249,8 +272,8 @@ var brdr =  document.getElementById(titlebarid.id+"_resizer");
  var xsize = event.clientX-(titlebarid.offsetLeft);
  var ysize = event.clientY-(titlebarid.offsetTop+32);
  
- var xsize2 = (xsize*100 / document.documentElement.clientWidth)+"vw"; 
- var ysize2 = (ysize*100 / document.documentElement.clientHeight)+"vh"; 
+ var xsize2 = xsize+"px"; 
+ var ysize2 = ysize+"px";
  
  wind.style.width = xsize2;
  wind.style.height = ysize2;
@@ -440,8 +463,8 @@ function closeWindow(callerid,winid)
 			  var wind = document.createElement("div");
 			wind.className  = "wind";
 			
-			wind.style.width = (width*100 / document.documentElement.clientWidth)+"vw"; 
-			wind.style.height = (height*100 / document.documentElement.clientHeight)+"vh"; 
+			wind.style.width = width+"px"; //change to vw to make responsive and 1000 to 100
+			wind.style.height = height+"px";  //change to vh to make responsive
 			
 			
 			
@@ -660,8 +683,19 @@ function closeWindow(callerid,winid)
   window.onload = function() { 
 
 
+  
+if ((getCookie("lastversion") == "")||(getCookie("lastversion") != window.janus.version)) //if you have never previously used janus, or the last used version of janus is not the current version
+{
 shownotification('Welcome to JanusVR v'+window.janus.version+'! Press <b>ESC</b> to interact with the HUD.','notifications/logo.png',"null","#455947");
-toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/chatlog/index.html','1vw','65vh')
+
+//set last version checker to current version
+setCookie("lastversion",window.janus.version,36500)
+
+}
+
+
+
+toggleWindow(document.getElementById("chatlogbutton"),325,230,'CHAT LOG','apps/chatlog/index.html','1vw','65vh')
 
   };
   
@@ -686,24 +720,24 @@ toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/ch
 	 
 	switch(window.janus.networkstatus) {
     case 0:
-		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('You are <b>offline</b>.')}
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('You are <b>not connected</b> to a presence server.')}
         document.getElementById("onlinestatus").innerHTML = "OFFLINE";
 		document.getElementById("onlinestatus").style.color = "#F88E8E";
         break;
     case 1:
-		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Connecting to <b>'+window.janus.roomserver+'</b>')}	
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Attempting to connect to the <b>'+window.janus.roomserver+'</b> presence server.')}	
         document.getElementById("onlinestatus").innerHTML = "...";
 		document.getElementById("onlinestatus").style.color = "";
         break;
     case 2:
-		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Connected to <b>'+window.janus.roomserver+'</b>.')}	
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Online at <b>'+window.janus.roomserver+'</b> presence server.')}	
         document.getElementById("onlinestatus").innerHTML = "ONLINE";
 		document.getElementById("onlinestatus").style.color = "";
         break;				
     case -1:
         document.getElementById("onlinestatus").innerHTML = "ERROR";
 		document.getElementById("onlinestatus").style.color = "#F88E8E";		
-		document.getElementById("onlinestatus").onmousemove = function() {showtooltip(window.janus.networkerror)}		
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip(strip(window.janus.networkerror))}		
 		break;
 	default:
 	    document.getElementById("onlinestatus").innerHTML = "????";
@@ -737,14 +771,14 @@ toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/ch
     document.getElementById("lockedstatus").innerHTML = "UNLOCKED";
 	document.getElementById("lockedstatus").style.color = "";
 	document.getElementById("lockedstatus").style.borderColor = "";
-	document.getElementById("lockedstatus").onmousemove = function() {showtooltip('You may <b>edit</b> here.')}	
+	document.getElementById("lockedstatus").onmousemove = function() {showtooltip('You <b>may edit</b> here.')}	
 	}
 	else
 	{
     document.getElementById("lockedstatus").innerHTML = "LOCKED";	 
 	document.getElementById("lockedstatus").style.color = "#F88E8E";
 	document.getElementById("lockedstatus").style.borderColor = "#F88E8E";	
-	document.getElementById("lockedstatus").onmousemove = function() {showtooltip('Cannot <b>edit</b> here.')}		
+	document.getElementById("lockedstatus").onmousemove = function() {showtooltip('<b>Cannot edit</b> here.')}		
 	}
   
   
@@ -769,7 +803,7 @@ toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/ch
   
   if (document.getElementById("tooltip").style.visibility == "visible")
   {
-   opacityoftooltip += 0.025;
+   opacityoftooltip += 0.05;
 
   }
   else 
@@ -846,6 +880,20 @@ document.getElementById("tooltip").style.visibility = "";
 document.getElementById("tooltip").innerHTML = "";
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -957,9 +1005,11 @@ document.getElementById("tooltip").innerHTML = "";
 
 	<div class="notification">
 	<div class="closebutton notifbutton" style="padding-top:0px;padding-right:0px;" onclick=" hidenotification()" 	></div>	
+	
+	<!--
 	<div class=" notifbuttonright notifbutton" style="padding-top:0px;padding-right:0px;" onclick=" hidenotification()" 	></div>
 	<div class="notifbuttonleft notifbutton" style="padding-top:0px;padding-right:0px;" onclick=" hidenotification()" 	></div>
-
+	-->
 
 	<div class="notificationtext" id="notificationtext"></div>
 	</div>
