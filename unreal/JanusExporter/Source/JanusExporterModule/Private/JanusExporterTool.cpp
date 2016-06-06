@@ -5,6 +5,7 @@
 #include "Runtime/Engine/Classes/Components/StaticMeshComponent.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "Runtime/Engine/Public/LightMap.h"
+#include "Runtime/Engine/Public/ShadowMap.h"
 #include "Editor/UnrealEd/Public/ObjectTools.h"
 #include "Editor/UnrealEd/Public/EditorDirectories.h"
 #include "Editor/MainFrame/Public/Interfaces/IMainFrameModule.h"
@@ -138,7 +139,7 @@ void ExportTGA(UTexture* Texture, FString RootFolder)
 	UExporter::ExportToFileEx(Params);
 }
 
-void ExportPNG(UTexture* Texture, FString RootFolder)
+void ExportPNG(UTexture* Texture, FString RootFolder, bool bFillAlpha = true)
 {
 	FString TexPath = RootFolder + Texture->GetName() + ".png";
 
@@ -162,10 +163,22 @@ void ExportPNG(UTexture* Texture, FString RootFolder)
 	int32 Height = MipMap->SizeY;
 	int32 Elements = Width * Height;
 
-	for (int i = 0; i < Elements; i++)
+	if (bFillAlpha)
 	{
-		FColor Color = Data[i];
-		ColorData.Add(Color);
+		for (int i = 0; i < Elements; i++) // this is terrible
+		{
+			FColor Color = Data[i];
+			Color.A = 255;
+			ColorData.Add(Color);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < Elements; i++) // this is terrible
+		{
+			FColor Color = Data[i];
+			ColorData.Add(Color);
+		}
 	}
 
 	MipMap->BulkData.Unlock();
@@ -195,7 +208,7 @@ void ExportBMP(FString& Path, TArray<FColor> ColorData, int Width, int Height)
 
 void ExportMaterial(FString& Folder, UMaterialInterface* Material, TArray<FString>* ExportedTextures)
 {
-#if CUSTOM_UNREAL  // needs custom Unreal source code to export materials, as the API is broken (until I manage to push my modifications to the main repo that is)
+//#if CUSTOM_UNREAL  // needs custom Unreal source code to export materials, as the API is broken (until I manage to push my modifications to the main repo that is)
 	check(Material);
 
 	TEnumAsByte<EBlendMode> BlendMode = Material->GetBlendMode();
@@ -223,7 +236,7 @@ void ExportMaterial(FString& Folder, UMaterialInterface* Material, TArray<FStrin
 
 		ExportPNG(Path, ColorData, Size.X, Size.Y);
 	}
-#endif
+//#endif
 }
 
 FVector ChangeSpace(FVector Vector)
@@ -296,9 +309,11 @@ void UJanusExporterTool::Export()
 			}
 
 			if (Component->LODData.Num() > 0)
+			//if (false)
 			{
 				FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
 				FLightMap* LightMap = LODInfo->LightMap;
+				FShadowMap* ShadowMap = LODInfo->ShadowMap;
 				if (LightMap != NULL)
 				{
 					FLightMap2D* LightMap2D = LightMap->GetLightMap2D();
@@ -311,6 +326,19 @@ void UJanusExporterTool::Export()
 
 					TexturesExp.Add(TexName);
 					ExportPNG(Texture, Root);
+				}
+				if (ShadowMap != NULL)
+				{
+					FShadowMap2D* ShadowMap2D = ShadowMap->GetShadowMap2D();
+					UShadowMapTexture2D* ShadowTex = ShadowMap2D->GetTexture();
+					FString TexName = ShadowTex->GetName();
+					if (TexturesExp.Contains(TexName))
+					{
+						continue;
+					}
+
+					TexturesExp.Add(TexName);
+					ExportPNG(ShadowTex, Root);
 				}
 			}
 
@@ -354,7 +382,7 @@ void UJanusExporterTool::Export()
 	{
 		FString Path = TexturesExp[i];
 
-		Index.Append("\n\t\t\t\t<AssetImage id=\"" + Path + "\" src=\"" + Path + ".png" + "\"/>");
+		Index.Append("\n\t\t\t\t<AssetImage id=\"" + Path + "\" src=\"" + Path + ".png\" />");
 	}
 
 	Index.Append("\n\t\t\t</Assets>\n\t\t\t<Room>");
@@ -362,11 +390,6 @@ void UJanusExporterTool::Export()
 	for (int32 i = 0; i < ActorsExported.Num(); i++)
 	{
 		AActor *Actor = ActorsExported[i];
-
-		if (Actor->IsHiddenEd())
-		{
-			continue;
-		}
 
 		TArray<UStaticMeshComponent*> StaticMeshes;
 		Actor->GetComponents<UStaticMeshComponent>(StaticMeshes);
@@ -378,6 +401,7 @@ void UJanusExporterTool::Export()
 			{
 				continue;
 			}
+
 			FString ImageID = "";
 
 			TArray<UMaterialInterface*> Materials = Component->GetMaterials();
@@ -398,7 +422,7 @@ void UJanusExporterTool::Export()
 			}
 			else
 			{
-				Index.Append("\n\t\t\t\t<Object collision_id=\"" + Mesh->GetName() + "\" id=\"" + Mesh->GetName() + "\" tex0=\"" + ImageID + "\"  lighting=\"true\" pos=\"");
+				Index.Append("\n\t\t\t\t<Object collision_id=\"" + Mesh->GetName() + "\" id=\"" + Mesh->GetName() + "\" image_id=\"" + ImageID + "\" lighting=\"true\" pos=\"");
 			}
 
 			FRotator Rot = Actor->GetActorRotation();
