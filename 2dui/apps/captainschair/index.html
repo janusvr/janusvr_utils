@@ -2,14 +2,76 @@
 <head>
   <meta charset="utf-8">
 
-  <title>JanusVR Interface Captains Chair for Really Swell People and the Likes</title>
-  <meta name="description" content="JanusVR Interface Captains Chair for Really Swell People and the Likes">
+  <title>JanusVR Interface Settings Menu</title>
+  <meta name="description" content="JanusVR Interface Settings Menu">
   <meta name="author" content="JanusVR Inc.">
- 
+  <script src="../../scripts/tabs.js"></script>
   
   <script>
 
+  function setDefaults() {
 
+
+  //set all the default booleans
+
+  //set all the default values
+
+  
+  
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  window.onload = function () {
+  
+  tabSelect("maintabcontainer","maintabbutton")
+  window.onresize()
+  setDefaults() 
+  }
+
+  
+  
+   window.onresize = function(event) { //make sure the window area stays a consistent size
+
+
+ 
+ if (document.getElementById("tabrow").offsetWidth >= 200) //if you change the 200 here, also change the min-width of the window containing it. this is to prevent flicker when vertically resizing a minimally (width) sized window
+ {
+document.getElementById("windowarea").style.height = "calc(100% - "+(document.getElementsByClassName("tabrow")[0].offsetHeight+3)+"px)";	
+ }
+};
+  
+  
+  
+   setInterval(function() {
+
+   
+   //update variables
+   document.getElementById("networkstatus").innerHTML = "Network Status: "+parent.window.janus.networkstatus;
+   //update variables
+   document.getElementById("networkerror").innerHTML = "Network Error: "+parent.window.janus.networkerror;
+    //update variables
+   document.getElementById("progressstatus").innerHTML = "Room Load Progress: "+parent.window.janus.roomprogress();
+           
+   
+   }, 1); 
 
   
     </script>
@@ -23,35 +85,97 @@
 
 <div class="windowcontainer">
 
-<ul class="unselectable">
-  <li><button class="selected">STATISTICS</a></li>
- <li><button >DEBUGGING TOOLS</a></li>
+<div class="tabrow unselectable" id="tabrow">
 
-</ul>
-
-
-<div class="windowarea unselectable" >
-
-<div class="header">RENDERING STATISTICS</div>
-<div class="item">FPS: 80.6fps</div>
-<div class="item">Draw Calls: 253</div>
-<div class="item">Total Frame Time: 2.674ms </div>
-
-<div class="header">NETWORK STATISTICS</div>
-<div class="item">Pending Downloads: 0</div>
-<div class="item">Packets In: 19pps</div>
-<div class="item">Packets Out: 39pps</div>
-
-
-<div class="header">JAVASCRIPT STATISTICS</div>
-<div class="item">Scripts Running: 2</div>
-<div class="item">Errors: 0</div>
-
+	<div class="tabbutton" id="maintabbutton" onmousedown="tabSelect('maintabcontainer','maintabbutton')">NETWORK</div></li>
+	<div class="tabbutton" id="roomtabbutton" onmousedown="tabSelect('roomtabcontainer','roomtabbutton')">ROOM</div></li>
+	<div class="tabbutton" id="misctabbutton" onmousedown="tabSelect('misctabcontainer','misctabbutton')">MISC</div></li>
 
 </div>
 
 
+<div class="windowarea unselectable" id="windowarea">
 
+
+					
+					
+					
+					
+					
+				<div class="tabcontainer" id="maintabcontainer">
+					<div class='header'>STATUS</div>
+
+					<div class='item' id="networkstatus" >
+					</div>	
+
+					<div class='item' id="networkerror" >
+					</div>						
+
+				</div>
+					
+			
+
+				<div class="tabcontainer" id="roomtabcontainer">
+					<div class='header'>STATUS</div>
+
+					<div class='item' id="progressstatus" >
+					</div>	
+
+						
+
+				</div>
+					
+								
+					
+				<div class="tabcontainer" id="misctabcontainer">
+					<div class='header'>STATUS</div>
+
+					<div class='item' >Splines: Reticulated
+					</div>	
+
+						
+
+				</div>
+					
+												
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+		</div>			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
 </div>
 
 

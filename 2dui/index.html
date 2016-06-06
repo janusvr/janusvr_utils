@@ -57,6 +57,29 @@
   <link rel="stylesheet" type="text/css" href="skins/emerald/emerald.css">
   <script>
   
+ function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+  
     function strip(html)
 {
 var tmp = document.createElement("DIV");
@@ -115,31 +138,7 @@ else
 
 }
   
-<!-- Progress bar.-->
-setInterval(
-function()
-{ 
 
-	var progbar = document.getElementById("progressbar");	
-	progressx = (window.janus.roomprogress())*200;
-
-if (progressx < 200)
-{
- 
-document.getElementById("progressbar").style.backgroundSize = ""+progressx+"% 100%";
-document.getElementById("contain").style.opacity = "1";
-}
-else
-{
-document.getElementById("contain").style.opacity = "";
-}
-
-
-
-}
-, 50);
- 
- 
  
  <!-- Windowing System. -->
  
@@ -273,8 +272,8 @@ var brdr =  document.getElementById(titlebarid.id+"_resizer");
  var xsize = event.clientX-(titlebarid.offsetLeft);
  var ysize = event.clientY-(titlebarid.offsetTop+32);
  
- var xsize2 = (xsize*100 / document.documentElement.clientWidth)+"vw"; 
- var ysize2 = (ysize*100 / document.documentElement.clientHeight)+"vh"; 
+ var xsize2 = xsize+"px"; 
+ var ysize2 = ysize+"px";
  
  wind.style.width = xsize2;
  wind.style.height = ysize2;
@@ -380,6 +379,7 @@ function closeWindow(callerid,winid)
 			
 			//create the titlebar element first so we can pass it into the resizewindow function
 			var div = document.createElement("div");
+			
 			brdr.onmousemove = function() { resizewindow(div) };
 			brdr.onmousedown = function() { clickresize(brdr,div) };
 			brdr.onmouseup = function() { unclickresize(brdr) };
@@ -463,8 +463,8 @@ function closeWindow(callerid,winid)
 			  var wind = document.createElement("div");
 			wind.className  = "wind";
 			
-			wind.style.width = (width*100 / document.documentElement.clientWidth)+"vw"; 
-			wind.style.height = (height*100 / document.documentElement.clientHeight)+"vh"; 
+			wind.style.width = width+"px"; //change to vw to make responsive and 1000 to 100
+			wind.style.height = height+"px";  //change to vh to make responsive
 			
 			
 			
@@ -510,7 +510,7 @@ function closeWindow(callerid,winid)
 	{
 	
 
-	var ele = rhandles[i].id.substring(0,rhandles[i].id.length-8); //get the main titlebar name by literally slicing off the length of the word _resizer because i'm lazy and it's 2 am
+	var ele = rhandles[i].id.substring(0,rhandles[i].id.length-8); 
 	var brdr = document.getElementById(ele+"_resizer");
 	var div = document.getElementById(ele);
 	var wind = document.getElementById(ele+"_windowarea");
@@ -518,9 +518,7 @@ function closeWindow(callerid,winid)
 
 		
 	setResizeHandlePosition(brdr,div,wind);
-	
-	//are you happy now? think about all the work i went through to make sure resize handles stick to their respective windows on page resize
-	// >:C
+
 	}
 	
 	
@@ -639,6 +637,11 @@ function closeWindow(callerid,winid)
 	case "debug://tailtoddle":
 	toggleWindow("null",500,400,"TAMMY GARS MA TAIL TODDLE","https://www.youtube.com/embed/heV-ccihSuI?autoplay=true&loop=1","40vw","35vh");
 	break;
+	
+	case "debug://version":
+	shownotification("You are using JanusVR v"+window.janus.version,"notifications/logo.png","null","#455947");
+	break;	
+	
 	case "debug://rosebud":
 	shownotification("Do you canoe?","notifications/call.png","null","#455947");
 	break;
@@ -680,8 +683,19 @@ function closeWindow(callerid,winid)
   window.onload = function() { 
 
 
-shownotification('Welcome to JanusVR! Press <b>ESC</b> to interact with the HUD.','notifications/logo.png',"null","#455947");
-toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/chatlog/index.html','1vw','65vh')
+  
+if ((getCookie("lastversion") == "")||(getCookie("lastversion") != window.janus.version)) //if you have never previously used janus, or the last used version of janus is not the current version
+{
+shownotification('Welcome to JanusVR v'+window.janus.version+'! Press <b>ESC</b> to interact with the HUD.','notifications/logo.png',"null","#455947");
+
+//set last version checker to current version
+setCookie("lastversion",window.janus.version,36500)
+
+}
+
+
+
+toggleWindow(document.getElementById("chatlogbutton"),325,230,'CHAT LOG','apps/chatlog/index.html','1vw','65vh')
 
   };
   
@@ -706,20 +720,29 @@ toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/ch
 	 
 	switch(window.janus.networkstatus) {
     case 0:
-		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('You are <b>offline</b>.')}
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('You are <b>not connected</b> to a presence server.')}
         document.getElementById("onlinestatus").innerHTML = "OFFLINE";
+		document.getElementById("onlinestatus").style.color = "#F88E8E";
         break;
     case 1:
-		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Attempting to connect...')}	
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Attempting to connect to the <b>'+window.janus.roomserver+'</b> presence server.')}	
         document.getElementById("onlinestatus").innerHTML = "...";
+		document.getElementById("onlinestatus").style.color = "";
         break;
     case 2:
-		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('You are <b>online</b>.')}	
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Online at <b>'+window.janus.roomserver+'</b> presence server.')}	
         document.getElementById("onlinestatus").innerHTML = "ONLINE";
+		document.getElementById("onlinestatus").style.color = "";
         break;				
-    default:
+    case -1:
         document.getElementById("onlinestatus").innerHTML = "ERROR";
-		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Error.')}		
+		document.getElementById("onlinestatus").style.color = "#F88E8E";		
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip(strip(window.janus.networkerror))}		
+		break;
+	default:
+	    document.getElementById("onlinestatus").innerHTML = "????";
+		document.getElementById("onlinestatus").style.color = "#F88E8E";
+		document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Something went wrong with the client.')}		
 }
 	 
 	 
@@ -728,11 +751,11 @@ toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/ch
 	
 	if ((window.janus.playercount-1) == 1)
 	{
-	document.getElementById("playercountstatuscontainer").onmousemove = function()  {showtooltip('<b>'+(window.janus.playerlist.length-1)+'</b> person nearby.')}
+	document.getElementById("playercountstatuscontainer").onmousemove = function()  {showtooltip('<b>'+(window.janus.playerlist.length-1)+'</b> person here.')}
 	}
 	else
 	{
-	document.getElementById("playercountstatuscontainer").onmousemove = function() {showtooltip('<b>'+(window.janus.playerlist.length-1)+'</b> people nearby.')}
+	document.getElementById("playercountstatuscontainer").onmousemove = function() {showtooltip('<b>'+(window.janus.playerlist.length-1)+'</b> people here.')}
 
 	}
 	
@@ -748,14 +771,14 @@ toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/ch
     document.getElementById("lockedstatus").innerHTML = "UNLOCKED";
 	document.getElementById("lockedstatus").style.color = "";
 	document.getElementById("lockedstatus").style.borderColor = "";
-	document.getElementById("lockedstatus").onmousemove = function() {showtooltip('You may <b>edit</b> here.')}	
+	document.getElementById("lockedstatus").onmousemove = function() {showtooltip('You <b>may edit</b> here.')}	
 	}
 	else
 	{
     document.getElementById("lockedstatus").innerHTML = "LOCKED";	 
 	document.getElementById("lockedstatus").style.color = "#F88E8E";
 	document.getElementById("lockedstatus").style.borderColor = "#F88E8E";	
-	document.getElementById("lockedstatus").onmousemove = function() {showtooltip('Cannot <b>edit</b> here.')}		
+	document.getElementById("lockedstatus").onmousemove = function() {showtooltip('<b>Cannot edit</b> here.')}		
 	}
   
   
@@ -780,7 +803,7 @@ toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/ch
   
   if (document.getElementById("tooltip").style.visibility == "visible")
   {
-   opacityoftooltip += 0.025;
+   opacityoftooltip += 0.05;
 
   }
   else 
@@ -790,6 +813,28 @@ toggleWindow(document.getElementById("chatlogbutton"),90,230,'CHAT LOG','apps/ch
   }
   
   document.getElementById("tooltip").style.opacity = opacityoftooltip+"";
+  
+  
+  //progressbar
+  
+  	var progbar = document.getElementById("progressbar");	
+	progressx = (window.janus.roomprogress())*200;
+
+	document.getElementById("progressbar").style.backgroundSize = ""+progressx+"% 100%";
+	
+if (progressx < 200)
+{
+document.getElementById("contain").style.opacity = "1";
+}
+else
+{
+document.getElementById("contain").style.opacity = "";
+}
+
+  
+  
+  
+  
   
   
   
@@ -810,16 +855,20 @@ if (( (event.clientX-(document.getElementById("tooltip").offsetWidth*0.5)) > 0) 
 {
 document.getElementById("tooltip").style.left = (event.clientX-(document.getElementById("tooltip").offsetWidth*0.5))+"px";
 }
+else
+{
+document.getElementById("tooltip").style.left = "0px";
+}
 
 
 
 if (event.clientY > window.innerHeight*0.5)
 {
-document.getElementById("tooltip").style.top = ((event.clientY-32)-(document.getElementById("tooltip").offsetHeight*0.5))+"px";
+document.getElementById("tooltip").style.top = ((event.clientY-32)-(document.getElementById("tooltip").offsetHeight*0.75))+"px";
 }
 else
 {
-document.getElementById("tooltip").style.top = ((event.clientY+16)+(document.getElementById("tooltip").offsetHeight*0.5))+"px";
+document.getElementById("tooltip").style.top = ((event.clientY+16)+(document.getElementById("tooltip").offsetHeight*0.75))+"px";
 }
 //height
 
@@ -831,6 +880,20 @@ document.getElementById("tooltip").style.visibility = "";
 document.getElementById("tooltip").innerHTML = "";
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -849,7 +912,7 @@ document.getElementById("tooltip").innerHTML = "";
 			<button onmousemove="showtooltip('Main Menu')" onmouseout="hidetooltip()" class="containerbutton miscbutton" onclick="togglemenulist()"></button>
 			<button onmousemove="showtooltip('Back')" onmouseout="hidetooltip()" class="containerbutton backbutton" onclick="clickBack()"></button>
 			<button onmousemove="showtooltip('Forwards')" onmouseout="hidetooltip()"  class="containerbutton forwardsbutton" onclick="clickForwards()"></button>
-			<button onmousemove="showtooltip('Go to Landing Space')" onmouseout="hidetooltip()"  class="containerbutton pocketbutton" onclick="toggleWindow(this,500,256,'HIS BOY, ELROY','https://www.youtube.com/embed/FyinD6ZDqeg?autoplay=1','50vw','50vh')"></button>		
+			<button onmousemove="showtooltip('Go to Landing Space')" onmouseout="hidetooltip()"  class="containerbutton pocketbutton" ></button>		
 		</div>
 
 	</div>
@@ -942,9 +1005,11 @@ document.getElementById("tooltip").innerHTML = "";
 
 	<div class="notification">
 	<div class="closebutton notifbutton" style="padding-top:0px;padding-right:0px;" onclick=" hidenotification()" 	></div>	
+	
+	<!--
 	<div class=" notifbuttonright notifbutton" style="padding-top:0px;padding-right:0px;" onclick=" hidenotification()" 	></div>
 	<div class="notifbuttonleft notifbutton" style="padding-top:0px;padding-right:0px;" onclick=" hidenotification()" 	></div>
-
+	-->
 
 	<div class="notificationtext" id="notificationtext"></div>
 	</div>
