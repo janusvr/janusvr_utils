@@ -27,12 +27,18 @@ return tmp.textContent || tmp.innerText;
         {
 
 		<!--unfocus field-->
-
+		
+		
+		if (document.getElementById("entryform").value != "")
+		{
 		window.janus.chatsend(document.getElementById("entryform").value); //send chat message value
+		}
 		
 		document.getElementById("entryform").value=""; //blank out entry form
 		document.getElementById("entryform").blur();
 			
+			
+		parent.window.janus.unfocus()	
         }
 		
 
@@ -61,7 +67,7 @@ return tmp.textContent || tmp.innerText;
 	msgcontainer.innerHTML = strip(window.janus.chat[window.janus.chat.length-1]);
 	chtlog.appendChild(msgcontainer); //append this message to the chatlog container
     
-    window.scrollTo(0,document.body.scrollHeight);
+    chtlog.scrollTop = chtlog.scrollHeight;
     previouslength = window.janus.chat.length;
    }
   
@@ -72,8 +78,9 @@ return tmp.textContent || tmp.innerText;
   
   );
   
-
-  
+window.onresize = function(event) {
+   document.getElementById("messagecontainer").scrollTop = document.getElementById("messagecontainer").scrollHeight;
+};
   
     </script>
   
@@ -84,7 +91,7 @@ return tmp.textContent || tmp.innerText;
 
 <body >
 
-<div class="entryform"   ><input onkeydown="sendmessagewithenter()" id="entryform" type="text" placeholder="Click here or press T to chat."> </input>  </div>
+<div class="entryform"   ><input onkeydown="sendmessagewithenter()" id="entryform" maxlength="245" type="text" placeholder="Click here or press T to chat." > </input>  </div>
 
 
 <div class="chatlog" id="chatlog"> 

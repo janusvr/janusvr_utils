@@ -43,10 +43,13 @@
   document.getElementById("maxmemoryslidernumber").innerHTML =  parent.window.janus.getsetting('maxmemory')+"MB";
     
   
-   document.getElementById("rotationspeedslider").value =  parent.window.janus.getsetting('rotationspeed');  
+  document.getElementById("rotationspeedslider").value =  parent.window.janus.getsetting('rotationspeed');  
   document.getElementById("rotationspeedslidernumber").innerHTML =  parent.window.janus.getsetting('rotationspeed');
      
-  
+ 
+  document.getElementById("landingpageform").value =  parent.window.janus.getsetting('launchurl');  
+ 
+ 
   
   
   
@@ -54,12 +57,7 @@
   
   
   
-  
-  
-  
-  
-  
-  
+
   
   
   
@@ -76,6 +74,7 @@
   tabSelect("avatartabcontainer","avatartabbutton")
   window.onresize()
   setDefaults() 
+
   }
 
   
@@ -548,6 +547,19 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<br>
 					</div>
 
+					
+					<div class='item' >
+					<span>
+					Landing Page
+					<input  type='text' class="longerinput" id="landingpageform"  onchange="window.janus.setsetting('launchurl', this.value);"  >
+
+					</span>
+
+					</div>	
+					
+					
+					
+					
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox'  >
