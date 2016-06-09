@@ -10,6 +10,7 @@ namespace JanusVR
     {
         public Mesh mesh;
         public string lightMapPath;
+        public string diffuseTexPath;
         public GameObject go;
 
         public Collider col;

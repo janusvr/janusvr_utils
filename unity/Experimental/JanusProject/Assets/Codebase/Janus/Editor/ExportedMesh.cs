@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace JanusVR
 {
-    public struct ExportedMesh
+    public class ExportedMesh
     {
         public Mesh mesh;
         public string lightMapPath;
