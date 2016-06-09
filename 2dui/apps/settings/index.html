@@ -43,10 +43,13 @@
   document.getElementById("maxmemoryslidernumber").innerHTML =  parent.window.janus.getsetting('maxmemory')+"MB";
     
   
-   document.getElementById("rotationspeedslider").value =  parent.window.janus.getsetting('rotationspeed');  
+  document.getElementById("rotationspeedslider").value =  parent.window.janus.getsetting('rotationspeed');  
   document.getElementById("rotationspeedslidernumber").innerHTML =  parent.window.janus.getsetting('rotationspeed');
      
-  
+ 
+  document.getElementById("landingpageform").value =  parent.window.janus.getsetting('launchurl');  
+ 
+ 
   
   
   
@@ -54,12 +57,7 @@
   
   
   
-  
-  
-  
-  
-  
-  
+
   
   
   
@@ -76,6 +74,7 @@
   tabSelect("avatartabcontainer","avatartabbutton")
   window.onresize()
   setDefaults() 
+
   }
 
   
@@ -124,7 +123,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" id="multiplayertoggle" type='checkbox' onchange="window.janus.setsetting('multiplayer', this.checked); " > 
-					<b>Multiplayer</b>
+					Multiplayer
 
 					</span>
 					<br>
@@ -133,7 +132,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox'  >
-					<b>Fallback Server</b>
+					Fallback Server
 
 					</span>
 					<br>
@@ -143,7 +142,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox'  >
-					<b>Fallback Server Port</b>
+					Fallback Server Port
 
 					</span>
 					<br>
@@ -154,7 +153,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox'  >
-					<b>Fallback Server Poll Rate</b>
+					Fallback Server Poll Rate
 
 					</span>
 					<br>
@@ -167,7 +166,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="statisticstoggle" onchange="window.janus.setsetting('sessiontracking', this.checked); "   >
-					<b>Anonymous Statistics</b>
+					Anonymous Statistics
 
 					</span>
 					<br>
@@ -186,7 +185,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					<b>Display Name</b>
+					Display Name
 					<input  type='text' class="longerinput" id="displaynameform"  onchange="window.janus.userid=this.value;"  >
 
 					</span>
@@ -196,7 +195,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="avatarlightingtoggle" onchange="window.janus.avatarlighting=this.checked;"  >
-					<b>Avatar Lighting</b>
+					Avatar Lighting
 
 					</span>
 					<br>
@@ -206,7 +205,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="selfavatartoggle" onchange="window.janus.setsetting('selfavatar', this.checked); "  >
-					<b>First Person Avatar</b>
+					First Person Avatar
 
 					</span>
 					<br>
@@ -214,7 +213,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					<b>Avatar Scale</b>
+					Avatar Scale
 					<input  type='text'  value='1 1 1'>
 
 					</span>
@@ -233,7 +232,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					<b>Avatar URL</b>
+					Avatar URL
 					<input class="longerinput" type='text'  value='http://janusvr.com/default.dae'>
 
 					</span>
@@ -245,7 +244,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					<b>Avatar URL</b>
+					Avatar .mtl URL
 					<input class="longerinput" type='text'  value='http://janusvr.com/default.mtl'>
 
 					</span>
@@ -277,7 +276,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="invertpitchtoggle"   onchange="window.janus.setsetting('invertpitch', this.checked); " >
-					<b>Invert Pitch</b>
+					Invert Pitch
 
 					</span>
 					<br>
@@ -288,7 +287,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox'  id="mousepitchtoggle" onchange="window.janus.setsetting('mousepitch', this.checked); "  >
-					<b>Vertical Mouselook</b>
+					Vertical Mouselook
 
 					</span>
 					<br>
@@ -299,7 +298,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myslider" type='range' id="rotationspeedslider" min="50" max="100" oninput="window.janus.setsetting('rotationspeed', this.value); document.getElementById('rotationspeedslidernumber').innerHTML=this.value;" >
-					<b>Rotation Speed: </b><span id="rotationspeedslidernumber"></span>
+					Rotation Speed: <span id="rotationspeedslidernumber"></span>
 
 					</span>
 					<br>
@@ -312,7 +311,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="gamepadtoggle" onchange="window.janus.setsetting('gamepad', this.checked); "  >
-					<b>Gamepad</b>
+					Gamepad
 
 					</span>
 					<br>
@@ -329,7 +328,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="portalhotkeystoggle" onchange="window.janus.setsetting('portalhotkeys', this.checked); "  >
-					<b>Advanced Hotkeys</b>
+					Advanced Hotkeys
 
 					</span>
 					<br>
@@ -353,7 +352,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 <!-- This will come in the future!
 					<div class='item' >
 					<span>
-					<b>Jump</b>
+					Jump
 					<input  type='text'  value='SPACE'>
 
 					</span>
@@ -362,7 +361,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					<b>Walk Forwards</b>
+					Walk Forwards
 					<input  type='text'  value='W'>
 
 					</span>
@@ -371,7 +370,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					<b>Walk Backwards</b>
+					Walk Backwards
 					<input  type='text'  value='S'>
 
 					</span>
@@ -380,7 +379,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					<b>Walk Left</b>
+					Walk Left
 					<input  type='text'  value='A'>
 
 					</span>
@@ -389,7 +388,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					<b>Walk Right</b>
+					Walk Right
 					<input  type='text'  value='D'>
 
 					</span>
@@ -398,7 +397,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					<b>Run</b>
+					Run
 					<input  type='text'  value='SHIFT'>
 
 					</span>
@@ -407,7 +406,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					
 					<div class='item' >
 					<span>
-					<b>Spawn Portal</b>
+					Spawn Portal
 					<input  type='text'  value='TAB'>
 
 					</span>
@@ -416,7 +415,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					<b>???</b>
+					???
 					<input  type='text'  value='G'>
 
 					</span>
@@ -437,7 +436,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="decoupleheadtoggle" onchange="window.janus.setsetting('decouplehead', this.checked); " >
-					<b>Decouple Head</b>
+					Decouple Head
 
 					</span>
 					<br>
@@ -448,7 +447,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="comfortmodetoggle" onchange="window.janus.setsetting('comfortmode', this.checked); "  >
-					<b>Comfort Mode</b>
+					Comfort Mode
 
 					</span>
 					<br>
@@ -459,7 +458,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="leapmotionhmdtoggle" onchange="window.janus.setsetting('leapmotionhmd', this.checked); " >
-					<b>Leap Motion on HMD</b>
+					Leap Motion on HMD
 
 					</span>
 					<br>
@@ -494,7 +493,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="antialiasingtoggle" onchange="window.janus.setsetting('antialiasing', this.checked); " >
-					<b>Antialiasing (4xMSAA)</b>
+					Antialiasing (4xMSAA)
 
 					</span>
 					<br>
@@ -503,7 +502,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myslider" type='range' id="fovslider" min="50" max="120" oninput="window.janus.setsetting('fov', this.value); document.getElementById('fovslidernumber').innerHTML=this.value;" >
-					<b>Field of View: </b><span id="fovslidernumber"></span>
+					Field of View: <span id="fovslidernumber"></span>
 
 					</span>
 					<br>
@@ -515,7 +514,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="assetimagestoggle" onchange="window.janus.setsetting('assetimages', this.checked); "  >
-					<b>AssetImages</b>
+					AssetImages
 
 					</span>
 					<br>
@@ -524,7 +523,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="assetshaderstoggle" onchange="window.janus.setsetting('assetshaders', this.checked); "  >
-					<b>Custom AssetShaders</b>
+					Custom AssetShaders
 
 					</span>
 					<br>
@@ -542,16 +541,29 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="crosshairtoggle" onchange="window.janus.setsetting('crosshair', this.checked); "  >
-					<b>Crosshairs</b>
+					Crosshairs
 
 					</span>
 					<br>
 					</div>
 
+					
+					<div class='item' >
+					<span>
+					Landing Page
+					<input  type='text' class="longerinput" id="landingpageform"  onchange="window.janus.setsetting('launchurl', this.value);"  >
+
+					</span>
+
+					</div>	
+					
+					
+					
+					
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox'  >
-					<b>Hide UI on Unfocus</b>
+					Hide UI on Unfocus
 
 					</span>
 					<br>
@@ -565,7 +577,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="soundstoggle" onchange="window.janus.setsetting('sounds', this.checked); " >
-					<b>Interface Sounds</b>
+					Interface Sounds
 
 					</span>
 					<br>
@@ -584,7 +596,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="editmodetoggle" onchange="window.janus.setsetting('editmode', this.checked); "  >
-					<b>Edit Mode</b>
+					Edit Mode
 
 					</span>
 					<br>
@@ -596,7 +608,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="downloadcachetoggle" onchange="window.janus.setsetting('downloadcache', this.checked); "  >
-					<b>Cache Content</b>
+					Cache Content
 
 					</span>
 					<br>
@@ -608,7 +620,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myslider" type='range' id="maxmemoryslider" min="1024" max="8192" oninput="window.janus.setsetting('maxmemory', this.value); document.getElementById('maxmemoryslidernumber').innerHTML=this.value+'MB';" >
-					<b>Maximum Memory Usage: </b><span id="maxmemoryslidernumber"></span>
+					Maximum Memory Usage: <span id="maxmemoryslidernumber"></span>
 
 					</span>
 					<br>
@@ -623,7 +635,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="jsdebuggertoggle" onchange="window.janus.setsetting('jsdebugger', this.checked); " >
-					<b>Javascript Debugger</b>
+					Javascript Debugger
 
 
 

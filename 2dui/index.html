@@ -679,10 +679,30 @@ function closeWindow(callerid,winid)
  
  
  
+   
+  
+  function showUpdateNotification() {
+  
+  
+	  if (window.janus.version < window.janus.versiononline) //if the current version differs from the version online
+	  {
+		
+		
+		shownotification('JanusVR v'+window.janus.versiononline+' has been released. Please upgrade at http://janusvr.com.','notifications/logo.png',"null","#455947");
+	  
+	  }
+  
+  }
+  
+  
+  
+ 
+ 
+ 
  
   window.onload = function() { 
 
-
+showUpdateNotification();
   
 if ((getCookie("lastversion") == "")||(getCookie("lastversion") != window.janus.version)) //if you have never previously used janus, or the last used version of janus is not the current version
 {
@@ -831,9 +851,36 @@ else
 document.getElementById("contain").style.opacity = "";
 }
 
+
+  //poll keys to see if T is pressed
   
-  
-  
+  if (window.janus.currentkey == "T" )
+  {
+	//if, when the ui has focus, you are not currently using a window or input, or if it lacks ui focus, allow chatlog usage
+	if (   ((document.activeElement.tagName != "INPUT" && document.activeElement.tagName != "IFRAME") && window.janus.hasFocus()) ||(!(window.janus.hasFocus())))  			
+		{
+
+			//if chatlog doesn't exist, create it
+			if (document.getElementById("window_CHAT&nbsp;LOG_windowarea") == null)
+			{
+			toggleWindow(document.getElementById("chatlogbutton"),325,230,'CHAT LOG','apps/chatlog/index.html','1vw','65vh')
+			}
+			
+			
+			
+			//if the UI is focused and the chatlog is not
+			if (!(window.janus.hasFocus()))
+			{
+			window.janus.focus();
+			}
+
+			document.getElementById("window_CHAT&nbsp;LOG_windowarea").children[0].contentWindow.document.getElementById("entryform").focus();
+			
+		}
+				
+				
+				
+  }
   
   
   
@@ -946,8 +993,8 @@ document.getElementById("tooltip").innerHTML = "";
 			<li class="menulistbutton" onclick="syncroom()"> SYNC PEERS </li>			
 			<li class="menulistbutton" onclick="toggleWindow(this,600,350,'EDITOR','apps/roomcode/index.html','50vw','50vh')" >EDITOR</li>		
 		
-			<li class="menulistbutton"  onclick="  	shownotification('The interface has been hidden. Press <b>ESC</b> to bring it back.','notifications/invisible.png','null','#455947')          "> HIDE UI </li>	
-		<li class="menulistbutton" onclick="quitjanus()" > QUIT </li>				
+
+		<li class="menulistbuttonquit" onclick="quitjanus()" > QUIT </li>				
 			</ul>
 			</div>
 

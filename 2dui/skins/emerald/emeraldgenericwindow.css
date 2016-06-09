@@ -11,10 +11,11 @@
     src: url(Montserrat-Regular.ttf);
 } 
   
-  @font-face {
-    font-family: "Swis721 BT";
-    src: url(swiss.ttf);
+@font-face {
+    font-family: "Open Sans Regular";
+    src: url(OpenSans-Regular.ttf);
 }
+
 ul {
     list-style-type: none;
     margin: 0;
@@ -38,7 +39,8 @@ li {
   
  .longerinput
  {
- width: 200px !important; 
+ width: 50% !important; 
+
  }
  
 .subtleinfo
@@ -52,7 +54,7 @@ color:#848484;
 width:100%;
 background-color: rgba(0,0,0,0.1);
 border-style: none;
-  font-family: "Swis721 BT";
+  font-family: "Open Sans Regular";
   color:white;
 }
  
@@ -60,12 +62,13 @@ border-style: none;
 
        .entryform {
   position:fixed;
-  font-family: "Swis721 BT";
+  font-family: "Open Sans Regular";
   width: 100%;
   bottom: 0px;
   padding: 0 0 0 0;
   margin: 0 0 0 0;
-  
+  	 font-size:14px;
+
 
   }
 
@@ -107,14 +110,21 @@ resize: none;
   resize: none;
   background-color: rgba(0,0,0,0);
   color:white;
-   font-family: "Swis721 BT";
+   font-family: "Open Sans Regular";
    text-decoration: none !important;
+ 	 font-size:14px;
+
  } 
  
   
 .messagecontainer {
 overflow:auto;
-height:100%;
+height:calc(100% - 23px);
+word-wrap:break-word;
+    -webkit-hyphens: auto;
+       -moz-hyphens: auto;
+        -ms-hyphens: auto;
+            hyphens: auto;
 }
 
 .windowarea {
@@ -311,7 +321,7 @@ border-bottom-color:#3F3F3F;
 
 .mapiconname {
 text-align:center;
-font-family: "Swis721 BT";
+font-family: "Open Sans Regular";
 color:white;
     text-shadow: -1px 0 #545454, 0 1px #545454, 1px 0 #545454, 0 -1px #545454;
 bottom:24px;
@@ -323,9 +333,10 @@ font-weight: bold;
 .item {
 
 
+	 font-size:14px;
 
 padding: 8px 8px;
- font-family: "Swis721 BT";
+ font-family: "Open Sans Regular";
  color:white;
 }
 
@@ -340,8 +351,8 @@ input {
 
 background-color: #455947;
 border-style: solid;
-border-width:2px;
-border-color: #405442;
+border-width:1px;
+border-color: gray;
 color:white;
 
 }

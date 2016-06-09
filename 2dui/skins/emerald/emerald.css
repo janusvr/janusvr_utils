@@ -4,10 +4,11 @@
     src: url(Montserrat-Regular.ttf);
 } 
   
-  @font-face {
-    font-family: "Swis721 BT";
-    src: url(swiss.ttf);
+@font-face {
+    font-family: "Open Sans Regular";
+    src: url(OpenSans-Regular.ttf);
 }
+
   
   
   form {
@@ -120,7 +121,7 @@ position: fixed;
   color:white;
   visibility:hidden;
   overflow:visible;
-  font-family: "Swis721 BT";
+  font-family: "Open Sans Regular";
   z-index:22222222222222;
   padding: 4px 4px;
   border-color:white;
@@ -170,7 +171,7 @@ width: 256px;
   }
 
   .notification {
-  
+
   width: 36vw !important;
   }
   
@@ -265,12 +266,12 @@ width: 256px;
   border-bottom-right-radius:0;
 
   font-size: 12px;
-  background-color: #455947;
+  background-color: #282828;
   border-style: none;
   border-width: 2px;
   border-color: #0EE05A;
   color: #E4E4E4;
-  font-family: "Swis721 BT";
+  font-family: "Open Sans Regular";
   padding: 10px;
   padding-left:1vw;
   padding-right:6.5vw;
@@ -593,8 +594,8 @@ opacity:0.75;
   .titlebar:hover {
   opacity: 1;
   }
-  
 
+  
   
   
   
@@ -734,6 +735,32 @@ opacity:0.75;
 	  
 }
 
+  .menulistbuttonquit {
+    display: block;
+
+    text-align: center;
+
+    text-decoration: none;
+	  font-family: "Montserrat";
+	  
+	  
+	  font-size: 12px;
+
+
+  color: #E4E4E4;
+  font-family: "Montserrat";
+  padding: 10px 10px;
+
+ 
+	  
+	  background-color:#4F4F4F;
+	
+	  
+	  
+}
+
+
+
   .menulistbuttongray {
     display: block;
 
@@ -780,6 +807,22 @@ background-color:#E4E4E4 ;
   color: #3F3F3F;
 }
 
+
+
+.menulistbuttonquit:hover {
+
+cursor:hand;
+background-color:#7F7F7F ;
+}
+
+.menulistbuttonquit:active {
+
+background-color:#E4E4E4 ;
+  color: #3F3F3F;
+}
+
+
+
  .menulist ul {
  
  margin: 0px 0px;
@@ -825,9 +868,9 @@ max-height:100%;
 
 .notificationtext {
 
-	font-family: "Swis721 BT";
+	font-family: "Open Sans Regular";
 	color:white;
-	
+	 font-size:14px;
 
 }
 

@@ -10,19 +10,20 @@
     src: url(Montserrat-Regular.ttf);
 } 
   
-  @font-face {
-    font-family: "Swis721 BT";
-    src: url(swiss.ttf);
+@font-face {
+    font-family: "Open Sans Regular";
+    src: url(OpenSans-Regular.ttf);
 }
+
   
   .username {
-  font-family:"Swis721 BT";
+  font-family:"Open Sans Regular";
   color: #0EE05A ;
   
   }
   
    .dialogue {
-  font-family:"Swis721 BT";
+  font-family:"Open Sans Regular";
   color: white ;
   
   }
@@ -36,7 +37,7 @@
   
   .entryform {
   position:fixed;
-  font-family: "Swis721 BT";
+  font-family: "Open Sans Regular";
   width: 100%;
   bottom: -16px;
   padding: 0 0 0 0;

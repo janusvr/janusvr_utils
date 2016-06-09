@@ -70,7 +70,13 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
     //update variables
    document.getElementById("progressstatus").innerHTML = "Room Load Progress: "+parent.window.janus.roomprogress();
            
-   
+     document.getElementById("currentkey").innerHTML = "Current Key Pressed: "+parent.window.janus.currentkey;
+
+           
+     document.getElementById("uifocus").innerHTML = "UI focus: "+parent.window.janus.hasFocus();
+        
+	     document.getElementById("active").innerHTML = "Active Element: "+parent.document.activeElement.tagName;
+         
    }, 1); 
 
   
@@ -133,8 +139,16 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >Splines: Reticulated
 					</div>	
 
-						
+					<div class='item' id="currentkey" >
+					</div>								
 
+					<div class='item' id="uifocus" >
+					</div>
+
+					<div class='item' id="active" >
+					</div>							
+										
+					
 				</div>
 					
 												
