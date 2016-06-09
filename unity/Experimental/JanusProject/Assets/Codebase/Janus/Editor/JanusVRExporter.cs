@@ -48,6 +48,18 @@ namespace JanusVR
         [SerializeField]
         private ExportMeshFormat meshFormat;
 
+        [SerializeField]
+        private bool bakeMatLightMaps = true;
+
+
+        /// <summary>
+        /// Lower case values that the exporter will consider for being the Main Texture on a shader
+        /// </summary>
+        private string[] mainTexSemantics = new string[]
+            {
+                "_maintex"
+            };
+
 
         private Dictionary<int, List<GameObject>> lightmapped;
 
@@ -66,6 +78,9 @@ namespace JanusVR
             meshFormat = (ExportMeshFormat)EditorGUILayout.EnumPopup("Mesh Format", meshFormat);
             maxLightMapResolution = Math.Max(32, EditorGUILayout.IntField("Max Lightmap Resolution", maxLightMapResolution));
             uniformScale = EditorGUILayout.FloatField("Uniform Scale", uniformScale);
+            bakeMatLightMaps = GUILayout.Toggle(bakeMatLightMaps, "Bake Materials and Lightmaps");
+
+            
 
             if (GUILayout.Button("Export"))
             {
@@ -91,78 +106,108 @@ namespace JanusVR
                 return;
             }
 
-            // only load shader now, so if the user is not exporting lightmaps
-            // he doesn't need to have it on his project folder
-            Shader lightMapShader = Shader.Find("Hidden/LightMapExtracter");
-            Material lightMap = new Material(lightMapShader);
-            lightMap.SetPass(0);
-
-            string scenePath = scene.path;
-            scenePath = Path.GetDirectoryName(scenePath);
-            string lightMapsFolder = Path.Combine(scenePath, scene.name);
-
-            // export lightmaps
-            int exp = 0;
-            foreach (var lightPair in lightmapped)
+            if (bakeMatLightMaps)
             {
-                int id = lightPair.Key;
-                List<GameObject> toRender = lightPair.Value;
+                // only load shader now, so if the user is not exporting lightmaps
+                // he doesn't need to have it on his project folder
+                Shader lightMapShader = Shader.Find("Hidden/LightMapExtracter");
+                Material lightMap = new Material(lightMapShader);
+                lightMap.SetPass(0);
 
-                // get the path to the lightmap file
-                string lightMapFile = Path.Combine(lightMapsFolder, "Lightmap-" + id + "_comp_light.exr");
-                Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(lightMapFile);
-                lightMap.SetTexture("_LightMapTex", texture);
+                string scenePath = scene.path;
+                scenePath = Path.GetDirectoryName(scenePath);
+                string lightMapsFolder = Path.Combine(scenePath, scene.name);
 
-                for (int i = 0; i < toRender.Count; i++)
+                // export lightmaps
+                int exp = 0;
+                foreach (var lightPair in lightmapped)
                 {
-                    GameObject obj = toRender[i];
-                    MeshRenderer renderer = obj.GetComponent<MeshRenderer>();
-                    MeshFilter filter = obj.GetComponent<MeshFilter>();
+                    int id = lightPair.Key;
+                    List<GameObject> toRender = lightPair.Value;
 
-                    Mesh mesh = filter.sharedMesh;
+                    // get the path to the lightmap file
+                    string lightMapFile = Path.Combine(lightMapsFolder, "Lightmap-" + id + "_comp_light.exr");
+                    Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(lightMapFile);
+                    if (texture == null)
+                    {
+                        continue;
+                    }
 
-                    Transform trans = obj.transform;
+                    lightMap.SetTexture("_LightMapTex", texture);
 
-                    Matrix4x4 world = Matrix4x4.TRS(trans.position, trans.rotation, trans.lossyScale);
+                    for (int i = 0; i < toRender.Count; i++)
+                    {
+                        GameObject obj = toRender[i];
+                        MeshRenderer renderer = obj.GetComponent<MeshRenderer>();
+                        MeshFilter filter = obj.GetComponent<MeshFilter>();
 
-                    Vector4 scaleOffset = renderer.lightmapScaleOffset;
-                    float width = (1 - scaleOffset.z) * scaleOffset.x;
-                    float height = (1 - scaleOffset.w) * scaleOffset.y;
-                    float size = Math.Max(width, height);
+                        Mesh mesh = filter.sharedMesh;
+                        Transform trans = obj.transform;
+                        Matrix4x4 world = Matrix4x4.TRS(trans.position, trans.rotation, trans.lossyScale);
 
-                    int lightMapSize = (int)(maxLightMapResolution * size);
-                    lightMapSize = (int)Math.Pow(2, Math.Ceiling(Math.Log(lightMapSize) / Math.Log(2)));
-                    lightMapSize = Math.Min(maxLightMapResolution, Math.Max(lightMapSize, 16));
+                        Vector4 scaleOffset = renderer.lightmapScaleOffset;
+                        float width = (1 - scaleOffset.z) * scaleOffset.x;
+                        float height = (1 - scaleOffset.w) * scaleOffset.y;
+                        float size = Math.Max(width, height);
 
-                    RenderTexture renderTexture = RenderTexture.GetTemporary(lightMapSize, lightMapSize, 0, RenderTextureFormat.ARGB32);
-                    Graphics.SetRenderTarget(renderTexture);
-                    GL.Clear(true, true, Color.red);
+                        int lightMapSize = (int)(maxLightMapResolution * size);
+                        lightMapSize = (int)Math.Pow(2, Math.Ceiling(Math.Log(lightMapSize) / Math.Log(2)));
+                        lightMapSize = Math.Min(maxLightMapResolution, Math.Max(lightMapSize, 16));
 
-                    lightMap.SetVector("_LightMapUV", renderer.lightmapScaleOffset);
-                    lightMap.SetPass(0);
-                    Graphics.DrawMeshNow(mesh, world);
+                        RenderTexture renderTexture = RenderTexture.GetTemporary(lightMapSize, lightMapSize, 0, RenderTextureFormat.ARGB32);
+                        Graphics.SetRenderTarget(renderTexture);
+                        GL.Clear(true, true, Color.red);
 
-                    // This is the only way to access data from a RenderTexture
-                    Texture2D tex = new Texture2D(renderTexture.width, renderTexture.height);
-                    tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
-                    byte[] bytes = tex.EncodeToPNG();
-                    string lightName = "Lightmap" + exp;
-                    File.WriteAllBytes(Path.Combine(exportPath, lightName + ".png"), bytes);
+                        Material[] mats = renderer.sharedMaterials;
+                        for (int j = 0; j < mats.Length; j++)
+                        {
+                            Material mat = mats[j];
 
-                    ExportedMesh me = new ExportedMesh();
-                    me.mesh = mesh;
-                    me.lightMapPath = lightName;
-                    me.go = obj;
-                    exported.lightMapMeshes.Add(me);
+                            lightMap.SetTexture("_MainTex", null);
 
-                    Graphics.SetRenderTarget(null);
-                    RenderTexture.ReleaseTemporary(renderTexture);
-                    UnityEngine.Object.DestroyImmediate(tex);
+                            Shader shader = mat.shader;
+                            int props = ShaderUtil.GetPropertyCount(shader);
+                            for (int k = 0; k < props; k++)
+                            {
+                                string name = ShaderUtil.GetPropertyName(shader, k);
 
-                    exp++;
+                                if (ShaderUtil.GetPropertyType(shader, k) == ShaderUtil.ShaderPropertyType.TexEnv)
+                                {
+                                    if (mainTexSemantics.Contains(name.ToLower()))
+                                    {
+                                        // main texture texture
+                                        lightMap.SetTexture("_MainTex", mat.GetTexture(name));
+                                    }
+                                }
+                            }
+
+                            lightMap.SetVector("_LightMapUV", renderer.lightmapScaleOffset);
+                            lightMap.SetPass(0);
+                            Graphics.DrawMeshNow(mesh, world, j);
+                        }
+
+                        // This is the only way to access data from a RenderTexture
+                        Texture2D tex = new Texture2D(renderTexture.width, renderTexture.height);
+                        tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
+                        byte[] bytes = tex.EncodeToPNG();
+                        string lightName = "Lightmap" + exp;
+                        File.WriteAllBytes(Path.Combine(exportPath, lightName + ".png"), bytes);
+
+                        ExportedMesh me = new ExportedMesh();
+                        me.mesh = mesh;
+                        me.lightMapPath = lightName;
+                        me.go = obj;
+                        exported.lightMapMeshes.Add(me);
+
+                        Graphics.SetRenderTarget(null);
+                        RenderTexture.ReleaseTemporary(renderTexture);
+                        UnityEngine.Object.DestroyImmediate(tex);
+
+                        exp++;
+                    }
                 }
+                UnityEngine.Object.DestroyImmediate(lightMap);
             }
-            UnityEngine.Object.DestroyImmediate(lightMap);
 
 
             // Make the index.html file
