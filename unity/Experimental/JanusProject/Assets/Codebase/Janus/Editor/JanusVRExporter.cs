@@ -100,7 +100,7 @@ namespace JanusVR
             {
                 case ExportMeshFormat.FBX:
                     return ".fbx";
-                case ExportMeshFormat.OBJ:
+                case ExportMeshFormat.OBJ_NotWorking:
                     return ".obj";
                 default:
                     return "";
