@@ -395,7 +395,7 @@ namespace JanusVR
                                     FBXExporter.ExportMesh(mesh, Path.Combine(exportPath, mesh.name + ".fbx"));
                                 }
                                 break;
-                            case ExportMeshFormat.OBJ:
+                            case ExportMeshFormat.OBJ_NotWorking:
                                 break;
                         }
                     }
