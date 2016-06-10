@@ -9,8 +9,10 @@ namespace JanusVR
     public class ExportedObject
     {
         public Mesh mesh;
-        public string lightMapPath;
-        public string diffuseTexPath;
+
+        public Texture2D lightMapTex;
+        public Texture2D diffuseMapTex;
+
         public GameObject go;
 
         public Collider col;
