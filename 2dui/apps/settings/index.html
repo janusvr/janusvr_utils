@@ -50,6 +50,10 @@
   document.getElementById("landingpageform").value =  parent.window.janus.getsetting('launchurl');  
  
  
+    document.getElementById("serverform").value =  parent.window.janus.getsetting('server');  
+	document.getElementById("rateform").value =  parent.window.janus.getsetting('rate');  	
+	document.getElementById("portform").value =  parent.window.janus.getsetting('port');  
+ 
   
   
   
@@ -131,33 +135,33 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					<input class="myCheckbox" type='checkbox'  >
 					Fallback Server
+					<input  type='text' class="longerinput" id="serverform"  onchange="window.janus.setsetting('server', this.value);"  >
 
 					</span>
-					<br>
-					</div>
+
+					</div>	
 
 
 					<div class='item' >
 					<span>
-					<input class="myCheckbox" type='checkbox'  >
 					Fallback Server Port
+					<input  type='text'  id="portform"  onchange="window.janus.setsetting('port', this.value);"  >
 
 					</span>
-					<br>
-					</div>
+
+					</div>	
 
 
 
 					<div class='item' >
 					<span>
-					<input class="myCheckbox" type='checkbox'  >
-					Fallback Server Poll Rate
+					Fallback Server Polling Rate
+					<input  type='text'  id="rateform"  onchange="window.janus.setsetting('rate', this.value);"  >
 
 					</span>
-					<br>
-					</div>
+
+					</div>	
 
 
 					<div class='header'>PRIVACY</div>
@@ -577,7 +581,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="soundstoggle" onchange="window.janus.setsetting('sounds', this.checked); " >
-					Interface Sounds
+					Interaction Sounds
 
 					</span>
 					<br>
