@@ -49,27 +49,36 @@ return tmp.textContent || tmp.innerText;
   
 
   //populate the chatlog
-  var previouslength = 0;
+  var chatlength = 0;
   
   setInterval(
   function() {
 
 
-  if (window.janus.chat.length != previouslength) //if the length of the janus chatlog array is larger than the last known array size
+  if (window.janus.chat.length != chatlength) //if the length of the janus chatlog array is larger than the last known array size
    {
     var chtlog = document.getElementById("messagecontainer"); //grab the element we're going to be appending this new message to
 	
 	
+	while(window.janus.chat.length > chatlength)
+	{
 	//create main message container
    	var msgcontainer = document.createElement("div"); //initialize a new message
 	msgcontainer.className  = "item"; //set the class name 
-	msgcontainer.setAttribute('id', "message"+window.janus.chat.length); //set the message id to message plus the current length
-	msgcontainer.innerHTML = strip(window.janus.chat[window.janus.chat.length-1]);
+	msgcontainer.setAttribute('id', "message"+chatlength); //set the message id to message plus the current iteration
+	msgcontainer.innerHTML = strip(window.janus.chat[chatlength]);
 	chtlog.appendChild(msgcontainer); //append this message to the chatlog container
     
     chtlog.scrollTop = chtlog.scrollHeight;
-    previouslength = window.janus.chat.length;
-   }
+    chatlength += 1;
+
+	}
+
+
+
+
+
+  }
   
   
   

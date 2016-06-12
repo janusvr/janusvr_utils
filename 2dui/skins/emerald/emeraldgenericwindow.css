@@ -116,6 +116,16 @@ resize: none;
 
  } 
  
+ .mainwindowframe{
+ height:calc(100% - 0px);
+ width: calc(100% - 0px);
+ 
+ border-style:none;
+ margin: 0 0 0 0;
+ padding: 0 0 0 0;
+ 
+ }
+ 
   
 .messagecontainer {
 overflow:auto;
@@ -217,6 +227,27 @@ overflow:hidden;
 .tabbutton:focus {
 
  outline:0;
+
+}
+
+
+.inputminiurl {
+
+  font-family: "Open Sans Regular";
+  color:white;
+
+max-width:100%;
+width:calc(100% - 132px);
+  font-size: 12px;
+ background-color:#455947;
+ border-color:grey;
+ border-width:1px;
+ bodrer-style:solid;
+height:calc(100% - 0px);
+
+vertical-align: middle;
+padding: 6px 8px;
+margin: 4px 4px;
 
 }
 

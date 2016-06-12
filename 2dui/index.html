@@ -57,6 +57,46 @@
   <link rel="stylesheet" type="text/css" href="skins/emerald/emerald.css">
   <script>
   
+  
+var getActiveElement = function( document ){
+
+     document = document || window.document;
+
+     // Check if the active element is in the main web or iframe
+     if( document.body === document.activeElement 
+        || document.activeElement.tagName == 'IFRAME' ){
+         // Get iframes
+         var iframes = document.getElementsByTagName('iframe');
+         for(var i = 0; i<iframes.length; i++ ){
+             // Recall
+             var focused = getActiveElement( iframes[i].contentWindow.document );
+             if( focused !== false ){
+                 return focused; // The focused
+             }
+         }
+     }
+
+    else return document.activeElement;
+
+     return false;
+};
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
  function setCookie(cname, cvalue, exdays) {
     var d = new Date();
     d.setTime(d.getTime() + (exdays*24*60*60*1000));
@@ -665,7 +705,7 @@ function closeWindow(callerid,winid)
          if(keyPressed==13)
         {
 			gotoroom()
-		
+		window.janus.unfocus();
 		<!--unfocus field-->
 		var progbar = document.getElementById("progressbar");		 
 		progbar.blur();
@@ -856,8 +896,13 @@ document.getElementById("contain").style.opacity = "";
   
   if (window.janus.currentkey == "T" )
   {
+  
+    
+  var eletemp=getActiveElement();
+
+  
 	//if, when the ui has focus, you are not currently using a window or input, or if it lacks ui focus, allow chatlog usage
-	if (   ((document.activeElement.tagName != "INPUT" && document.activeElement.tagName != "IFRAME") && window.janus.hasFocus()) ||(!(window.janus.hasFocus())))  			
+	if (   ((eletemp.tagName != "INPUT" && eletemp.tagName != "TEXTAREA") && window.janus.hasFocus()) ||(!(window.janus.hasFocus())))  			
 		{
 
 			//if chatlog doesn't exist, create it
@@ -885,6 +930,58 @@ document.getElementById("contain").style.opacity = "";
   
   
   
+  
+  
+  
+  
+  //poll keys to see if TAB is pressed
+  
+  if (window.janus.currentkey == "Tab" )
+  {
+  
+    
+  var eletemp=getActiveElement();
+
+  
+
+	if (   ((eletemp.tagName != "INPUT" && eletemp.tagName != "TEXTAREA") && window.janus.hasFocus()) ||(!(window.janus.hasFocus())))  			
+		{
+
+			
+	
+			if (!(window.janus.hasFocus()))
+			{
+			window.janus.focus();
+			}
+
+			document.getElementById("progressbar").focus();
+
+		}
+				
+				
+				
+  }
+  
+  
+  
+  
+			//blur active element if janus lacks focus
+			if (!(window.janus.hasFocus()))
+			{
+			document.activeElement.blur()
+			}
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
   
 }, 10);
 
@@ -932,7 +1029,11 @@ document.getElementById("tooltip").innerHTML = "";
 
 
 
-
+function selectURLBar(caller)
+{
+caller.focus();
+caller.select();
+}
 
 
 
@@ -948,7 +1049,7 @@ document.getElementById("tooltip").innerHTML = "";
 
 </head>
 
-<body class="unselectable" >
+<body class="unselectable"  >
 
 
 
@@ -968,7 +1069,7 @@ document.getElementById("tooltip").innerHTML = "";
 		
 		<div >
 
-			<input onkeydown="gotoroomenter()" class="inputfield" id="progressbar" type="text"  value="error" />
+			<input onkeydown="gotoroomenter()" onfocus="selectURLBar(this)" class="inputfield" id="progressbar" type="text"  value="error" />
 
 
 			
@@ -980,9 +1081,9 @@ document.getElementById("tooltip").innerHTML = "";
 	
 	
 		<!--Go button and portal button-->
-
+			<!--
 				<button class="inputbutton" id="gobutton" onclick="gotoroom()">GO</button>
-
+			-->
 	
 	
 			<div class="menulist unselectable" id="menulist" onclick="togglemenulist('true')" >
@@ -1035,11 +1136,11 @@ document.getElementById("tooltip").innerHTML = "";
 
 <button  id="inventorybutton" onmousemove="showtooltip('Inventory')" onmouseout="hidetooltip()" class="quickinventory" onclick="toggleWindow(this,500,256,'INVENTORY','apps/inventory/index.html','50vw','50vh')" > </button>
 
-<button id="websurfacebutton" onmousemove="showtooltip('Browser')" onmouseout="hidetooltip()" class="quickbrowser" onclick="toggleWindow(this,500,256,'BROWSER','https://duckduckgo.com/','50vw','50vh')" > </button>
+<button id="websurfacebutton" onmousemove="showtooltip('Browser')" onmouseout="hidetooltip()" class="quickbrowser" onclick="toggleWindow(this,500,256,'BROWSER','apps/browser/index.html','50vw','50vh')" > </button>
 
 <button  id="radarbutton" onmousemove="showtooltip('Radar')" onmouseout="hidetooltip()" class="quickmap" onclick="toggleWindow(this,300,300,'RADAR','apps/map/index.html','80vw','10vh')" > </button>
 
-<button id="chatlogbutton" onmousemove="showtooltip('Chatlog')" onmouseout="hidetooltip()" class="quickchatlog" onclick="toggleWindow(this,90,230,'CHAT LOG','apps/chatlog/index.html','1vw','65vh')" ></button>
+<button id="chatlogbutton" onmousemove="showtooltip('Chatlog')" onmouseout="hidetooltip()" class="quickchatlog" onclick="toggleWindow(this,325,230,'CHAT LOG','apps/chatlog/index.html','1vw','65vh')" ></button>
 
 </div>
 
