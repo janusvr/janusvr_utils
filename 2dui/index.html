@@ -222,7 +222,7 @@ ele.style.backgroundColor = '#3F3F3F';
 
 
  var dragaid = document.getElementById(ele.id.replace(' ','&nbsp;')+"_dragaid");
-
+ dragaid.className = "almostinvisible"
  dragaid.style.width = "0";
  dragaid.style.height = "0";
  }
@@ -644,6 +644,16 @@ function closeWindow(callerid,winid)
  }
  
 
+   function clickHome() {
+ 
+ clickSound()
+
+ window.janus.navhome();
+
+ }
+ 
+ 
+ 
   <!-- Sync room -->
  
  function syncroom() {
@@ -746,7 +756,7 @@ showUpdateNotification();
   
 if ((getCookie("lastversion") == "")||(getCookie("lastversion") != window.janus.version)) //if you have never previously used janus, or the last used version of janus is not the current version
 {
-shownotification('Welcome to JanusVR v'+window.janus.version+'! Press <b>ESC</b> to interact with the HUD.','notifications/logo.png',"null","#455947");
+shownotification('Welcome to JanusVR v'+window.janus.version+'! <b>Right Click</b> to interact with the HUD.','notifications/logo.png',"null","#455947");
 
 //set last version checker to current version
 setCookie("lastversion",window.janus.version,36500)
@@ -1038,7 +1048,16 @@ caller.select();
 
 
 
+function blururlBar() {
 
+//when the url bar blurs, if it has nothing in it, put the url of the room back in it
+
+if (document.getElementById("progressbar").value.trim().length == 0)
+{
+document.getElementById("progressbar").value = window.janus.currenturl();
+}
+
+}
 
 
 
@@ -1059,8 +1078,8 @@ caller.select();
 		<div >
 			<button onmousemove="showtooltip('Main Menu')" onmouseout="hidetooltip()" class="containerbutton miscbutton" onclick="togglemenulist()"></button>
 			<button onmousemove="showtooltip('Back')" onmouseout="hidetooltip()" class="containerbutton backbutton" onclick="clickBack()"></button>
-			<button onmousemove="showtooltip('Forwards')" onmouseout="hidetooltip()"  class="containerbutton forwardsbutton" onclick="clickForwards()"></button>
-			<button onmousemove="showtooltip('Go to Landing Space')" onmouseout="hidetooltip()"  class="containerbutton pocketbutton" ></button>		
+			<button onmousemove="showtooltip('Forward')" onmouseout="hidetooltip()"  class="containerbutton forwardsbutton" onclick="clickForwards()"></button>
+			<button onmousemove="showtooltip('Go to Landing Space')" onmouseout="hidetooltip()"  class="containerbutton pocketbutton" onclick="clickHome()" ></button>		
 		</div>
 
 	</div>
@@ -1069,7 +1088,7 @@ caller.select();
 		
 		<div >
 
-			<input onkeydown="gotoroomenter()" onfocus="selectURLBar(this)" class="inputfield" id="progressbar" type="text"  value="error" />
+			<input onkeydown="gotoroomenter()" onfocus="selectURLBar(this)" class="inputfield" id="progressbar" onblur="blururlBar()" type="text"  value="error" />
 
 
 			
@@ -1136,7 +1155,13 @@ caller.select();
 
 <button  id="inventorybutton" onmousemove="showtooltip('Inventory')" onmouseout="hidetooltip()" class="quickinventory" onclick="toggleWindow(this,500,256,'INVENTORY','apps/inventory/index.html','50vw','50vh')" > </button>
 
+
+
+<!-- Will come in a later update.
 <button id="websurfacebutton" onmousemove="showtooltip('Browser')" onmouseout="hidetooltip()" class="quickbrowser" onclick="toggleWindow(this,500,256,'BROWSER','apps/browser/index.html','50vw','50vh')" > </button>
+-->
+
+
 
 <button  id="radarbutton" onmousemove="showtooltip('Radar')" onmouseout="hidetooltip()" class="quickmap" onclick="toggleWindow(this,300,300,'RADAR','apps/map/index.html','80vw','10vh')" > </button>
 
