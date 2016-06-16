@@ -756,7 +756,7 @@ showUpdateNotification();
   
 if ((getCookie("lastversion") == "")||(getCookie("lastversion") != window.janus.version)) //if you have never previously used janus, or the last used version of janus is not the current version
 {
-shownotification('Welcome to JanusVR v'+window.janus.version+'! <b>Right Click</b> to interact with the HUD.','notifications/logo.png',"null","#455947");
+shownotification('Welcome to JanusVR v'+window.janus.version+'! Press <b>ESC</b> to interact with the HUD.','notifications/logo.png',"null","#455947");
 
 //set last version checker to current version
 setCookie("lastversion",window.janus.version,36500)
@@ -773,6 +773,32 @@ toggleWindow(document.getElementById("chatlogbutton"),325,230,'CHAT LOG','apps/c
   var previousroomurl;
 //UPDATING HUD STATUS IN REAL TIME ====================================================================================================================================
   setInterval(function() {
+  
+  
+  
+    
+  //check if chatlog is highlighted, and if it is, make it fully opaque
+  if (document.activeElement == document.getElementById("window_CHAT&nbsp;LOG_windowarea").children[0])
+  {
+
+  document.getElementById("window_CHAT&nbsp;LOG").style.opacity = "1";
+  }
+  else
+  {
+
+    document.getElementById("window_CHAT&nbsp;LOG").style.opacity = "";
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
    //change janus url based on what room you're in
     
   if (window.janus.currenturl() != previousroomurl)
@@ -982,11 +1008,10 @@ document.getElementById("contain").style.opacity = "";
 			}
   
   
+
   
   
-  
-  
-  
+
   
   
   
@@ -1043,6 +1068,7 @@ function selectURLBar(caller)
 {
 caller.focus();
 caller.select();
+brightenURLContainer()
 }
 
 
@@ -1051,7 +1077,7 @@ caller.select();
 function blururlBar() {
 
 //when the url bar blurs, if it has nothing in it, put the url of the room back in it
-
+darkenURLContainer()
 if (document.getElementById("progressbar").value.trim().length == 0)
 {
 document.getElementById("progressbar").value = window.janus.currenturl();
@@ -1059,8 +1085,12 @@ document.getElementById("progressbar").value = window.janus.currenturl();
 
 }
 
-
-
+function brightenURLContainer() {
+document.getElementById("contain").style.opacity = "1";
+}
+function darkenURLContainer() {
+document.getElementById("contain").style.opacity = "";
+}
 
 
 
@@ -1163,7 +1193,7 @@ document.getElementById("progressbar").value = window.janus.currenturl();
 
 
 
-<button  id="radarbutton" onmousemove="showtooltip('Radar')" onmouseout="hidetooltip()" class="quickmap" onclick="toggleWindow(this,300,300,'RADAR','apps/map/index.html','80vw','10vh')" > </button>
+<button  id="radarbutton" onmousemove="showtooltip('Radar')" onmouseout="hidetooltip()" class="quickmap" onclick="toggleWindow(this,266,300,'RADAR','apps/map/index.html','80vw','10vh')" > </button>
 
 <button id="chatlogbutton" onmousemove="showtooltip('Chatlog')" onmouseout="hidetooltip()" class="quickchatlog" onclick="toggleWindow(this,325,230,'CHAT LOG','apps/chatlog/index.html','1vw','65vh')" ></button>
 
