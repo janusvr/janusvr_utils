@@ -781,7 +781,22 @@ toggleWindow(document.getElementById("chatlogbutton"),325,230,'CHAT LOG','apps/c
   if (document.activeElement == document.getElementById("window_CHAT&nbsp;LOG_windowarea").children[0])
   {
 
-  document.getElementById("window_CHAT&nbsp;LOG").style.opacity = "1";
+  
+  //check if the input inside of this is selected 
+
+	var eletemp=getActiveElement();
+
+	 
+	 if ( window.janus.hasFocus() )
+	  {
+	  document.getElementById("window_CHAT&nbsp;LOG").style.opacity = "1";
+	  }
+	  else
+	  {
+	   document.getElementById("window_CHAT&nbsp;LOG").style.opacity = "";  
+	  }
+  
+  
   }
   else
   {
