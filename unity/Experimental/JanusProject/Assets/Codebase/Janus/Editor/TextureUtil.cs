@@ -30,6 +30,20 @@ namespace JanusVR
         }
 #endif
 
+        public static float DecodeLightmapRGBM(float alpha, float color, Vector2 decode)
+        {
+            return decode.x * (float)Math.Pow(alpha, decode.y) * color;
+        }
+
+        public static Color DecodeLightmapRGBM(Color data, Vector2 decode)
+        {
+            float r = DecodeLightmapRGBM(data.a, data.r, decode);
+            float g = DecodeLightmapRGBM(data.a, data.g, decode);
+            float b = DecodeLightmapRGBM(data.a, data.b, decode);
+
+            return new Color(r, g, b, 1);
+        }
+
         public static void ExportTexture(Texture2D input, Stream output, ImageFormatEnum imageFormat, object data)
         {
 #if SYSTEM_DRAWING

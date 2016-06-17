@@ -22,11 +22,7 @@
 #include "Runtime/Engine/Classes/Materials/MaterialInstanceDynamic.h"
 #include "Runtime/Engine/Public/HitProxies.h"
 #include "Developer/MaterialUtilities/Public/MaterialUtilities.h"
-
-#define private public   // POG = Programacao Orientada a Gambiarra
 #include "Editor/UnrealEd/Private/FbxExporter.h"
-#undef private
-
 #include <fbxsdk.h>
 
 #define LOCTEXT_NAMESPACE "JanusExporter"
@@ -89,7 +85,7 @@ bool ExportFBX(UStaticMesh* Mesh, FString RootFolder)
 	Exporter->CreateDocument();
 	Exporter->ExportStaticMesh(Mesh);
 
-	FbxScene* Scene = Exporter->Scene;
+	FbxScene* Scene = Exporter->GetFbxScene();
 	for (int i = 0; i < Scene->GetNodeCount(); i++)
 	{
 		FbxNode* Node = Scene->GetNode(i);
@@ -208,7 +204,6 @@ void ExportBMP(FString& Path, TArray<FColor> ColorData, int Width, int Height)
 
 void ExportMaterial(FString& Folder, UMaterialInterface* Material, TArray<FString>* ExportedTextures)
 {
-//#if CUSTOM_UNREAL  // needs custom Unreal source code to export materials, as the API is broken (until I manage to push my modifications to the main repo that is)
 	check(Material);
 
 	TEnumAsByte<EBlendMode> BlendMode = Material->GetBlendMode();
@@ -236,7 +231,6 @@ void ExportMaterial(FString& Folder, UMaterialInterface* Material, TArray<FStrin
 
 		ExportPNG(Path, ColorData, Size.X, Size.Y);
 	}
-//#endif
 }
 
 FVector ChangeSpace(FVector Vector)
@@ -309,7 +303,7 @@ void UJanusExporterTool::Export()
 			}
 
 			if (Component->LODData.Num() > 0)
-			//if (false)
+				//if (false)
 			{
 				FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
 				FLightMap* LightMap = LODInfo->LightMap;
@@ -440,7 +434,7 @@ void UJanusExporterTool::Export()
 			YDir = ChangeSpace(YDir);
 			ZDir = ChangeSpace(ZDir);
 			FVector Sign = GetSignVector(Sca);
-			
+
 			Index.Append(FString::SanitizeFloat(Pos.X) + " " + FString::SanitizeFloat(Pos.Y) + " " + FString::SanitizeFloat(Pos.Z));
 			if (Sca.X < 0 || Sca.Y < 0 || Sca.Z < 0)
 			{

@@ -12,6 +12,13 @@ namespace JanusVR
         private ImageFormatEnum format;
         private int quality;
         private string exportedPath;
+        private int resolution;
+
+        public int Resolution
+        {
+            get { return resolution; }
+            set { resolution = value; }
+        }
 
         public string ExportedPath
         {
