@@ -222,7 +222,7 @@ ele.style.backgroundColor = '#3F3F3F';
 
 
  var dragaid = document.getElementById(ele.id.replace(' ','&nbsp;')+"_dragaid");
-
+ dragaid.className = "almostinvisible"
  dragaid.style.width = "0";
  dragaid.style.height = "0";
  }
@@ -644,6 +644,16 @@ function closeWindow(callerid,winid)
  }
  
 
+   function clickHome() {
+ 
+ clickSound()
+
+ window.janus.navhome();
+
+ }
+ 
+ 
+ 
   <!-- Sync room -->
  
  function syncroom() {
@@ -763,6 +773,47 @@ toggleWindow(document.getElementById("chatlogbutton"),325,230,'CHAT LOG','apps/c
   var previousroomurl;
 //UPDATING HUD STATUS IN REAL TIME ====================================================================================================================================
   setInterval(function() {
+  
+  
+  
+    
+  //check if chatlog is highlighted, and if it is, make it fully opaque
+  if (document.activeElement == document.getElementById("window_CHAT&nbsp;LOG_windowarea").children[0])
+  {
+
+  
+  //check if the input inside of this is selected 
+
+	var eletemp=getActiveElement();
+
+	 
+	 if ( window.janus.hasFocus() )
+	  {
+	  document.getElementById("window_CHAT&nbsp;LOG").style.opacity = "1";
+	  }
+	  else
+	  {
+	   document.getElementById("window_CHAT&nbsp;LOG").style.opacity = "";  
+	  }
+  
+  
+  }
+  else
+  {
+
+    document.getElementById("window_CHAT&nbsp;LOG").style.opacity = "";
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
    //change janus url based on what room you're in
     
   if (window.janus.currenturl() != previousroomurl)
@@ -972,11 +1023,10 @@ document.getElementById("contain").style.opacity = "";
 			}
   
   
+
   
   
-  
-  
-  
+
   
   
   
@@ -1033,15 +1083,29 @@ function selectURLBar(caller)
 {
 caller.focus();
 caller.select();
+brightenURLContainer()
 }
 
 
 
 
+function blururlBar() {
 
+//when the url bar blurs, if it has nothing in it, put the url of the room back in it
+darkenURLContainer()
+if (document.getElementById("progressbar").value.trim().length == 0)
+{
+document.getElementById("progressbar").value = window.janus.currenturl();
+}
 
+}
 
-
+function brightenURLContainer() {
+document.getElementById("contain").style.opacity = "1";
+}
+function darkenURLContainer() {
+document.getElementById("contain").style.opacity = "";
+}
 
 
 
@@ -1059,8 +1123,8 @@ caller.select();
 		<div >
 			<button onmousemove="showtooltip('Main Menu')" onmouseout="hidetooltip()" class="containerbutton miscbutton" onclick="togglemenulist()"></button>
 			<button onmousemove="showtooltip('Back')" onmouseout="hidetooltip()" class="containerbutton backbutton" onclick="clickBack()"></button>
-			<button onmousemove="showtooltip('Forwards')" onmouseout="hidetooltip()"  class="containerbutton forwardsbutton" onclick="clickForwards()"></button>
-			<button onmousemove="showtooltip('Go to Landing Space')" onmouseout="hidetooltip()"  class="containerbutton pocketbutton" ></button>		
+			<button onmousemove="showtooltip('Forward')" onmouseout="hidetooltip()"  class="containerbutton forwardsbutton" onclick="clickForwards()"></button>
+			<button onmousemove="showtooltip('Go to Landing Space')" onmouseout="hidetooltip()"  class="containerbutton pocketbutton" onclick="clickHome()" ></button>		
 		</div>
 
 	</div>
@@ -1069,7 +1133,7 @@ caller.select();
 		
 		<div >
 
-			<input onkeydown="gotoroomenter()" onfocus="selectURLBar(this)" class="inputfield" id="progressbar" type="text"  value="error" />
+			<input onkeydown="gotoroomenter()" onfocus="selectURLBar(this)" class="inputfield" id="progressbar" onblur="blururlBar()" type="text"  value="error" />
 
 
 			
@@ -1136,9 +1200,15 @@ caller.select();
 
 <button  id="inventorybutton" onmousemove="showtooltip('Inventory')" onmouseout="hidetooltip()" class="quickinventory" onclick="toggleWindow(this,500,256,'INVENTORY','apps/inventory/index.html','50vw','50vh')" > </button>
 
-<button id="websurfacebutton" onmousemove="showtooltip('Browser')" onmouseout="hidetooltip()" class="quickbrowser" onclick="toggleWindow(this,500,256,'BROWSER','apps/browser/index.html','50vw','50vh')" > </button>
 
-<button  id="radarbutton" onmousemove="showtooltip('Radar')" onmouseout="hidetooltip()" class="quickmap" onclick="toggleWindow(this,300,300,'RADAR','apps/map/index.html','80vw','10vh')" > </button>
+
+<!-- Will come in a later update.
+<button id="websurfacebutton" onmousemove="showtooltip('Browser')" onmouseout="hidetooltip()" class="quickbrowser" onclick="toggleWindow(this,500,256,'BROWSER','apps/browser/index.html','50vw','50vh')" > </button>
+-->
+
+
+
+<button  id="radarbutton" onmousemove="showtooltip('Radar')" onmouseout="hidetooltip()" class="quickmap" onclick="toggleWindow(this,266,300,'RADAR','apps/map/index.html','80vw','10vh')" > </button>
 
 <button id="chatlogbutton" onmousemove="showtooltip('Chatlog')" onmouseout="hidetooltip()" class="quickchatlog" onclick="toggleWindow(this,325,230,'CHAT LOG','apps/chatlog/index.html','1vw','65vh')" ></button>
 
