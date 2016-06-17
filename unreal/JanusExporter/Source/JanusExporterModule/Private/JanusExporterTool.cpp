@@ -22,10 +22,19 @@
 #include "Runtime/Engine/Classes/Materials/MaterialInstanceDynamic.h"
 #include "Runtime/Engine/Public/HitProxies.h"
 #include "Developer/MaterialUtilities/Public/MaterialUtilities.h"
-#include "Editor/UnrealEd/Private/FbxExporter.h"
 #include <fbxsdk.h>
 
 #define LOCTEXT_NAMESPACE "JanusExporter"
+#define NO_CUSTOM_SOURCE 1 // remove this if you have the fixed source code that exports materials
+
+#if NO_CUSTOM_SOURCE
+#define private public
+#include "Editor/UnrealEd/Private/FbxExporter.h"
+#undef private
+#else
+#include "Editor/UnrealEd/Private/FbxExporter.h"
+#endif
+
 
 UJanusExporterTool::UJanusExporterTool()
 	: Super(FObjectInitializer::Get())
@@ -85,7 +94,11 @@ bool ExportFBX(UStaticMesh* Mesh, FString RootFolder)
 	Exporter->CreateDocument();
 	Exporter->ExportStaticMesh(Mesh);
 
+#if NO_CUSTOM_SOURCE
+	FbxScene* Scene = Exporter->Scene;
+#else
 	FbxScene* Scene = Exporter->GetFbxScene();
+#endif
 	for (int i = 0; i < Scene->GetNodeCount(); i++)
 	{
 		FbxNode* Node = Scene->GetNode(i);
@@ -204,6 +217,7 @@ void ExportBMP(FString& Path, TArray<FColor> ColorData, int Width, int Height)
 
 void ExportMaterial(FString& Folder, UMaterialInterface* Material, TArray<FString>* ExportedTextures)
 {
+#if !NO_CUSTOM_SOURCE
 	check(Material);
 
 	TEnumAsByte<EBlendMode> BlendMode = Material->GetBlendMode();
@@ -231,6 +245,7 @@ void ExportMaterial(FString& Folder, UMaterialInterface* Material, TArray<FStrin
 
 		ExportPNG(Path, ColorData, Size.X, Size.Y);
 	}
+#endif
 }
 
 FVector ChangeSpace(FVector Vector)
