@@ -143,7 +143,7 @@ namespace JanusVR
                         tex.Resolution = EditorGUI.IntSlider(new Rect(half * 1.3f, r.y + last.height, half * 0.7f, last.height), tex.Resolution, 32, tex.Texture.width);
                         if (SupportsQuality(tex.Format))
                         {
-                            GUI.Label(new Rect(half, r.y + last.height, half * 0.3f, last.height), "Quality");
+                            GUI.Label(new Rect(half, r.y + (last.height * 2), half * 0.3f, last.height), "Quality");
                             tex.Quality = EditorGUI.IntSlider(new Rect(half * 1.3f, r.y + (last.height * 2), half * 0.7f, last.height), tex.Quality, 0, 100);
                         }
                     }
