@@ -32,7 +32,9 @@
   document.getElementById("downloadcachetoggle").checked =  parent.window.janus.getsetting('downloadcache');
   document.getElementById("jsdebuggertoggle").checked =  parent.window.janus.getsetting('jsdebugger');
   document.getElementById("avatarlightingtoggle").checked = parent.window.janus.avatarlighting;
-
+  document.getElementById("hidemenutoggle").checked = parent.window.janus.getsetting('hidemenu');
+  
+  
   //set all the default values
   document.getElementById("displaynameform").value =  parent.window.janus.userid;
 
@@ -215,6 +217,8 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<br>
 					</div>					
 
+					
+				<!-- 
 					<div class='item' >
 					<span>
 					Avatar Scale
@@ -223,7 +227,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					</span>
 
 					</div>		
-
+			
 					
 
 					
@@ -255,6 +259,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</div>		
 					
+					-->
 					
 					<div class='header'>MISC</div>
 					
@@ -566,12 +571,12 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					
 					<div class='item' >
 					<span>
-					<input class="myCheckbox" type='checkbox'  >
+					<input class="myCheckbox" type='checkbox' id="hidemenutoggle" onchange="window.janus.setsetting('hidemenu', this.checked); "  >
 					Hide UI on Unfocus
 
 					</span>
 					<br>
-					</div>					
+					</div>			
 					
 					
 					
