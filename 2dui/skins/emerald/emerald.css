@@ -188,7 +188,7 @@ width: 256px;
   .containerbutton {
     width:48px;
 	padding: 10px 0;
-	  height:42px;
+	  height:39px;
   }
   
   
@@ -255,7 +255,7 @@ width: 256px;
   }
   
   #progressbar {
-  
+  top:-4px;
   position:relative;
   -webkit-transition: left 0.25s; /* Safari 3.1 to 6.0 */
     transition: left 0.25s;
@@ -510,12 +510,17 @@ right:116px;
    
   .stat:hover {
    opacity:1;
-    background-color: #343434;
+    background-color: rgba(84,84,84,0.5);
   
   }
     .stat {
-  opacity:0.65;
-    background-color: #545454;
+  opacity:1;
+
+    text-shadow:
+   -1px -1px 0 #545454,  
+    1px -1px 0 #545454,
+    -1px 1px 0 #545454,
+     1px 1px 0 #545454;
   
   }
   
