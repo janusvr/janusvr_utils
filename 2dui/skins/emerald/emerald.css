@@ -247,7 +247,26 @@ width: 256px;
   overflow:hidden;
   }
   
+  #buttonscontainer {
   
+  position:relative;
+    -webkit-transition: left 0.25s; /* Safari 3.1 to 6.0 */
+    transition: left 0.25s;
+  }
+  
+  #progressbar {
+  
+  position:relative;
+  -webkit-transition: left 0.25s; /* Safari 3.1 to 6.0 */
+    transition: left 0.25s;
+  }
+  
+  #quickbar {
+  
+   -webkit-transition: bottom 0.25s; /* Safari 3.1 to 6.0 */
+    transition: bottom 0.25s; 
+  
+  }
   
   
   button:hover {

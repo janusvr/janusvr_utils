@@ -1001,8 +1001,17 @@ document.getElementById("contain").style.opacity = "";
   }
   
   
+    
+
   
-if (typeof document.getElementById("window_CHAT&nbsp;LOG_windowarea") !== 'undefined') {    
+  
+  
+  
+  
+  
+  
+  
+if (document.getElementById("window_CHAT&nbsp;LOG_windowarea") !== null) {    
   //check if chatlog is highlighted, and if it is, make it fully opaque
   if (document.activeElement == document.getElementById("window_CHAT&nbsp;LOG_windowarea").children[0])
   {
@@ -1030,6 +1039,28 @@ if (typeof document.getElementById("window_CHAT&nbsp;LOG_windowarea") !== 'undef
     document.getElementById("window_CHAT&nbsp;LOG").style.opacity = "";
   }
  }   
+  
+  
+  
+
+
+  if ( window.janus.hasFocus() == 0 ) 
+  {
+
+  document.getElementById("buttonscontainer").style.left = -(document.getElementById("buttonscontainer").offsetWidth)+"px";
+  document.getElementById("progressbar").style.left = -(document.getElementById("buttonscontainer").offsetWidth)+"px";
+  document.getElementById("quickbar").style.bottom =  -(document.getElementById("quickbar").offsetHeight)+"px";
+
+  }
+  else
+  {
+  document.getElementById("buttonscontainer").style.left = "";
+  document.getElementById("progressbar").style.left = "";
+    document.getElementById("quickbar").style.bottom = "";
+  }
+
+  
+  
   
   
   
@@ -1126,7 +1157,7 @@ document.getElementById("contain").style.opacity = "";
 
 
 <div class="navbar unselectable" id="contain" onmouseleave="togglemenulist('true')">
-	<div class="container " >
+	<div class="container " id="buttonscontainer" >
 
 		<div >
 			<button onmousemove="showtooltip('Main Menu')" onmouseout="hidetooltip()" class="containerbutton miscbutton" onclick="togglemenulist()"></button>
@@ -1137,7 +1168,7 @@ document.getElementById("contain").style.opacity = "";
 
 	</div>
 
-	<div class="urlcontainer" >
+	<div class="urlcontainer" id="urlcontainer" >
 		
 		<div >
 
@@ -1203,7 +1234,7 @@ document.getElementById("contain").style.opacity = "";
 
 </div>
 
-<div class="quickbar unselectable">
+<div class="quickbar unselectable" id="quickbar">
 
 
 <button  id="inventorybutton" onmousemove="showtooltip('Inventory')" onmouseout="hidetooltip()" class="quickinventory" onclick="toggleWindow(this,500,256,'INVENTORY','apps/inventory/index.html','50vw','50vh')" > </button>
