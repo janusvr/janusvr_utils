@@ -21,6 +21,12 @@
 
 }
 
+#urlwidthtest {
+
+position:absolute;
+visibility:hidden;
+}
+
   
   .bgvid {
 position: fixed;
@@ -257,8 +263,10 @@ width: 256px;
   #progressbar {
   top:-4px;
   position:relative;
-  -webkit-transition: left 0.25s; /* Safari 3.1 to 6.0 */
-    transition: left 0.25s;
+    -webkit-transition: width 0.25s, left 0.25s; /* Safari */
+    transition: width 0.25s, left 0.25s;
+	max-width:100%;
+	
   }
   
   #quickbar {

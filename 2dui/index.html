@@ -1041,22 +1041,38 @@ if (document.getElementById("window_CHAT&nbsp;LOG_windowarea") !== null) {
  }   
   
   
-  
+  document.getElementById("urlwidthtest").innerHTML =  document.getElementById("progressbar").value;
 
 
   if ( window.janus.hasFocus() == 0 ) 
   {
 
+  
+  //hide buttons on unfocus
   document.getElementById("buttonscontainer").style.left = -(document.getElementById("buttonscontainer").offsetWidth)+"px";
   document.getElementById("progressbar").style.left = -(document.getElementById("buttonscontainer").offsetWidth)+"px";
   document.getElementById("quickbar").style.bottom =  -(document.getElementById("quickbar").offsetHeight)+"px";
 
+
+  document.getElementById("progressbar").style.width = (document.getElementById("urlwidthtest").offsetWidth+32)+"px";
+  
+  
+  
+  
   }
   else
   {
+  
+  //show buttons on unfocus
   document.getElementById("buttonscontainer").style.left = "";
   document.getElementById("progressbar").style.left = "";
-    document.getElementById("quickbar").style.bottom = "";
+  document.getElementById("quickbar").style.bottom = "";
+
+    document.getElementById("progressbar").style.width = ""
+    
+  
+  
+  
   }
 
   
@@ -1154,7 +1170,7 @@ document.getElementById("contain").style.opacity = "";
 
 <body class="unselectable"  >
 
-
+<div id="urlwidthtest" ></div>
 
 <div class="navbar unselectable" id="contain" onmouseleave="togglemenulist('true')">
 	<div class="container " id="buttonscontainer" >
