@@ -97,6 +97,13 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
   
 
   
+  function changename(caller) {
+  
+  window.janus.userid=caller.value;
+  
+  }
+  
+  
     </script>
   
   
@@ -192,7 +199,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					Display Name
-					<input  type='text' class="longerinput" id="displaynameform"  onchange="window.janus.userid=this.value;"  >
+					<input  type='text' class="longerinput" id="displaynameform"  onchange="changename(this)"  >
 
 					</span>
 

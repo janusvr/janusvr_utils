@@ -1,46 +1,49 @@
   <!--
                                              
                                            
-                                           
-                   .:;;,`                  
-                `;;;;;;;;;;                
-               ;;;;;;;;;;;;;,              
-              ;;;;;;;;;;;;;;;;             
-             ;;;;;;;;;;;;;;;;;:            
-         `,,;;;;;;;;;;;;;;;;;;;:`;         
-        .   ;;;;;;;;;;;;;;;;;;;   :        
-            `;;;;;;;;;;;;;;;;;;    :       
-       ;     ;;;;;;;;;;;;;;;;;,            
-       `     ;;;;;;;;;;;;;;;;;      :      
-      `      :;;;;;;;;;;;;;;;;      ,      
-      :      .;;;;;;;;;;;;;;;;             
-      :       ;;;;;;;;;;;;;;;;             
-      :       ;;;;;;;;;;;;;;;:             
-      ;       ;;;;;;;;;;;;;;;`             
-      :       ;;;;;;;;;;;;;;;       `      
-      :       .;;;;;;;;;;;;;;              
-     `         ;;;;;;;;;;;;;;        :     
-     .         ;;;;;;;;;;;;;`         .    
-    ,          :;;;;;;;;;;;;          .             JANUSVR: THE WORLD INSIDE THE WEB
-    :           ;;;;;;;;;;;;               
-    ,           ;;;;;;;;;;;`          ,    
-     ,          `;;;;;;;;;;          ,     
-      .          ;;;;;;;;;           .     
-      :           ;;;;;;;:                 
-      ;           .;;;;;;                  
-      ,            ;;;;;,           `      
-                   ;;;;;`           ;      
-       :           ;;;;;           .       
-        `;,,,`     ;;;;;      ,,,:,        
-              `    ;;;;;     ,             
-              :    ;;;;;                   
-              ,    ,;;;;    .              
-                    ;;;;    ;              
-               ,    ;;;,    `              
-               ,    ;;;    .               
-                ``;`    ,, :               
-                                           
-                                           
+                                                                                                  
+                                             ````...```                                             
+                                        `.-:/++++++++++//-.`                                        
+                                     `-/++oooooooooooooooo++/-`                                     
+                                   `:+oooooooooooooooooooooooo+:.                                   
+                              `` `:+oooooooooooooooooooooooooooo+:` ``                              
+                           `--..-+oooooooooooooooooooooooooooooooo+-..--`                           
+                         `--`````/oooooooooooooooooooooooooooooooo/`````--`                         
+                        `:.```````+oooooooooooooooooooooooooooooo+```````.:`                        
+                       `/`````````:oooooooooooooooooooooooooooooo:`````````/`                       
+                       :.``````````+oooooooooooooooooooooooooooo+``````````.:                       
+                      `/```````````/oooooooooooooooooooooooooooo/```````````/`                      
+                      --```````````-oooooooooooooooooooooooooooo-```````````.-                      
+                      :`````````````+oooooooooooooooooooooooooo+`````````````/                      
+                      -.````````````:oooooooooooooooooooooooooo/````````````.:                      
+                      .:````````````.oooooooooooooooooooooooooo.````````````-.                      
+                      :.`````````````/oooooooooooooooooooooooo/`````````````.:                      
+                    `:.``````````````.oooooooooooooooooooooooo.``````````````.:`                    
+                   `/`````````````````/oooooooooooooooooooooo/`````````````````/`                   
+                   /```````````````````+oooooooooooooooooooo+.``````````````````/`                  JANUSVR: THE WORLD INSIDE THE WEB
+                  `/```````````````````-oooooooooooooooooooo-```````````````````/`                  
+                   `--``````````````````:oooooooooooooooooo:``````````````````--`                   
+                     .:``````````````````-+oooooooooooooo+-``````````````````:.                     
+                      :```````````````````.+oooooooooooo+.```````````````````/                      
+                      -.````````````````````/oooooooooo/````````````````````.:                      
+                      `:`````````````````````+oooooooo+`````````````````````:.                      
+                       :-````````````````````/oooooooo/````````````````````-:                       
+                        .-..`````````````````:oooooooo:`````````````````..-.                        
+                          `..-------.````````:oooooooo:````````.-------..`                          
+                                    :.```````-oooooooo-````````/                                    
+                                    `:```````.oooooooo.```````:.                                    
+                                     :.```````/oooooo+```````.:                                     
+                                     `/```````-oooooo-```````/`                                     
+                                      .:```````/++++/```````:.                                      
+                                       :-..---..````..---..-:                                       
+                                        ..`              `..                                        
+                         
+HEY, YOU'VE FOUND YOUR WAY TO THE 2D UI.
+IF YOU WANT HELP, DROP BY OUR DEV MUMBLE CHANNEL: babylon.vrsites.com
+(OR IF YOU JUST WANT TO CHAT)
+
+WE REAAAAAALLLY ENCOURAGE YOU TO MAKE CHANGES TO THIS. MAKE IT YOUR OWN! CUSTOMIZE IT! HAVE FUN!
+
                                         
 	-->
   
@@ -695,10 +698,9 @@ function closeWindow(callerid,winid)
 	case "debug://rosebud":
 	shownotification("Do you canoe?","notifications/call.png","null","#455947");
 	break;
-	case "debug://aesthetic":
-	shownotification("<marquee style='color:pink'>【<b>ＪＡＮＵＳＶＲ</b>】メタバースへようこそ</marquee>","notifications/logo2.png","null","#442332");
-	toggleWindow('null',500,400,'AESTHETIC','https://www.youtube.com/embed/cU8HrO7XuiE?autoplay=true&loop=1','40vw','35vh');
-	break;
+	case "debug://credits":
+	toggleWindow('null',500,400,'CREDITS','apps/credits/index.html','40vw','35vh');
+	break;	
 	case "debug://captainschair":
 	toggleWindow("null",500,400," CAPTAIN'S CHAIR","apps/captainschair/index.html","40vw","35vh");
 	break;
@@ -768,9 +770,11 @@ setCookie("lastversion",window.janus.version,36500)
 
   };
   
+  
   var opacityoftooltip;
   var previousroomurl;
-//UPDATING HUD STATUS IN REAL TIME ====================================================================================================================================
+  var previoususerid=window.janus.userid;
+  //UPDATING HUD STATUS IN REAL TIME ====================================================================================================================================
   setInterval(function() {
   
   
@@ -1076,7 +1080,13 @@ if (document.getElementById("window_CHAT&nbsp;LOG_windowarea") !== null) {
   }
 
   
+  //check if username has changed, and if it has, show notification
   
+  if ((window.janus.userid != previoususerid) && (previoususerid != ""))
+  {
+  shownotification('Others now see you as <b>'+window.janus.userid+'</b>.','notifications/user.png',"null","#455947");
+  previoususerid = window.janus.userid;
+  }
   
   
   
