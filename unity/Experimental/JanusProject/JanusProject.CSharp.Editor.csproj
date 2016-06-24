@@ -111,6 +111,7 @@
     <Compile Include="Assets\Codebase\Janus\Editor\FbxVector3.cs" />
     <Compile Include="Assets\Codebase\Janus\Editor\ImageFormatEnum.cs" />
     <Compile Include="Assets\Codebase\Janus\Editor\JanusVRExporter.cs" />
+    <Compile Include="Assets\Codebase\Janus\Editor\LightmapExportType.cs" />
     <Compile Include="Assets\Codebase\Janus\Editor\MTL\MtlImporterWindow.cs" />
     <Compile Include="Assets\Codebase\Janus\Editor\MeshExportData.cs" />
     <Compile Include="Assets\Codebase\Janus\Editor\TextureExportData.cs" />

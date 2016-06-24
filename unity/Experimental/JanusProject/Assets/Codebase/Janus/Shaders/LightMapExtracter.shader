@@ -95,7 +95,7 @@
 			{
 				fixed4 lightData = tex2D(_LightMapTex, i.uv1);
 				float3 lightmap = 2 * DecodeLightmap(lightData);
-				return half4(lightmap, 1);
+				return half4(lightmap.rgb, 1);
 			}
 			ENDCG
 		}
