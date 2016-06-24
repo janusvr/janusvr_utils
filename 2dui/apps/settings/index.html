@@ -97,6 +97,13 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
   
 
   
+  function changename(caller) {
+  
+  window.janus.userid=caller.value;
+  
+  }
+  
+  
     </script>
   
   
@@ -192,7 +199,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					Display Name
-					<input  type='text' class="longerinput" id="displaynameform"  onchange="window.janus.userid=this.value;"  >
+					<input  type='text' class="longerinput" id="displaynameform"  onchange="changename(this)"  >
 
 					</span>
 
@@ -306,7 +313,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					<input class="myslider" type='range' id="rotationspeedslider" min="50" max="100" oninput="window.janus.setsetting('rotationspeed', this.value); document.getElementById('rotationspeedslidernumber').innerHTML=this.value;" >
+					<input class="myslider" type='range' id="rotationspeedslider" min="10" max="100" oninput="window.janus.setsetting('rotationspeed', this.value); document.getElementById('rotationspeedslidernumber').innerHTML=this.value;" >
 					Rotation Speed: <span id="rotationspeedslidernumber"></span>
 
 					</span>
