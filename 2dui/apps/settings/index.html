@@ -313,7 +313,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					<input class="myslider" type='range' id="rotationspeedslider" min="10" max="100" oninput="window.janus.setsetting('rotationspeed', this.value); document.getElementById('rotationspeedslidernumber').innerHTML=this.value;" >
+					<input class="myslider" type='range' id="rotationspeedslider" min="10" max="100" onchange="window.janus.setsetting('rotationspeed', this.value); document.getElementById('rotationspeedslidernumber').innerHTML=this.value;" >
 					Rotation Speed: <span id="rotationspeedslidernumber"></span>
 
 					</span>

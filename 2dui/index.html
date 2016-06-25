@@ -439,6 +439,9 @@ function closeWindow(callerid,winid)
 			div.onmousemove  = function(){movewindow(this)};
 			div.style.left = spawnx;
 			div.style.top = spawny;
+			div.style.backgroundAttachment = "fixed";
+			div.style.backgroundImage = "url('backgrounds/stripe.png')";
+
 			
 			div.style.zIndex = highestwindow;
 			div.setAttribute('id', winid); //set the id of this window to window_windowtitlewithspacesremoved

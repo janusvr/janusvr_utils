@@ -611,9 +611,10 @@ opacity:0.75;
   cursor:hand;
   position:absolute; 
   line-height:32px;
-   max-height:32px;
+   max-height:31px;
   width: inherit;
-  min-height: 32px;
+  min-height: 31px;
+  border-bottom: 1px solid #657967;
   
   font-family: "Montserrat";
   color: white;
