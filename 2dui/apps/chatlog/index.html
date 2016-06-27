@@ -31,7 +31,20 @@ return tmp.textContent || tmp.innerText;
 		
 		if (document.getElementById("entryform").value != "")
 		{
-		window.janus.chatsend(document.getElementById("entryform").value); //send chat message value
+		var message = document.getElementById("entryform").value;
+		
+		var checkslashme = message.charAt(0)+message.charAt(1)+message.charAt(2);
+		
+			if (  checkslashme != "/me")
+			{
+				var finalmessage = ":"+message;
+			}
+			else
+			{
+			finalmessage = message.substr(3, message.length);
+			}
+		
+		window.janus.chatsend(finalmessage); //send chat message value
 		}
 		
 		document.getElementById("entryform").value=""; //blank out entry form

@@ -90,7 +90,17 @@ var getActiveElement = function( document ){
   
   
   
-  
+  function formatAMPM() {
+  var date = new Date();
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  var strTime = hours + ':' + minutes + ' ' + ampm;
+  return strTime;
+}
   
   
   
@@ -207,7 +217,7 @@ clicked[ele] = true;
 mousex = event.clientX; 
 mousey = event.clientY;
 
-ele.style.backgroundColor = '#4C4C4C';
+ele.style.backgroundImage = "url('skins/emerald/stripelit.png')";
 
  
  var dragaid = document.getElementById(ele.id.replace(' ','&nbsp;')+"_dragaid");
@@ -221,7 +231,7 @@ ele.style.backgroundColor = '#4C4C4C';
 dragoffsound();
 clicked[ele] = false;
 
-ele.style.backgroundColor = '#3F3F3F';
+ele.style.backgroundImage = '';
 
 
  var dragaid = document.getElementById(ele.id.replace(' ','&nbsp;')+"_dragaid");
@@ -439,8 +449,7 @@ function closeWindow(callerid,winid)
 			div.onmousemove  = function(){movewindow(this)};
 			div.style.left = spawnx;
 			div.style.top = spawny;
-			div.style.backgroundAttachment = "fixed";
-			div.style.backgroundImage = "url('backgrounds/stripe.png')";
+
 
 			
 			div.style.zIndex = highestwindow;
@@ -704,6 +713,11 @@ function closeWindow(callerid,winid)
 	case "debug://credits":
 	toggleWindow('null',500,400,'CREDITS','apps/credits/index.html','40vw','35vh');
 	break;	
+	
+	case "debug://dizzpet":
+	toggleWindow('null',128,192,'DIZZPET','apps/extras/dizzpet/index.html','10vw','20vh');
+	break;		
+	
 	case "debug://captainschair":
 	toggleWindow("null",500,400," CAPTAIN'S CHAIR","apps/captainschair/index.html","40vw","35vh");
 	break;
@@ -782,7 +796,17 @@ setCookie("lastversion",window.janus.version,36500)
   
   
   
-
+	//if UI focused for the first time, demonstrate how to use [...] menu
+	
+	if (window.janus.hasFocus()) {
+	
+	  if (getCookie("fact1") != "used")
+		{
+	 shownotification('You are now in UI mode. Click on the <b>Main Menu</b> to perform a wide variety of useful features.','notifications/menu.png',"null","#455947");
+		setCookie("fact1","used","100000000")
+		}
+	
+	}
   
   
   
@@ -851,8 +875,8 @@ setCookie("lastversion",window.janus.version,36500)
 	
 	
 	
-    document.getElementById("polystatus").innerHTML = window.janus.tricount();
-	document.getElementById("polycountstatuscontainer").onmousemove = function()  {showtooltip('<b>'+(window.janus.tricount())+'</b> polygons here.')}
+    document.getElementById("polystatus").innerHTML = formatAMPM();
+	document.getElementById("polycountstatuscontainer").onmousemove = function()  {showtooltip('The time is <b>'+(formatAMPM())+'</b>.')}
 	
 	//if room is locked or unlocked change locked display
 	
@@ -1255,7 +1279,7 @@ document.getElementById("contain").style.opacity = "";
 
 <div class="stat statisticright unselectable"  id="polycountstatuscontainer" onmouseout="hidetooltip()" >
 <span id="polystatus" ></span>
-<img src="skins\emerald\icons\triicon.png" style="width:20px;height:17px;float:right;padding-right:8px;" />
+
 </div>
 
 

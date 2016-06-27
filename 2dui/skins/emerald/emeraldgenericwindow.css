@@ -58,7 +58,12 @@ border-style: none;
   color:white;
 }
  
+ p {
+   font-family: "Open Sans Regular";
+  color:white;
  
+ 
+ }
 
        .entryform {
   position:fixed;
@@ -187,6 +192,7 @@ display: none;
 }
 
 .tabrow {
+
 white-space: nowrap;
 overflow:hidden;
 }
@@ -204,7 +210,7 @@ overflow:hidden;
 	  
 	  
 	  font-size: 12px;
-  background-color: #545454;
+
  border-style:none;
   color: #E4E4E4;
   font-family: "Montserrat";
@@ -242,7 +248,7 @@ width:calc(100% - 132px);
  background-color:#455947;
  border-color:grey;
  border-width:1px;
- bodrer-style:solid;
+ border-style:solid;
 height:calc(100% - 0px);
 
 vertical-align: middle;

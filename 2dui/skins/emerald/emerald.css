@@ -619,6 +619,10 @@ opacity:0.75;
   font-family: "Montserrat";
   color: white;
   cursor:hand;
+  
+  background-image: url('stripe.png');
+  background-attachment: fixed;
+  background-size: cover;
 
     border-top-right-radius:10px;
     border-top-left-radius:10px;
@@ -631,6 +635,7 @@ opacity:0.75;
   
   .titlebar:hover {
   opacity: 1;
+  
   }
 
   
