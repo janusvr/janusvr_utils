@@ -176,12 +176,12 @@ border-bottom-width: 2px;
 border-top-color: #3F3F3F;
 border-top-style: none;
 border-top-width: 2px;
-background-color:#4C4C4C;
+
 font-family: "Montserrat";
 color: white;
 
 padding: 8px 8px;
-text-align:center;
+text-align:left;
 
 }
 
@@ -374,8 +374,25 @@ font-weight: bold;
 
 padding: 8px 8px;
  font-family: "Open Sans Regular";
- color:white;
+ color: #CCCCCC;
 }
+
+.itemchat {
+
+
+	 font-size:14px;
+
+padding: 8px 8px;
+ font-family: "Open Sans Regular";
+ color: #CCCCCC;
+}
+
+.itemchat b {
+
+color: #0EE05A;
+
+}
+
 
 form {
 margin-bottom: 0;
