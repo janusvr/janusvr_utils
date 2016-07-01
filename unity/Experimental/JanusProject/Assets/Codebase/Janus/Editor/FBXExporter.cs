@@ -81,9 +81,7 @@ namespace UnityEngine.FBX
                     uv[j] = new FbxVector2(v.x, v.y);
                 }
 
-                FBXExporter.AddTexCoords(uv, uv.Length, i, "UV");
-
-                break;
+                FBXExporter.AddTexCoords(uv, uv.Length, i, "UV" + i);
             }
 
             FBXExporter.Export(path);
@@ -137,7 +135,7 @@ namespace UnityEngine.FBX
                 }
 
                 i = 0;
-                FBXExporter.AddTexCoords(uv, uv.Length, i, "UV");
+                FBXExporter.AddTexCoords(uv, uv.Length, i, "UV" + i);
 
                 break;
             }

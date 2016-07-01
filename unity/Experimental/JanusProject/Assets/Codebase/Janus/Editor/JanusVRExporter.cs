@@ -252,7 +252,7 @@ namespace JanusVR
                     {
                         // only load shader now, so if the user is not exporting lightmaps
                         // he doesn't need to have it on his project folder
-                        Shader lightMapShader = Shader.Find("Hidden/LightMapExtracter");
+                        Shader lightMapShader = Shader.Find("Hidden/LMapBaked");
                         Material lightMap = new Material(lightMapShader);
                         lightMap.SetPass(0);
 
@@ -351,7 +351,7 @@ namespace JanusVR
                 case LightmapExportType.Packed:
                     #region Packed
                     {
-                        Shader lightMapShader = Shader.Find("Hidden/LightMapToScreen");
+                        Shader lightMapShader = Shader.Find("Hidden/LMapPacked");
                         Material lightMap = new Material(lightMapShader);
                         lightMap.SetPass(0);
 
@@ -419,7 +419,7 @@ namespace JanusVR
                 case LightmapExportType.Unpacked:
                     #region Unpacked
                     {
-                        Shader lightMapShader = Shader.Find("Hidden/LightMapExtracter");
+                        Shader lightMapShader = Shader.Find("Hidden/LMapUnpacked");
                         Material lightMap = new Material(lightMapShader);
                         lightMap.SetPass(0);
 
@@ -753,6 +753,18 @@ namespace JanusVR
 
         private void DoExport()
         {
+            try
+            {
+                if (!Directory.Exists(exportPath))
+                {
+                    Directory.CreateDirectory(exportPath);
+                }
+            }
+            catch
+            {
+                Debug.LogError("Error while creating the export folder!");
+            }
+
             for (int i = 0; i < texturesExportedData.Count; i++)
             {
                 TextureExportData tex = texturesExportedData[i];
@@ -842,6 +854,16 @@ namespace JanusVR
             for (int i = 0; i < exported.exportedObjs.Count; i++)
             {
                 ExportedObject obj = exported.exportedObjs[i];
+                if (!meshWritten.Contains(obj.mesh))
+                {
+                    string path = meshesExportedData.First(c => c.Mesh == obj.mesh).ExportedPath;
+                    index.Append("\n\t\t\t\t<AssetObject id=\"" + obj.mesh.name + "\" src=\"" + path + "\" />");
+                    meshWritten.Add(obj.mesh);
+                }
+            }
+            for (int i = 0; i < exported.exportedObjs.Count; i++)
+            {
+                ExportedObject obj = exported.exportedObjs[i];
                 if (obj.diffuseMapTex != null &&
                     !texWritten.Contains(obj.diffuseMapTex))
                 {
@@ -855,16 +877,6 @@ namespace JanusVR
                     string path = texturesExportedData.First(c => c.Texture == obj.lightMapTex).ExportedPath;
                     index.Append("\n\t\t\t\t<AssetImage id=\"" + Path.GetFileNameWithoutExtension(path) + "\" src=\"" + path + "\" />");
                     texWritten.Add(obj.lightMapTex);
-                }
-            }
-            for (int i = 0; i < exported.exportedObjs.Count; i++)
-            {
-                ExportedObject obj = exported.exportedObjs[i];
-                if (!meshWritten.Contains(obj.mesh))
-                {
-                    string path = meshesExportedData.First(c => c.Mesh == obj.mesh).ExportedPath;
-                    index.Append("\n\t\t\t\t<AssetObject id=\"" + obj.mesh.name + "\" src=\"" + path + "\" />");
-                    meshWritten.Add(obj.mesh);
                 }
             }
 
@@ -906,13 +918,13 @@ namespace JanusVR
                             lmap.z = Mathf.Clamp(lmap.z, 0, 1);
                             lmap.w = Mathf.Clamp(lmap.w, 0, 1);
 
-                            index.Append("\n\t\t\t\t<Object collision_id=\"" + obj.mesh.name + "\" id=\"" + obj.mesh.name + "\" lmapid=\"" + lmapID + "\" image_id=\"" + diffuseID + "\" lmapscale=\"");
+                            index.Append("\n\t\t\t\t<Object collision_id=\"" + obj.mesh.name + "\" id=\"" + obj.mesh.name + "\" lmap_id=\"" + lmapID + "\" image_id=\"" + diffuseID + "\" lmap_sca=\"");
                             index.Append(lmap.x.ToString(c) + " " + lmap.y.ToString(c) + " " + lmap.z.ToString(c) + " " + lmap.w.ToString(c));
                             index.Append("\" lighting=\"true\" pos=\"");
                         }
                         else if (lightmapExportType == LightmapExportType.Unpacked)
                         {
-                            index.Append("\n\t\t\t\t<Object collision_id=\"" + obj.mesh.name + "\" id=\"" + obj.mesh.name + "\" lmapid=\"" + lmapID + "\" image_id=\"" + diffuseID + "\" lighting=\"true\" pos=\"");
+                            index.Append("\n\t\t\t\t<Object collision_id=\"" + obj.mesh.name + "\" id=\"" + obj.mesh.name + "\" lmap_id=\"" + lmapID + "\" image_id=\"" + diffuseID + "\" lighting=\"true\" pos=\"");
                         }
                     }
                     else
@@ -932,7 +944,6 @@ namespace JanusVR
 
                 Vector3 sca = trans.lossyScale;
                 sca *= uniformScale;
-
 
                 index.Append(pos.x.ToString(c) + " " + pos.y.ToString(c) + " " + pos.z.ToString(c));
                 if (sca.x < 0 || sca.y < 0 || sca.z < 0)
