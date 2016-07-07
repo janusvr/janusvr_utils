@@ -694,11 +694,23 @@ opacity:0.75;
 
 
   body {
-  background-color: rgba(0,x0,0,0);
+  background-color: rgba(0,0,0,0);
   overflow:hidden;
   margin: 2px 2px;
   }
   
+  
+  #fader {
+  position:fixed;
+  width:100%;
+  height:100%;
+  background-color: rgba(0,0,0,0);
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+  
+  -webkit-transition: background-color 0.25s; 
+    transition: background-color 0.25s;
+  }
   
     .closebutton {
   

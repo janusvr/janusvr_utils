@@ -819,16 +819,28 @@ setCookie("lastversion",window.janus.version,36500)
   setInterval(function() {
   
   
-  
-	//if UI focused for the first time, demonstrate how to use [...] menu
-	
+
 	if (window.janus.hasFocus()) {
+	  
+	//if UI focused for the first time, demonstrate how to use [...] menu
 	
 	  if (getCookie("fact1") != "used")
 		{
 	 shownotification('You are now in UI mode. Click on the <b>Main Menu</b> to perform a wide variety of useful features.','notifications/menu.png',"null","#455947");
 		setCookie("fact1","used","100000000")
 		}
+	
+	
+	//darken UI on focus
+	
+	document.getElementById("fader").style.backgroundColor = "rgba(0,0,0,0.3)";
+
+	
+	
+	}
+	else
+	{
+	document.getElementById("fader").style.backgroundColor = "";
 	
 	}
   
@@ -1230,7 +1242,7 @@ document.getElementById("contain").style.opacity = "";
 </head>
 
 <body class="unselectable"  >
-
+<div id="fader"></div>
 <div id="urlwidthtest" ></div>
 
 <div class="navbar unselectable" id="contain" onmouseleave="togglemenulist('true')">
