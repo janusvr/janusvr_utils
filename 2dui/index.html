@@ -192,6 +192,30 @@ else
 }
   
 
+  
+function toggleavatarlist(closeornot) {
+
+ 
+ if (document.getElementById("avatarlist").style.visibility == "visible")
+ {
+ clickSound()
+ }
+if (document.getElementById("avatarlist").style.visibility == "visible" || closeornot=="true")
+{
+ document.getElementById("avatarlist").style.visibility = "hidden"
+
+ 
+ 
+}
+else
+{
+ document.getElementById("avatarlist").style.visibility = "visible"
+ clickSound()
+}
+
+}
+  
+  
  
  <!-- Windowing System. -->
  
@@ -1244,6 +1268,7 @@ document.getElementById("contain").style.opacity = "";
 	
 			<div class="menulist unselectable" id="menulist" onclick="togglemenulist('true')" >
 			<ul>
+			<li class="menulisttitle"  > MAIN MENU</li>	
 			<li class="menulistbutton"  onclick="toggleWindow(this,600,350,'SETTINGS','apps/settings/index.html','50vw','50vh')"> SETTINGS </li>		
 				
 			<li class="menulistbutton" onclick="saveroom()"> SAVE </li>
@@ -1330,7 +1355,44 @@ document.getElementById("contain").style.opacity = "";
 
 
 
- 
+
+<!--
+<div class="avatarcontainer" onmouseleave="toggleavatarlist('true')">
+
+			<div class="avatar"  class="containerbutton miscbutton" onclick="toggleavatarlist()"  >  </div>
+
+
+
+			<div class="avatarlist unselectable" id="avatarlist" onclick="toggleavatarlist('true')" >
+			<ul>
+					<li class="menulisttitle"  > SOCIAL</li>		
+			
+			<li class="menulistbutton"  onclick="toggleWindow(this,600,350,'PROFILE','apps/profile/index.html','50vw','50vh')"> PROFILE </li>		
+				
+			<li class="menulistbutton" onclick="saveroom()"> ROOMS </li>
+			<li class="menulistbutton" onclick="syncroom()"> INBOX </li>		
+			
+		<li class="menulistbuttonquit" onclick="quitjanus()" > LOG OUT </li>				
+			</ul>
+			</div>
+
+</div>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
  <div class="tooltip" id="tooltip">Error.</div>
 	

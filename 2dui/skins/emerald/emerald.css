@@ -16,6 +16,43 @@
   
   }
   
+ .avatar {
+margin-top:4px;
+ opacity: 0.65;
+float:right;
+height:38px;
+width:38px;
+background-image:url(textures/noavatar.png);
+background-size:cover;
+border-radius:50%;
+border-color:white;
+border-width:1px;
+border-style:solid;
+margin-right:4px;
+ } 
+  
+ .avatarcontainer {
+
+float:right;
+height:64px;
+width:147px;
+
+
+
+
+ 
+ }   
+  
+
+  
+  
+  .avatar:hover {
+  
+  opacity:1;
+  cursor:pointer;
+  }
+  
+  
 .almostinvisible {
 
 
@@ -266,7 +303,7 @@ width: 256px;
     -webkit-transition: width 0.25s, left 0.25s; /* Safari */
     transition: width 0.25s, left 0.25s;
 	max-width:100%;
-	
+	background-color: #2B382C;
   }
   
   #quickbar {
@@ -613,8 +650,8 @@ opacity:0.75;
   line-height:32px;
    max-height:31px;
   width: inherit;
-  min-height: 31px;
-  border-bottom: 1px solid #657967;
+  min-height: 32px;
+  border-bottom: 0px solid #04953c;
   
   font-family: "Montserrat";
   color: white;
@@ -659,6 +696,7 @@ opacity:0.75;
   body {
   background-color: rgba(0,x0,0,0);
   overflow:hidden;
+  margin: 2px 2px;
   }
   
   
@@ -734,6 +772,22 @@ opacity:0.75;
   
   }
 
+    .avatarlist {
+  
+  z-Index:2222222222;
+  width:256px;
+  background-color:#3F3F3F;
+  top:48px;
+  right:4px;
+  position:absolute;
+  width: 150px;
+  border-style: solid;
+  border-color: #E4E4E4;
+  border-width:1px;
+    font-family: "Montserrat";
+  color: white;
+  visibility: hidden;
+  }
   
   
   .menulist {
@@ -741,9 +795,9 @@ opacity:0.75;
   z-Index:2222222222;
   width:256px;
   background-color:#3F3F3F;
-  top:58px;
+  top:48px;
   float:left;
-
+	left:4px;
   position:absolute;
   width: 150px;
   border-style: solid;
@@ -777,6 +831,33 @@ opacity:0.75;
 	  
 	  
 }
+
+.menulisttitle {
+    display: block;
+
+    text-align: center;
+
+    text-decoration: none;
+	  font-family: "Montserrat";
+	  
+	  
+	  font-size: 12px;
+	cursor:default;
+
+  color: #E4E4E4;
+  font-family: "Montserrat";
+  padding: 5px 10px;
+word-break: break-all;
+	  
+	  background-image: url('stripe.png');
+  background-attachment: fixed;
+  background-size: cover;
+	  
+	  
+}
+
+
+
 
   .menulistbuttonquit {
     display: block;
@@ -872,6 +953,11 @@ background-color:#E4E4E4 ;
  padding: 0px 0px;
  }
  
+  .avatarlist ul {
+ 
+ margin: 0px 0px;
+ padding: 0px 0px;
+ }
 
 .notification {
 
@@ -927,7 +1013,7 @@ max-height:100%;
 
 .notificationcontainer {
 visibility: hidden;
-left:8px;
+left:4px;
 top:64px;
 position:absolute;
 opacity: 0.65;
