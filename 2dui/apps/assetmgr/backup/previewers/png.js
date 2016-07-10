@@ -1,1 +1,0 @@
-include('previewers/png.js');
