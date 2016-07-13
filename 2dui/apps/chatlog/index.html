@@ -86,7 +86,7 @@ return tmp.textContent || tmp.innerText;
 	
 	var msgtosend = strip(window.janus.chat[chatlength]);
 	
-	msgcontainer.innerHTML = "<b>"+msgtosend.slice(0, msgtosend.indexOf(" "))+"</b>"+msgtosend.slice(msgtosend.indexOf(" ")+1,msgtosend.length );
+	msgcontainer.innerHTML = "<b>"+msgtosend.slice(0, msgtosend.indexOf(" "))+"</b> "+msgtosend.slice(msgtosend.indexOf(" ")+1,msgtosend.length );
 	chtlog.appendChild(msgcontainer); //append this message to the chatlog container
     
     chtlog.scrollTop = chtlog.scrollHeight;
