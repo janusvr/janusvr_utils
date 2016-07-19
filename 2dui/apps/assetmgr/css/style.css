@@ -1,0 +1,150 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;           /* Non-prefixed version, currently
+                                  not supported by any browser */
+}
+
+.windowarea {
+  max-height: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  height: 100%;
+  border-spacing: 0;
+  table-layout:fixed
+}
+
+table tr:first-child {
+  height: 100px;
+}
+
+.assets-container {
+  width: 100%;
+  height: 100%;
+  padding : 10px 10px 10px 12px;
+  background: black;
+  color: white;
+  font-family: 'Open Sans Regular', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+.assets-container ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.assets-container li {
+  position: relative;
+  padding-left: 16px;
+  min-height: 17px;
+  padding-top: 1px;
+}
+
+.assets-container li > ul {
+  display: none;
+}
+
+.assets-container li.expanded > ul {
+  display: block;
+}
+
+.assets-container li .entry-display {
+  white-space: nowrap;
+  cursor: pointer;
+  position: relative;
+  padding-left: 20px;
+}
+
+.assets-container .entry-display.active {
+  outline: 1px solid #325d35;
+  background: rgb(32,70,49);
+}
+
+.assets-container .entry-display.active {
+  outline: 1px solid #325d35;
+  background: rgb(32,70,49);
+}
+
+.assets-container .entry-display.renaming input {
+  background: #042714;
+  color: white;
+  border: 1px solid #325d35;
+
+  height: 16px;
+}
+
+.assets-container .entry-display.renaming .filename {
+  display: none;
+}
+
+.icon {
+  background: url('../images/icons.png?');
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  background-position: -64px 16px;
+}
+
+.active .icon {
+  background-position-y: 16px;
+}
+
+.assets-container li::before:hover, .assets-container li::after:hover {
+  background-position-y: -16px;
+}
+
+.icon-file {
+  background-position-x: -64px;
+}
+
+.icon-folder {
+  background-position-x: -32px;
+}
+
+.icon-image,
+.icon-jpg,
+.icon-gif,
+.icon-png {
+  background-position-x: -80px;
+}
+
+.icon-document, .icon-txt {
+  background-position-x: -96px;
+}
+
+.icon-model,
+.icon-fbx,
+.icon-obj,
+.icon-dae,
+.icon-collada {
+  background-position-x: -112px;
+}
+
+.expanded > .expander {
+  background-position-x: -16px;
+}
+
+.expander {
+  cursor: pointer;
+  left: 0px;
+  background-position-x: 0px;
+}
