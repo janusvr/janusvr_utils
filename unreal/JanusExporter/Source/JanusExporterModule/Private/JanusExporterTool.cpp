@@ -35,11 +35,17 @@
 #include "Editor/UnrealEd/Private/FbxExporter.h"
 #endif
 
+struct LightmappedObjects
+{
+	TArray<AActor*> Actors;
+	FLightMap2D* LightMap;
+	bool IsHighQuality;
+};
 
 UJanusExporterTool::UJanusExporterTool()
 	: Super(FObjectInitializer::Get())
 {
-	ExportPath = "C:\\janus\\";
+	ExportPath = "C:\\janus\\unreal\\decoded\\";
 }
 
 void AssembleListOfExporters(TArray<UExporter*>& OutExporters)
@@ -78,7 +84,7 @@ void UJanusExporterTool::SearchForExport()
 		Title,
 		ExportPath,
 		FolderName
-		);
+	);
 
 	if (bFolderSelected)
 	{
@@ -126,7 +132,12 @@ bool ExportFBX(UStaticMesh* Mesh, FString RootFolder)
 
 	return true;
 }
-
+void ExportPNG(FString& Path, TArray<FColor> ColorData, int Width, int Height)
+{
+	TArray<uint8> PNGData;
+	FImageUtils::CompressImageArray(Width, Height, ColorData, PNGData);
+	FFileHelper::SaveArrayToFile(PNGData, *Path);
+}
 void ExportTGA(UTexture* Texture, FString RootFolder)
 {
 	FString MeshPath = RootFolder + Texture->GetName() + ".tga";
@@ -147,6 +158,324 @@ void ExportTGA(UTexture* Texture, FString RootFolder)
 	Params.WriteEmptyFiles = false;
 	UExporter::ExportToFileEx(Params);
 }
+
+void DecodeAndSaveLQLightmap(LightmappedObjects* Exported, FString RootFolder)
+{
+	FLightMap2D* LightMap = Exported->LightMap;
+	UTexture2D* Texture2D = LightMap->GetTexture(1); // 1 = LQ
+	FString TexName = Texture2D->GetName();
+	FString TexPath = RootFolder + TexName + ".png";
+
+	TEnumAsByte<TextureCompressionSettings> Compression = Texture2D->CompressionSettings;
+	TEnumAsByte<TextureMipGenSettings> MipSettings = Texture2D->MipGenSettings;
+	uint32 SRGB = Texture2D->SRGB;
+	Texture2D->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
+	Texture2D->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
+	Texture2D->SRGB = 0;
+	Texture2D->UpdateResource();
+
+	FTexture2DMipMap* MipMap = &Texture2D->PlatformData->Mips[0];
+
+	void* DataPointer = MipMap->BulkData.Lock(LOCK_READ_ONLY);
+	FColor* Data = static_cast<FColor*>(DataPointer);
+
+	TArray<FColor> ColorData;
+
+	int32 Width = MipMap->SizeX;
+	int32 Height = MipMap->SizeY;
+	int32 Elements = Width * Height;
+	int32 HalfHeight = Height / 2;
+
+	ColorData.SetNum(Elements);
+
+	const float LogBlackPoint = 0.00390625f;// exp2(-8);
+
+	TArray<AActor*> Actors = Exported->Actors;
+	for (int i = 0; i < Actors.Num(); i++)
+	{
+		AActor* Actor = Actors[i];
+
+		TArray<UStaticMeshComponent*> StaticMeshes;
+		Actor->GetComponents<UStaticMeshComponent>(StaticMeshes);
+		for (int j = 0; j < StaticMeshes.Num(); j++)
+		{
+			UStaticMeshComponent* Component = StaticMeshes[j];
+			if (!Component->StaticMesh ||
+				Component->LODData.Num() == 0)
+			{
+				continue;
+			}
+
+			FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
+			FLightMap* LMap = LODInfo->LightMap;
+			if (LMap == NULL)
+			{
+				continue;
+			}
+
+			FLightMap2D* LMap2D = LMap->GetLightMap2D();
+			if (LMap2D->GetTexture(1)->GetName() != TexName)
+			{
+				continue;
+			}
+
+			FLightMapInteraction Interaction = LMap2D->GetInteraction(ERHIFeatureLevel::SM5);
+			const FVector Scale = Interaction.GetLQScaleArray()[0];
+			const FVector Add = Interaction.GetLQAddArray()[0];
+
+			const FVector2D Sca = Interaction.GetCoordinateScale();
+			const FVector2D Bias = Interaction.GetCoordinateBias();
+
+			int X = fmin(Bias.X * Width, Width);
+			int Y = fmin(Bias.Y * Height, Height);
+			int W = fmin(X + (Sca.X * Width), Width);
+			int H = fmin(Y + (Sca.Y * Height), Height) / 2;
+
+			for (int x = X; x < W; x++)
+			{
+				for (int y = Y; y < H - 1; y++)
+				{
+					FColor Color0 = Data[x + (y * Width)];
+					FVector Lightmap0 = FVector(Color0.R / 255.0f, Color0.G / 255.0f, Color0.B / 255.0f);
+
+					// Range scale
+					FVector LogRGB = Lightmap0 * Scale + Add;// 1 vmad
+					float LogL = FVector::DotProduct(LogRGB, FVector(0.3f, 0.59f, 0.11f));// 1 dot
+					float L = exp2(LogL * 16 - 8) - LogBlackPoint;// 1 exp2, 1 smad, 1 ssub
+					float Directionality = 0.6;
+
+					float Luma = L * Directionality;
+					FVector Color = LogRGB * (Luma / LogL);// 1 rcp, 1 smul, 1 vmul
+
+					uint8 R = (uint8)(Color.X * 255.0f);
+					uint8 G = (uint8)(Color.Y * 255.0f);
+					uint8 B = (uint8)(Color.Z * 255.0f);
+					FColor FinalColor = FColor(R, G, B, 255);
+
+					ColorData[x + ((y * 2) * Width)] = FinalColor;
+					ColorData[x + (((y * 2) + 1) * Width)] = FinalColor;
+				}
+			}
+		}
+	}
+
+	MipMap->BulkData.Unlock();
+	Texture2D->CompressionSettings = Compression;
+	Texture2D->MipGenSettings = MipSettings;
+	Texture2D->SRGB = SRGB;
+	Texture2D->UpdateResource();
+
+	ExportPNG(TexPath, ColorData, Width, Height);
+}
+void DecodeAndSaveLQLightmap2(LightmappedObjects* Exported, FString RootFolder)
+{
+	FLightMap2D* LightMap = Exported->LightMap;
+	UTexture2D* Texture2D = LightMap->GetTexture(1); // 1 = LQ
+	FString TexName = Texture2D->GetName();
+	FString TexPath = RootFolder + TexName + "_2.png";
+
+	TEnumAsByte<TextureCompressionSettings> Compression = Texture2D->CompressionSettings;
+	TEnumAsByte<TextureMipGenSettings> MipSettings = Texture2D->MipGenSettings;
+	uint32 SRGB = Texture2D->SRGB;
+	Texture2D->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
+	Texture2D->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
+	Texture2D->SRGB = 0;
+	Texture2D->UpdateResource();
+
+	FTexture2DMipMap* MipMap = &Texture2D->PlatformData->Mips[0];
+
+	void* DataPointer = MipMap->BulkData.Lock(LOCK_READ_ONLY);
+	FColor* Data = static_cast<FColor*>(DataPointer);
+
+	TArray<FColor> ColorData;
+
+	int32 Width = MipMap->SizeX;
+	int32 Height = MipMap->SizeY;
+	int32 Elements = Width * Height;
+	int32 HalfHeight = Height / 2;
+
+	ColorData.SetNum(Elements);
+
+	const float LogBlackPoint = 0.00390625f;// exp2(-8);
+
+	TArray<AActor*> Actors = Exported->Actors;
+	for (int i = 0; i < Actors.Num(); i++)
+	{
+		AActor* Actor = Actors[i];
+
+		TArray<UStaticMeshComponent*> StaticMeshes;
+		Actor->GetComponents<UStaticMeshComponent>(StaticMeshes);
+		for (int j = 0; j < StaticMeshes.Num(); j++)
+		{
+			UStaticMeshComponent* Component = StaticMeshes[j];
+			UStaticMesh *Mesh = Component->StaticMesh;
+			if (!Mesh ||
+				Component->LODData.Num() == 0)
+			{
+				continue;
+			}
+
+			FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
+			FLightMap* LMap = LODInfo->LightMap;
+			if (LMap == NULL)
+			{
+				continue;
+			}
+
+			FLightMap2D* LMap2D = LMap->GetLightMap2D();
+			if (LMap2D->GetTexture(1)->GetName() != TexName)
+			{
+				continue;
+			}
+
+			FLightMapInteraction Interaction = LMap2D->GetInteraction(ERHIFeatureLevel::SM5);
+			const FVector Scale = Interaction.GetLQScaleArray()[0];
+			const FVector Add = Interaction.GetLQAddArray()[0];
+
+			const FVector2D Sca = Interaction.GetCoordinateScale();
+			const FVector2D Bias = Interaction.GetCoordinateBias();
+
+			int X = fmin(Bias.X * Width, Width);
+			int Y = fmin(Bias.Y * Height, Height);
+			int W = fmin(X + (Sca.X * Width), Width);
+			int H = fmin(Y + (Sca.Y * Height), Height) / 2;
+
+			for (int x = X; x < W; x++)
+			{
+				for (int y = Y; y < H - 1; y++)
+				{
+					FColor Color0 = Data[x + (y * Width)];
+					ColorData[x + ((y * 2) * Width)] = Color0;
+					ColorData[x + (((y * 2) + 1) * Width)] = Color0;
+				}
+			}
+		}
+	}
+
+	MipMap->BulkData.Unlock();
+	Texture2D->CompressionSettings = Compression;
+	Texture2D->MipGenSettings = MipSettings;
+	Texture2D->SRGB = SRGB;
+	Texture2D->UpdateResource();
+
+	ExportPNG(TexPath, ColorData, Width, Height);
+}
+void DecodeAndSaveHQLightmap(LightmappedObjects* Exported, FString RootFolder)
+{
+	FLightMap2D* LightMap = Exported->LightMap;
+	UTexture2D* Texture2D = LightMap->GetTexture(0);
+	FString TexName = Texture2D->GetName();
+	FString TexPath = RootFolder + TexName + ".png";
+
+	TEnumAsByte<TextureCompressionSettings> Compression = Texture2D->CompressionSettings;
+	TEnumAsByte<TextureMipGenSettings> MipSettings = Texture2D->MipGenSettings;
+	uint32 SRGB = Texture2D->SRGB;
+	Texture2D->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
+	Texture2D->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
+	Texture2D->SRGB = 0;
+	Texture2D->UpdateResource();
+
+	FTexture2DMipMap* MipMap = &Texture2D->PlatformData->Mips[0];
+
+	void* DataPointer = MipMap->BulkData.Lock(LOCK_READ_ONLY);
+	FColor* Data = static_cast<FColor*>(DataPointer);
+
+	TArray<FColor> ColorData;
+
+	int32 Width = MipMap->SizeX;
+	int32 Height = MipMap->SizeY;
+	int32 Elements = Width * Height;
+	int32 HalfHeight = Height / 2;
+
+	ColorData.SetNum(Elements);
+
+	const float LogBlackPoint = 0.01858136;
+
+	TArray<AActor*> Actors = Exported->Actors;
+	for (int i = 0; i < Actors.Num(); i++)
+	{
+		AActor* Actor = Actors[i];
+
+		TArray<UStaticMeshComponent*> StaticMeshes;
+		Actor->GetComponents<UStaticMeshComponent>(StaticMeshes);
+		for (int32 j = 0; j < StaticMeshes.Num(); j++)
+		{
+			UStaticMeshComponent* Component = StaticMeshes[j];
+			UStaticMesh *Mesh = Component->StaticMesh;
+			if (!Mesh ||
+				Component->LODData.Num() == 0)
+			{
+				continue;
+			}
+
+			FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
+			FLightMap* LMap = LODInfo->LightMap;
+			if (LMap == NULL)
+			{
+				continue;
+			}
+
+			FLightMap2D* LMap2D = LMap->GetLightMap2D();
+			if (LMap2D->GetTexture(0)->GetName() != TexName)
+			{
+				continue;
+			}
+
+			FLightMapInteraction Interaction = LMap2D->GetInteraction(ERHIFeatureLevel::SM5);
+			const FVector4 Scale = Interaction.GetScaleArray()[0];
+			const FVector4 Add = Interaction.GetAddArray()[0];
+
+			const FVector2D Sca = Interaction.GetCoordinateScale();
+			const FVector2D Bias = Interaction.GetCoordinateBias();
+
+			int X = fmin(Bias.X * Width, Width);
+			int Y = fmin(Bias.Y * Height, Height);
+			int W = fmin(X + (Sca.X * Width), Width);
+			int H = fmin(Y + (Sca.Y * Height), Height) / 2;
+
+			for (int x = X; x < W; x++)
+			{
+				for (int y = Y; y < H; y++)
+				{
+					FColor Color0 = Data[x + (y * Width)];
+					FColor Color1 = Data[x + ((y + HalfHeight) * Width)];
+					FVector4 Lightmap0 = FVector4(Color0.R / 255.0f, Color0.G / 255.0f, Color0.B / 255.0f, Color0.A / 255.0f);
+					FVector4 Lightmap1 = FVector4(Color1.R / 255.0f, Color1.G / 255.0f, Color1.B / 255.0f, Color1.A / 255.0f);
+
+					float LogL = Lightmap0.W;
+					// Add residual
+					LogL += Lightmap1.W * (1.0 / 255.0f) - (0.5 / 255.0f);
+					// Range scale LogL
+					LogL = LogL * Scale.W + Add.W;
+					// Range scale UVW
+					FVector UVW = Lightmap0 * Lightmap0 * Scale + Add;
+					// LogL -> L
+					float L = exp2f(LogL) - LogBlackPoint;
+					float Directionality = 0.6;
+					float Luma = L * Directionality;
+					FVector Color = Luma * UVW;
+
+					uint8 R = (uint8)(Color.X * 255.0f);
+					uint8 G = (uint8)(Color.Y * 255.0f);
+					uint8 B = (uint8)(Color.Z * 255.0f);
+					FColor FinalColor = FColor(R, G, B, 255);
+
+					ColorData[x + ((y * 2) * Width)] = FinalColor;
+					ColorData[x + (((y * 2) + 1) * Width)] = FinalColor;
+				}
+			}
+		}
+	}
+
+	MipMap->BulkData.Unlock();
+	Texture2D->CompressionSettings = Compression;
+	Texture2D->MipGenSettings = MipSettings;
+	Texture2D->SRGB = SRGB;
+	Texture2D->UpdateResource();
+
+	ExportPNG(TexPath, ColorData, Width, Height);
+}
+
 
 void ExportPNG(UTexture* Texture, FString RootFolder, bool bFillAlpha = true)
 {
@@ -196,34 +525,21 @@ void ExportPNG(UTexture* Texture, FString RootFolder, bool bFillAlpha = true)
 	Texture2D->SRGB = SRGB;
 	Texture2D->UpdateResource();
 
-	TArray<uint8> PNGData;
-
-	FImageUtils::CompressImageArray(Width, Height, ColorData, PNGData);
-
-	FFileHelper::SaveArrayToFile(PNGData, *TexPath);
+	ExportPNG(TexPath, ColorData, Width, Height);
 }
-
-void ExportPNG(FString& Path, TArray<FColor> ColorData, int Width, int Height)
-{
-	TArray<uint8> PNGData;
-	FImageUtils::CompressImageArray(Width, Height, ColorData, PNGData);
-	FFileHelper::SaveArrayToFile(PNGData, *Path);
-}
-
 void ExportBMP(FString& Path, TArray<FColor> ColorData, int Width, int Height)
 {
 	FFileHelper::CreateBitmap(*Path, Width, Height, ColorData.GetData());
 }
-
 void ExportMaterial(FString& Folder, UMaterialInterface* Material, TArray<FString>* ExportedTextures)
 {
-#if !NO_CUSTOM_SOURCE
+	//#if !NO_CUSTOM_SOURCE
 	check(Material);
 
 	TEnumAsByte<EBlendMode> BlendMode = Material->GetBlendMode();
 	bool bIsValidMaterial = FMaterialUtilities::SupportsExport((EBlendMode)(BlendMode), EMaterialProperty::MP_BaseColor);
 
-	//if (bIsValidMaterial)
+	if (bIsValidMaterial)
 	{
 		TArray<FColor> ColorData;
 		FIntPoint Size;
@@ -245,36 +561,23 @@ void ExportMaterial(FString& Folder, UMaterialInterface* Material, TArray<FStrin
 
 		ExportPNG(Path, ColorData, Size.X, Size.Y);
 	}
-#endif
+	//#endif
 }
-
 FVector ChangeSpace(FVector Vector)
 {
 	return FVector(Vector.Y, Vector.Z, -Vector.X);
 }
-
 FVector ChangeSpaceScalar(FVector Vector)
 {
 	return FVector(Vector.Y, Vector.Z, Vector.X);
 }
-
-float Abs(float Value)
-{
-	if (Value < 0)
-	{
-		return Value * -1;
-	}
-	return Value;
-}
-
 FVector GetSignVector(FVector Vector)
 {
 	return FVector(Vector.X > 0 ? 1 : -1, Vector.Y > 0 ? 1 : -1, Vector.Z > 0 ? 1 : -1);
 }
-
 FVector Abs(FVector Vector)
 {
-	return FVector(Abs(Vector.X), Abs(Vector.Y), Abs(Vector.Z));
+	return FVector(fabsf(Vector.X), fabsf(Vector.Y), fabsf(Vector.Z));
 }
 
 void UJanusExporterTool::Export()
@@ -287,18 +590,14 @@ void UJanusExporterTool::Export()
 	TArray<AActor*> ActorsExported;
 	TArray<UStaticMesh*> StaticMeshesExp;
 	TArray<FString> TexturesExp;
-	TArray<FString> MaterialsExported;
+	TArray<UMaterialInterface*> MaterialsExported;
+	TMap<FString, LightmappedObjects> LightmapsToExport;
 
 	for (TObjectIterator<AActor> Itr; Itr; ++Itr)
 	{
 		AActor *Actor = *Itr;
 
 		FString Name = Actor->GetName();
-		/*if (!Name.StartsWith("SM_Floor_R"))
-		{
-			continue;
-		}*/
-
 		if (Actor->IsHiddenEd())
 		{
 			continue;
@@ -312,49 +611,59 @@ void UJanusExporterTool::Export()
 		{
 			UStaticMeshComponent* Component = StaticMeshes[i];
 			UStaticMesh *Mesh = Component->StaticMesh;
-			if (!Mesh)
+			if (!Mesh ||
+				Component->LODData.Num() == 0)
 			{
 				continue;
-			}
-
-			if (Component->LODData.Num() > 0)
-				//if (false)
-			{
-				FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
-				FLightMap* LightMap = LODInfo->LightMap;
-				FShadowMap* ShadowMap = LODInfo->ShadowMap;
-				if (LightMap != NULL)
-				{
-					FLightMap2D* LightMap2D = LightMap->GetLightMap2D();
-					UTexture2D* Texture = LightMap2D->GetTexture(0); // 0 = HQ LightMap
-					FString TexName = Texture->GetName();
-					if (TexturesExp.Contains(TexName))
-					{
-						continue;
-					}
-
-					TexturesExp.Add(TexName);
-					ExportPNG(Texture, Root);
-				}
-				if (ShadowMap != NULL)
-				{
-					FShadowMap2D* ShadowMap2D = ShadowMap->GetShadowMap2D();
-					UShadowMapTexture2D* ShadowTex = ShadowMap2D->GetTexture();
-					FString TexName = ShadowTex->GetName();
-					if (TexturesExp.Contains(TexName))
-					{
-						continue;
-					}
-
-					TexturesExp.Add(TexName);
-					ExportPNG(ShadowTex, Root);
-				}
 			}
 
 			if (!StaticMeshesExp.Contains(Mesh))
 			{
 				StaticMeshesExp.Add(Mesh);
 				ExportFBX(Mesh, Root);
+			}
+
+			FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
+			FLightMap* LightMap = LODInfo->LightMap;
+			if (LightMap != NULL)
+			{
+				FLightMap2D* LightMap2D = LightMap->GetLightMap2D();
+
+				// HQ
+				UTexture2D* Texture = LightMap2D->GetTexture(0); // 0 = HQ LightMap, 1 = LQ LightMap
+				FString TexName = Texture->GetName();
+				if (!LightmapsToExport.Contains(TexName))
+				{
+					LightmappedObjects Obj;
+					Obj.LightMap = LightMap2D;
+					Obj.IsHighQuality = true;
+					LightmapsToExport.Add(TexName, Obj);
+				}
+				LightmapsToExport[TexName].Actors.Add(Actor);
+
+				if (!TexturesExp.Contains(TexName))
+				{
+					ExportPNG(Texture, Root + "\\Encoded\\");
+					TexturesExp.Add(TexName);
+				}
+
+				// LQ
+				Texture = LightMap2D->GetTexture(1);
+				TexName = Texture->GetName();
+				if (!LightmapsToExport.Contains(TexName))
+				{
+					LightmappedObjects Obj;
+					Obj.LightMap = LightMap2D;
+					Obj.IsHighQuality = false;
+					LightmapsToExport.Add(TexName, Obj);
+				}
+				LightmapsToExport[TexName].Actors.Add(Actor);
+
+				if (!TexturesExp.Contains(TexName))
+				{
+					ExportPNG(Texture, Root + "\\Encoded\\");
+					TexturesExp.Add(TexName);
+				}
 			}
 
 			TArray<UMaterialInterface*> Materials = Component->GetMaterials();
@@ -366,25 +675,36 @@ void UJanusExporterTool::Export()
 					continue;
 				}
 
-				FString MatName = Material->GetName();
-
-				if (MaterialsExported.Contains(MatName))
+				if (MaterialsExported.Contains(Material))
 				{
 					continue;
 				}
 
-				MaterialsExported.Add(MatName);
+				MaterialsExported.Add(Material);
 				ExportMaterial(Root, Material, &TexturesExp);
 			}
+		}
+	}
+
+	for (auto Elem : LightmapsToExport)
+	{
+		if (Elem.Value.IsHighQuality)
+		{
+			DecodeAndSaveHQLightmap(&Elem.Value, Root);
+		}
+		else
+		{
+			DecodeAndSaveLQLightmap(&Elem.Value, Root);
+			DecodeAndSaveLQLightmap2(&Elem.Value, Root);
 		}
 	}
 
 	// Models before textures so we can start showing the scene faster (textures take too long to load)
 	for (int32 i = 0; i < StaticMeshesExp.Num(); i++)
 	{
-		UStaticMesh *mesh = StaticMeshesExp[i];
+		UStaticMesh *Mesh = StaticMeshesExp[i];
 
-		Index.Append("\n\t\t\t\t<AssetObject id=\"" + mesh->GetName() + "\" src=\"" + mesh->GetName() + ".fbx\" />");
+		Index.Append("\n\t\t\t\t<AssetObject id=\"" + Mesh->GetName() + "\" src=\"" + Mesh->GetName() + ".fbx\" />");
 	}
 
 	for (int32 i = 0; i < TexturesExp.Num(); i++)
@@ -412,6 +732,33 @@ void UJanusExporterTool::Export()
 			}
 
 			FString ImageID = "";
+			FString LmapID = "";
+			FVector4 LightMapSca = FVector4(0, 0, 0, 0);
+			FVector4 LightMapCoSca = FVector4(0, 0, 0, 0);
+			FVector4 LightMapCoAdd = FVector4(0, 0, 0, 0);
+			bool HasLightmap = false;
+
+			if (Component->LODData.Num() > 0)
+			{
+				FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
+				FLightMap* LightMap = LODInfo->LightMap;
+				FShadowMap* ShadowMap = LODInfo->ShadowMap;
+				if (LightMap != NULL)
+				{
+					FLightMap2D* LightMap2D = LightMap->GetLightMap2D();
+					UTexture2D* Texture = LightMap2D->GetTexture(0);
+					FString TexName = Texture->GetName();
+					LmapID = TexName;
+
+					FLightMapInteraction Interaction = LightMap2D->GetInteraction(ERHIFeatureLevel::SM5);
+					FVector2D Scale = Interaction.GetCoordinateScale();
+					FVector2D Bias = Interaction.GetCoordinateBias();
+					LightMapSca = FVector4(Scale.X, Scale.Y, Bias.X, 1 - Bias.Y - Scale.Y);
+					LightMapCoSca = Interaction.GetLQScaleArray()[0];
+					LightMapCoAdd = Interaction.GetLQAddArray()[0];
+					HasLightmap = true;
+				}
+			}
 
 			TArray<UMaterialInterface*> Materials = Component->GetMaterials();
 			for (int32 j = 0; j < Materials.Num(); j++)
@@ -425,14 +772,7 @@ void UJanusExporterTool::Export()
 				break;
 			}
 
-			if (ImageID == "")
-			{
-				Index.Append("\n\t\t\t\t<Object collision_id=\"" + Mesh->GetName() + "\" id=\"" + Mesh->GetName() + "\" lighting=\"true\" pos=\"");
-			}
-			else
-			{
-				Index.Append("\n\t\t\t\t<Object collision_id=\"" + Mesh->GetName() + "\" id=\"" + Mesh->GetName() + "\" image_id=\"" + ImageID + "\" lighting=\"true\" pos=\"");
-			}
+			Index.Append("\n\t\t\t\t<Object collision_id=\"" + Mesh->GetName() + "\" id=\"" + Mesh->GetName() + "\" lighting=\"true\" ");
 
 			FRotator Rot = Actor->GetActorRotation();
 			FVector XDir = Rot.RotateVector(FVector::RightVector);
@@ -450,25 +790,43 @@ void UJanusExporterTool::Export()
 			ZDir = ChangeSpace(ZDir);
 			FVector Sign = GetSignVector(Sca);
 
-			Index.Append(FString::SanitizeFloat(Pos.X) + " " + FString::SanitizeFloat(Pos.Y) + " " + FString::SanitizeFloat(Pos.Z));
+			Index.Append("pos=\"");
+			Index.Append(FString::SanitizeFloat(Pos.X) + " " + FString::SanitizeFloat(Pos.Y) + " " + FString::SanitizeFloat(Pos.Z) + "\" ");
 			if (Sca.X < 0 || Sca.Y < 0 || Sca.Z < 0)
 			{
-				Index.Append("\" cull_face=\"front");
+				Index.Append("cull_face=\"front\" ");
 			}
 
-			Index.Append("\" scale=\"");
-			Index.Append(FString::SanitizeFloat(Sca.X) + " " + FString::SanitizeFloat(Sca.Y) + " " + FString::SanitizeFloat(Sca.Z));
+			if (ImageID != "")
+			{
+				Index.Append("image_id=\"" + ImageID + "\" ");
+			}
 
-			Index.Append("\" xdir=\"");
-			Index.Append(FString::SanitizeFloat(XDir.X) + " " + FString::SanitizeFloat(XDir.Y) + " " + FString::SanitizeFloat(XDir.Z));
+			if (HasLightmap)
+			{
+				//Index.Append("name=\"" + Actor->GetName() + "\" ");
+				Index.Append("lmap_id=\"" + LmapID + "\" ");
+				Index.Append("lmap_sca=\"");
+				Index.Append(FString::SanitizeFloat(LightMapSca.X) + " " + FString::SanitizeFloat(LightMapSca.Y) + " " + FString::SanitizeFloat(LightMapSca.Z) + " " + FString::SanitizeFloat(LightMapSca.W) + "\" ");
+				Index.Append("cosca=\"");
+				Index.Append(FString::SanitizeFloat(LightMapCoSca.X) + " " + FString::SanitizeFloat(LightMapCoSca.Y) + " " + FString::SanitizeFloat(LightMapCoSca.Z) + " " + FString::SanitizeFloat(LightMapCoSca.W) + "\" ");
+				Index.Append("coadd=\"");
+				Index.Append(FString::SanitizeFloat(LightMapCoAdd.X) + " " + FString::SanitizeFloat(LightMapCoAdd.Y) + " " + FString::SanitizeFloat(LightMapCoAdd.Z) + " " + FString::SanitizeFloat(LightMapCoAdd.W) + "\" ");
+			}
 
-			Index.Append("\" ydir=\"");
-			Index.Append(FString::SanitizeFloat(YDir.X) + " " + FString::SanitizeFloat(YDir.Y) + " " + FString::SanitizeFloat(YDir.Z));
+			Index.Append("scale=\"");
+			Index.Append(FString::SanitizeFloat(Sca.X) + " " + FString::SanitizeFloat(Sca.Y) + " " + FString::SanitizeFloat(Sca.Z) + "\" ");
 
-			Index.Append("\" zdir=\"");
-			Index.Append(FString::SanitizeFloat(ZDir.X) + " " + FString::SanitizeFloat(ZDir.Y) + " " + FString::SanitizeFloat(ZDir.Z));
+			Index.Append("xdir=\"");
+			Index.Append(FString::SanitizeFloat(XDir.X) + " " + FString::SanitizeFloat(XDir.Y) + " " + FString::SanitizeFloat(XDir.Z) + "\" ");
 
-			Index.Append("\" />");
+			Index.Append("ydir=\"");
+			Index.Append(FString::SanitizeFloat(YDir.X) + " " + FString::SanitizeFloat(YDir.Y) + " " + FString::SanitizeFloat(YDir.Z) + "\" ");
+
+			Index.Append("zdir=\"");
+			Index.Append(FString::SanitizeFloat(ZDir.X) + " " + FString::SanitizeFloat(ZDir.Y) + " " + FString::SanitizeFloat(ZDir.Z) + "\" ");
+
+			Index.Append("/>");
 		}
 	}
 

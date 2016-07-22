@@ -7,11 +7,11 @@ public class JanusExporterModule : ModuleRules
         PrivateIncludePaths.AddRange(
             new string[]
             {
-                @"C:\Users\Lucas\Source\Repos\UnrealEngine\Engine\Source\ThirdParty\FBX\2016.1.1\include",
+                @"C:\Dev\UnrealEngine\Engine\Source\ThirdParty\FBX\2016.1.1\include",
             }
         );
 
-        PublicAdditionalLibraries.Add(@"C:\Users\Lucas\Source\Repos\UnrealEngine\Engine\Source\ThirdParty\FBX\2016.1.1\lib\vs2015\x64\release\libfbxsdk.lib");
+        PublicAdditionalLibraries.Add(@"C:\Dev\UnrealEngine\Engine\Source\ThirdParty\FBX\2016.1.1\lib\vs2015\x64\release\libfbxsdk.lib");
 
         PublicDependencyModuleNames.AddRange(
 			new string[] {
