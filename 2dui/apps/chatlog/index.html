@@ -35,13 +35,17 @@ return tmp.textContent || tmp.innerText;
 		
 		var checkslashme = message.charAt(0)+message.charAt(1)+message.charAt(2);
 		
-			if (  checkslashme != "/me")
+			if (  checkslashme != "/me" && message.charAt(0) != "#")
 			{
 				var finalmessage = " : "+message;
 			}
-			else
+			else if (checkslashme == "/me")
 			{
 			finalmessage = message.substr(3, message.length);
+			}
+			else if (message.charAt(0) == "#")
+			{
+			finalmessage = message.substr(0, message.length);
 			}
 		
 		window.janus.chatsend(finalmessage); //send chat message value
@@ -82,7 +86,7 @@ return tmp.textContent || tmp.innerText;
 	
 	var msgtosend = strip(window.janus.chat[chatlength]);
 	
-	msgcontainer.innerHTML = "<b>"+msgtosend.slice(0, msgtosend.indexOf(" "))+"</b>"+msgtosend.slice(msgtosend.indexOf(" ")+1,msgtosend.length );
+	msgcontainer.innerHTML = "<b>"+msgtosend.slice(0, msgtosend.indexOf(" "))+"</b> "+msgtosend.slice(msgtosend.indexOf(" ")+1,msgtosend.length );
 	chtlog.appendChild(msgcontainer); //append this message to the chatlog container
     
     chtlog.scrollTop = chtlog.scrollHeight;
