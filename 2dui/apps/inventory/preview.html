@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -5,7 +6,8 @@
     <title>Asset Previewer</title>
     <meta name="description" content="JanusVR Interface Settings Menu">
     <meta name="author" content="JanusVR Inc.">
-    <script src="../../../scripts/tabs.js"></script>
+    <script src="../../scripts/tabs.js"></script>
+    <script src="../../scripts/winlib.js"></script>
     <script src="lib/jquery-3.0.0.min.js"></script>
     <script src="lib/jquery.form.min.js"></script>
 
@@ -18,10 +20,12 @@
         margin: 0px;
       }
 
-      .windowarea, .windowcontainer, img {
+      .windowarea, .windowcontainer {
         width: 100%;
         height: 100%;
-        background: white;
+        background: black;
+        border: none;
+        overflow: hidden;
       }
 
       iframe {
@@ -32,23 +36,26 @@
 
     </style>
     <script type='text/javascript'>
+
+      var assetData = null;
+
+      var baseurl = 'http://ipfs.io/ipfs/';
+      var assetURL;
+      var winid = null;
+      var isInited = false;
+
       var listeners = [];
       window.onMessage = function(cb) {
         listeners.push(cb);
       }
 
       window.addEventListener('message', function(ev) {
-        var id = ev.data.id;
-
-        if (!frameIDs[id])
-          return;
-
-        frameIDs[id](ev.data.content);
-        $('#' + id).remove();
-        delete frameIDs[id];
+        var data = ev.data;
+        if (data.cmd == 'asset') {
+          assetData = data.data;
+        }
       }, false);
 
-      var frameIDs = [];
 
       function loadViaFrame(url, cb) {
         var id = 'f' + Math.floor(Math.random() * 100000000);
@@ -66,47 +73,25 @@
         frame.appendTo('body');
       }
 
-      function include(src) {
-        src += '?r=' + Math.random();
-        var s = document.createElement('script');
-        s.src = src;
 
-        document.head.appendChild(s);
 
-        return s;
-      }
-
-      var params = {};
-      var baseurl = 'http://ipfs.strandedin.space:8080/ipfs/';
-      var assetURL;
-
-      $(document).ready(function() {
+      window.onJanusWinReady(function() {
         function displayError(error) {
           error = error || 'Error';
           $('.windowarea').html('<h1>' + error + '</h1>')
         }
-        var query = location.href.split('?').pop();
 
-        if (!query)
-          return displayError('No query data');
+        var type = assetData.filetype;//params['filetype'];
 
-
-        var toks = query.split('&');
-        for (var i in toks) {
-          var pair = toks[i].split('=');
-
-          var val = pair.pop();
-          var key = pair.pop();
-
-          params[key] = val;
-        }
-
-        var type = params['filetype'];
+        if (type.substr(type.length-3,3) == '.gz')
+          type = type.substr(0,type.length-3);
 
         if (!type)
           return displayError('Missing filetype');
 
-        assetURL = baseurl + params['uuid'];
+
+        assetURL = baseurl + assetData.hash;//params['hash'];
+
         include('previewers/' + type + '.js');
       });
     </script>
