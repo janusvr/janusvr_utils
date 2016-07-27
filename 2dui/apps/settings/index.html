@@ -61,7 +61,8 @@
 	document.getElementById("rateform").value =  parent.window.janus.getsetting('rate');  	
 	document.getElementById("portform").value =  parent.window.janus.getsetting('port');  
  
-  
+  	document.getElementById("ipdform").value =  parent.window.janus.getsetting('ipd');  
+ 
   
   
   }
@@ -227,7 +228,11 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>					
+					</div>				
+
+
+
+					
 
 					
 				<!-- 
@@ -605,6 +610,16 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					</div>
 
 					
+					
+				<div class='header'>VR</div>				
+					<div class='item' >
+					<span>
+					Distance Between Eyes (IPD)
+					<input  type='text'  id="ipdform"  onchange="window.janus.setsetting('ipd', this.value);"  >
+
+					</span>
+
+					</div>	
 					
 				</div>					
 										
