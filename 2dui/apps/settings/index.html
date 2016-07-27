@@ -61,8 +61,8 @@
 	document.getElementById("rateform").value =  parent.window.janus.getsetting('rate');  	
 	document.getElementById("portform").value =  parent.window.janus.getsetting('port');  
  
-  	document.getElementById("ipdslider").value =  parent.window.janus.getsetting('ipd');  
-    document.getElementById("ipdslidernumber").innerHTML =  parent.window.janus.getsetting('ipd');
+  	document.getElementById("ipdslider").value =  parent.window.janus.getsetting('ipd')*1000;  
+    document.getElementById("ipdslidernumber").innerHTML =  parent.window.janus.getsetting('ipd')*1000;
   
   
   }
