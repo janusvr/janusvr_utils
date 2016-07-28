@@ -303,7 +303,7 @@ width: 256px;
     -webkit-transition: width 0.25s, left 0.25s; /* Safari */
     transition: width 0.25s, left 0.25s;
 	max-width:100%;
-	background-color: #2B382C;
+	background-color: #3F3F3F;
   }
 
   #quickbar {
