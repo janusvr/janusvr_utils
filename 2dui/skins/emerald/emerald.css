@@ -716,7 +716,8 @@ opacity:0.75;
   margin: 0 0 0 0;
   padding: 0 0 0 0;
 
-
+  -webkit-transition: background-color 0.25s;
+    transition: background-color 0.25s;
   }
 
     .closebutton {
