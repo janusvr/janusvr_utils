@@ -34,6 +34,7 @@ li {
   }
 
   .myslider {
+  background-color: #B3B3B3;
   width: 50% !important;
   }
 
@@ -403,12 +404,14 @@ margin-bottom: 0;
 
 input {
 
-background-color: #455947;
+background-color: #444444;
 border-style: solid;
 border-width:1px;
-border-color: gray;
+border-color: #0E705A;
 color:white;
-
+border-radius:6px;
+padding-left:4px;
+padding-right:4px;
 }
 
 li .selected {

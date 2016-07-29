@@ -15,6 +15,70 @@
   margin-bottom:0px;
 
   }
+  
+  .stat {
+  width:32px;
+  height:32px;
+  position: absolute;
+  background-size:cover;
+
+  }
+  
+  .statisticleft {
+  background-image: url(icons/newstat/network-online.png);
+  bottom:8px;
+  left:8px;
+  }
+  .statisticleftdisconnected {
+  background-image: url(icons/newstat/network-offline.png);
+  bottom:8px;
+  left:8px;
+  }
+    .statisticleftpending {
+  background-image: url(icons/newstat/network-pending.png);
+  bottom:8px;
+  left:8px;
+  }
+  
+   .statisticleft2 {
+  background-image: url(icons/newstat/population.png);
+  bottom:8px;
+  left:48px;
+  }
+  
+  
+  .statisticright2{
+  background-image: url(icons/newstat/room-locked.png);
+  bottom:8px;
+  right:8px;
+  }
+  .statisticright2unlocked{
+  background-image: url(icons/newstat/room-unlocked.png);
+  bottom:8px;
+  right:8px;
+  }  
+  
+  .statisticleft2counter {
+  
+  position:absolute;
+  padding-left:24px;
+  padding-right:16px;
+  padding-bottom:6.5px;
+  padding-top:6.5px;
+  background-color: white;
+  bottom:8px;
+  left:64px;
+  font-family: 'Montserrat';
+  color:#545454;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+
+
+
+  }
+  
+  
+  
 
  .avatar {
 margin-top:4px;
@@ -173,6 +237,7 @@ position: fixed;
   border-color:white;
   border-width:1px;
   border-style:solid;
+
   }
 
 
@@ -338,7 +403,7 @@ width: 256px;
   background-color: #282828;
   border-style: solid;
   border-width: 1px;
-  border-color: gray;
+  border-color: #0E705A;
   color: #E4E4E4;
   font-family: "Open Sans Regular";
   padding: 10px;
@@ -416,8 +481,8 @@ user-select: none;
   transition: opacity .2s ease-in-out;
  opacity: 0.65;
  width: 450px;
- padding: 10px 0.5vw;
-
+ padding-left: 0.5vw;
+ padding-bottom: 4px;
  border-top-right-radius:10px;
  border-top-left-radius:10px;
  bottom: 0 ;
@@ -468,119 +533,16 @@ user-select: none;
   max-width:32px;
   }
 
-  .statisticleft
-  {
-  position:absolute;
-bottom: 0;
-margin: 10px 10px;
-border-color: white;
-border-style: none;
-border-width: 2px;
-width:96px;
-
-text-align:center;
-padding: 7px 2px;
-font-family: "Montserrat";
-color: white;
-float:left;
-
-cursor: hand;
-height:22px;
-  }
 
 
-    .statisticright
-  {
-  height:22px;
-  position:absolute;
-bottom: 0;
-margin: 10px 10px;
-border-color: white;
-border-style: none;
-border-width: 2px;
-width:96px;
-cursor: hand;
-text-align:center;
-padding: 7px 2px;
-font-family: "Montserrat";
-color: white;
-float:right;
-
-right:0px;
-  }
 
 
-   .statisticleft2
-  {
-  height:22px;
-  cursor: hand;
-  position:absolute;
-  bottom: 0;
-  left: 122px;
-  margin: 10px 10px;
-  border-color: white;
-border-style: none;
-  border-width: 2px;
-  width:96px;
-  text-align:center;
-  padding: 7px 2px;
-  font-family: "Montserrat";
-  color: white;
-  float:left;
 
 
-  }
 
 
-    .statisticright2
-  {
-  height:22px;
-  position:absolute;
-bottom: 0;
-margin: 10px 10px;
-border-color: white;
-border-style: none;
-border-width: 2px;
-width:96px;
-cursor: hand;
-text-align:center;
-padding: 7px 2px;
-font-family: "Montserrat";
-color: white;
-float:right;
 
-right:116px;
 
-  }
-
-  .stat:hover {
-   opacity:1;
-    background-color: rgba(84,84,84,0.5);
-
-  }
-    .stat {
-  opacity:1;
-
-    text-shadow:
-   -1px -1px 0 #545454,
-    1px -1px 0 #545454,
-    -1px 1px 0 #545454,
-     1px 1px 0 #545454;
-
-  }
-
-@media screen and (max-width: 750px) {
-    .statisticleft2 {
-        bottom: 48px;
-		left: 8px;
-
-    }
-
-	    .statisticright2 {
-        bottom: 48px;
-		right: 0px;
-    }
-}
 
 .unselectable {
   -webkit-touch-callout: none; /* iOS Safari */

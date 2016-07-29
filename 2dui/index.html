@@ -1075,33 +1075,32 @@ previousroomurl = window.janus.currenturl();
 switch(window.janus.networkstatus) {
   case 0:
   document.getElementById("onlinestatus").onmousemove = function() {showtooltip('You are <b>not connected</b> to a presence server.')}
-      document.getElementById("onlinestatus").innerHTML = "OFFLINE";
-  document.getElementById("onlinestatus").style.color = "#F88E8E";
+      document.getElementById("onlinestatus").className = "stat statisticleftdisconnected";
       break;
   case 1:
   document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Attempting to connect to the <b>'+window.janus.roomserver+'</b> presence server.')}
-      document.getElementById("onlinestatus").innerHTML = "...";
-  document.getElementById("onlinestatus").style.color = "";
+      document.getElementById("onlinestatus").className = "stat statisticleftpending";
+
       break;
   case 2:
   document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Online at <b>'+window.janus.roomserver+'</b> presence server.')}
-      document.getElementById("onlinestatus").innerHTML = "ONLINE";
-  document.getElementById("onlinestatus").style.color = "";
+      document.getElementById("onlinestatus").className = "stat statisticleft";
+
       break;
   case -1:
-      document.getElementById("onlinestatus").innerHTML = "ERROR";
-  document.getElementById("onlinestatus").style.color = "#F88E8E";
+      document.getElementById("onlinestatus").className = "stat statisticleftdisconnected";
+
   document.getElementById("onlinestatus").onmousemove = function() {showtooltip(strip(window.janus.networkerror))}
   break;
 default:
-    document.getElementById("onlinestatus").innerHTML = "????";
-  document.getElementById("onlinestatus").style.color = "#F88E8E";
+    document.getElementById("onlinestatus").className = "stat statisticleftdisconnected";
+
   document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Something went wrong with the client.')}
 }
 
+	//set player count and tricount
+    	document.getElementById("playercountstatus").innerHTML = window.janus.playercount-1;
 
-//set player count and tricount
-    document.getElementById("playercountstatus").innerHTML = window.janus.playercount-1;
 
 if ((window.janus.playercount-1) == 1)
 {
@@ -1115,23 +1114,18 @@ document.getElementById("playercountstatuscontainer").onmousemove = function() {
 
 
 
-  document.getElementById("polystatus").innerHTML = formatAMPM();
-document.getElementById("polycountstatuscontainer").onmousemove = function()  {showtooltip('The time is <b>'+(formatAMPM())+'</b>.')}
+
 
 //if room is locked or unlocked change locked display
 
 if (window.janus.locked() == 0)
 {
-  document.getElementById("lockedstatus").innerHTML = "UNLOCKED";
-document.getElementById("lockedstatus").style.color = "";
-document.getElementById("lockedstatus").style.borderColor = "";
+  document.getElementById("lockedstatus").className = "stat statisticright2unlocked";
 document.getElementById("lockedstatus").onmousemove = function() {showtooltip('You <b>may edit</b> here.')}
 }
 else
 {
-  document.getElementById("lockedstatus").innerHTML = "LOCKED";
-document.getElementById("lockedstatus").style.color = "#F88E8E";
-document.getElementById("lockedstatus").style.borderColor = "#F88E8E";
+  document.getElementById("lockedstatus").className = "stat statisticright2";
 document.getElementById("lockedstatus").onmousemove = function() {showtooltip('<b>Cannot edit</b> here.')}
 }
 
@@ -1512,17 +1506,13 @@ document.getElementById("contain").style.opacity = "";
 
 </div>
 
+
+<div class="statisticleft2counter" id="playercountstatus"></div>
+
+
 <div class="stat statisticleft2 unselectable"  id="playercountstatuscontainer"  onmouseout="hidetooltip()" >
-<span id="playercountstatus"></span>
-<img src='skins\emerald\icons\staticon.png' style='width:15px;height:22px;float:right;padding-right:8px;' />
-</div>
-
-
-<div class="stat statisticright unselectable"  id="polycountstatuscontainer" onmouseout="hidetooltip()" >
-<span id="polystatus" ></span>
 
 </div>
-
 
 <div class="stat statisticright2 unselectable" id="lockedstatus"  onmouseout="hidetooltip()"  >
 
