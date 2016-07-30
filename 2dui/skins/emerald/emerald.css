@@ -296,7 +296,7 @@ width: 256px;
   .containerbutton {
     width:48px;
 	padding: 10px 0;
-	  height:39px;
+	  height:29px;
   }
 
 
@@ -406,7 +406,7 @@ width: 256px;
   border-color: #0E705A;
   color: #E4E4E4;
   font-family: "Open Sans Regular";
-  padding: 10px;
+  padding: 5px;
   padding-left:16px;
   padding-right:16px;
   margin-right:0.5vw;
@@ -996,7 +996,7 @@ max-height:100%;
 .notificationcontainer {
 visibility: hidden;
 left:4px;
-top:64px;
+top:48px;
 position:absolute;
 opacity: 0.65;
 transition: opacity .2s ease-in-out;
