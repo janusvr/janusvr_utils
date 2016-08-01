@@ -187,8 +187,21 @@ position: fixed;
   }
 
 
+    .quickbookmarks {
+    background-image: url("icons/glyph-09.png");
+   background-repeat: no-repeat;
+   background-size: contain;
+      background-position: center;
 
+  }
 
+      .quickedit {
+    background-image: url("icons/glyph-03.png");
+   background-repeat: no-repeat;
+   background-size: contain;
+      background-position: center;
+
+  }
 
     .quickinventory {
     background-image: url("icons/glyph-02.png");
@@ -777,7 +790,7 @@ opacity:0.75;
   z-Index:2222222222;
   width:256px;
   background-color:#3F3F3F;
-  top:48px;
+  top:42px;
   float:left;
 	left:4px;
   position:absolute;
@@ -996,7 +1009,7 @@ max-height:100%;
 .notificationcontainer {
 visibility: hidden;
 left:4px;
-top:48px;
+top:42px;
 position:absolute;
 opacity: 0.65;
 transition: opacity .2s ease-in-out;

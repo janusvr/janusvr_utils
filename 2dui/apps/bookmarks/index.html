@@ -1,0 +1,178 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>JanusVR Interface</title>
+  <meta name="description" content="JanusVR Interface">
+  <meta name="author" content="JanusVR Inc.">
+  <script src="../../scripts/tabs.js"></script>
+  
+  <script>
+
+  function launchPortal(url) {
+  
+  parent.window.janus.launchurl(url,0);
+  
+  }
+  
+  function showImage(url,listcontainer) {
+  
+
+  listcontainer.style.backgroundImage = "url("+url+")";
+
+  
+  
+  
+  }
+  
+  function genList(arraytype,listcontainer,thumbarraytype) {
+
+  //urlarray is the kind of array to read from when generating the list. Can be bookmarkurl or workspaceurl.
+  //listcontainer is which html element to dump new items into.
+	
+		//Refresh the element you're writing to:
+		listcontainer.innerHTML = "";
+	
+	  for (var ii=0;ii<arraytype.length;ii++) //iterate through specified array and create list items in the appropriate container
+	  {
+	  	
+		
+		var newlistitem = document.createElement("div");
+		newlistitem.className = "item lightup mousehand bookmarkitem";
+		newlistitem.innerHTML = arraytype[ii];	  
+		newlistitem.onclick = function(arg) {
+										return function() {
+											launchPortal(arraytype[arg])
+												}
+												}(ii);
+												
+		newlistitem.onmouseover = function(arg) {
+										return function() {
+											showImage(thumbarraytype[arg],listcontainer)
+												}
+												}(ii);										
+	    listcontainer.appendChild(newlistitem); //append the newly generated item to the specified container
+	  }
+  
+  
+  }
+  
+  
+  window.onload = function () {
+  
+  tabSelect("bookmarkstabcontainer","bookmarkstabbutton")
+  window.onresize()
+
+  genList(parent.window.janus.bookmarkurl,document.getElementById("bookmarkstabcontainer"),parent.window.janus.bookmarkthumb); //Create the bookmarks list.
+  genList(parent.window.janus.workspaceurl,document.getElementById("workspacestabcontainer"),parent.window.janus.workspacethumb); //Create the workspaces list.
+
+  }
+
+  function updateListIfNeeded(arraytype,listcontainer) //Check if number of divs in the listcontainer is different from the number of array entries. 
+  {
+	  if (arraytype.length != listcontainer.children.length)
+	  {
+		genList(arraytype,listcontainer,thumbarraytype);
+	  }
+  }
+  
+  
+  
+
+  //Bookmarks are not auto refreshed because the current method of checking the length of this array requires a read to disk. In the future it'd be better to load the array into memory so that we don't mess up peoples' harddrives.
+  /*If that change is ever made, simply uncomment this part of the code.
+  setInterval(
+	  function(){
+
+	  updateListIfNeeded(parent.window.janus.workspaceurl,document.getElementById("workspacestabcontainer"),parent.window.janus.workspacethumb); 
+	  updateListIfNeeded(parent.window.janus.bookmarkurl,document.getElementById("bookmarkstabcontainer"),parent.window.janus.bookmarkthumb); 
+	  	  
+	  }
+  , 500);
+  */
+
+  
+   window.onresize = function(event) { //make sure the window area stays a consistent size
+
+
+ 
+	if (document.getElementById("tabrow").offsetWidth >= 200) //if you change the 200 here, also change the min-width of the window containing it. this is to prevent flicker when vertically resizing a minimally (width) sized window
+		{
+		document.getElementById("windowarea").style.height = "calc(100% - "+(document.getElementsByClassName("tabrow")[0].offsetHeight+3)+"px)";	
+		}
+	};
+	  
+
+
+  
+    </script>
+  
+  
+  <link rel="stylesheet" type="text/css" href="../../skins/emerald/emeraldgenericwindow.css">
+  
+</head>
+
+<body >
+
+<div class="windowcontainer">
+
+<div class="tabrow unselectable" id="tabrow">
+
+	<div class="tabbutton" id="bookmarkstabbutton" onmousedown="tabSelect('bookmarkstabcontainer','bookmarkstabbutton')">REMOTE</div></li>
+	<div class="tabbutton" id="workspacestabbutton2" onmousedown="tabSelect('workspacestabcontainer','workspacestabbutton2')">LOCAL</div></li>
+
+
+
+</div>
+
+
+<div class="windowarea unselectable" id="windowarea">
+		
+					
+					
+					
+				<div style="background-size:cover;" class="tabcontainer" id="bookmarkstabcontainer">
+					
+				</div>					
+													
+				<div  style="background-size:cover;" class="tabcontainer" id="workspacestabcontainer">
+					
+				</div>							
+					
+	
+					
+					
+		</div>			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+</div>
+
+
+
+</body>
+</html>

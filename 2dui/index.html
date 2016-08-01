@@ -1483,7 +1483,7 @@ document.getElementById("contain").style.opacity = "";
 
     <li class="menulistbutton" onclick="saveroom()"> SAVE </li>
     <li class="menulistbutton" onclick="syncroom()"> SYNC PEERS </li>
-    <li class="menulistbutton" onclick="toggleWindow(this,600,350,'EDITOR','apps/roomcode/index.html','50vw','50vh')" >EDITOR</li>
+
 
 
   <li class="menulistbuttonquit" onclick="quitjanus()" > QUIT </li>
@@ -1523,12 +1523,16 @@ document.getElementById("contain").style.opacity = "";
 
 <button data-priority='10' id="inventorybutton" onmousemove="showtooltip('Inventory')" onmouseout="hidetooltip()" class="quickinventory" onclick="toggleWindow(this,250,400,'Inventory (Beta)','apps/inventory/index.html','1vw',pxToVh(50), Anchor.BottomRight, true)" > </button>
 
+
+<button id="bookmarksbutton" onmousemove="showtooltip('Bookmarks')" onmouseout="hidetooltip()" class="quickbookmarks" onclick="toggleWindow(this,500,300,'★ Bookmarks','apps/bookmarks/index.html','1vw',pxToVh(50), Anchor.TopLeft, false)" > </button>
+
 <!-- Will come in a later update.
 <button id="websurfacebutton" onmousemove="showtooltip('Browser')" onmouseout="hidetooltip()" class="quickbrowser" onclick="toggleWindow(this,500,256,'BROWSER','apps/browser/index.html','50vw','50vh')" > </button>
 -->
 
 <button data-priority='20' id="radarbutton" onmousemove="showtooltip('Radar')" onmouseout="hidetooltip()" class="quickmap" onclick="toggleWindow(this,266,300,'RADAR','apps/map/index.html','1vw','0.5vh', Anchor.TopRight)" > </button>
 <button data-priority='30' id="chatlogbutton" onmousemove="showtooltip('Chatlog')" onmouseout="hidetooltip()" class="quickchatlog" onclick="toggleWindow(this,325,230,'CHAT LOG','apps/chatlog/index.html','1vw',pxToVh(50), Anchor.BottomLeft)" ></button>
+<button id="editbutton" onmousemove="showtooltip('Creation Tools')" onmouseout="hidetooltip()" class="quickedit" onclick="toggleWindow(this,600,350,'CREATION TOOLS','apps/roomcode/index.html','50vw','50vh')" > </button>
 
 </div>
 
