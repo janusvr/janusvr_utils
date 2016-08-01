@@ -9,6 +9,22 @@
   
   <script>
 
+  
+ function removeElementsByClass(className){
+    var elements = document.getElementsByClassName(className);
+    while(elements.length > 0){
+        elements[0].parentNode.removeChild(elements[0]);
+    }
+} 
+  
+ function changeLitButtonsToUnselectedButtons(){
+ elements = document.getElementsByClassName("litup");
+    for (var iii = 0; iii < elements.length; iii++) {
+        elements[iii].className="item lightup mousehand bookmarkitem";
+    }
+}   
+  
+  
   function launchPortal(url) {
   
   parent.window.janus.launchurl(url,0);
@@ -24,6 +40,61 @@
   
   
   }
+  
+  function removePreviews()
+  {
+    //return all lit up buttons back to their normal state
+  changeLitButtonsToUnselectedButtons();
+    //delete all existing previews
+  removeElementsByClass("windowpreview");
+  removeElementsByClass("bottombarrelative");
+  }
+  
+  
+  function genPreview(position,listcontainer,thumbarraytype,arraytype) //position in list to generate preview, container that contains preview, thumbnail array to use, name of element that called function
+  {
+	removePreviews(); //remove all existing previews and return buttons back to normal
+  
+
+  listcontainer.children[position].className = "item litup mousehand bookmarkitem";
+
+  
+    var itembottombar = document.createElement("div");    
+	itembottombar.className = "bottombarrelative"
+	listcontainer.insertBefore(itembottombar,listcontainer.children[position+1])
+	
+		var itembottombarteleportbutton = document.createElement("div");    
+		itembottombarteleportbutton.className = "footstepsicon"
+		
+		
+		itembottombarteleportbutton.onclick =  function(arg) {
+										return function() {
+											launchPortal(arraytype[arg])
+												}
+												}(position);
+												
+		
+		
+		
+		
+		
+		
+		itembottombar.appendChild(itembottombarteleportbutton);
+		
+  
+  var newItem = document.createElement("div");    
+  newItem.className = "windowpreview"
+  newItem.style.backgroundImage = "url('"+thumbarraytype+"'),url('../../images/nopreview.png')";
+	setTimeout(function(){
+		newItem.style.height="40%";
+	}, 30); // wait 30ms before making preview big so that transition happens
+  listcontainer.insertBefore(newItem,listcontainer.children[position+1])
+  
+
+  
+  
+  }
+  
   
   function genList(arraytype,listcontainer,thumbarraytype) {
 
@@ -42,15 +113,20 @@
 		newlistitem.innerHTML = arraytype[ii];	  
 		newlistitem.onclick = function(arg) {
 										return function() {
-											launchPortal(arraytype[arg])
+											genPreview(arg,listcontainer,thumbarraytype[arg],arraytype)
 												}
 												}(ii);
 												
+												
+												
+												
+		/*
 		newlistitem.onmouseover = function(arg) {
 										return function() {
 											showImage(thumbarraytype[arg],listcontainer)
 												}
-												}(ii);										
+												}(ii);	
+		*/											
 	    listcontainer.appendChild(newlistitem); //append the newly generated item to the specified container
 	  }
   
@@ -60,6 +136,9 @@
   
   window.onload = function () {
   
+  
+  showElement('bookmarkstopbarcontainer');
+  hideElement('workspacesstopbarcontainer');
   tabSelect("bookmarkstabcontainer","bookmarkstabbutton")
   window.onresize()
 
@@ -103,6 +182,57 @@
 	};
 	  
 
+function togglemenulist(specific,elementtotoggle) {
+
+
+if (specific != "off")
+{
+	if (document.getElementById(elementtotoggle).style.visibility != "visible")
+	{
+		document.getElementById(elementtotoggle).style.visibility = "visible";
+	}
+	else
+	{
+		document.getElementById(elementtotoggle).style.visibility = "";
+	}
+}
+else
+{
+document.getElementById(elementtotoggle).style.visibility = "";
+}
+
+
+
+}
+
+function showElement(element)
+{
+var element = document.getElementById(element);
+
+element.style.display = "block";
+
+}
+
+function hideElement(element)
+{
+var element = document.getElementById(element);
+
+element.style.display = "none";
+
+}
+
+function newWorkspace()
+{
+var d = new Date();
+var n = d.getTime();
+
+parent.window.janus.saveworkspace(n);
+
+	setTimeout(function(){
+		genList(parent.window.janus.workspaceurl,document.getElementById('workspacestabcontainer'),parent.window.janus.workspacethumb);togglemenulist('off','menulist2'); 
+	}, 500); // wait 500ms before refreshing the list so the program has time to catch up (doubt this is needed but whatever)
+
+}
 
   
     </script>
@@ -118,29 +248,55 @@
 
 <div class="tabrow unselectable" id="tabrow">
 
-	<div class="tabbutton" id="bookmarkstabbutton" onmousedown="tabSelect('bookmarkstabcontainer','bookmarkstabbutton')">REMOTE</div></li>
-	<div class="tabbutton" id="workspacestabbutton2" onmousedown="tabSelect('workspacestabcontainer','workspacestabbutton2')">LOCAL</div></li>
+	<div class="tabbutton" id="bookmarkstabbutton" onmousedown="tabSelect('bookmarkstabcontainer','bookmarkstabbutton')  ; showElement('bookmarkstopbarcontainer') ;hideElement('workspacesstopbarcontainer')        ">ONLINE</div></li>
+	<div class="tabbutton" id="workspacestabbutton2" onmousedown="tabSelect('workspacestabcontainer','workspacestabbutton2') ;showElement('workspacesstopbarcontainer') ;hideElement('bookmarkstopbarcontainer')      ">OFFLINE</div></li>
 
 
 
 </div>
 
 
-<div class="windowarea unselectable" id="windowarea">
+<div class="windowarea unselectable" id="windowarea" onmouseleave="togglemenulist('off','menulist');togglemenulist('off','menulist2')" >
 		
+								
+								
+								<div id="bookmarkstopbarcontainer">
+									<div class="bookmarkstopbar" >
+										<div class="tastysandwichicon" onclick="togglemenulist('null','menulist')"></div>
+									</div>	
+									
+									<div class="menulist unselectable" id="menulist" style="right:0px;top:70px;">
+										<ul>
+											<li class="menulistbutton" onclick="genList(parent.window.janus.bookmarkurl,document.getElementById('bookmarkstabcontainer'),parent.window.janus.bookmarkthumb);togglemenulist('off','menulist'); "> REFRESH </li>										
+										</ul>
+									</div>
+								</div>	
+
+								<div id="workspacesstopbarcontainer">
+									<div class="bookmarkstopbar" >
+										<div class="tastysandwichicon" onclick="togglemenulist('null','menulist2')"></div>
+									</div>	
+									
+									<div class="menulist unselectable" id="menulist2" style="right:0px;top:70px;">
+										<ul>
+											<li class="menulistbutton" onclick="newWorkspace();"> CREATE SPACE </li>
+											<li class="menulistbutton" onclick="genList(parent.window.janus.workspaceurl,document.getElementById('workspacestabcontainer'),parent.window.janus.workspacethumb);togglemenulist('off','menulist2'); "> REFRESH </li>										
+																						
+									</ul>
+									</div>
+								</div>	
+								
 					
-					
-					
-				<div style="background-size:cover;" class="tabcontainer" id="bookmarkstabcontainer">
+
+				<div onclick="togglemenulist('off','menulist')" style="background-size:cover;margin-top:32px;" class="tabcontainer" id="bookmarkstabcontainer">
 					
 				</div>					
 													
-				<div  style="background-size:cover;" class="tabcontainer" id="workspacestabcontainer">
+				<div onclick="togglemenulist('off','menulist2')"  style="background-size:cover;margin-top:32px;" class="tabcontainer" id="workspacestabcontainer">
 					
 				</div>							
 					
-	
-					
+
 					
 		</div>			
 

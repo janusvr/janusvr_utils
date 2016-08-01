@@ -159,6 +159,102 @@ background-color: #5F5F5F;
 }
 
 
+.litup {
+background-color:white;
+color: #545454 !important;
+}
+
+
+.windowpreview {
+ height:0px;
+	-webkit-transition: height 0.4s;
+	-moz-transition: height 0.4s;
+	transition: height 0.4s;
+background-size: cover;
+border-top-style:solid;
+border-bottom-style:solid;
+border-color: white;
+border-width: 2px;
+}
+
+
+.bookmarkstopbar {
+width:100%;
+background-color: #444444;
+position:fixed;
+
+
+
+}
+
+.tastysandwichicon {
+height:32px;
+width:32px;
+background-image: url('icons/tastysandwich.png');
+cursor:pointer;
+float:right;
+background-size: contain;
+}
+
+ .menulist ul {
+display:inline-block;
+ margin: 0px 0px;
+ padding: 0px 0px;
+ 	width:100%;
+
+ }
+ 
+ .menulist ul li {
+  	float:initial;
+
+ }
+
+  .menulist {
+	text-align:center;
+  z-Index:2222222222;
+  width:256px;
+  background-color:#3F3F3F;
+
+  position:absolute;
+  width: 150px;
+  border-style: solid;
+  border-color: #E4E4E4;
+  border-width:1px;
+    font-family: "Montserrat";
+  color: white;
+visibility:hidden;
+  }
+
+  .menulistbutton {
+    display: block;
+
+    text-align: center;
+
+    text-decoration: none;
+	  font-family: "Montserrat";
+
+
+	  font-size: 12px;
+
+
+  color: #E4E4E4;
+  font-family: "Montserrat";
+  padding: 10px 10px;
+
+
+
+	  background-color:#4F4F4F;
+
+
+
+}
+
+.menulistbutton:hover {
+
+cursor:pointer;
+background-color:#7F7F7F ;
+}
+
   .unselectable {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none;   /* Chrome/Safari/Opera */
@@ -357,6 +453,17 @@ border-bottom-color:#3F3F3F;
 }
 
 
+.bottombarrelative {
+
+bottom:0;
+
+background-color:white;
+color:#545454;
+width:100%;
+
+
+}
+
 .mapiconname {
 text-align:center;
 font-family: "Open Sans Regular";
@@ -365,6 +472,22 @@ color:white;
 bottom:24px;
 position:absolute;
 font-weight: bold;
+}
+
+.footstepsicon {
+height:32px;
+width:32px;
+background-image: url('icons/footsteps.png');
+cursor:pointer;
+background-size: contain;
+}
+
+.footstepsicon:hover {
+height:32px;
+width:32px;
+background-image: url('icons/footstepshover.png');
+cursor:pointer;
+background-size: contain;
 }
 
 
