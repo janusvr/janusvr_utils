@@ -5,6 +5,8 @@
 #include "BaseEditorToolCustomization.h"
 #include "JanusCommands.h"
 #include "JanusExporterStyle.h"
+#include "Editor/MainFrame/Public/Interfaces/IMainFrameModule.h"
+#include "Runtime/Slate/Public/Widgets/SCanvas.h"
 
 #define LOCTEXT_NAMESPACE "Janus Exporter"
 
@@ -104,6 +106,33 @@ void FJanusExporterModule::TriggerTool(UClass* ToolClass)
 
 	TArray<UObject*> ObjectsToView;
 	ObjectsToView.Add(ToolInstance);
+
+	//TSharedRef<SWindow> Window = SNew(SWindow)
+	//	.Title(NSLOCTEXT("PropertyEditor", "WindowTitle", "Janus Exporter"))
+	//	.ClientSize(FVector2D(400, 550));
+	//// If the main frame exists parent the window to it
+	//TSharedPtr< SWindow > ParentWindow;
+	//if (FModuleManager::Get().IsModuleLoaded("MainFrame"))
+	//{
+	//	IMainFrameModule& MainFrame = FModuleManager::GetModuleChecked<IMainFrameModule>("MainFrame");
+	//	ParentWindow = MainFrame.GetParentWindow();
+	//}
+
+	//if (ParentWindow.IsValid())
+	//{
+	//	// Parent the window to the main frame 
+	//	FSlateApplication::Get().AddWindowAsNativeChild(Window, ParentWindow.ToSharedRef());
+	//}
+	//else
+	//{
+	//	FSlateApplication::Get().AddWindow(Window);
+	//}
+
+	//TSharedRef<SCanvas> Canvas = SNew(SCanvas);
+	//FSlot* Slot = Canvas->AddSlot();
+
+	//Window->SetContent(Canvas);
+
 	TSharedRef<SWindow> Window = PropertyModule.CreateFloatingDetailsView(ObjectsToView, /*bIsLockeable=*/ false);
 
 	Window->SetOnWindowClosed(FOnWindowClosed::CreateStatic(&FJanusExporterModule::OnToolWindowClosed, ToolInstance));

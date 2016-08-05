@@ -1,5 +1,5 @@
-#include "FJanusExporterModulePrivatePCH.h"
 #include "JanusExporterTool.h"
+#include "FJanusExporterModulePrivatePCH.h"
 #include "ScopedTransaction.h"
 #include "EngineUtils.h"
 #include "Runtime/Engine/Classes/Components/StaticMeshComponent.h"
@@ -39,7 +39,6 @@ struct LightmappedObjects
 {
 	TArray<AActor*> Actors;
 	FLightMap2D* LightMap;
-	bool IsHighQuality;
 };
 
 UJanusExporterTool::UJanusExporterTool()
@@ -50,9 +49,8 @@ UJanusExporterTool::UJanusExporterTool()
 
 void AssembleListOfExporters(TArray<UExporter*>& OutExporters)
 {
-	auto TransientPackage = GetTransientPackage();
+	UPackage* TransientPackage = GetTransientPackage();
 
-	// @todo DB: Assemble this set once.
 	OutExporters.Empty();
 	for (TObjectIterator<UClass> It; It; ++It)
 	{
@@ -88,7 +86,7 @@ void UJanusExporterTool::SearchForExport()
 
 	if (bFolderSelected)
 	{
-		ExportPath = FolderName.Append("//");
+		ExportPath = FolderName.Replace(TEXT("/"), TEXT("\\")).Append("\\");
 	}
 }
 
@@ -138,345 +136,6 @@ void ExportPNG(FString& Path, TArray<FColor> ColorData, int Width, int Height)
 	FImageUtils::CompressImageArray(Width, Height, ColorData, PNGData);
 	FFileHelper::SaveArrayToFile(PNGData, *Path);
 }
-void ExportTGA(UTexture* Texture, FString RootFolder)
-{
-	FString MeshPath = RootFolder + Texture->GetName() + ".tga";
-
-	auto TransientPackage = GetTransientPackage();
-	UTextureExporterTGA* Exporter = NewObject<UTextureExporterTGA>(TransientPackage, UTextureExporterTGA::StaticClass());
-
-	const FScopedBusyCursor BusyCursor;
-
-	UExporter::FExportToFileParams Params;
-	Params.Object = Texture;
-	Params.Exporter = Exporter;
-	Params.Filename = *MeshPath;
-	Params.InSelectedOnly = false;
-	Params.NoReplaceIdentical = false;
-	Params.Prompt = false;
-	Params.bUseFileArchive = Texture->IsA(UPackage::StaticClass());
-	Params.WriteEmptyFiles = false;
-	UExporter::ExportToFileEx(Params);
-}
-
-void DecodeAndSaveLQLightmap(LightmappedObjects* Exported, FString RootFolder)
-{
-	FLightMap2D* LightMap = Exported->LightMap;
-	UTexture2D* Texture2D = LightMap->GetTexture(1); // 1 = LQ
-	FString TexName = Texture2D->GetName();
-	FString TexPath = RootFolder + TexName + ".png";
-
-	TEnumAsByte<TextureCompressionSettings> Compression = Texture2D->CompressionSettings;
-	TEnumAsByte<TextureMipGenSettings> MipSettings = Texture2D->MipGenSettings;
-	uint32 SRGB = Texture2D->SRGB;
-	Texture2D->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
-	Texture2D->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
-	Texture2D->SRGB = 0;
-	Texture2D->UpdateResource();
-
-	FTexture2DMipMap* MipMap = &Texture2D->PlatformData->Mips[0];
-
-	void* DataPointer = MipMap->BulkData.Lock(LOCK_READ_ONLY);
-	FColor* Data = static_cast<FColor*>(DataPointer);
-
-	TArray<FColor> ColorData;
-
-	int32 Width = MipMap->SizeX;
-	int32 Height = MipMap->SizeY;
-	int32 Elements = Width * Height;
-	int32 HalfHeight = Height / 2;
-
-	ColorData.SetNum(Elements);
-
-	const float LogBlackPoint = 0.00390625f;// exp2(-8);
-
-	TArray<AActor*> Actors = Exported->Actors;
-	for (int i = 0; i < Actors.Num(); i++)
-	{
-		AActor* Actor = Actors[i];
-
-		TArray<UStaticMeshComponent*> StaticMeshes;
-		Actor->GetComponents<UStaticMeshComponent>(StaticMeshes);
-		for (int j = 0; j < StaticMeshes.Num(); j++)
-		{
-			UStaticMeshComponent* Component = StaticMeshes[j];
-			if (!Component->StaticMesh ||
-				Component->LODData.Num() == 0)
-			{
-				continue;
-			}
-
-			FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
-			FLightMap* LMap = LODInfo->LightMap;
-			if (LMap == NULL)
-			{
-				continue;
-			}
-
-			FLightMap2D* LMap2D = LMap->GetLightMap2D();
-			if (LMap2D->GetTexture(1)->GetName() != TexName)
-			{
-				continue;
-			}
-
-			FLightMapInteraction Interaction = LMap2D->GetInteraction(ERHIFeatureLevel::SM5);
-			const FVector Scale = Interaction.GetLQScaleArray()[0];
-			const FVector Add = Interaction.GetLQAddArray()[0];
-
-			const FVector2D Sca = Interaction.GetCoordinateScale();
-			const FVector2D Bias = Interaction.GetCoordinateBias();
-
-			int X = fmin(Bias.X * Width, Width);
-			int Y = fmin(Bias.Y * Height, Height);
-			int W = fmin(X + (Sca.X * Width), Width);
-			int H = fmin(Y + (Sca.Y * Height), Height) / 2;
-
-			for (int x = X; x < W; x++)
-			{
-				for (int y = Y; y < H - 1; y++)
-				{
-					FColor Color0 = Data[x + (y * Width)];
-					FVector Lightmap0 = FVector(Color0.R / 255.0f, Color0.G / 255.0f, Color0.B / 255.0f);
-
-					// Range scale
-					FVector LogRGB = Lightmap0 * Scale + Add;// 1 vmad
-					float LogL = FVector::DotProduct(LogRGB, FVector(0.3f, 0.59f, 0.11f));// 1 dot
-					float L = exp2(LogL * 16 - 8) - LogBlackPoint;// 1 exp2, 1 smad, 1 ssub
-					float Directionality = 0.6;
-
-					float Luma = L * Directionality;
-					FVector Color = LogRGB * (Luma / LogL);// 1 rcp, 1 smul, 1 vmul
-
-					uint8 R = (uint8)(Color.X * 255.0f);
-					uint8 G = (uint8)(Color.Y * 255.0f);
-					uint8 B = (uint8)(Color.Z * 255.0f);
-					FColor FinalColor = FColor(R, G, B, 255);
-
-					ColorData[x + ((y * 2) * Width)] = FinalColor;
-					ColorData[x + (((y * 2) + 1) * Width)] = FinalColor;
-				}
-			}
-		}
-	}
-
-	MipMap->BulkData.Unlock();
-	Texture2D->CompressionSettings = Compression;
-	Texture2D->MipGenSettings = MipSettings;
-	Texture2D->SRGB = SRGB;
-	Texture2D->UpdateResource();
-
-	ExportPNG(TexPath, ColorData, Width, Height);
-}
-void DecodeAndSaveLQLightmap2(LightmappedObjects* Exported, FString RootFolder)
-{
-	FLightMap2D* LightMap = Exported->LightMap;
-	UTexture2D* Texture2D = LightMap->GetTexture(1); // 1 = LQ
-	FString TexName = Texture2D->GetName();
-	FString TexPath = RootFolder + TexName + "_2.png";
-
-	TEnumAsByte<TextureCompressionSettings> Compression = Texture2D->CompressionSettings;
-	TEnumAsByte<TextureMipGenSettings> MipSettings = Texture2D->MipGenSettings;
-	uint32 SRGB = Texture2D->SRGB;
-	Texture2D->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
-	Texture2D->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
-	Texture2D->SRGB = 0;
-	Texture2D->UpdateResource();
-
-	FTexture2DMipMap* MipMap = &Texture2D->PlatformData->Mips[0];
-
-	void* DataPointer = MipMap->BulkData.Lock(LOCK_READ_ONLY);
-	FColor* Data = static_cast<FColor*>(DataPointer);
-
-	TArray<FColor> ColorData;
-
-	int32 Width = MipMap->SizeX;
-	int32 Height = MipMap->SizeY;
-	int32 Elements = Width * Height;
-	int32 HalfHeight = Height / 2;
-
-	ColorData.SetNum(Elements);
-
-	const float LogBlackPoint = 0.00390625f;// exp2(-8);
-
-	TArray<AActor*> Actors = Exported->Actors;
-	for (int i = 0; i < Actors.Num(); i++)
-	{
-		AActor* Actor = Actors[i];
-
-		TArray<UStaticMeshComponent*> StaticMeshes;
-		Actor->GetComponents<UStaticMeshComponent>(StaticMeshes);
-		for (int j = 0; j < StaticMeshes.Num(); j++)
-		{
-			UStaticMeshComponent* Component = StaticMeshes[j];
-			UStaticMesh *Mesh = Component->StaticMesh;
-			if (!Mesh ||
-				Component->LODData.Num() == 0)
-			{
-				continue;
-			}
-
-			FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
-			FLightMap* LMap = LODInfo->LightMap;
-			if (LMap == NULL)
-			{
-				continue;
-			}
-
-			FLightMap2D* LMap2D = LMap->GetLightMap2D();
-			if (LMap2D->GetTexture(1)->GetName() != TexName)
-			{
-				continue;
-			}
-
-			FLightMapInteraction Interaction = LMap2D->GetInteraction(ERHIFeatureLevel::SM5);
-			const FVector Scale = Interaction.GetLQScaleArray()[0];
-			const FVector Add = Interaction.GetLQAddArray()[0];
-
-			const FVector2D Sca = Interaction.GetCoordinateScale();
-			const FVector2D Bias = Interaction.GetCoordinateBias();
-
-			int X = fmin(Bias.X * Width, Width);
-			int Y = fmin(Bias.Y * Height, Height);
-			int W = fmin(X + (Sca.X * Width), Width);
-			int H = fmin(Y + (Sca.Y * Height), Height) / 2;
-
-			for (int x = X; x < W; x++)
-			{
-				for (int y = Y; y < H - 1; y++)
-				{
-					FColor Color0 = Data[x + (y * Width)];
-					ColorData[x + ((y * 2) * Width)] = Color0;
-					ColorData[x + (((y * 2) + 1) * Width)] = Color0;
-				}
-			}
-		}
-	}
-
-	MipMap->BulkData.Unlock();
-	Texture2D->CompressionSettings = Compression;
-	Texture2D->MipGenSettings = MipSettings;
-	Texture2D->SRGB = SRGB;
-	Texture2D->UpdateResource();
-
-	ExportPNG(TexPath, ColorData, Width, Height);
-}
-void DecodeAndSaveHQLightmap(LightmappedObjects* Exported, FString RootFolder)
-{
-	FLightMap2D* LightMap = Exported->LightMap;
-	UTexture2D* Texture2D = LightMap->GetTexture(0);
-	FString TexName = Texture2D->GetName();
-	FString TexPath = RootFolder + TexName + ".png";
-
-	TEnumAsByte<TextureCompressionSettings> Compression = Texture2D->CompressionSettings;
-	TEnumAsByte<TextureMipGenSettings> MipSettings = Texture2D->MipGenSettings;
-	uint32 SRGB = Texture2D->SRGB;
-	Texture2D->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
-	Texture2D->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
-	Texture2D->SRGB = 0;
-	Texture2D->UpdateResource();
-
-	FTexture2DMipMap* MipMap = &Texture2D->PlatformData->Mips[0];
-
-	void* DataPointer = MipMap->BulkData.Lock(LOCK_READ_ONLY);
-	FColor* Data = static_cast<FColor*>(DataPointer);
-
-	TArray<FColor> ColorData;
-
-	int32 Width = MipMap->SizeX;
-	int32 Height = MipMap->SizeY;
-	int32 Elements = Width * Height;
-	int32 HalfHeight = Height / 2;
-
-	ColorData.SetNum(Elements);
-
-	const float LogBlackPoint = 0.01858136;
-
-	TArray<AActor*> Actors = Exported->Actors;
-	for (int i = 0; i < Actors.Num(); i++)
-	{
-		AActor* Actor = Actors[i];
-
-		TArray<UStaticMeshComponent*> StaticMeshes;
-		Actor->GetComponents<UStaticMeshComponent>(StaticMeshes);
-		for (int32 j = 0; j < StaticMeshes.Num(); j++)
-		{
-			UStaticMeshComponent* Component = StaticMeshes[j];
-			UStaticMesh *Mesh = Component->StaticMesh;
-			if (!Mesh ||
-				Component->LODData.Num() == 0)
-			{
-				continue;
-			}
-
-			FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
-			FLightMap* LMap = LODInfo->LightMap;
-			if (LMap == NULL)
-			{
-				continue;
-			}
-
-			FLightMap2D* LMap2D = LMap->GetLightMap2D();
-			if (LMap2D->GetTexture(0)->GetName() != TexName)
-			{
-				continue;
-			}
-
-			FLightMapInteraction Interaction = LMap2D->GetInteraction(ERHIFeatureLevel::SM5);
-			const FVector4 Scale = Interaction.GetScaleArray()[0];
-			const FVector4 Add = Interaction.GetAddArray()[0];
-
-			const FVector2D Sca = Interaction.GetCoordinateScale();
-			const FVector2D Bias = Interaction.GetCoordinateBias();
-
-			int X = fmin(Bias.X * Width, Width);
-			int Y = fmin(Bias.Y * Height, Height);
-			int W = fmin(X + (Sca.X * Width), Width);
-			int H = fmin(Y + (Sca.Y * Height), Height) / 2;
-
-			for (int x = X; x < W; x++)
-			{
-				for (int y = Y; y < H; y++)
-				{
-					FColor Color0 = Data[x + (y * Width)];
-					FColor Color1 = Data[x + ((y + HalfHeight) * Width)];
-					FVector4 Lightmap0 = FVector4(Color0.R / 255.0f, Color0.G / 255.0f, Color0.B / 255.0f, Color0.A / 255.0f);
-					FVector4 Lightmap1 = FVector4(Color1.R / 255.0f, Color1.G / 255.0f, Color1.B / 255.0f, Color1.A / 255.0f);
-
-					float LogL = Lightmap0.W;
-					// Add residual
-					LogL += Lightmap1.W * (1.0 / 255.0f) - (0.5 / 255.0f);
-					// Range scale LogL
-					LogL = LogL * Scale.W + Add.W;
-					// Range scale UVW
-					FVector UVW = Lightmap0 * Lightmap0 * Scale + Add;
-					// LogL -> L
-					float L = exp2f(LogL) - LogBlackPoint;
-					float Directionality = 0.6;
-					float Luma = L * Directionality;
-					FVector Color = Luma * UVW;
-
-					uint8 R = (uint8)(Color.X * 255.0f);
-					uint8 G = (uint8)(Color.Y * 255.0f);
-					uint8 B = (uint8)(Color.Z * 255.0f);
-					FColor FinalColor = FColor(R, G, B, 255);
-
-					ColorData[x + ((y * 2) * Width)] = FinalColor;
-					ColorData[x + (((y * 2) + 1) * Width)] = FinalColor;
-				}
-			}
-		}
-	}
-
-	MipMap->BulkData.Unlock();
-	Texture2D->CompressionSettings = Compression;
-	Texture2D->MipGenSettings = MipSettings;
-	Texture2D->SRGB = SRGB;
-	Texture2D->UpdateResource();
-
-	ExportPNG(TexPath, ColorData, Width, Height);
-}
-
-
 void ExportPNG(UTexture* Texture, FString RootFolder, bool bFillAlpha = true)
 {
 	FString TexPath = RootFolder + Texture->GetName() + ".png";
@@ -527,9 +186,147 @@ void ExportPNG(UTexture* Texture, FString RootFolder, bool bFillAlpha = true)
 
 	ExportPNG(TexPath, ColorData, Width, Height);
 }
+void ExportTGA(UTexture* Texture, FString RootFolder)
+{
+	FString MeshPath = RootFolder + Texture->GetName() + ".tga";
+
+	auto TransientPackage = GetTransientPackage();
+	UTextureExporterTGA* Exporter = NewObject<UTextureExporterTGA>(TransientPackage, UTextureExporterTGA::StaticClass());
+
+	const FScopedBusyCursor BusyCursor;
+
+	UExporter::FExportToFileParams Params;
+	Params.Object = Texture;
+	Params.Exporter = Exporter;
+	Params.Filename = *MeshPath;
+	Params.InSelectedOnly = false;
+	Params.NoReplaceIdentical = false;
+	Params.Prompt = false;
+	Params.bUseFileArchive = Texture->IsA(UPackage::StaticClass());
+	Params.WriteEmptyFiles = false;
+	UExporter::ExportToFileEx(Params);
+}
 void ExportBMP(FString& Path, TArray<FColor> ColorData, int Width, int Height)
 {
 	FFileHelper::CreateBitmap(*Path, Width, Height, ColorData.GetData());
+}
+
+void DecodeAndSaveHQLightmap(LightmappedObjects* Exported, FString RootFolder)
+{
+	FLightMap2D* LightMap = Exported->LightMap;
+	UTexture2D* Texture2D = LightMap->GetTexture(0);
+	FString TexName = Texture2D->GetName();
+	FString TexPath = RootFolder + TexName + ".png";
+
+	TEnumAsByte<TextureCompressionSettings> Compression = Texture2D->CompressionSettings;
+	TEnumAsByte<TextureMipGenSettings> MipSettings = Texture2D->MipGenSettings;
+	uint32 SRGB = Texture2D->SRGB;
+	Texture2D->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
+	Texture2D->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
+	Texture2D->SRGB = 0;
+	Texture2D->UpdateResource();
+
+	FTexture2DMipMap* MipMap = &Texture2D->PlatformData->Mips[0];
+
+	void* DataPointer = MipMap->BulkData.Lock(LOCK_READ_ONLY);
+	FColor* Data = static_cast<FColor*>(DataPointer);
+
+	TArray<FColor> ColorData;
+
+	int32 Width = MipMap->SizeX;
+	int32 Height = MipMap->SizeY;
+	int32 Elements = Width * Height;
+	int32 HalfHeight = Height / 2;
+
+	ColorData.SetNum(Elements);
+
+	const float LogBlackPoint = 0.01858136;
+
+	TArray<AActor*> Actors = Exported->Actors;
+	for (int i = 0; i < Actors.Num(); i++)
+	{
+		AActor* Actor = Actors[i];
+
+		TArray<UStaticMeshComponent*> StaticMeshes;
+		Actor->GetComponents<UStaticMeshComponent>(StaticMeshes);
+		for (int j = 0; j < StaticMeshes.Num(); j++)
+		{
+			UStaticMeshComponent* Component = StaticMeshes[j];
+			if (!Component->StaticMesh ||
+				Component->LODData.Num() == 0)
+			{
+				continue;
+			}
+
+			FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
+			FLightMap* LMap = LODInfo->LightMap;
+			if (LMap == NULL)
+			{
+				continue;
+			}
+
+			FLightMap2D* LMap2D = LMap->GetLightMap2D();
+			if (LMap2D->GetTexture(0)->GetName() != TexName)
+			{
+				continue;
+			}
+
+			FLightMapInteraction Interaction = LMap2D->GetInteraction(ERHIFeatureLevel::SM5);
+			const FVector4 Scale = Interaction.GetScaleArray()[0];
+			const FVector4 Add = Interaction.GetAddArray()[0];
+
+			const FVector2D Sca = Interaction.GetCoordinateScale();
+			const FVector2D Bias = Interaction.GetCoordinateBias();
+
+
+			int X = fmin(Bias.X * Width, Width);
+			int Y = fmin(Bias.Y * Height, Height);
+			int W = fmin(X + (Sca.X * Width), Width);
+			int H = fmin(Y + (Sca.Y * Height), Height) / 2;
+
+			for (int x = X; x < W; x++)
+			{
+				for (int y = Y; y < H; y++)
+				{
+					FColor Color0 = Data[x + (y * Width)];
+					FColor Color1 = Data[x + ((y + HalfHeight) * Width)];
+					FVector4 Lightmap0 = FVector4(Color0.R / 255.0f, Color0.G / 255.0f, Color0.B / 255.0f, Color0.A / 255.0f);
+					FVector4 Lightmap1 = FVector4(Color1.R / 255.0f, Color1.G / 255.0f, Color1.B / 255.0f, Color1.A / 255.0f);
+
+					double LogL = Lightmap0.W;
+					// Add residual
+					LogL += Lightmap1.W * (1.0 / 255.0) - (0.5 / 255.0);
+					// Range scale LogL
+					LogL = LogL * Scale.W + Add.W;
+					// Range scale UVW
+					FVector UVW = Lightmap0 * Lightmap0 * Scale + Add;
+					// LogL -> L
+					double L = exp2(LogL) - LogBlackPoint;
+					double Directionality = 0.6;
+					double Luma = L * Directionality;
+					FVector Color = Luma * UVW;
+
+					//FinalColor = FColor(Luma * 255.0f, Luma*255.0f, Luma*255.0f, 255);
+					float r = fminf(Color.X * 255.0f, 255);
+					float g = fminf(Color.Y * 255.0f, 255);
+					float b = fminf(Color.Z * 255.0f, 255);
+
+					FColor FinalColor = FColor(r, g, b, 255);
+
+					ColorData[x + ((y * 2) * Width)] = FinalColor;
+					ColorData[x + (((y * 2) + 1) * Width)] = FinalColor;
+				}
+			}
+		}
+	}
+
+	MipMap->BulkData.Unlock();
+	Texture2D->CompressionSettings = Compression;
+	Texture2D->MipGenSettings = MipSettings;
+	Texture2D->SRGB = SRGB;
+	Texture2D->UpdateResource();
+
+	ExportPNG(TexPath, ColorData, Width, Height);
 }
 void ExportMaterial(FString& Folder, UMaterialInterface* Material, TArray<FString>* ExportedTextures)
 {
@@ -598,7 +395,7 @@ void UJanusExporterTool::Export()
 		AActor *Actor = *Itr;
 
 		FString Name = Actor->GetName();
-		if (Actor->IsHiddenEd())
+		if (Actor->IsHiddenEd() || Actor->GetName().Contains("SkySphere"))
 		{
 			continue;
 		}
@@ -636,32 +433,13 @@ void UJanusExporterTool::Export()
 				{
 					LightmappedObjects Obj;
 					Obj.LightMap = LightMap2D;
-					Obj.IsHighQuality = true;
 					LightmapsToExport.Add(TexName, Obj);
 				}
 				LightmapsToExport[TexName].Actors.Add(Actor);
 
 				if (!TexturesExp.Contains(TexName))
 				{
-					ExportPNG(Texture, Root + "\\Encoded\\");
-					TexturesExp.Add(TexName);
-				}
-
-				// LQ
-				Texture = LightMap2D->GetTexture(1);
-				TexName = Texture->GetName();
-				if (!LightmapsToExport.Contains(TexName))
-				{
-					LightmappedObjects Obj;
-					Obj.LightMap = LightMap2D;
-					Obj.IsHighQuality = false;
-					LightmapsToExport.Add(TexName, Obj);
-				}
-				LightmapsToExport[TexName].Actors.Add(Actor);
-
-				if (!TexturesExp.Contains(TexName))
-				{
-					ExportPNG(Texture, Root + "\\Encoded\\");
+					ExportPNG(Texture, Root + "\\Encoded\\", true);
 					TexturesExp.Add(TexName);
 				}
 			}
@@ -688,15 +466,7 @@ void UJanusExporterTool::Export()
 
 	for (auto Elem : LightmapsToExport)
 	{
-		if (Elem.Value.IsHighQuality)
-		{
-			DecodeAndSaveHQLightmap(&Elem.Value, Root);
-		}
-		else
-		{
-			DecodeAndSaveLQLightmap(&Elem.Value, Root);
-			DecodeAndSaveLQLightmap2(&Elem.Value, Root);
-		}
+		DecodeAndSaveHQLightmap(&Elem.Value, Root);
 	}
 
 	// Models before textures so we can start showing the scene faster (textures take too long to load)
@@ -734,8 +504,6 @@ void UJanusExporterTool::Export()
 			FString ImageID = "";
 			FString LmapID = "";
 			FVector4 LightMapSca = FVector4(0, 0, 0, 0);
-			FVector4 LightMapCoSca = FVector4(0, 0, 0, 0);
-			FVector4 LightMapCoAdd = FVector4(0, 0, 0, 0);
 			bool HasLightmap = false;
 
 			if (Component->LODData.Num() > 0)
@@ -754,8 +522,6 @@ void UJanusExporterTool::Export()
 					FVector2D Scale = Interaction.GetCoordinateScale();
 					FVector2D Bias = Interaction.GetCoordinateBias();
 					LightMapSca = FVector4(Scale.X, Scale.Y, Bias.X, 1 - Bias.Y - Scale.Y);
-					LightMapCoSca = Interaction.GetLQScaleArray()[0];
-					LightMapCoAdd = Interaction.GetLQAddArray()[0];
 					HasLightmap = true;
 				}
 			}
@@ -804,14 +570,9 @@ void UJanusExporterTool::Export()
 
 			if (HasLightmap)
 			{
-				//Index.Append("name=\"" + Actor->GetName() + "\" ");
 				Index.Append("lmap_id=\"" + LmapID + "\" ");
 				Index.Append("lmap_sca=\"");
 				Index.Append(FString::SanitizeFloat(LightMapSca.X) + " " + FString::SanitizeFloat(LightMapSca.Y) + " " + FString::SanitizeFloat(LightMapSca.Z) + " " + FString::SanitizeFloat(LightMapSca.W) + "\" ");
-				Index.Append("cosca=\"");
-				Index.Append(FString::SanitizeFloat(LightMapCoSca.X) + " " + FString::SanitizeFloat(LightMapCoSca.Y) + " " + FString::SanitizeFloat(LightMapCoSca.Z) + " " + FString::SanitizeFloat(LightMapCoSca.W) + "\" ");
-				Index.Append("coadd=\"");
-				Index.Append(FString::SanitizeFloat(LightMapCoAdd.X) + " " + FString::SanitizeFloat(LightMapCoAdd.Y) + " " + FString::SanitizeFloat(LightMapCoAdd.Z) + " " + FString::SanitizeFloat(LightMapCoAdd.W) + "\" ");
 			}
 
 			Index.Append("scale=\"");

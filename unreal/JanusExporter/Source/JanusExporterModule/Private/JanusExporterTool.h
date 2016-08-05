@@ -11,7 +11,6 @@ class UJanusExporterTool : public UBaseEditorTool
 public:
 	UJanusExporterTool();
 
-public:
 	UPROPERTY(EditAnywhere, Category = "Settings")
 		FString ExportPath;
 

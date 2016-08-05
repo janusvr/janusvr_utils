@@ -1,6 +1,11 @@
 Janus VR Unity Exporter v2.0 - Alpha 1
 
-To open the Janus Exporter, hit the Edit -> Janus VR Exporter 2.0 menu. You can add the shown window to your Unity layout (the parameters will be saved).
+- To Install the Janus VR Exporter
+Open your project in Unity then hit:
+Assets -> Import Package -> Custom Package
+And point to the "JanusVR.2.0.unitypackage" file inside the Release folder.
+
+- To open the Janus Exporter, hit the Edit -> Janus VR Exporter 2.0 menu. You can add the shown window to your Unity layout (the parameters will be saved).
 
 Export Path
 	The folder you want to export your scene to
