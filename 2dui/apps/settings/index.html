@@ -61,7 +61,8 @@
 	document.getElementById("rateform").value =  parent.window.janus.getsetting('rate');  	
 	document.getElementById("portform").value =  parent.window.janus.getsetting('port');  
  
-  
+  	document.getElementById("ipdslider").value =  parent.window.janus.getsetting('ipd')*1000;  
+    document.getElementById("ipdslidernumber").innerHTML =  (parent.window.janus.getsetting('ipd')*1000)+"mm";
   
   
   }
@@ -128,6 +129,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 	<div class="tabbutton" id="graphicstabbutton" onmousedown="tabSelect('graphicstabcontainer','graphicstabbutton')" >GRAPHICS</div></li>
 	<div class="tabbutton" id="interfacetabbutton" onmousedown="tabSelect('interfacetabcontainer','interfacetabbutton')" >INTERFACE</div></li>
 	<div class="tabbutton" id="developertabbutton" onmousedown="tabSelect('developertabcontainer','developertabbutton')" >DEVELOPER</div></li>
+	<div class="tabbutton" id="vrtabbutton" onmousedown="tabSelect('vrtabcontainer','vrtabbutton')" >VR</div></li>
 
 
 </div>
@@ -227,7 +229,11 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>					
+					</div>				
+
+
+
+					
 
 					
 				<!-- 
@@ -451,39 +457,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					
 					
 					
-					<div class='header'>VR</div>
-					
-					
-					<div class='item' >
-					<span>
-					<input class="myCheckbox" type='checkbox' id="decoupleheadtoggle" onchange="window.janus.setsetting('decouplehead', this.checked); " >
-					Decouple Head
-
-					</span>
-					<br>
-					</div>					
-					
-					
-
-					<div class='item' >
-					<span>
-					<input class="myCheckbox" type='checkbox' id="comfortmodetoggle" onchange="window.janus.setsetting('comfortmode', this.checked); "  >
-					Comfort Mode
-
-					</span>
-					<br>
-					</div>					
-					
-					
-					
-					<div class='item' >
-					<span>
-					<input class="myCheckbox" type='checkbox' id="leapmotionhmdtoggle" onchange="window.janus.setsetting('leapmotionhmd', this.checked); " >
-					Leap Motion on HMD
-
-					</span>
-					<br>
-					</div>					
+				
 					
 					
 					
@@ -501,8 +475,55 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 				</div>
 				
 										
+				<div class="tabcontainer" id="vrtabcontainer">	
+				
+					<div class='header'>INPUT</div>
 					
 					
+						<div class='item' >
+						<span>
+						<input class="myCheckbox" type='checkbox' id="decoupleheadtoggle" onchange="window.janus.setsetting('decouplehead', this.checked); " >
+						Decouple Head
+
+						</span>
+						<br>
+						</div>					
+						
+						
+
+						<div class='item' >
+						<span>
+						<input class="myCheckbox" type='checkbox' id="comfortmodetoggle" onchange="window.janus.setsetting('comfortmode', this.checked); "  >
+						Comfort Mode
+
+						</span>
+						<br>
+						</div>					
+						
+						
+						
+						<div class='item' >
+						<span>
+						<input class="myCheckbox" type='checkbox' id="leapmotionhmdtoggle" onchange="window.janus.setsetting('leapmotionhmd', this.checked); " >
+						Leap Motion on HMD
+
+						</span>
+						<br>
+						</div>	
+						
+					<div class='header'>GRAPHICS</div>				
+						<div class='item' >
+						<span>
+						<input step="0.25" class="myslider" type='range' id="ipdslider" min="54" max="74" oninput="window.janus.setsetting('ipd', this.value/1000); document.getElementById('ipdslidernumber').innerHTML=this.value+'mm';" >
+						Interpupillary Distance: <span id="ipdslidernumber"></span>
+
+						</span>
+						<br>
+						</div>	
+						
+						
+				
+				</div>	
 					
 					
 					
@@ -549,6 +570,9 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					</span>
 					<br>
 					</div>
+					
+					
+					
 					
 					
 				</div>					
@@ -605,6 +629,8 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					</div>
 
 					
+					
+
 					
 				</div>					
 										

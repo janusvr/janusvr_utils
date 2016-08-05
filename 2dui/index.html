@@ -59,6 +59,38 @@ WE REAAAAAALLLY ENCOURAGE YOU TO MAKE CHANGES TO THIS. MAKE IT YOUR OWN! CUSTOMI
 <meta name="author" content="JanusVR Inc.">
 <link rel="stylesheet" type="text/css" href="skins/emerald/emerald.css">
 <script>
+  function include(src, cb) {
+    cb = cb || function() {};
+
+    if (src.substr(0,1) == '/')
+      src = params.rootdir + src;
+
+    src += '?d=' + new Date().getTime();
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = src;
+
+    s.addEventListener('load', function() {
+      cb();
+    }, false);
+
+    document.head.appendChild(s);
+
+    return s;
+  }
+
+  window.addEventListener('load', function() {
+    include('startup.js');
+  }, false);
+
+  function registerApp(appName) {
+
+  }
+
+  function addToQuickbar(opt) {
+    var iconSrc = opt.src || 'skins/emerald/icons/unknown.js';
+
+  }
 
 
 var getActiveElement = function( document ){
@@ -84,10 +116,29 @@ var getActiveElement = function( document ){
    return false;
 };
 
+function vwToPx(vw) {
+  vw = parseFloat(vw);
+  var clientWidth = document.documentElement.clientWidth;
+  return Math.round((vw/100) * clientWidth) + 'px';
+}
 
+function vhToPx(vh) {
+  vh = parseFloat(vh);
+  var clientHeight = document.documentElement.clientHeight;
+  return Math.round((vh/100) * clientHeight) + 'px';
+}
 
+function pxToVw(px) {
+  px = parseInt(px);
+  var clientWidth = document.documentElement.clientWidth;
+  return (px*100 / clientWidth)+"vw";
+}
 
-
+function pxToVh(px) {
+  px = parseInt(px);
+  var clientHeight = document.documentElement.clientHeight;
+  return (px*100 / clientHeight)+"vh";
+}
 
 
 function formatAMPM() {
@@ -264,33 +315,60 @@ dragaid.style.width = "0";
 dragaid.style.height = "0";
 }
 
- function movewindow(ele) {
+function movewindow(ele) {
 
-if ( (clicked[ele] == true) && (ele == activeobject) ) {
+  if ((clicked[ele] == false) || (ele != activeobject))
+    return;
 
+  var deltaX = event.clientX - mousex;
+  var deltaY = event.clientY - mousey;
 
- winx = (ele.offsetLeft + (event.clientX - mousex)); //return new position in px
- winy = (ele.offsetTop + (event.clientY - mousey)); //same here
+  var anchor = parseInt(ele.getAttribute('data-anchor'));
 
- ele.style.left = (winx*100 / document.documentElement.clientWidth)+"vw"; //convert that px value into vw so that windows move with screen readjustment
- ele.style.top = (winy*100 / document.documentElement.clientHeight)+"vh"; //convert that px value into vh so that windows move with screen readjustment
+  winx = ele.offsetLeft + deltaX; //return new position in px
+  winy = ele.offsetTop + deltaY; //same here
+
+  var winWidth = ele.offsetWidth;
+  var winHeight = ele.offsetHeight;
+
+  var clientWidth = document.documentElement.clientWidth;
+  var clientHeight = document.documentElement.clientHeight
+
+  // Convert px values in relative vw/vh values :D
+  switch (anchor) {
+    case Anchor.TopLeft:
+      ele.style.left = (winx*100 / clientWidth)+"vw";
+      ele.style.top = (winy*100 / clientHeight)+"vh";
+    break;
+
+    case Anchor.TopRight:
+      ele.style.right = ((winx + winWidth)*100 / clientWidth)+"vw";
+      ele.style.top = (winy*100 / clientHeight)+"vh";
+    break;
+
+    case Anchor.BottomLeft:
+      ele.style.left = (winx*100 / clientWidth)+"vw";
+      ele.style.bottom = ((winy + winHeight)*100 / clientHeight)+"vh";
+    break;
+
+    case Anchor.BottomRight:
+      ele.style.right = ((winx + winWidth)*100 / clientWidth)+"vw";
+      ele.style.bottom = ((winy + winHeight)*100 / clientHeight)+"vh";
+    break;
+
+  }
+
 
   mousex = event.clientX;
-mousey = event.clientY;
+  mousey = event.clientY;
 
-var brdr = document.getElementById(ele.id+"_resizer");
-var div = document.getElementById(ele.id);
-var wind = document.getElementById(ele.id+"_windowarea");
-
-
-
-setResizeHandlePosition(brdr,div,wind);
+  var brdr = document.getElementById(ele.id+"_resizer");
+  var div = document.getElementById(ele.id);
+  var wind = document.getElementById(ele.id+"_windowarea");
 
 
 
-
- }
-
+  setResizeHandlePosition(brdr,div,wind);
 }
 
 
@@ -335,33 +413,69 @@ resizehandlegrabbed[brdr.id] =  false;
     raid.style.height = "0";
 }
 
-
-function resizewindow(titlebarid) {
-
-
-var wind = document.getElementById(titlebarid.id+"_windowarea");
-var brdr =  document.getElementById(titlebarid.id+"_resizer");
-
-
-if (resizehandlegrabbed[brdr.id] ==  true)
-{
-
-var xsize = event.clientX-(titlebarid.offsetLeft);
-var ysize = event.clientY-(titlebarid.offsetTop+32);
-
-var xsize2 = xsize+"px";
-var ysize2 = ysize+"px";
-
-wind.style.width = xsize2;
-wind.style.height = ysize2;
-
-
-
-//reset the handled position after the scale
-setResizeHandlePosition(brdr,titlebarid,wind);
+function setWindowSize(callerid, winid, width, height) {
+  var titlebar = document.getElementById(winid);
+  var win = document.getElementById(winid + '_windowarea');
+  var brdr =  document.getElementById(titlebar.id+"_resizer");
+  win.style.width = width;
+  win.style.height = height;
+  setResizeHandlePosition(brdr,titlebar,win);
 }
 
+function resizewindow(titlebar) {
 
+
+  var wind = document.getElementById(titlebar.id+"_windowarea");
+  var brdr =  document.getElementById(titlebar.id+"_resizer");
+
+
+  if (!resizehandlegrabbed[brdr.id])
+    return;
+
+  var xsize = event.clientX-(titlebar.offsetLeft);
+  var ysize = event.clientY-(titlebar.offsetTop+32); //32 for titlebar offset?
+
+
+  var clientWidth = document.documentElement.clientWidth;
+  var clientHeight = document.documentElement.clientHeight;
+
+  var oldWidth = titlebar.offsetWidth;
+  var oldHeight = titlebar.offsetHeight;
+  var offsetHeight = titlebar.offsetHeight;
+  var offsetLeft = titlebar.offsetLeft;
+  var offsetTop = titlebar.offsetTop;
+  var offsetBottom = (clientHeight - offsetTop) - oldHeight;
+  var offsetRight = (clientWidth - offsetLeft) - oldWidth;
+
+  wind.style.width = xsize + "px";
+  wind.style.height = ysize + "px";
+
+  var deltaX = titlebar.offsetWidth - oldWidth;
+  var deltaY = titlebar.offsetHeight - oldHeight;
+
+  var anchor = parseInt(titlebar.getAttribute('data-anchor'));
+  switch (anchor) {
+    /*case Anchor.TopLeft:
+      wind.style.width = xsize + "px";
+      wind.style.height = ysize + "px";
+    break;*/
+    case Anchor.TopRight:
+      var newRight = ((offsetRight-deltaX) * 100 / clientWidth)+"vw";
+      titlebar.style.right = newRight;
+    break;
+    case Anchor.BottomLeft:
+      var newBottom = ((offsetBottom-deltaY) * 100 / clientHeight)+"vh";
+      titlebar.style.bottom = newBottom;
+    break;
+    case Anchor.BottomRight:
+    var newRight = ((offsetRight-deltaX) * 100 / clientWidth)+"vw";
+      var newBottom = ((offsetBottom-deltaY) * 100 / clientHeight)+"vh";
+      titlebar.style.right = newRight;
+      titlebar.style.bottom = newBottom;
+    break;
+  }
+  //reset the handled position after the scale
+  setResizeHandlePosition(brdr,titlebar,wind);
 }
 
 //probably do the same thing did for window moving and create a 'resize aid' to help with the resizing
@@ -390,31 +504,62 @@ setResizeHandlePosition(brdr,titlebarid,wind);
 
 function closeWindow(callerid,winid)
 {
-  document.getElementById(winid).remove();
-  document.getElementById(winid+"_resizer").remove();
+  var win = document.getElementById(winid);
+  if (win.getAttribute('data-persist')) {
+    if (win.style.display == 'none') {
+      win.style.display = 'block';
+      document.getElementById(winid+"_resizer").style.display = 'block';
 
+      if (callerid != "null") {
+        callerid.style.borderColor = "#0EE05A";
+      }
+    } else {
+      win.style.display = 'none';
+      document.getElementById(winid+"_resizer").style.display = 'none';
 
-    if (callerid != "null")
-    {
-    callerid.style.borderColor = "";
-
+      if (callerid != "null") {
+        callerid.style.borderColor = "";
+      }
     }
-      closesound();
+  } else {
+
+    document.getElementById(winid).remove();
+    document.getElementById(winid+"_resizer").remove();
+
+    if (callerid != "null") {
+      callerid.style.borderColor = "";
+    }
+  }
+
+  closesound();
 }
 
+function shadeWindow(callerid,winid,shademe,titlebarid) {
+  //alert(winid);
+  var win = document.getElementById(winid);
+  var index;
 
-function shadeWindow(callerid,winid,shademe,titlebarid)
-{
-  if (document.getElementById(shademe).style.visibility == "")
-  {
-  document.getElementById(shademe).style.visibility = "hidden";
+  if (win.classList.contains('collapsed')) {
+    win.classList.remove('collapsed');
 
-  document.getElementById(titlebarid.id+"_resizer").style.visibility = "hidden";
+    if (win.classList.contains('anchor-bottom')) {
+      if (win.offsetTop < 0) {
+        var clientHeight = document.documentElement.clientHeight;
+
+        win.style.bottom = pxToVh(clientHeight - win.offsetHeight);
+      }
+    }
+  } else {
+    win.classList.add('collapsed');
   }
-  else
-  {
-  document.getElementById(shademe).style.visibility = "";
-  document.getElementById(titlebarid.id+"_resizer").style.visibility = "";
+
+  if (document.getElementById(shademe).style.visibility == "") {
+    document.getElementById(shademe).style.visibility = "hidden";
+    document.getElementById(titlebarid.id+"_resizer").style.visibility = "hidden";
+  }
+  else {
+    document.getElementById(shademe).style.visibility = "";
+    document.getElementById(titlebarid.id+"_resizer").style.visibility = "";
   }
 
   shadesound();
@@ -426,27 +571,37 @@ window.addEventListener('message', function(ev) {
   switch (data.cmd) {
     case 'toggleWindow':
       toggleWindow(data.callerid, data.width, data.height, data.title, data.page, data.spawnx, data.spawny);
-    break
+
+    break;
+
+    case 'setWindowSize':
+      setWindowSize(null, data.winid, data.width, data.height);
+    break;
   }
 }, false);
 
 <!-- Window Toggle Button System -->
 
+var Anchor = {
+  TopLeft : 1,
+  TopRight : 2,
+  BottomLeft : 3,
+  BottomRight : 4,
+}
 
-function toggleWindow(callerid,width,height,title,page,spawnx,spawny) { //set callerid to null if there is no element calling this function
-
+function toggleWindow(callerid,width,height,title,page,spawnx,spawny,anchor, persist) { //set callerid to null if there is no element calling this function
+  anchor = anchor || Anchor.TopLeft;
 
 
 var winid= 'window_'+title.replace(/ /g,'&nbsp;');
 
-if (document.getElementById(winid)!=null)
-  {
-  closeWindow(callerid,winid);
+  if (document.getElementById(winid) != null) {
+    closeWindow(callerid,winid);
   }
   else
   {
      clickSound()
-     <!--Set calling element's border colour to green.-->
+     <!--Set calling elements border colour to green.-->
 
      if (callerid != "null")
      {
@@ -480,8 +635,32 @@ if (document.getElementById(winid)!=null)
     div.onmousedown  = function(){clickwindow(this)};
     div.onmouseup  = function(){unclickwindow(this)};
     div.onmousemove  = function(){movewindow(this)};
-    div.style.left = spawnx;
-    div.style.top = spawny;
+
+    if (persist)
+      div.setAttribute('data-persist', true);
+    div.setAttribute('data-anchor', anchor);
+    switch (anchor) {
+      case Anchor.TopLeft:
+        div.classList.add('anchor-top','anchor-left');
+        div.style.top = spawny;
+        div.style.left = spawnx;
+      break;
+      case Anchor.TopRight:
+        div.classList.add('anchor-top','anchor-right');
+        div.style.top = spawny;
+        div.style.right = spawnx;
+      break;
+      case Anchor.BottomLeft:
+        div.classList.add('anchor-bottom','anchor-left');
+        div.style.bottom = spawny;
+        div.style.left = spawnx;
+      break;
+      case Anchor.BottomRight:
+        div.classList.add('anchor-bottom','anchor-left');
+        div.style.bottom = spawny;
+        div.style.right = spawnx;
+      break;
+    }
 
 
 
@@ -535,7 +714,7 @@ if (document.getElementById(winid)!=null)
     <!--Create closebutton-->
      var div2 = document.createElement("div");
     div2.className  = "closebutton";
-    div2.onmousedown = function() { closeWindow(callerid,winid); };
+    div2.onmousedown = function(ev) { closeWindow(callerid,winid); ev.stopPropagation() };
 
     span.appendChild(div2);
 
@@ -548,7 +727,7 @@ if (document.getElementById(winid)!=null)
 
     <!--Create Window-->
 
-      var wind = document.createElement("div");
+    var wind = document.createElement("div");
     wind.className  = "wind";
 
     wind.style.width = width+"px"; //change to vw to make responsive and 1000 to 100
@@ -562,20 +741,32 @@ if (document.getElementById(winid)!=null)
     //set resize handle to window's bottom and left (basically grab window left and top and add their width/height to get this.)
     setResizeHandlePosition(brdr,div,wind);
 
+    var rootdir = location.pathname.split('/');
+    rootdir.pop();
 
+    rootdir = rootdir.join('/');
 
+    var params = 'rootdir=' + rootdir + '&winid=' + winid;
+
+    if (page.split('?').length > 1) {
+      page += '&' + params;
+    } else {
+      page += '?' + params;
+    }
 
       <!--Create Iframe-->
-     var frame = document.createElement("iframe");
+    var frame = document.createElement("iframe");
     frame.src = page;
 
+    frame.onload = function() {
+
+      frame.contentWindow.postMessage({
+        cmd : 'wininit',
+        winid : winid
+      }, '*')
+    }
+
     wind.appendChild(frame);
-
-
-
-
-
-
   }
 
 }
@@ -751,9 +942,9 @@ case "debug://dizzpet":
 toggleWindow('null',128,192,'DIZZPET','apps/extras/dizzpet/index.html','10vw','20vh');
 break;
 
-case "window://assets":
-toggleWindow('null',250,400,'Asset Manager','apps/assetmgr/index.html','10vw','20vh');
-break;
+//case "window://inventory":
+//toggleWindow('null',250,400,'Inventory (Beta)','apps/inventory/index.html','10vw','20vh');
+//break;
 
 case "debug://captainschair":
 toggleWindow("null",500,400," CAPTAIN'S CHAIR","apps/captainschair/index.html","40vw","35vh");
@@ -884,33 +1075,32 @@ previousroomurl = window.janus.currenturl();
 switch(window.janus.networkstatus) {
   case 0:
   document.getElementById("onlinestatus").onmousemove = function() {showtooltip('You are <b>not connected</b> to a presence server.')}
-      document.getElementById("onlinestatus").innerHTML = "OFFLINE";
-  document.getElementById("onlinestatus").style.color = "#F88E8E";
+      document.getElementById("onlinestatus").className = "stat statisticleftdisconnected";
       break;
   case 1:
   document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Attempting to connect to the <b>'+window.janus.roomserver+'</b> presence server.')}
-      document.getElementById("onlinestatus").innerHTML = "...";
-  document.getElementById("onlinestatus").style.color = "";
+      document.getElementById("onlinestatus").className = "stat statisticleftpending";
+
       break;
   case 2:
   document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Online at <b>'+window.janus.roomserver+'</b> presence server.')}
-      document.getElementById("onlinestatus").innerHTML = "ONLINE";
-  document.getElementById("onlinestatus").style.color = "";
+      document.getElementById("onlinestatus").className = "stat statisticleft";
+
       break;
   case -1:
-      document.getElementById("onlinestatus").innerHTML = "ERROR";
-  document.getElementById("onlinestatus").style.color = "#F88E8E";
+      document.getElementById("onlinestatus").className = "stat statisticleftdisconnected";
+
   document.getElementById("onlinestatus").onmousemove = function() {showtooltip(strip(window.janus.networkerror))}
   break;
 default:
-    document.getElementById("onlinestatus").innerHTML = "????";
-  document.getElementById("onlinestatus").style.color = "#F88E8E";
+    document.getElementById("onlinestatus").className = "stat statisticleftdisconnected";
+
   document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Something went wrong with the client.')}
 }
 
+	//set player count and tricount
+    	document.getElementById("playercountstatus").innerHTML = window.janus.playercount-1;
 
-//set player count and tricount
-    document.getElementById("playercountstatus").innerHTML = window.janus.playercount-1;
 
 if ((window.janus.playercount-1) == 1)
 {
@@ -924,23 +1114,18 @@ document.getElementById("playercountstatuscontainer").onmousemove = function() {
 
 
 
-  document.getElementById("polystatus").innerHTML = formatAMPM();
-document.getElementById("polycountstatuscontainer").onmousemove = function()  {showtooltip('The time is <b>'+(formatAMPM())+'</b>.')}
+
 
 //if room is locked or unlocked change locked display
 
 if (window.janus.locked() == 0)
 {
-  document.getElementById("lockedstatus").innerHTML = "UNLOCKED";
-document.getElementById("lockedstatus").style.color = "";
-document.getElementById("lockedstatus").style.borderColor = "";
+  document.getElementById("lockedstatus").className = "stat statisticright2unlocked";
 document.getElementById("lockedstatus").onmousemove = function() {showtooltip('You <b>may edit</b> here.')}
 }
 else
 {
-  document.getElementById("lockedstatus").innerHTML = "LOCKED";
-document.getElementById("lockedstatus").style.color = "#F88E8E";
-document.getElementById("lockedstatus").style.borderColor = "#F88E8E";
+  document.getElementById("lockedstatus").className = "stat statisticright2";
 document.getElementById("lockedstatus").onmousemove = function() {showtooltip('<b>Cannot edit</b> here.')}
 }
 
@@ -1255,7 +1440,7 @@ document.getElementById("contain").style.opacity = "";
 </head>
 
 <body class="unselectable"  >
-<div id="fader"></div>
+<div id="fader" onclick="window.janus.unfocus();" ></div>
 <div id="urlwidthtest" ></div>
 
 <div class="navbar unselectable" id="contain" onmouseleave="togglemenulist('true')">
@@ -1298,7 +1483,7 @@ document.getElementById("contain").style.opacity = "";
 
     <li class="menulistbutton" onclick="saveroom()"> SAVE </li>
     <li class="menulistbutton" onclick="syncroom()"> SYNC PEERS </li>
-    <li class="menulistbutton" onclick="toggleWindow(this,600,350,'EDITOR','apps/roomcode/index.html','50vw','50vh')" >EDITOR</li>
+
 
 
   <li class="menulistbuttonquit" onclick="quitjanus()" > QUIT </li>
@@ -1321,17 +1506,13 @@ document.getElementById("contain").style.opacity = "";
 
 </div>
 
+
+<div class="statisticleft2counter" id="playercountstatus"></div>
+
+
 <div class="stat statisticleft2 unselectable"  id="playercountstatuscontainer"  onmouseout="hidetooltip()" >
-<span id="playercountstatus"></span>
-<img src='skins\emerald\icons\staticon.png' style='width:15px;height:22px;float:right;padding-right:8px;' />
-</div>
-
-
-<div class="stat statisticright unselectable"  id="polycountstatuscontainer" onmouseout="hidetooltip()" >
-<span id="polystatus" ></span>
 
 </div>
-
 
 <div class="stat statisticright2 unselectable" id="lockedstatus"  onmouseout="hidetooltip()"  >
 
@@ -1340,19 +1521,18 @@ document.getElementById("contain").style.opacity = "";
 <div class="quickbar unselectable" id="quickbar">
 
 
-<button  id="inventorybutton" onmousemove="showtooltip('Inventory')" onmouseout="hidetooltip()" class="quickinventory" onclick="toggleWindow(this,500,256,'INVENTORY','apps/inventory/index.html','50vw','50vh')" > </button>
+<button data-priority='10' id="inventorybutton" onmousemove="showtooltip('Inventory')" onmouseout="hidetooltip()" class="quickinventory" onclick="toggleWindow(this,250,400,'Inventory (Beta)','apps/inventory/index.html','1vw',pxToVh(50), Anchor.BottomRight, true)" > </button>
 
 
+<button id="bookmarksbutton" onmousemove="showtooltip('Spaces')" onmouseout="hidetooltip()" class="quickbookmarks" onclick="toggleWindow(this,500,700,'Spaces','apps/bookmarks/index.html','1vw',pxToVh(50), Anchor.TopLeft, false)" > </button>
 
 <!-- Will come in a later update.
 <button id="websurfacebutton" onmousemove="showtooltip('Browser')" onmouseout="hidetooltip()" class="quickbrowser" onclick="toggleWindow(this,500,256,'BROWSER','apps/browser/index.html','50vw','50vh')" > </button>
 -->
 
-
-
-<button  id="radarbutton" onmousemove="showtooltip('Radar')" onmouseout="hidetooltip()" class="quickmap" onclick="toggleWindow(this,266,300,'RADAR','apps/map/index.html','80vw','10vh')" > </button>
-
-<button id="chatlogbutton" onmousemove="showtooltip('Chatlog')" onmouseout="hidetooltip()" class="quickchatlog" onclick="toggleWindow(this,325,230,'CHAT LOG','apps/chatlog/index.html','1vw','65vh')" ></button>
+<button data-priority='20' id="radarbutton" onmousemove="showtooltip('Radar')" onmouseout="hidetooltip()" class="quickmap" onclick="toggleWindow(this,266,300,'RADAR','apps/map/index.html','1vw','0.5vh', Anchor.TopRight)" > </button>
+<button data-priority='30' id="chatlogbutton" onmousemove="showtooltip('Chatlog')" onmouseout="hidetooltip()" class="quickchatlog" onclick="toggleWindow(this,325,230,'CHAT LOG','apps/chatlog/index.html','1vw',pxToVh(50), Anchor.BottomLeft)" ></button>
+<button id="editbutton" onmousemove="showtooltip('Creation Tools')" onmouseout="hidetooltip()" class="quickedit" onclick="toggleWindow(this,600,350,'CREATION TOOLS','apps/roomcode/index.html','50vw','50vh')" > </button>
 
 </div>
 
