@@ -8,13 +8,40 @@ namespace JanusVR
 {
     public class ExportedObject
     {
-        public Mesh mesh;
+        private Mesh mesh;
+        private Texture2D lightMapTex;
+        private Texture2D diffuseMapTex;
+        private GameObject go;
+        private Collider col;
 
-        public Texture2D lightMapTex;
-        public Texture2D diffuseMapTex;
+        public Mesh Mesh
+        {
+            get { return mesh; }
+            set { mesh = value; }
+        }
 
-        public GameObject go;
+        public Texture2D LightMapTex
+        {
+            get { return lightMapTex; }
+            set { lightMapTex = value; }
+        }
 
-        public Collider col;
+        public Texture2D DiffuseMapTex
+        {
+            get { return diffuseMapTex; }
+            set { diffuseMapTex = value; }
+        }
+
+        public GameObject GameObject
+        {
+            get { return go; }
+            set { go = value; }
+        }
+
+        public Collider Col
+        {
+            get { return col; }
+            set { col = value; }
+        }
     }
 }

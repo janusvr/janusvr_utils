@@ -9,11 +9,15 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.FBX;
 using UnityEngine.SceneManagement;
+using UObject = UnityEngine.Object;
 
 namespace JanusVR
 {
     public class JanusVRExporter : EditorWindow
     {
+        private const int PreviewSize = 64;
+        public const int Version = 201;
+
         internal class ExportedData
         {
             internal List<ExportedObject> exportedObjs;
@@ -44,15 +48,15 @@ namespace JanusVR
         [SerializeField]
         private int defaultQuality = 100;
         [SerializeField]
-        private TextureFilterMode filterMode;
+        private TextureFilterMode filterMode = TextureFilterMode.Average;
 
         [SerializeField]
-        private ExportMeshFormat defaultMeshFormat;
+        private ExportMeshFormat defaultMeshFormat = ExportMeshFormat.FBX;
         [SerializeField]
         private float uniformScale = 1;
 
         [SerializeField]
-        private LightmapExportType lightmapExportType;
+        private LightmapExportType lightmapExportType = LightmapExportType.Packed;
         [SerializeField]
         private int maxLightMapResolution = 1024;
 
@@ -60,9 +64,9 @@ namespace JanusVR
         /// Lower case values that the exporter will consider for being the Main Texture on a shader
         /// </summary>
         private string[] mainTexSemantics = new string[]
-            {
-                "_maintex"
-            };
+        {
+            "_maintex"
+        };
 
         private Dictionary<int, List<GameObject>> lightmapped;
 
@@ -71,6 +75,9 @@ namespace JanusVR
 
         private List<Mesh> meshesExported;
         private List<MeshExportData> meshesExportedData;
+        private Dictionary<Mesh, string> meshesNames;
+        private int meshesCount;
+
         private ExportedData exported;
 
         private bool perTextureOptions = false;
@@ -92,13 +99,12 @@ namespace JanusVR
 
             defaultMeshFormat = (ExportMeshFormat)EditorGUILayout.EnumPopup("Default Mesh Format", defaultMeshFormat);
             defaultTexFormat = (ImageFormatEnum)EditorGUILayout.EnumPopup("Default Textures Format", defaultTexFormat);
-            filterMode = (TextureFilterMode)EditorGUILayout.EnumPopup("Texture Filter When Scaling", filterMode);
+            filterMode = (TextureFilterMode)EditorGUILayout.EnumPopup("Texture Filter", filterMode);
             defaultQuality = EditorGUILayout.IntSlider("Default Textures Quality", defaultQuality, 0, 100);
 
             uniformScale = EditorGUILayout.FloatField("Uniform Scale", uniformScale);
 
             lightmapExportType = (LightmapExportType)EditorGUILayout.EnumPopup("Lightmap Type", lightmapExportType);
-            //exportLightmaps = GUILayout.Toggle(exportLightmaps, "Export Lightmaps");
             if (lightmapExportType != LightmapExportType.None)
             {
                 maxLightMapResolution = Math.Max(32, EditorGUILayout.IntField("Max Lightmap Resolution", maxLightMapResolution));
@@ -130,7 +136,7 @@ namespace JanusVR
                         TextureExportData tex = texturesExportedData[i];
                         Rect r = GUILayoutUtility.GetRect(Screen.width, size * 1.05f);
 
-                        GUI.DrawTexture(new Rect(size * 0.1f, r.y, size, size), tex.Texture);
+                        GUI.DrawTexture(new Rect(size * 0.1f, r.y, size, size), tex.Preview);
                         GUI.Label(new Rect(size * 1.1f, r.y, half - size, size), tex.Texture.name);
 
                         GUI.Label(new Rect(half, r.y, half * 0.3f, last.height), "Format");
@@ -151,10 +157,11 @@ namespace JanusVR
                     for (int i = 0; i < meshesExportedData.Count; i++)
                     {
                         MeshExportData model = meshesExportedData[i];
+                        string name = meshesNames[model.Mesh];
                         Rect r = GUILayoutUtility.GetRect(Screen.width, size * 1.05f);
 
                         GUI.DrawTexture(new Rect(size * 0.1f, r.y, size, size), model.Preview);
-                        GUI.Label(new Rect(size * 1.1f, r.y, half - size, size), model.Mesh.name);
+                        GUI.Label(new Rect(size * 1.1f, r.y, half - size, size), name);
 
                         GUI.Label(new Rect(half, r.y, half * 0.3f, last.height), "Format");
                         model.Format = (ExportMeshFormat)EditorGUI.EnumPopup(new Rect(half * 1.3f, r.y, half * 0.7f, last.height), model.Format);
@@ -223,6 +230,8 @@ namespace JanusVR
 
             meshesExported = new List<Mesh>();
             meshesExportedData = new List<MeshExportData>();
+            meshesNames = new Dictionary<Mesh, string>();
+            meshesCount = 0;
 
             Scene scene = SceneManager.GetActiveScene();
             GameObject[] roots = scene.GetRootGameObjects();
@@ -235,8 +244,8 @@ namespace JanusVR
                 RecursiveSearch(roots[i], exported);
             }
 
-            if (lightmapExportType == LightmapExportType.None ||
-                lightmapped.Count == 0)
+            if (lightmapExportType != LightmapExportType.None &&
+                lightmapped.Count > 0)
             {
                 string scenePath = scene.path;
                 scenePath = Path.GetDirectoryName(scenePath);
@@ -332,8 +341,8 @@ namespace JanusVR
                                         texturesExported.Add(tex);
                                     }
 
-                                    ExportedObject eobj = exported.exportedObjs.First(c => c.go == obj);
-                                    eobj.diffuseMapTex = tex;
+                                    ExportedObject eobj = exported.exportedObjs.First(c => c.GameObject == obj);
+                                    eobj.DiffuseMapTex = tex;
 
                                     Graphics.SetRenderTarget(null);
                                     RenderTexture.ReleaseTemporary(renderTexture);
@@ -399,8 +408,8 @@ namespace JanusVR
                                         Graphics.DrawMeshNow(mesh, world, j);
                                     }
 
-                                    ExportedObject eobj = exported.exportedObjs.First(c => c.go == obj);
-                                    eobj.lightMapTex = decTex;
+                                    ExportedObject eobj = exported.exportedObjs.First(c => c.GameObject == obj);
+                                    eobj.LightMapTex = decTex;
                                 }
 
                                 decTex.ReadPixels(new Rect(0, 0, decTex.width, decTex.height), 0, 0);
@@ -409,7 +418,7 @@ namespace JanusVR
                                 Graphics.SetRenderTarget(null);
                                 RenderTexture.ReleaseTemporary(renderTexture);
                             }
-                            UnityEngine.Object.DestroyImmediate(lightMap);
+                            UObject.DestroyImmediate(lightMap);
                         }
                         #endregion
                         break;
@@ -481,8 +490,8 @@ namespace JanusVR
                                         texturesExported.Add(tex);
                                     }
 
-                                    ExportedObject eobj = exported.exportedObjs.First(c => c.go == obj);
-                                    eobj.lightMapTex = tex;
+                                    ExportedObject eobj = exported.exportedObjs.First(c => c.GameObject == obj);
+                                    eobj.LightMapTex = tex;
 
                                     Graphics.SetRenderTarget(null);
                                     RenderTexture.ReleaseTemporary(renderTexture);
@@ -490,7 +499,7 @@ namespace JanusVR
                                     lmap++;
                                 }
                             }
-                            UnityEngine.Object.DestroyImmediate(lightMap);
+                            UObject.DestroyImmediate(lightMap);
                         }
                         #endregion
                         break;
@@ -501,22 +510,69 @@ namespace JanusVR
             {
                 Texture2D tex = texturesExported[i];
                 TextureExportData data = new TextureExportData();
+                string path = AssetDatabase.GetAssetPath(tex);
+
+                data.Created = string.IsNullOrEmpty(path);
                 data.Format = this.defaultTexFormat; // start up with a default format
                 data.Texture = tex;
                 data.Resolution = tex.width;
-
                 data.Quality = defaultQuality;
+
+                if (tex.width <= PreviewSize && tex.height <= PreviewSize)
+                {
+                    data.Preview = data.Texture;
+                }
+                else
+                {
+                    if (data.Created)
+                    {
+                        data.Preview = ScaleTexture(data, PreviewSize);
+                    }
+                    else
+                    {
+                        TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(path);
+                        bool wasReadable = importer.isReadable;
+                        TextureImporterFormat lastFormat = importer.textureFormat;
+                        if (!importer.isReadable || importer.textureFormat != TextureImporterFormat.ARGB32) // only reimport if truly needed
+                        {
+                            importer.isReadable = true;
+                            if (!tex.name.Contains("comp_light"))
+                            {
+                                importer.textureFormat = TextureImporterFormat.ARGB32;
+                            }
+                        }
+
+                        AssetDatabase.Refresh();
+                        AssetDatabase.ImportAsset(path);
+
+                        data.Preview = ScaleTexture(data, PreviewSize);
+
+                        if (!wasReadable)
+                        {
+                            importer.isReadable = false;
+                            importer.textureFormat = lastFormat;
+                        }
+                    }
+                }
 
                 texturesExportedData.Add(data);
             }
+
             for (int i = 0; i < meshesExported.Count; i++)
             {
                 Mesh mesh = meshesExported[i];
                 MeshExportData data = new MeshExportData();
                 data.Format = this.defaultMeshFormat;
                 data.Mesh = mesh;
-
                 data.Preview = AssetPreview.GetAssetPreview(mesh);
+
+                string name = mesh.name;
+                if (string.IsNullOrEmpty(name))
+                {
+                    meshesCount++;
+                    name = "ExportedMesh" + meshesCount;
+                }
+                meshesNames.Add(mesh, name);
 
                 meshesExportedData.Add(data);
             }
@@ -560,14 +616,14 @@ namespace JanusVR
                         meshesExported.Add(mesh);
                     }
 
-                    ExportedObject exp = data.exportedObjs.FirstOrDefault(c => c.go == root);
+                    ExportedObject exp = data.exportedObjs.FirstOrDefault(c => c.GameObject == root);
                     if (exp == null)
                     {
                         exp = new ExportedObject();
-                        exp.go = root;
+                        exp.GameObject = root;
                         data.exportedObjs.Add(exp);
                     }
-                    exp.mesh = mesh;
+                    exp.Mesh = mesh;
 
                     // export textures
                     if (lightmapExportType != LightmapExportType.BakedMaterial) // if were baking we dont need the original textures
@@ -597,7 +653,7 @@ namespace JanusVR
                                             continue;
                                         }
 
-                                        exp.diffuseMapTex = tex;
+                                        exp.DiffuseMapTex = tex;
                                         if (!texturesExported.Contains(tex))
                                         {
                                             texturesExported.Add(tex);
@@ -611,7 +667,7 @@ namespace JanusVR
                     int lightMap = meshRen.lightmapIndex;
                     if (lightMap != -1)
                     {
-                        // Render lightmaps for this object
+                        // Register mesh for lightmap render
                         List<GameObject> toRender;
                         if (!lightmapped.TryGetValue(lightMap, out toRender))
                         {
@@ -626,14 +682,14 @@ namespace JanusVR
                 {
                     Collider col = (Collider)comp;
 
-                    ExportedObject exp = data.exportedObjs.FirstOrDefault(c => c.go == root);
+                    ExportedObject exp = data.exportedObjs.FirstOrDefault(c => c.GameObject == root);
                     if (exp == null)
                     {
                         exp = new ExportedObject();
-                        exp.go = root;
+                        exp.GameObject = root;
                         data.exportedObjs.Add(exp);
                     }
-                    exp.col = col;
+                    exp.Col = col;
                 }
             }
 
@@ -653,12 +709,22 @@ namespace JanusVR
             for (int i = 0; i < texturesExportedData.Count; i++)
             {
                 TextureExportData tex = texturesExportedData[i];
-                string path = AssetDatabase.GetAssetPath(tex.Texture);
 
-                if (string.IsNullOrEmpty(path))
+                if (tex.Created)
                 {
                     // we made this, we delete this
-                    GameObject.DestroyImmediate(tex.Texture);
+                    UObject.DestroyImmediate(tex.Texture);
+                }
+
+                if (tex.Preview)
+                {
+                    string path = AssetDatabase.GetAssetPath(tex.Preview);
+                    if (string.IsNullOrEmpty(path))
+                    {
+                        // make sure we didnt just copy the Preview because it was the same resolution
+                        // as the requested preview
+                        UObject.DestroyImmediate(tex.Preview);
+                    }
                 }
             }
         }
@@ -670,29 +736,28 @@ namespace JanusVR
             {
                 times++;
             }
-
             return times;
         }
 
-        private Texture2D ScaleTexture(TextureExportData tex)
+        private Texture2D ScaleTexture(TextureExportData tex, int resolution)
         {
             Texture2D texture = tex.Texture;
             // scale the texture
-            Texture2D scaled = new Texture2D(tex.Resolution, tex.Resolution);
+            Texture2D scaled = new Texture2D(resolution, resolution);
 
             Color[] source = texture.GetPixels();
-            Color[] target = new Color[tex.Resolution * tex.Resolution];
+            Color[] target = new Color[resolution * resolution];
 
-            int scale = texture.width / tex.Resolution;
+            int scale = texture.width / resolution;
             float sca = scale * 2;
 
             switch (filterMode)
             {
                 case TextureFilterMode.Average:
                     {
-                        for (int x = 0; x < tex.Resolution; x++)
+                        for (int x = 0; x < resolution; x++)
                         {
-                            for (int y = 0; y < tex.Resolution; y++)
+                            for (int y = 0; y < resolution; y++)
                             {
                                 // sample neighbors
                                 int xx = x * scale;
@@ -725,16 +790,16 @@ namespace JanusVR
                                 a = a / sca;
 
                                 Color sampled = new Color(r, g, b, a);
-                                target[x + (y * tex.Resolution)] = sampled;
+                                target[x + (y * resolution)] = sampled;
                             }
                         }
                     }
                     break;
                 case TextureFilterMode.Nearest:
                     {
-                        for (int x = 0; x < tex.Resolution; x++)
+                        for (int x = 0; x < resolution; x++)
                         {
-                            for (int y = 0; y < tex.Resolution; y++)
+                            for (int y = 0; y < resolution; y++)
                             {
                                 // sample neighbors
                                 int xx = x * scale;
@@ -742,7 +807,7 @@ namespace JanusVR
                                 int ind = xx + (yy * texture.width);
 
                                 Color col = source[ind];
-                                target[x + (y * tex.Resolution)] = col;
+                                target[x + (y * resolution)] = col;
                             }
                         }
                     }
@@ -766,6 +831,7 @@ namespace JanusVR
             catch
             {
                 Debug.LogError("Error while creating the export folder!");
+                return;
             }
 
             for (int i = 0; i < texturesExportedData.Count; i++)
@@ -790,9 +856,9 @@ namespace JanusVR
 
                     if (tex.Resolution != texture.width)
                     {
-                        Texture2D scaled = ScaleTexture(tex);
+                        Texture2D scaled = ScaleTexture(tex, tex.Resolution);
                         ExportTexture(scaled, expPath, defaultTexFormat, null);
-                        UnityEngine.Object.DestroyImmediate(scaled);
+                        UObject.DestroyImmediate(scaled);
                     }
                     else
                     {
@@ -820,9 +886,9 @@ namespace JanusVR
 
                     if (tex.Resolution != texture.width)
                     {
-                        Texture2D scaled = ScaleTexture(tex);
+                        Texture2D scaled = ScaleTexture(tex, tex.Resolution);
                         ExportTexture(scaled, expPath, defaultTexFormat, null);
-                        UnityEngine.Object.DestroyImmediate(scaled);
+                        UObject.DestroyImmediate(scaled);
                     }
                     else
                     {
@@ -843,13 +909,14 @@ namespace JanusVR
             for (int i = 0; i < meshesExportedData.Count; i++)
             {
                 MeshExportData model = meshesExportedData[i];
-                string expPath = Path.Combine(exportPath, model.Mesh.name);
+                string name = meshesNames[model.Mesh];
+                string expPath = Path.Combine(exportPath, name);
                 ExportMesh(model.Mesh, expPath, model.Format, null);
-                model.ExportedPath = model.Mesh.name + GetMeshFormat(model.Format);
+                model.ExportedPath = name + GetMeshFormat(model.Format);
             }
 
             // Make the index.html file
-            StringBuilder index = new StringBuilder("<html>\n\t<head>\n\t\t<title>Unreal Export</title>\n\t</head>\n\t<body>\n\t\t<FireBoxRoom>\n\t\t\t<Assets>");
+            StringBuilder index = new StringBuilder("<html>\n\t<head>\n\t\t<title>Janus Unity Exporter v" + Version +  "</title>\n\t</head>\n\t<body>\n\t\t<FireBoxRoom>\n\t\t\t<Assets>");
 
             List<Texture2D> texWritten = new List<Texture2D>();
             List<Mesh> meshWritten = new List<Mesh>();
@@ -857,29 +924,38 @@ namespace JanusVR
             for (int i = 0; i < exported.exportedObjs.Count; i++)
             {
                 ExportedObject obj = exported.exportedObjs[i];
-                if (!meshWritten.Contains(obj.mesh))
+                if (!meshWritten.Contains(obj.Mesh))
                 {
-                    string path = meshesExportedData.First(c => c.Mesh == obj.mesh).ExportedPath;
-                    index.Append("\n\t\t\t\t<AssetObject id=\"" + obj.mesh.name + "\" src=\"" + path + "\" />");
-                    meshWritten.Add(obj.mesh);
+                    string path = meshesExportedData.First(c => c.Mesh == obj.Mesh).ExportedPath;
+                    string name = meshesNames[obj.Mesh];
+                    index.Append("\n\t\t\t\t<AssetObject id=\"" + name + "\" src=\"" + path + "\" />");
+                    meshWritten.Add(obj.Mesh);
                 }
             }
             for (int i = 0; i < exported.exportedObjs.Count; i++)
             {
                 ExportedObject obj = exported.exportedObjs[i];
-                if (obj.diffuseMapTex != null &&
-                    !texWritten.Contains(obj.diffuseMapTex))
+                if (obj.DiffuseMapTex != null &&
+                    !texWritten.Contains(obj.DiffuseMapTex))
                 {
-                    string path = texturesExportedData.First(c => c.Texture == obj.diffuseMapTex).ExportedPath;
-                    index.Append("\n\t\t\t\t<AssetImage id=\"" + Path.GetFileNameWithoutExtension(path) + "\" src=\"" + path + "\" />");
-                    texWritten.Add(obj.diffuseMapTex);
+                    TextureExportData data = texturesExportedData.FirstOrDefault(c => c.Texture == obj.DiffuseMapTex);
+                    if (data != null)
+                    {
+                        string path = data.ExportedPath;
+                        index.Append("\n\t\t\t\t<AssetImage id=\"" + Path.GetFileNameWithoutExtension(path) + "\" src=\"" + path + "\" />");
+                        texWritten.Add(obj.DiffuseMapTex);
+                    }
                 }
-                if (obj.lightMapTex != null &&
-                    !texWritten.Contains(obj.lightMapTex))
+                if (obj.LightMapTex != null &&
+                    !texWritten.Contains(obj.LightMapTex))
                 {
-                    string path = texturesExportedData.First(c => c.Texture == obj.lightMapTex).ExportedPath;
-                    index.Append("\n\t\t\t\t<AssetImage id=\"" + Path.GetFileNameWithoutExtension(path) + "\" src=\"" + path + "\" />");
-                    texWritten.Add(obj.lightMapTex);
+                    TextureExportData data = texturesExportedData.First(c => c.Texture == obj.LightMapTex);
+                    if (data != null)
+                    {
+                        string path = data.ExportedPath;
+                        index.Append("\n\t\t\t\t<AssetImage id=\"" + Path.GetFileNameWithoutExtension(path) + "\" src=\"" + path + "\" />");
+                        texWritten.Add(obj.LightMapTex);
+                    }
                 }
             }
 
@@ -888,52 +964,48 @@ namespace JanusVR
             for (int i = 0; i < exported.exportedObjs.Count; i++)
             {
                 ExportedObject obj = exported.exportedObjs[i];
-                GameObject go = obj.go;
+                GameObject go = obj.GameObject;
 
                 string diffuseID = "";
                 string lmapID = "";
-                if (obj.diffuseMapTex != null)
+                if (obj.DiffuseMapTex != null)
                 {
-                    diffuseID = Path.GetFileNameWithoutExtension(texturesExportedData.First(k => k.Texture == obj.diffuseMapTex).ExportedPath);
+                    diffuseID = Path.GetFileNameWithoutExtension(texturesExportedData.First(k => k.Texture == obj.DiffuseMapTex).ExportedPath);
                 }
-                if (obj.lightMapTex != null)
+                if (obj.LightMapTex != null)
                 {
-                    lmapID = Path.GetFileNameWithoutExtension(texturesExportedData.First(k => k.Texture == obj.lightMapTex).ExportedPath);
+                    lmapID = Path.GetFileNameWithoutExtension(texturesExportedData.First(k => k.Texture == obj.LightMapTex).ExportedPath);
                 }
 
                 CultureInfo c = CultureInfo.InvariantCulture;
+                Mesh mesh = obj.Mesh;
+                string meshName = meshesNames[mesh];
 
-                if (string.IsNullOrEmpty(diffuseID))
+                index.Append("\n\t\t\t\t<Object id=\"" + meshName + "\" lighting=\"true\" ");
+
+                if (!string.IsNullOrEmpty(diffuseID))
                 {
-                    index.Append("\n\t\t\t\t<Object collision_id=\"" + obj.mesh.name + "\" id=\"" + obj.mesh.name + "\" lighting=\"true\" pos=\"");
+                    index.Append("image_id=\"" + diffuseID + "\" ");
                 }
-                else
+
+                if (!string.IsNullOrEmpty(lmapID))
                 {
-                    if (lightmapExportType != LightmapExportType.None && lightmapExportType != LightmapExportType.BakedMaterial)
+                    index.Append("lmap_id=\"" + lmapID + "\" ");
+                    if (lightmapExportType == LightmapExportType.Packed)
                     {
                         MeshRenderer renderer = go.GetComponent<MeshRenderer>();
-
-                        if (lightmapExportType == LightmapExportType.Packed)
-                        {
-                            Vector4 lmap = renderer.lightmapScaleOffset;
-                            lmap.x = Mathf.Clamp(lmap.x, 0, 1);
-                            lmap.y = Mathf.Clamp(lmap.y, 0, 1);
-                            lmap.z = Mathf.Clamp(lmap.z, 0, 1);
-                            lmap.w = Mathf.Clamp(lmap.w, 0, 1);
-
-                            index.Append("\n\t\t\t\t<Object collision_id=\"" + obj.mesh.name + "\" id=\"" + obj.mesh.name + "\" lmap_id=\"" + lmapID + "\" image_id=\"" + diffuseID + "\" lmap_sca=\"");
-                            index.Append(lmap.x.ToString(c) + " " + lmap.y.ToString(c) + " " + lmap.z.ToString(c) + " " + lmap.w.ToString(c));
-                            index.Append("\" lighting=\"true\" pos=\"");
-                        }
-                        else if (lightmapExportType == LightmapExportType.Unpacked)
-                        {
-                            index.Append("\n\t\t\t\t<Object collision_id=\"" + obj.mesh.name + "\" id=\"" + obj.mesh.name + "\" lmap_id=\"" + lmapID + "\" image_id=\"" + diffuseID + "\" lighting=\"true\" pos=\"");
-                        }
+                        Vector4 lmap = renderer.lightmapScaleOffset;
+                        lmap.x = Mathf.Clamp(lmap.x, 0, 1);
+                        lmap.y = Mathf.Clamp(lmap.y, 0, 1);
+                        lmap.z = Mathf.Clamp(lmap.z, 0, 1);
+                        lmap.w = Mathf.Clamp(lmap.w, 0, 1);
+                        index.Append("lmap_sca=\"" + lmap.x.ToString(c) + " " + lmap.y.ToString(c) + " " + lmap.z.ToString(c) + " " + lmap.w.ToString(c) + "\" ");
                     }
-                    else
-                    {
-                        index.Append("\n\t\t\t\t<Object collision_id=\"" + obj.mesh.name + "\" id=\"" + obj.mesh.name + "\" image_id=\"" + diffuseID + "\" lighting=\"true\" pos=\"");
-                    }
+                }
+
+                if (obj.Col != null)
+                {
+                    index.Append("collision_id=\"" + meshName + "\" ");
                 }
 
                 Transform trans = go.transform;
@@ -948,25 +1020,25 @@ namespace JanusVR
                 Vector3 sca = trans.lossyScale;
                 sca *= uniformScale;
 
-                index.Append(pos.x.ToString(c) + " " + pos.y.ToString(c) + " " + pos.z.ToString(c));
+                index.Append("pos=\"" + pos.x.ToString(c) + " " + pos.y.ToString(c) + " " + pos.z.ToString(c) + "\" ");
                 if (sca.x < 0 || sca.y < 0 || sca.z < 0)
                 {
-                    index.Append("\" cull_face=\"front");
+                    index.Append("cull_face=\"front\"" + "\" ");
                 }
 
-                index.Append("\" scale=\"");
-                index.Append(sca.x.ToString(c) + " " + sca.y.ToString(c) + " " + sca.z.ToString(c));
+                index.Append("scale=\"");
+                index.Append(sca.x.ToString(c) + " " + sca.y.ToString(c) + " " + sca.z.ToString(c) + "\" ");
 
-                index.Append("\" xdir=\"");
-                index.Append(xDir.x.ToString(c) + " " + xDir.y.ToString(c) + " " + xDir.z.ToString(c));
+                index.Append("xdir=\"");
+                index.Append(xDir.x.ToString(c) + " " + xDir.y.ToString(c) + " " + xDir.z.ToString(c) + "\" ");
 
-                index.Append("\" ydir=\"");
-                index.Append(yDir.x.ToString(c) + " " + yDir.y.ToString(c) + " " + yDir.z.ToString(c));
+                index.Append("ydir=\"");
+                index.Append(yDir.x.ToString(c) + " " + yDir.y.ToString(c) + " " + yDir.z.ToString(c) + "\" ");
 
-                index.Append("\" zdir=\"");
-                index.Append(zDir.x.ToString(c) + " " + zDir.y.ToString(c) + " " + zDir.z.ToString(c));
+                index.Append("zdir=\"");
+                index.Append(zDir.x.ToString(c) + " " + zDir.y.ToString(c) + " " + zDir.z.ToString(c) + "\" ");
 
-                index.Append("\" />");
+                index.Append("/>");
 
             }
 
