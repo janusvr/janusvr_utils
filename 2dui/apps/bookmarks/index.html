@@ -69,7 +69,7 @@
 		
 		itembottombarteleportbutton.onclick =  function(arg) {
 										return function() {
-											launchPortal(arraytype[arg])
+											launchPortal(arraytype[arg].url)
 												}
 												}(position);
 												
@@ -110,10 +110,10 @@
 		
 		var newlistitem = document.createElement("div");
 		newlistitem.className = "item lightup mousehand bookmarkitem";
-		newlistitem.innerHTML = arraytype[ii];	  
+		newlistitem.innerHTML = arraytype[ii].url;	  
 		newlistitem.onclick = function(arg) {
 										return function() {
-											genPreview(arg,listcontainer,thumbarraytype[arg],arraytype)
+											genPreview(arg,listcontainer,thumbarraytype[arg].thumbnail,arraytype)
 												}
 												}(ii);
 												
@@ -142,8 +142,8 @@
   tabSelect("bookmarkstabcontainer","bookmarkstabbutton")
   window.onresize()
 
-  genList(parent.window.janus.bookmarkurl,document.getElementById("bookmarkstabcontainer"),parent.window.janus.bookmarkthumb); //Create the bookmarks list.
-  genList(parent.window.janus.workspaceurl,document.getElementById("workspacestabcontainer"),parent.window.janus.workspacethumb); //Create the workspaces list.
+  genList(parent.window.janus.bookmarks,document.getElementById("bookmarkstabcontainer"),parent.window.janus.bookmarks); //Create the bookmarks list.
+  genList(parent.window.janus.workspaces,document.getElementById("workspacestabcontainer"),parent.window.janus.workspaces); //Create the workspaces list.
 
   }
 
@@ -229,7 +229,7 @@ var n = d.getTime();
 parent.window.janus.saveworkspace(n);
 
 	setTimeout(function(){
-		genList(parent.window.janus.workspaceurl,document.getElementById('workspacestabcontainer'),parent.window.janus.workspacethumb);togglemenulist('off','menulist2'); 
+		genList(parent.window.janus.workspaces,document.getElementById('workspacestabcontainer'),parent.window.janus.workspaces);togglemenulist('off','menulist2'); 
 	}, 500); // wait 500ms before refreshing the list so the program has time to catch up (doubt this is needed but whatever)
 
 }
@@ -267,7 +267,7 @@ parent.window.janus.saveworkspace(n);
 									
 									<div class="menulist unselectable" id="menulist" style="right:0px;top:70px;">
 										<ul>
-											<li class="menulistbutton" onclick="genList(parent.window.janus.bookmarkurl,document.getElementById('bookmarkstabcontainer'),parent.window.janus.bookmarkthumb);togglemenulist('off','menulist'); "> REFRESH </li>										
+											<li class="menulistbutton" onclick="genList(parent.window.janus.bookmarks,document.getElementById('bookmarkstabcontainer'),parent.window.janus.bookmarks);togglemenulist('off','menulist'); "> REFRESH </li>										
 										</ul>
 									</div>
 								</div>	
@@ -280,7 +280,7 @@ parent.window.janus.saveworkspace(n);
 									<div class="menulist unselectable" id="menulist2" style="right:0px;top:70px;">
 										<ul>
 											<li class="menulistbutton" onclick="newWorkspace();"> CREATE SPACE </li>
-											<li class="menulistbutton" onclick="genList(parent.window.janus.workspaceurl,document.getElementById('workspacestabcontainer'),parent.window.janus.workspacethumb);togglemenulist('off','menulist2'); "> REFRESH </li>										
+											<li class="menulistbutton" onclick="genList(parent.window.janus.workspaces,document.getElementById('workspacestabcontainer'),parent.window.janus.workspaces);togglemenulist('off','menulist2'); "> REFRESH </li>										
 																						
 									</ul>
 									</div>
