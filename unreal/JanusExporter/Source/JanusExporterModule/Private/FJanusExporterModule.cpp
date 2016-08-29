@@ -7,10 +7,10 @@
 #include "JanusExporterStyle.h"
 #include "Editor/MainFrame/Public/Interfaces/IMainFrameModule.h"
 #include "Runtime/Slate/Public/Widgets/SCanvas.h"
+#include "JanusMaterialUtilities.h"
 
 #define LOCTEXT_NAMESPACE "Janus Exporter"
 
-//class FDemoEditorExtensionsEditorModule : public IModuleInterface
 class FJanusExporterModule : public IModuleInterface
 {
 public:
@@ -27,11 +27,22 @@ public:
 
 	static bool HandleTestCommandCanExcute();
 
+	/** Call back for garbage collector, cleans up the RenderTargetPool if CurrentlyRendering is set to false */
+	static void OnPreGarbageCollect();
+
 	TSharedPtr<FUICommandList> CommandList;
 };
 
+void FJanusExporterModule::OnPreGarbageCollect()
+{
+	FJanusMaterialUtilities::ClearRenderTargetPool();
+}
+
 void FJanusExporterModule::StartupModule()
 {
+	//void* Function = &FJanusExporterModule::OnPreGarbageCollect;
+	//FCoreUObjectDelegates::PreGarbageCollect.AddRaw(this, Function);
+
 	// Register the details customizations
 	{
 		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
@@ -46,53 +57,46 @@ void FJanusExporterModule::StartupModule()
 	FJanusCommands::Register();
 	CommandList = MakeShareable(new FUICommandList);
 
+	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>(TEXT("LevelEditor"));
+
+	CommandList->Append(LevelEditorModule.GetGlobalLevelEditorActions());
+
+	/*CommandList->MapAction(
+		FJanusCommands::Get().TestCommand,
+		FExecuteAction::CreateStatic(&FJanusExporterModule::HandleTestCommandExcute),
+		FCanExecuteAction::CreateStatic(&FJanusExporterModule::HandleTestCommandCanExcute)
+		);*/
+
+	struct Local
 	{
-		FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>(TEXT("LevelEditor"));
-
-		CommandList->Append(LevelEditorModule.GetGlobalLevelEditorActions());
-
-		/*CommandList->MapAction(
-			FJanusCommands::Get().TestCommand,
-			FExecuteAction::CreateStatic(&FJanusExporterModule::HandleTestCommandExcute),
-			FCanExecuteAction::CreateStatic(&FJanusExporterModule::HandleTestCommandCanExcute)
-			);*/
-
-		struct Local
+		/*static void AddToolbarCommands(FToolBarBuilder& ToolbarBuilder)
 		{
-			/*static void AddToolbarCommands(FToolBarBuilder& ToolbarBuilder)
-			{
-				ToolbarBuilder.AddToolBarButton(FJanusCommands::Get().TestCommand);
-			}*/
+			ToolbarBuilder.AddToolBarButton(FJanusCommands::Get().TestCommand);
+		}*/
 
-			static void AddMenuCommands(FMenuBuilder& MenuBuilder)
-			{
-				MenuBuilder.AddSubMenu(LOCTEXT("JanusExporter", "Janus Exporter"),
-					LOCTEXT("JanusExporterTooltip", "Janus Exporter tools"),
-					FNewMenuDelegate::CreateStatic(&FJanusExporterModule::CreateToolListMenu)
-					);
-			}
-		};
+		static void AddMenuCommands(FMenuBuilder& MenuBuilder)
+		{
+			MenuBuilder.AddSubMenu(LOCTEXT("JanusExporter", "Janus Exporter"),
+				LOCTEXT("JanusExporterTooltip", "Janus Exporter tools"),
+				FNewMenuDelegate::CreateStatic(&FJanusExporterModule::CreateToolListMenu)
+			);
+		}
+	};
 
-		TSharedRef<FExtender> MenuExtender(new FExtender());
-		MenuExtender->AddMenuExtension(
-			TEXT("EditMain"),
-			EExtensionHook::After,
-			CommandList.ToSharedRef(),
-			FMenuExtensionDelegate::CreateStatic(&Local::AddMenuCommands));
-		LevelEditorModule.GetMenuExtensibilityManager()->AddExtender(MenuExtender);
-
-		/*TSharedRef<FExtender> ToolbarExtender(new FExtender());
-		ToolbarExtender->AddToolBarExtension(
-			TEXT("Game"),
-			EExtensionHook::After,
-			CommandList.ToSharedRef(),
-			FToolBarExtensionDelegate::CreateStatic(&Local::AddToolbarCommands));
-		LevelEditorModule.GetToolBarExtensibilityManager()->AddExtender(ToolbarExtender);*/
-	}
+	TSharedRef<FExtender> MenuExtender(new FExtender());
+	MenuExtender->AddMenuExtension(
+		TEXT("EditMain"),
+		EExtensionHook::After,
+		CommandList.ToSharedRef(),
+		FMenuExtensionDelegate::CreateStatic(&Local::AddMenuCommands));
+	LevelEditorModule.GetMenuExtensibilityManager()->AddExtender(MenuExtender);
 }
 
 void FJanusExporterModule::ShutdownModule()
 {
+	//FCoreUObjectDelegates::PreGarbageCollect.RemoveAll(this);
+	OnPreGarbageCollect();
+
 	FJanusCommands::Unregister();
 	FJanusExporterStyle::Shutdown();
 }
@@ -129,11 +133,11 @@ void FJanusExporterModule::TriggerTool(UClass* ToolClass)
 	//}
 
 	//TSharedRef<SCanvas> Canvas = SNew(SCanvas);
-	//FSlot* Slot = Canvas->AddSlot();
+	////FSlot* Slot = Canvas->AddSlot();
 
 	//Window->SetContent(Canvas);
 
-	TSharedRef<SWindow> Window = PropertyModule.CreateFloatingDetailsView(ObjectsToView, /*bIsLockeable=*/ false);
+	TSharedRef<SWindow> Window = PropertyModule.CreateFloatingDetailsView(ObjectsToView, /*bIsLockeable=*/ true);
 
 	Window->SetOnWindowClosed(FOnWindowClosed::CreateStatic(&FJanusExporterModule::OnToolWindowClosed, ToolInstance));
 }

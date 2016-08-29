@@ -35,7 +35,7 @@ namespace UnityEngine.FBX
         [DllImport("UnityFBXExporter", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public extern static void Export([MarshalAs(UnmanagedType.LPStr)] string SceneName);
 
-        public static void ExportMesh(Mesh mesh, string path, int fbxVersion = 1)
+        public static void ExportMesh(Mesh mesh, string path, bool switchUv = false, int fbxVersion = 1)
         {
             FBXExporter.Initialize(mesh.name);
             FBXExporter.SetFBXCompatibility(fbxVersion);
@@ -64,80 +64,44 @@ namespace UnityEngine.FBX
             FBXExporter.AddVertices(nvertices, nvertices.Length);
             FBXExporter.AddNormals(nnormals, nnormals.Length);
 
-            for (int i = 0; i < 4; i++)
+            if (switchUv)
             {
                 List<Vector2> tverts = new List<Vector2>();
-                mesh.GetUVs(i, tverts);
+                mesh.GetUVs(1, tverts);
 
-                if (tverts.Count == 0)
+                if (tverts.Count != 0)
                 {
-                    continue;
-                }
+                    FbxVector2[] uv = new FbxVector2[triangles.Length];
+                    for (int j = 0; j < triangles.Length; j++)
+                    {
+                        Vector2 v = tverts[triangles[j]];
+                        uv[j] = new FbxVector2(v.x, v.y);
+                    }
 
-                FbxVector2[] uv = new FbxVector2[triangles.Length];
-                for (int j = 0; j < triangles.Length; j++)
-                {
-                    Vector2 v = tverts[triangles[j]];
-                    uv[j] = new FbxVector2(v.x, v.y);
+                    FBXExporter.AddTexCoords(uv, uv.Length, 0, "UV0");
                 }
-
-                FBXExporter.AddTexCoords(uv, uv.Length, i, "UV" + i);
             }
-
-            FBXExporter.Export(path);
-        }
-
-        public static void ExportMeshPOG(Mesh mesh, string path, int fbxVersion = 1)
-        {
-            FBXExporter.Initialize(mesh.name);
-            FBXExporter.SetFBXCompatibility(fbxVersion);
-            FBXExporter.AddMesh(mesh.name);
-
-            Vector3[] vertices = mesh.vertices;
-            Vector3[] normals = mesh.normals;
-            int[] triangles = mesh.triangles;
-
-            FbxVector3[] nvertices = new FbxVector3[vertices.Length];
-            for (int i = 0; i < vertices.Length; i++)
+            else
             {
-                Vector3 v = vertices[i];
-                nvertices[i] = new FbxVector3(v.x, v.y, v.z);
-            }
-
-            FbxVector3[] nnormals = new FbxVector3[triangles.Length];
-            for (int i = 0; i < triangles.Length; i++)
-            {
-                Vector3 v = normals[triangles[i]];
-                nnormals[i] = new FbxVector3(v.x, v.y, v.z);
-            }
-
-            FBXExporter.AddMaterial(new FbxVector3(0.7, 0.7, 0.7));
-            FBXExporter.AddIndices(triangles, triangles.Length, 0);
-            FBXExporter.AddVertices(nvertices, nvertices.Length);
-            FBXExporter.AddNormals(nnormals, nnormals.Length);
-
-            for (int i = 0; i < 4; i++)
-            {
-                i = 1;
-                List<Vector2> tverts = new List<Vector2>();
-                mesh.GetUVs(i, tverts);
-
-                if (tverts.Count == 0)
+                for (int i = 0; i < 4; i++)
                 {
-                    continue;
+                    List<Vector2> tverts = new List<Vector2>();
+                    mesh.GetUVs(i, tverts);
+
+                    if (tverts.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    FbxVector2[] uv = new FbxVector2[triangles.Length];
+                    for (int j = 0; j < triangles.Length; j++)
+                    {
+                        Vector2 v = tverts[triangles[j]];
+                        uv[j] = new FbxVector2(v.x, v.y);
+                    }
+
+                    FBXExporter.AddTexCoords(uv, uv.Length, i, "UV" + i);
                 }
-
-                FbxVector2[] uv = new FbxVector2[triangles.Length];
-                for (int j = 0; j < triangles.Length; j++)
-                {
-                    Vector2 v = tverts[triangles[j]];
-                    uv[j] = new FbxVector2(v.x, v.y);
-                }
-
-                i = 0;
-                FBXExporter.AddTexCoords(uv, uv.Length, i, "UV" + i);
-
-                break;
             }
 
             FBXExporter.Export(path);

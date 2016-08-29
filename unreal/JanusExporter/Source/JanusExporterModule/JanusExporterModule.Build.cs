@@ -21,7 +21,9 @@ public class JanusExporterModule : ModuleRules
 				"Slate",
 				"UnrealEd",
                 "UElibPNG",
-                "MaterialUtilities"
+                "MaterialUtilities",
+                "RenderCore",
+                "RHI"
             }
 		);
 		
@@ -33,6 +35,8 @@ public class JanusExporterModule : ModuleRules
 				"PropertyEditor",
 				"LevelEditor",
                 "MaterialUtilities",
+                "RenderCore",
+                "RHI"
             }
         );
 

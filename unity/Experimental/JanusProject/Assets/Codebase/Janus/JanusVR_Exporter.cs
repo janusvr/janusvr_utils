@@ -839,7 +839,7 @@ namespace JanusVR
             return sb.ToString();
         }
 
-        [MenuItem("Edit/JanusVR Export")]
+        [MenuItem("Edit/JanusVR Exporter v1.0")]
         private static void CreateWizard()
         {
             ScriptableWizard.DisplayWizard("JanusVR Export", typeof(JanusVR_Exporter), "Export");

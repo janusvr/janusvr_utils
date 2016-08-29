@@ -1,5 +1,5 @@
-#include "JanusExporterTool.h"
 #include "FJanusExporterModulePrivatePCH.h"
+#include "JanusExporterTool.h"
 #include "ScopedTransaction.h"
 #include "EngineUtils.h"
 #include "Runtime/Engine/Classes/Components/StaticMeshComponent.h"
@@ -22,6 +22,8 @@
 #include "Runtime/Engine/Classes/Materials/MaterialInstanceDynamic.h"
 #include "Runtime/Engine/Public/HitProxies.h"
 #include "Developer/MaterialUtilities/Public/MaterialUtilities.h"
+
+#include "JanusMaterialUtilities.h"
 #include <fbxsdk.h>
 
 #define LOCTEXT_NAMESPACE "JanusExporter"
@@ -44,7 +46,8 @@ struct LightmappedObjects
 UJanusExporterTool::UJanusExporterTool()
 	: Super(FObjectInitializer::Get())
 {
-	ExportPath = "C:\\janus\\unreal\\decoded\\";
+	//ExportPath = "C:\\janus\\unreal\\Sun Temple\\";
+	ExportPath = "C:\\janus\\unreal\\test\\";
 }
 
 void AssembleListOfExporters(TArray<UExporter*>& OutExporters)
@@ -340,7 +343,8 @@ void ExportMaterial(FString& Folder, UMaterialInterface* Material, TArray<FStrin
 	{
 		TArray<FColor> ColorData;
 		FIntPoint Size;
-		FMaterialUtilities::ExportMaterialProperty(Material, EMaterialProperty::MP_BaseColor, ColorData, Size);
+		//FMaterialUtilities::ExportMaterialProperty(Material, EMaterialProperty::MP_BaseColor, ColorData, Size);
+		FJanusMaterialUtilities::ExportMaterialProperty(Material, EMaterialProperty::MP_BaseColor, ColorData, Size);
 
 		FString MatName = Material->GetName();
 		FString Path = MatName + "_BaseColor";
@@ -439,7 +443,6 @@ void UJanusExporterTool::Export()
 
 				if (!TexturesExp.Contains(TexName))
 				{
-					ExportPNG(Texture, Root + "\\Encoded\\", true);
 					TexturesExp.Add(TexName);
 				}
 			}
@@ -473,14 +476,12 @@ void UJanusExporterTool::Export()
 	for (int32 i = 0; i < StaticMeshesExp.Num(); i++)
 	{
 		UStaticMesh *Mesh = StaticMeshesExp[i];
-
 		Index.Append("\n\t\t\t\t<AssetObject id=\"" + Mesh->GetName() + "\" src=\"" + Mesh->GetName() + ".fbx\" />");
 	}
 
 	for (int32 i = 0; i < TexturesExp.Num(); i++)
 	{
 		FString Path = TexturesExp[i];
-
 		Index.Append("\n\t\t\t\t<AssetImage id=\"" + Path + "\" src=\"" + Path + ".png\" />");
 	}
 
@@ -538,7 +539,11 @@ void UJanusExporterTool::Export()
 				break;
 			}
 
-			Index.Append("\n\t\t\t\t<Object collision_id=\"" + Mesh->GetName() + "\" id=\"" + Mesh->GetName() + "\" lighting=\"true\" ");
+			Index.Append("\n\t\t\t\t<Object ");
+
+			Index.Append("lighting=\"true\" ");
+			Index.Append("id = \"" + Mesh->GetName() + "\" ");
+			//Index.Append("collision_id=\"" + Mesh->GetName() + "\" ");
 
 			FRotator Rot = Actor->GetActorRotation();
 			FVector XDir = Rot.RotateVector(FVector::RightVector);

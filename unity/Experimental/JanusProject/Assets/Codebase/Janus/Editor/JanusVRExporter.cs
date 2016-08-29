@@ -906,12 +906,14 @@ namespace JanusVR
                 }
             }
 
+            bool switchUv = lightmapExportType == LightmapExportType.BakedMaterial;
+
             for (int i = 0; i < meshesExportedData.Count; i++)
             {
                 MeshExportData model = meshesExportedData[i];
                 string name = meshesNames[model.Mesh];
                 string expPath = Path.Combine(exportPath, name);
-                ExportMesh(model.Mesh, expPath, model.Format, null);
+                ExportMesh(model.Mesh, expPath, model.Format, null, switchUv);
                 model.ExportedPath = name + GetMeshFormat(model.Format);
             }
 
@@ -1048,14 +1050,19 @@ namespace JanusVR
             File.WriteAllText(indexPath, index.ToString());
         }
 
-        private static void ExportMesh(Mesh mesh, string path, ExportMeshFormat format, object data)
+        private static void ExportMesh(Mesh mesh, string path, ExportMeshFormat format, object data, bool switchUv)
         {
             string formatName = GetMeshFormat(format);
             string finalPath = path + formatName;
+            if (File.Exists(finalPath))
+            {
+                File.Delete(finalPath);
+            }
+
             switch (format)
             {
                 case ExportMeshFormat.FBX:
-                    FBXExporter.ExportMesh(mesh, finalPath);
+                    FBXExporter.ExportMesh(mesh, finalPath, switchUv);
                     break;
                 case ExportMeshFormat.OBJ_NotWorking:
                     break;
