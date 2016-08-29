@@ -162,6 +162,7 @@ background-color: #5F5F5F;
 .litup {
 background-color:white;
 color: #545454 !important;
+
 }
 
 
@@ -174,6 +175,7 @@ background-size: cover;
 border-top-style:solid;
 border-bottom-style:solid;
 border-color: white;
+background-position: center; 
 border-width: 2px;
 }
 
