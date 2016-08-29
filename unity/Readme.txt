@@ -1,4 +1,4 @@
-Janus VR Unity Exporter v2.0 - Alpha 1
+Janus VR Unity Exporter v2.0 - Alpha 2
 
 - To Install the Janus VR Exporter
 Open your project in Unity then hit:
