@@ -8,6 +8,8 @@ namespace UnityEngine.FBX
 {
     public static class FBXExporter
     {
+        public static bool LightmappingEnabled = false;
+
         [DllImport("UnityFBXExporter", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public extern static void Initialize([MarshalAs(UnmanagedType.LPStr)] string SceneName);
 
@@ -90,6 +92,10 @@ namespace UnityEngine.FBX
 
                     if (tverts.Count == 0)
                     {
+                        if (LightmappingEnabled && i == 1)
+                        {
+                            Debug.LogError("Lightmapping is enabled but mesh has no UV1 channel - " + mesh, mesh);
+                        }
                         continue;
                     }
 

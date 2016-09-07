@@ -70,6 +70,8 @@ namespace JanusVR
 
         [SerializeField]
         private bool exportMaterials = true;
+        [SerializeField]
+        private bool exportSkybox = true;
 
         /// <summary>
         /// Lower case values that the exporter will consider for being the Main Texture on a shader
@@ -77,6 +79,11 @@ namespace JanusVR
         private string[] mainTexSemantics = new string[]
         {
             "_maintex"
+        };
+
+        private string[] skyboxTexNames = new string[]
+        {
+            "_FrontTex", "_BackTex", "_LeftTex", "_RightTex", "_UpTex", "_DownTex"
         };
 
         private Dictionary<int, List<GameObject>> lightmapped;
@@ -115,6 +122,7 @@ namespace JanusVR
 
             uniformScale = EditorGUILayout.FloatField("Uniform Scale", uniformScale);
             exportMaterials = EditorGUILayout.Toggle("Export Materials", exportMaterials);
+            exportSkybox = EditorGUILayout.Toggle("Export Skybox (6-sided)", exportSkybox);
 
             lightmapExportType = (LightmapExportType)EditorGUILayout.EnumPopup("Lightmap Type", lightmapExportType);
             if (lightmapExportType != LightmapExportType.None)
@@ -266,6 +274,35 @@ namespace JanusVR
             for (int i = 0; i < roots.Length; i++)
             {
                 RecursiveSearch(roots[i], exported);
+            }
+
+            if (exportSkybox)
+            {
+                // look for skybox and grab all 6 textures if it's 6-sided
+                Material skybox = RenderSettings.skybox;
+                if (skybox != null)
+                {
+                    bool proceed = true;
+                    for (int i = 0; i < skyboxTexNames.Length; i++)
+                    {
+                        if (!skybox.HasProperty(skyboxTexNames[i]))
+                        {
+                            proceed = false;
+                        }
+                    }
+
+                    if (proceed)
+                    {
+                        for (int i = 0; i < skyboxTexNames.Length; i++)
+                        {
+                            Texture2D tex = (Texture2D)skybox.GetTexture(skyboxTexNames[i]);
+                            if (!texturesExported.Contains(tex))
+                            {
+                                texturesExported.Add(tex);
+                            }
+                        }
+                    }
+                }
             }
 
             if (lightmapExportType != LightmapExportType.None &&
@@ -759,7 +796,7 @@ namespace JanusVR
             return times;
         }
 
-      
+
 
         private void DoExport()
         {
@@ -775,6 +812,8 @@ namespace JanusVR
                 Debug.LogError("Error while creating the export folder!");
                 return;
             }
+
+            FBXExporter.LightmappingEnabled = lightmapExportType != LightmapExportType.None;
 
             for (int i = 0; i < texturesExportedData.Count; i++)
             {
@@ -863,7 +902,6 @@ namespace JanusVR
             // Make the index.html file
             StringBuilder index = new StringBuilder("<html>\n\t<head>\n\t\t<title>Janus Unity Exporter v" + Version + "</title>\n\t</head>\n\t<body>\n\t\t<FireBoxRoom>\n\t\t\t<Assets>");
 
-            List<Texture2D> texWritten = new List<Texture2D>();
             List<Mesh> meshWritten = new List<Mesh>();
 
             for (int i = 0; i < exported.exportedObjs.Count; i++)
@@ -877,34 +915,77 @@ namespace JanusVR
                     meshWritten.Add(obj.Mesh);
                 }
             }
-            for (int i = 0; i < exported.exportedObjs.Count; i++)
+
+            // textures appear only once, while exported objects can appear multiple times
+            // that's why we have a meshwritten list, and not a texturewritten (not anymore at least)
+            for (int i = 0; i < texturesExportedData.Count; i++)
             {
-                ExportedObject obj = exported.exportedObjs[i];
-                if (obj.DiffuseMapTex != null &&
-                    !texWritten.Contains(obj.DiffuseMapTex))
+                TextureExportData data = texturesExportedData[i];
+                string path = data.ExportedPath;
+                index.Append("\n\t\t\t\t<AssetImage id=\"" + Path.GetFileNameWithoutExtension(path) + "\" src=\"" + path + "\" />");
+            }
+
+            TextureExportData fronttex, backtex, lefttex, righttex, uptex, downtex = null;
+            string skyboxdata = "";
+
+            if (exportSkybox)
+            {
+                Material skybox = RenderSettings.skybox;
+                if (skybox != null)
                 {
-                    TextureExportData data = texturesExportedData.FirstOrDefault(c => c.Texture == obj.DiffuseMapTex);
-                    if (data != null)
+                    bool proceed = true;
+                    for (int i = 0; i < skyboxTexNames.Length; i++)
                     {
-                        string path = data.ExportedPath;
-                        index.Append("\n\t\t\t\t<AssetImage id=\"" + Path.GetFileNameWithoutExtension(path) + "\" src=\"" + path + "\" />");
-                        texWritten.Add(obj.DiffuseMapTex);
+                        if (!skybox.HasProperty(skyboxTexNames[i]))
+                        {
+                            proceed = false;
+                        }
                     }
-                }
-                if (obj.LightMapTex != null &&
-                    !texWritten.Contains(obj.LightMapTex))
-                {
-                    TextureExportData data = texturesExportedData.First(c => c.Texture == obj.LightMapTex);
-                    if (data != null)
+
+                    if (proceed)
                     {
-                        string path = data.ExportedPath;
-                        index.Append("\n\t\t\t\t<AssetImage id=\"" + Path.GetFileNameWithoutExtension(path) + "\" src=\"" + path + "\" />");
-                        texWritten.Add(obj.LightMapTex);
+                        fronttex = texturesExportedData.FirstOrDefault(c => c.Texture == (Texture2D)skybox.GetTexture("_FrontTex"));
+                        backtex = texturesExportedData.FirstOrDefault(c => c.Texture == (Texture2D)skybox.GetTexture("_BackTex"));
+                        lefttex = texturesExportedData.FirstOrDefault(c => c.Texture == (Texture2D)skybox.GetTexture("_LeftTex"));
+                        righttex = texturesExportedData.FirstOrDefault(c => c.Texture == (Texture2D)skybox.GetTexture("_RightTex"));
+                        uptex = texturesExportedData.FirstOrDefault(c => c.Texture == (Texture2D)skybox.GetTexture("_UpTex"));
+                        downtex = texturesExportedData.FirstOrDefault(c => c.Texture == (Texture2D)skybox.GetTexture("_DownTex"));
+
+                        if (fronttex != null)
+                        {
+                            skyboxdata += "skybox_front_id=\"" + Path.GetFileNameWithoutExtension(fronttex.ExportedPath) + "\" ";
+                        }
+                        if (backtex != null)
+                        {
+                            skyboxdata += "skybox_back_id=\"" + Path.GetFileNameWithoutExtension(backtex.ExportedPath) + "\" ";
+                        }
+                        if (lefttex != null)
+                        {
+                            skyboxdata += "skybox_left_id=\"" + Path.GetFileNameWithoutExtension(lefttex.ExportedPath) + "\" ";
+                        }
+                        if (righttex != null)
+                        {
+                            skyboxdata += "skybox_right_id=\"" + Path.GetFileNameWithoutExtension(righttex.ExportedPath) + "\" ";
+                        }
+                        if (uptex != null)
+                        {
+                            skyboxdata += "skybox_up_id=\"" + Path.GetFileNameWithoutExtension(uptex.ExportedPath) + "\" ";
+                        }
+                        if (downtex != null)
+                        {
+                            skyboxdata += "skybox_down_id=\"" + Path.GetFileNameWithoutExtension(downtex.ExportedPath) + "\"";
+                        }
+
+                        if (skyboxdata.EndsWith(" "))
+                        {
+                            skyboxdata = skyboxdata.Remove(skyboxdata.Length - 1, 1);
+                        }
+                        skyboxdata = " " + skyboxdata;
                     }
                 }
             }
 
-            index.Append("\n\t\t\t</Assets>\n\t\t\t<Room>");
+            index.Append("\n\t\t\t</Assets>\n\t\t\t<Room" + skyboxdata + ">");
 
             for (int i = 0; i < exported.exportedObjs.Count; i++)
             {
