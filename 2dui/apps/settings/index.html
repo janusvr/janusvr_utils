@@ -40,6 +40,9 @@
   document.getElementById("hidemenutoggle").checked = parent.window.janus.getsetting('hidemenu');
   
   
+    document.getElementById("hapticstoggle").checked = parent.window.janus.getsetting('haptics');
+  
+  
   //set all the default values
   document.getElementById("displaynameform").value =  parent.window.janus.userid;
 
@@ -489,7 +492,14 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 						<br>
 						</div>					
 						
-						
+						<div class='item' >
+						<span>
+						<input class="myCheckbox" type='checkbox' id="hapticstoggle" onchange="window.janus.setsetting('haptics', this.checked); " >
+						Haptics
+
+						</span>
+						<br>
+						</div>								
 
 						<div class='item' >
 						<span>
