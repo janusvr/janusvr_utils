@@ -44,7 +44,113 @@ namespace JanusVR
             return new Color(r, g, b, 1);
         }
 
-        public static void ExportTexture(Texture2D input, Stream output, ImageFormatEnum imageFormat, object data)
+        public static Texture2D ScaleTexture(TextureExportData tex, int resolution, bool zeroAlpha = true, TextureFilterMode filterMode = TextureFilterMode.Nearest)
+        {
+            Texture2D texture = tex.Texture;
+            // scale the texture
+            Texture2D scaled = new Texture2D(resolution, resolution);
+
+            Color[] source = texture.GetPixels();
+            Color[] target = new Color[resolution * resolution];
+
+            int scale = texture.width / resolution;
+            float sca = scale * 2;
+
+            switch (filterMode)
+            {
+                case TextureFilterMode.Average:
+                    {
+                        for (int x = 0; x < resolution; x++)
+                        {
+                            for (int y = 0; y < resolution; y++)
+                            {
+                                // sample neighbors
+                                int xx = x * scale;
+                                int yy = y * scale;
+
+                                float r = 0, g = 0, b = 0, a = 0;
+
+                                int ind = xx + (yy * texture.width);
+                                for (int j = 0; j < scale; j++)
+                                {
+                                    Color col = source[ind + j];
+                                    r += col.r;
+                                    g += col.g;
+                                    b += col.b;
+                                    a += col.a;
+                                }
+                                ind = xx + ((yy + 1) * texture.width);
+                                for (int j = 0; j < scale; j++)
+                                {
+                                    Color col = source[ind + j];
+                                    r += col.r;
+                                    g += col.g;
+                                    b += col.b;
+                                    a += col.a;
+                                }
+
+                                r = r / sca;
+                                g = g / sca;
+                                b = b / sca;
+                                a = a / sca;
+                              
+                                Color sampled = new Color(r, g, b, a);
+                                if (zeroAlpha)
+                                {
+                                    sampled.a = 1;
+                                }
+                                target[x + (y * resolution)] = sampled;
+                            }
+                        }
+                    }
+                    break;
+                case TextureFilterMode.Nearest:
+                    {
+                        for (int x = 0; x < resolution; x++)
+                        {
+                            for (int y = 0; y < resolution; y++)
+                            {
+                                // sample neighbors
+                                int xx = x * scale;
+                                int yy = y * scale;
+                                int ind = xx + (yy * texture.width);
+
+                                Color col = source[ind];
+                                if (zeroAlpha)
+                                {
+                                    col.a = 1;
+                                }
+                                target[x + (y * resolution)] = col;
+                            }
+                        }
+                    }
+                    break;
+            }
+
+            scaled.SetPixels(target);
+            scaled.Apply();
+            return scaled;
+        }
+
+        public static Texture2D ZeroAlpha(Texture2D input)
+        {
+            Texture2D output = new Texture2D(input.width, input.height);
+            Color[] source = input.GetPixels();
+            Color[] target = new Color[input.width * input.height];
+
+            for (int i = 0; i < source.Length; i++)
+            {
+                Color s = source[i];
+                s.a = 1;
+                target[i] = s;
+            }
+
+            output.SetPixels(target);
+            output.Apply();
+            return output;
+        }
+
+        public static void ExportTexture(Texture2D input, Stream output, ImageFormatEnum imageFormat, object data, bool zeroAlpha)
         {
 #if SYSTEM_DRAWING
             ImageFormat format = GetImageFormat(imageFormat);
@@ -79,18 +185,34 @@ namespace JanusVR
 
             bitmap.Dispose();
 #else
+            Texture2D inp;
+            if (zeroAlpha)
+            {
+                inp = ZeroAlpha(input);
+            }
+            else
+            {
+                inp = input;
+            }
+
             byte[] exported;
             switch (imageFormat)
             {
                 case ImageFormatEnum.JPG:
-                    exported = input.EncodeToJPG((int)data);
+                    exported = inp.EncodeToJPG((int)data);
                     break;
                 default:
                 case ImageFormatEnum.PNG:
-                    exported = input.EncodeToPNG();
+                    exported = inp.EncodeToPNG();
                     break;
             }
             output.Write(exported, 0, exported.Length);
+
+            if (zeroAlpha)
+            {
+                // destroy the texture
+                UnityEngine.Object.DestroyImmediate(inp);
+            }
 #endif
         }
     }

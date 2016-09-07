@@ -16,6 +16,7 @@ namespace JanusVR
         private string exportedPath;
         private int resolution;
         private bool created;
+        private bool exportAlpha;
 
         public bool Created
         {
@@ -56,6 +57,12 @@ namespace JanusVR
         {
             get { return format; }
             set { format = value; }
+        }
+
+        public bool ExportAlpha
+        {
+            get { return exportAlpha; }
+            set { exportAlpha = value; }
         }
     }
 }

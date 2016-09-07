@@ -39,10 +39,18 @@ namespace JanusVR
             // Get existing open window or if none, make a new one:
             JanusVRExporter window = EditorWindow.GetWindow<JanusVRExporter>();
             window.Show();
+
+            if (string.IsNullOrEmpty(window.exportPath))
+            {
+                string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                string workspace = Path.Combine(documents, @"JanusVR\workspaces");
+                string proj = Path.Combine(workspace, Application.productName);
+                window.exportPath = proj;
+            }
         }
 
         [SerializeField]
-        private string exportPath = @"C:\janus";
+        private string exportPath = @"";
         [SerializeField]
         private ImageFormatEnum defaultTexFormat = ImageFormatEnum.PNG;
         [SerializeField]
@@ -59,6 +67,9 @@ namespace JanusVR
         private LightmapExportType lightmapExportType = LightmapExportType.Packed;
         [SerializeField]
         private int maxLightMapResolution = 1024;
+
+        [SerializeField]
+        private bool exportMaterials = true;
 
         /// <summary>
         /// Lower case values that the exporter will consider for being the Main Texture on a shader
@@ -103,6 +114,7 @@ namespace JanusVR
             defaultQuality = EditorGUILayout.IntSlider("Default Textures Quality", defaultQuality, 0, 100);
 
             uniformScale = EditorGUILayout.FloatField("Uniform Scale", uniformScale);
+            exportMaterials = EditorGUILayout.Toggle("Export Materials", exportMaterials);
 
             lightmapExportType = (LightmapExportType)EditorGUILayout.EnumPopup("Lightmap Type", lightmapExportType);
             if (lightmapExportType != LightmapExportType.None)
@@ -139,34 +151,46 @@ namespace JanusVR
                         GUI.DrawTexture(new Rect(size * 0.1f, r.y, size, size), tex.Preview);
                         GUI.Label(new Rect(size * 1.1f, r.y, half - size, size), tex.Texture.name);
 
-                        GUI.Label(new Rect(half, r.y, half * 0.3f, last.height), "Format");
-                        tex.Format = (ImageFormatEnum)EditorGUI.EnumPopup(new Rect(half * 1.3f, r.y, half * 0.7f, last.height), tex.Format);
-                        GUI.Label(new Rect(half, r.y + last.height, half * 0.3f, last.height), "Resolution");
-                        tex.Resolution = EditorGUI.IntSlider(new Rect(half * 1.3f, r.y + last.height, half * 0.7f, last.height), tex.Resolution, 32, tex.Texture.width);
+                        float x1 = half * 1.3f;
+                        float y = r.y;
+                        float wid = half * 0.6f;
+
+                        GUI.Label(new Rect(half, y, half * 0.3f, last.height), "Format");
+                        tex.Format = (ImageFormatEnum)EditorGUI.EnumPopup(new Rect(x1, y, wid, last.height), tex.Format);
+                        y += last.height;
+
+                        GUI.Label(new Rect(half, y, half * 0.3f, last.height), "Resolution");
+                        tex.Resolution = EditorGUI.IntSlider(new Rect(x1, y, wid, last.height), tex.Resolution, 32, tex.Texture.width);
+                        y += last.height;
+
+                        GUI.Label(new Rect(half, y, half * 0.3f, last.height), "Export Alpha");
+                        tex.ExportAlpha = EditorGUI.Toggle(new Rect(x1, y, wid, last.height), tex.ExportAlpha);
+                        y += last.height;
+
                         if (SupportsQuality(tex.Format))
                         {
-                            GUI.Label(new Rect(half, r.y + (last.height * 2), half * 0.3f, last.height), "Quality");
-                            tex.Quality = EditorGUI.IntSlider(new Rect(half * 1.3f, r.y + (last.height * 2), half * 0.7f, last.height), tex.Quality, 0, 100);
+                            GUI.Label(new Rect(half, y, half * 0.3f, last.height), "Quality");
+                            tex.Quality = EditorGUI.IntSlider(new Rect(x1, y, wid, last.height), tex.Quality, 0, 100);
                         }
                     }
                 }
 
-                perModelOptions = EditorGUILayout.Foldout(perModelOptions, "Per Model Options");
-                if (perModelOptions)
-                {
-                    for (int i = 0; i < meshesExportedData.Count; i++)
-                    {
-                        MeshExportData model = meshesExportedData[i];
-                        string name = meshesNames[model.Mesh];
-                        Rect r = GUILayoutUtility.GetRect(Screen.width, size * 1.05f);
+                //perModelOptions = EditorGUILayout.Foldout(perModelOptions, "Per Model Options");
+                //if (perModelOptions)
+                //{
+                //    for (int i = 0; i < meshesExportedData.Count; i++)
+                //    {
+                //        MeshExportData model = meshesExportedData[i];
+                //        string name = meshesNames[model.Mesh];
+                //        Rect r = GUILayoutUtility.GetRect(Screen.width, size * 1.05f);
 
-                        GUI.DrawTexture(new Rect(size * 0.1f, r.y, size, size), model.Preview);
-                        GUI.Label(new Rect(size * 1.1f, r.y, half - size, size), name);
+                //        //GUI.DrawTexture(new Rect(size * 0.1f, r.y, size, size), model.Preview);
+                //        GUI.Label(new Rect(size * 1.1f, r.y, half - size, size), name);
 
-                        GUI.Label(new Rect(half, r.y, half * 0.3f, last.height), "Format");
-                        model.Format = (ExportMeshFormat)EditorGUI.EnumPopup(new Rect(half * 1.3f, r.y, half * 0.7f, last.height), model.Format);
-                    }
-                }
+                //        GUI.Label(new Rect(half, r.y, half * 0.3f, last.height), "Format");
+                //        model.Format = (ExportMeshFormat)EditorGUI.EnumPopup(new Rect(half * 1.3f, r.y, half * 0.7f, last.height), model.Format);
+                //    }
+                //}
 
                 if (GUILayout.Button("Do Export"))
                 {
@@ -379,7 +403,7 @@ namespace JanusVR
                                 lightMap.SetTexture("_LightMapTex", texture);
 
                                 // We need to access unity_Lightmap_HDR to decode the lightmap,
-                                // but we can't! yay! So we have to render everything to a custom RenderTexture!
+                                // but we can't, so we have to render everything to a custom RenderTexture!
                                 Texture2D decTex = new Texture2D(texture.width, texture.height);
                                 decTex.name = "Lightmap" + id;
                                 texturesExported.Add(decTex);
@@ -398,15 +422,9 @@ namespace JanusVR
                                     Transform trans = obj.transform;
                                     Matrix4x4 world = Matrix4x4.TRS(trans.position, trans.rotation, trans.lossyScale);
 
-                                    Material[] mats = renderer.sharedMaterials;
-                                    for (int j = 0; j < mats.Length; j++)
-                                    {
-                                        Material mat = mats[j];
-
-                                        lightMap.SetVector("_LightMapUV", renderer.lightmapScaleOffset);
-                                        lightMap.SetPass(0);
-                                        Graphics.DrawMeshNow(mesh, world, j);
-                                    }
+                                    lightMap.SetVector("_LightMapUV", renderer.lightmapScaleOffset);
+                                    lightMap.SetPass(0);
+                                    Graphics.DrawMeshNow(mesh, Matrix4x4.identity);
 
                                     ExportedObject eobj = exported.exportedObjs.First(c => c.GameObject == obj);
                                     eobj.LightMapTex = decTex;
@@ -526,7 +544,8 @@ namespace JanusVR
                 {
                     if (data.Created)
                     {
-                        data.Preview = ScaleTexture(data, PreviewSize);
+                        data.Preview = TextureUtil.ScaleTexture(data, PreviewSize, true);
+                        data.ExportAlpha = false;
                     }
                     else
                     {
@@ -545,7 +564,8 @@ namespace JanusVR
                         AssetDatabase.Refresh();
                         AssetDatabase.ImportAsset(path);
 
-                        data.Preview = ScaleTexture(data, PreviewSize);
+                        data.Preview = TextureUtil.ScaleTexture(data, PreviewSize, true);
+                        data.ExportAlpha = importer.alphaIsTransparency;
 
                         if (!wasReadable)
                         {
@@ -626,7 +646,7 @@ namespace JanusVR
                     exp.Mesh = mesh;
 
                     // export textures
-                    if (lightmapExportType != LightmapExportType.BakedMaterial) // if were baking we dont need the original textures
+                    if (lightmapExportType != LightmapExportType.BakedMaterial && exportMaterials) // if were baking we dont need the original textures
                     {
                         Material[] mats = meshRen.sharedMaterials;
                         for (int j = 0; j < mats.Length; j++)
@@ -739,85 +759,7 @@ namespace JanusVR
             return times;
         }
 
-        private Texture2D ScaleTexture(TextureExportData tex, int resolution)
-        {
-            Texture2D texture = tex.Texture;
-            // scale the texture
-            Texture2D scaled = new Texture2D(resolution, resolution);
-
-            Color[] source = texture.GetPixels();
-            Color[] target = new Color[resolution * resolution];
-
-            int scale = texture.width / resolution;
-            float sca = scale * 2;
-
-            switch (filterMode)
-            {
-                case TextureFilterMode.Average:
-                    {
-                        for (int x = 0; x < resolution; x++)
-                        {
-                            for (int y = 0; y < resolution; y++)
-                            {
-                                // sample neighbors
-                                int xx = x * scale;
-                                int yy = y * scale;
-
-                                float r = 0, g = 0, b = 0, a = 0;
-
-                                int ind = xx + (yy * texture.width);
-                                for (int j = 0; j < scale; j++)
-                                {
-                                    Color col = source[ind + j];
-                                    r += col.r;
-                                    g += col.g;
-                                    b += col.b;
-                                    a += col.a;
-                                }
-                                ind = xx + ((yy + 1) * texture.width);
-                                for (int j = 0; j < scale; j++)
-                                {
-                                    Color col = source[ind + j];
-                                    r += col.r;
-                                    g += col.g;
-                                    b += col.b;
-                                    a += col.a;
-                                }
-
-                                r = r / sca;
-                                g = g / sca;
-                                b = b / sca;
-                                a = a / sca;
-
-                                Color sampled = new Color(r, g, b, a);
-                                target[x + (y * resolution)] = sampled;
-                            }
-                        }
-                    }
-                    break;
-                case TextureFilterMode.Nearest:
-                    {
-                        for (int x = 0; x < resolution; x++)
-                        {
-                            for (int y = 0; y < resolution; y++)
-                            {
-                                // sample neighbors
-                                int xx = x * scale;
-                                int yy = y * scale;
-                                int ind = xx + (yy * texture.width);
-
-                                Color col = source[ind];
-                                target[x + (y * resolution)] = col;
-                            }
-                        }
-                    }
-                    break;
-            }
-
-            scaled.SetPixels(target);
-            scaled.Apply();
-            return scaled;
-        }
+      
 
         private void DoExport()
         {
@@ -856,13 +798,13 @@ namespace JanusVR
 
                     if (tex.Resolution != texture.width)
                     {
-                        Texture2D scaled = ScaleTexture(tex, tex.Resolution);
-                        ExportTexture(scaled, expPath, defaultTexFormat, null);
+                        Texture2D scaled = TextureUtil.ScaleTexture(tex, tex.Resolution, true, filterMode);
+                        ExportTexture(scaled, expPath, defaultTexFormat, null, true);
                         UObject.DestroyImmediate(scaled);
                     }
                     else
                     {
-                        ExportTexture(tex.Texture, expPath, defaultTexFormat, null);
+                        ExportTexture(tex.Texture, expPath, defaultTexFormat, null, true);
                     }
                 }
                 else
@@ -871,6 +813,7 @@ namespace JanusVR
                     bool wasReadable = importer.isReadable;
                     TextureImporterFormat lastFormat = importer.textureFormat;
                     bool changed = false;
+                    bool alpha = importer.alphaIsTransparency;
                     if (!importer.isReadable || importer.textureFormat != TextureImporterFormat.ARGB32) // only reimport if truly needed
                     {
                         changed = true;
@@ -886,13 +829,13 @@ namespace JanusVR
 
                     if (tex.Resolution != texture.width)
                     {
-                        Texture2D scaled = ScaleTexture(tex, tex.Resolution);
-                        ExportTexture(scaled, expPath, defaultTexFormat, null);
+                        Texture2D scaled = TextureUtil.ScaleTexture(tex, tex.Resolution, !alpha, filterMode);
+                        ExportTexture(scaled, expPath, defaultTexFormat, null, !alpha);
                         UObject.DestroyImmediate(scaled);
                     }
                     else
                     {
-                        ExportTexture(tex.Texture, expPath, tex.Format, tex.Quality);
+                        ExportTexture(tex.Texture, expPath, tex.Format, tex.Quality, !alpha);
                     }
                     tex.ExportedPath = tex.Texture.name + GetImageFormatName(tex.Format);
 
@@ -918,7 +861,7 @@ namespace JanusVR
             }
 
             // Make the index.html file
-            StringBuilder index = new StringBuilder("<html>\n\t<head>\n\t\t<title>Janus Unity Exporter v" + Version +  "</title>\n\t</head>\n\t<body>\n\t\t<FireBoxRoom>\n\t\t\t<Assets>");
+            StringBuilder index = new StringBuilder("<html>\n\t<head>\n\t\t<title>Janus Unity Exporter v" + Version + "</title>\n\t</head>\n\t<body>\n\t\t<FireBoxRoom>\n\t\t\t<Assets>");
 
             List<Texture2D> texWritten = new List<Texture2D>();
             List<Mesh> meshWritten = new List<Mesh>();
@@ -1069,12 +1012,12 @@ namespace JanusVR
             }
         }
 
-        private static void ExportTexture(Texture2D tex, string path, ImageFormatEnum format, object data)
+        private static void ExportTexture(Texture2D tex, string path, ImageFormatEnum format, object data, bool zeroAlpha)
         {
             string formatName = GetImageFormatName(format);
             using (Stream output = File.OpenWrite(path + formatName))
             {
-                TextureUtil.ExportTexture(tex, output, format, data);
+                TextureUtil.ExportTexture(tex, output, format, data, zeroAlpha);
             }
         }
     }

@@ -17,5 +17,16 @@ namespace UnityEngine.FBX
             X = x;
             Y = y;
         }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder(32);
+            sb.Append("{X:");
+            sb.Append(this.X.ToString("F2"));
+            sb.Append(" Y:");
+            sb.Append(this.Y.ToString("F2"));
+            sb.Append("}");
+            return sb.ToString();
+        }
     }
 }
