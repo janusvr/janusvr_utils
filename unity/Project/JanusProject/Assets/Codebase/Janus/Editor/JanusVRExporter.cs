@@ -1057,6 +1057,9 @@ namespace JanusVR
                 Vector3 xDir = rot * Vector3.right;
                 Vector3 yDir = rot * Vector3.up;
                 Vector3 zDir = rot * Vector3.forward;
+                xDir.x *= -1;
+                yDir.x *= -1;
+                zDir.x *= -1;
 
                 Vector3 sca = trans.lossyScale;
                 sca *= uniformScale;

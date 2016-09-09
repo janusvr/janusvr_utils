@@ -54,7 +54,7 @@
 				tc.xy += _LightMapUV.zw;
 
 				fixed4 lightData = tex2D(_LightMapTex, tc);
-				float3 lightmap = 2 * DecodeLightmap(lightData);
+				float3 lightmap = DecodeLightmap(lightData);
 
 				return half4(lightmap.rgb, 1);
 			}
