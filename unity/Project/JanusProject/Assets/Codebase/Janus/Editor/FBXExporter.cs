@@ -37,7 +37,7 @@ namespace UnityEngine.FBX
         [DllImport("UnityFBXExporter", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public extern static void Export([MarshalAs(UnmanagedType.LPStr)] string SceneName);
 
-        public static void ExportMesh(Mesh mesh, string path, bool switchUv = false, int fbxVersion = 1)
+        public static void ExportMesh(Mesh mesh, string path, bool switchUv = false, bool mirror = true, int fbxVersion = 1)
         {
             FBXExporter.Initialize(mesh.name);
             FBXExporter.SetFBXCompatibility(fbxVersion);
@@ -48,10 +48,33 @@ namespace UnityEngine.FBX
             int[] triangles = mesh.triangles;
 
             FbxVector3[] nvertices = new FbxVector3[vertices.Length];
-            for (int i = 0; i < vertices.Length; i++)
+            if (mirror)
             {
-                Vector3 v = vertices[i];
-                nvertices[i] = new FbxVector3(v.x, v.y, v.z);
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    Vector3 v = vertices[i];
+                    nvertices[i] = new FbxVector3(-v.x, v.y, v.z);
+                }
+
+                // change triangles order
+                for (int i = 0; i < triangles.Length - 2; i += 3)
+                {
+                    int i0 = triangles[i];
+                    int i1 = triangles[i + 1];
+                    int i2 = triangles[i + 2];
+
+                    triangles[i] = i2;
+                    triangles[i + 1] = i1;
+                    triangles[i + 2] = i0;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    Vector3 v = vertices[i];
+                    nvertices[i] = new FbxVector3(v.x, v.y, v.z);
+                }
             }
 
             FbxVector3[] nnormals = new FbxVector3[triangles.Length];

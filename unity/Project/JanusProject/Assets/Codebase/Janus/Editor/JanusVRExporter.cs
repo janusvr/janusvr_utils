@@ -253,6 +253,14 @@ namespace JanusVR
             return (int)Math.Pow(2, Math.Ceiling(Math.Log(value) / Math.Log(2)));
         }
 
+        private void AssertShader(Shader shader)
+        {
+            if (shader == null)
+            {
+                Debug.LogError("Shaders not found! Please reimport the Janus Exporter package");
+            }
+        }
+
         private void PreExport()
         {
             Clean();
@@ -320,6 +328,8 @@ namespace JanusVR
                             // only load shader now, so if the user is not exporting lightmaps
                             // he doesn't need to have it on his project folder
                             Shader lightMapShader = Shader.Find("Hidden/LMapBaked");
+                            AssertShader(lightMapShader);
+
                             Material lightMap = new Material(lightMapShader);
                             lightMap.SetPass(0);
 
@@ -419,6 +429,8 @@ namespace JanusVR
                         #region Packed
                         {
                             Shader lightMapShader = Shader.Find("Hidden/LMapPacked");
+                            AssertShader(lightMapShader);
+
                             Material lightMap = new Material(lightMapShader);
                             lightMap.SetPass(0);
 
@@ -481,6 +493,8 @@ namespace JanusVR
                         #region Unpacked
                         {
                             Shader lightMapShader = Shader.Find("Hidden/LMapUnpacked");
+                            AssertShader(lightMapShader);
+
                             Material lightMap = new Material(lightMapShader);
                             lightMap.SetPass(0);
 
@@ -1037,6 +1051,7 @@ namespace JanusVR
                 Transform trans = go.transform;
                 Vector3 pos = trans.position;
                 pos *= uniformScale;
+                pos.x *= -1;
 
                 Quaternion rot = trans.rotation;
                 Vector3 xDir = rot * Vector3.right;
