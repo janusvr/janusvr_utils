@@ -1140,13 +1140,13 @@ WE REAAAAAALLLY ENCOURAGE YOU TO MAKE CHANGES TO THIS. MAKE IT YOUR OWN! CUSTOMI
 					}
 					else if (reuse_id_attempt == 1)
 					{
-						var adjectives = ["Serious","Perspiring","Lumbricoid","Legatorial","Right","Easterly","Basophil","Preambitious","Unpleasant","Macabre","Intracutaneous","Unempty","Hanging","Traitorous","Anadromous","Subarticulate","Closer","Innumerable","Clamant","Unburdensome","Humbling","Dedicated","Practicing","Shaped","Accommodating","Colored","Measured","Brother","Rambling","Commissioned","Commissioned","Respectable","Crackled","Passionate","Bearded","Peculiar","Waterproofed","Graduate","Canonical"];
+						var adjectives = ["Serious","Laughable","Tasteful","Deteriorating","Perturbed","Angsty","Delicious","Forlorn","Unpleasant","Macabre","Gallinaceous","Colourful","Striking","Crude","Enamoured","Artsy","Closer","Musical","Stinky","Clean","Humbling","Dedicated","Practicing","Shaped","Accommodating","Laughing","Kafkaesque","Brother","Voxelized","Commissioned","Commissioned","Lurking","Sandwichlike","Terrified","Bearded","Peculiar","Waterproofed","Graduate","Canonical"];
 						var index = Math.floor(Math.random() * adjectives.length);
 						var prefix = adjectives[index] + delimiter + adjectives[Math.floor((index + Math.random() * adjectives.length / 2.0) % adjectives.length)] + delimiter;
 						var lastid = window.janus.userid;
 						window.janus.userid = prefix+preferred_userid;
 						previoususerid = window.janus.userid;
-						shownotification('Preferred user name <b>'+lastid+'</b> is already in use.<br>Others now see you as <b>'+window.janus.userid+'</b>.','notifications/user.png',"null","#455947");
+						shownotification('Username <b>'+lastid+'</b> is already in use.<br>Others now see you as <b>'+window.janus.userid+'</b>.','notifications/user.png',"null","#455947");
 					}
 				}
 			}
