@@ -33,7 +33,7 @@ namespace JanusVR
             this.titleContent = new GUIContent("Janus VR Exporter");
         }
 
-        [MenuItem("Edit/JanusVR Exporter 2.0")]
+        [MenuItem("Edit/JanusVR Exporter v2.0")]
         private static void Init()
         {
             // Get existing open window or if none, make a new one:
@@ -101,6 +101,8 @@ namespace JanusVR
         private bool perTextureOptions = false;
         private bool perModelOptions = false;
 
+        private bool updateOnlyHtml = false;
+
         private Vector2 scrollPosition;
 
         private void OnGUI()
@@ -128,6 +130,14 @@ namespace JanusVR
             if (lightmapExportType != LightmapExportType.None)
             {
                 maxLightMapResolution = Math.Max(32, EditorGUILayout.IntField("Max Lightmap Resolution", maxLightMapResolution));
+            }
+
+            if (GUILayout.Button("Export HTML only"))
+            {
+                updateOnlyHtml = true;
+                PreExport();
+                DoExport();
+                Clean();
             }
 
             if (!string.IsNullOrEmpty(exportPath))
@@ -772,31 +782,36 @@ namespace JanusVR
 
         private void Clean()
         {
-            if (texturesExportedData == null)
+            updateOnlyHtml = false;
+
+            if (texturesExportedData != null)
             {
-                return;
-            }
-
-            for (int i = 0; i < texturesExportedData.Count; i++)
-            {
-                TextureExportData tex = texturesExportedData[i];
-
-                if (tex.Created)
+                for (int i = 0; i < texturesExportedData.Count; i++)
                 {
-                    // we made this, we delete this
-                    UObject.DestroyImmediate(tex.Texture);
-                }
+                    TextureExportData tex = texturesExportedData[i];
 
-                if (tex.Preview)
-                {
-                    string path = AssetDatabase.GetAssetPath(tex.Preview);
-                    if (string.IsNullOrEmpty(path))
+                    if (tex.Created)
                     {
-                        // make sure we didnt just copy the Preview because it was the same resolution
-                        // as the requested preview
-                        UObject.DestroyImmediate(tex.Preview);
+                        // we made this, we delete this
+                        UObject.DestroyImmediate(tex.Texture);
+                    }
+
+                    if (tex.Preview)
+                    {
+                        string path = AssetDatabase.GetAssetPath(tex.Preview);
+                        if (string.IsNullOrEmpty(path))
+                        {
+                            // make sure we didnt just copy the Preview because it was the same resolution
+                            // as the requested preview
+                            UObject.DestroyImmediate(tex.Preview);
+                        }
                     }
                 }
+            }
+
+            if (exported != null)
+            {
+                exported = null;
             }
         }
 
@@ -1103,8 +1118,13 @@ namespace JanusVR
             File.WriteAllText(indexPath, index.ToString());
         }
 
-        private static void ExportMesh(Mesh mesh, string path, ExportMeshFormat format, object data, bool switchUv)
+        private void ExportMesh(Mesh mesh, string path, ExportMeshFormat format, object data, bool switchUv)
         {
+            if (updateOnlyHtml)
+            {
+                return;
+            }
+
             string formatName = GetMeshFormat(format);
             string finalPath = path + formatName;
             if (File.Exists(finalPath))
@@ -1122,8 +1142,13 @@ namespace JanusVR
             }
         }
 
-        private static void ExportTexture(Texture2D tex, string path, ImageFormatEnum format, object data, bool zeroAlpha)
+        private void ExportTexture(Texture2D tex, string path, ImageFormatEnum format, object data, bool zeroAlpha)
         {
+            if (updateOnlyHtml)
+            {
+                return;
+            }
+
             string formatName = GetImageFormatName(format);
             using (Stream output = File.OpenWrite(path + formatName))
             {
