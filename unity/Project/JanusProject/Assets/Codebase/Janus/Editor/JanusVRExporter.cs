@@ -70,6 +70,7 @@ namespace JanusVR
 
         [SerializeField]
         private bool exportMaterials = true;
+
         [SerializeField]
         private bool exportSkybox = true;
 
@@ -102,6 +103,8 @@ namespace JanusVR
         private bool perModelOptions = false;
 
         private bool updateOnlyHtml = false;
+        private float farPlaneDistance = 1000;
+        private Bounds sceneSize;
 
         private Vector2 scrollPosition;
 
@@ -132,6 +135,8 @@ namespace JanusVR
                 maxLightMapResolution = Math.Max(32, EditorGUILayout.IntField("Max Lightmap Resolution", maxLightMapResolution));
             }
 
+            farPlaneDistance = Math.Max(5, EditorGUILayout.FloatField("View Distance", farPlaneDistance));
+
             if (GUILayout.Button("Export HTML only"))
             {
                 updateOnlyHtml = true;
@@ -151,6 +156,8 @@ namespace JanusVR
             scrollPosition = GUILayout.BeginScrollView(scrollPosition);
             if (exported != null)
             {
+                GUILayout.Label("Scene size " + sceneSize.size);
+
                 perTextureOptions = EditorGUILayout.Foldout(perTextureOptions, "Per Texture Options");
 
                 Rect last = GUILayoutUtility.GetLastRect();
@@ -201,10 +208,8 @@ namespace JanusVR
                 //        MeshExportData model = meshesExportedData[i];
                 //        string name = meshesNames[model.Mesh];
                 //        Rect r = GUILayoutUtility.GetRect(Screen.width, size * 1.05f);
-
                 //        //GUI.DrawTexture(new Rect(size * 0.1f, r.y, size, size), model.Preview);
                 //        GUI.Label(new Rect(size * 1.1f, r.y, half - size, size), name);
-
                 //        GUI.Label(new Rect(half, r.y, half * 0.3f, last.height), "Format");
                 //        model.Format = (ExportMeshFormat)EditorGUI.EnumPopup(new Rect(half * 1.3f, r.y, half * 0.7f, last.height), model.Format);
                 //    }
@@ -657,6 +662,8 @@ namespace JanusVR
 
                 meshesExportedData.Add(data);
             }
+
+            farPlaneDistance = sceneSize.size.magnitude;
         }
 
         private void RecursiveSearch(GameObject root, ExportedData data)
@@ -690,6 +697,8 @@ namespace JanusVR
                     {
                         continue;
                     }
+
+                    sceneSize.Encapsulate(meshRen.bounds);
 
                     // Only export the mesh if we never exported this one mesh
                     if (!meshesExported.Contains(mesh))
@@ -782,6 +791,7 @@ namespace JanusVR
 
         private void Clean()
         {
+            sceneSize = new Bounds();
             updateOnlyHtml = false;
 
             if (texturesExportedData != null)
@@ -1020,7 +1030,7 @@ namespace JanusVR
                 }
             }
 
-            index.Append("\n\t\t\t</Assets>\n\t\t\t<Room" + skyboxdata + ">");
+            index.Append("\n\t\t\t</Assets>\n\t\t\t<Room far_dist=\""+ farPlaneDistance + "\"" + skyboxdata + ">");
 
             for (int i = 0; i < exported.exportedObjs.Count; i++)
             {
