@@ -728,7 +728,7 @@ namespace JanusVR
                                 {
                                     if (mainTexSemantics.Contains(name.ToLower()))
                                     {
-                                        Texture2D tex = (Texture2D)mat.GetTexture(name);
+                                        Texture2D tex = mat.GetTexture(name) as Texture2D;
                                         if (tex == null)
                                         {
                                             continue;
