@@ -7,6 +7,7 @@ namespace JanusVR
 {
     public enum TextureFilterMode
     {
-        Average, Nearest
+        Nearest,
+        //Average, 
     }
 }

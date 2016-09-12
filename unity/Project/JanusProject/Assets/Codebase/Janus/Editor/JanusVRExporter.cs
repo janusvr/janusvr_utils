@@ -56,7 +56,7 @@ namespace JanusVR
         [SerializeField]
         private int defaultQuality = 100;
         [SerializeField]
-        private TextureFilterMode filterMode = TextureFilterMode.Average;
+        private TextureFilterMode filterMode = TextureFilterMode.Nearest;// TextureFilterMode.Average;
 
         [SerializeField]
         private ExportMeshFormat defaultMeshFormat = ExportMeshFormat.FBX;
@@ -923,7 +923,13 @@ namespace JanusVR
                 ExportedObject obj = exported.exportedObjs[i];
                 if (!meshWritten.Contains(obj.Mesh))
                 {
-                    string path = meshesExportedData.First(c => c.Mesh == obj.Mesh).ExportedPath;
+                    MeshExportData data = meshesExportedData.FirstOrDefault(c => c.Mesh == obj.Mesh);
+                    if (data == null || string.IsNullOrEmpty(data.ExportedPath))
+                    {
+                        continue;
+                    }
+
+                    string path = data.ExportedPath;
                     string name = meshesNames[obj.Mesh];
                     index.Append("\n\t\t\t\t<AssetObject id=\"" + name + "\" src=\"" + path + "\" />");
                     meshWritten.Add(obj.Mesh);
@@ -1019,6 +1025,11 @@ namespace JanusVR
 
                 CultureInfo c = CultureInfo.InvariantCulture;
                 Mesh mesh = obj.Mesh;
+                if (mesh == null)
+                {
+                    continue;
+                }
+
                 string meshName = meshesNames[mesh];
 
                 index.Append("\n\t\t\t\t<Object id=\"" + meshName + "\" lighting=\"true\" ");

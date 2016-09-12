@@ -44,75 +44,94 @@ namespace JanusVR
             return new Color(r, g, b, 1);
         }
 
-        public static Texture2D ScaleTexture(TextureExportData tex, int resolution, bool zeroAlpha = true, TextureFilterMode filterMode = TextureFilterMode.Nearest)
+        public static Texture2D ScaleTexture(TextureExportData tex, int res, bool zeroAlpha = true, TextureFilterMode filterMode = TextureFilterMode.Nearest)
         {
             Texture2D texture = tex.Texture;
+
+            int width = res;
+            int height = res;
+            if (texture.height != texture.width)
+            {
+                // cant directly scale
+                if (texture.width > texture.height)
+                {
+                    height = (int)((texture.height / (float)texture.width) * width);
+                }
+                else
+                {
+                    width = (int)((texture.width / (float)texture.height) * height);
+                }
+            }
+
+
             // scale the texture
-            Texture2D scaled = new Texture2D(resolution, resolution);
+            Texture2D scaled = new Texture2D(width, height);
 
             Color[] source = texture.GetPixels();
-            Color[] target = new Color[resolution * resolution];
+            Color[] target = new Color[width * height];
 
-            int scale = texture.width / resolution;
-            float sca = scale * 2;
+            int xscale = texture.width / width;
+            int yscale = texture.height / height;
+            float xsca = xscale * 2;
+            float ysca = yscale * 2;
 
             switch (filterMode)
             {
-                case TextureFilterMode.Average:
-                    {
-                        for (int x = 0; x < resolution; x++)
-                        {
-                            for (int y = 0; y < resolution; y++)
-                            {
-                                // sample neighbors
-                                int xx = x * scale;
-                                int yy = y * scale;
+                //case TextureFilterMode.Average:
+                //    {
+                //        for (int x = 0; x < width; x++)
+                //        {
+                //            for (int y = 0; y < height; y++)
+                //            {
+                //                // sample neighbors
+                //                int xx = x * xscale;
+                //                int yy = y * yscale;
 
-                                float r = 0, g = 0, b = 0, a = 0;
+                //                float r = 0, g = 0, b = 0, a = 0;
 
-                                int ind = xx + (yy * texture.width);
-                                for (int j = 0; j < scale; j++)
-                                {
-                                    Color col = source[ind + j];
-                                    r += col.r;
-                                    g += col.g;
-                                    b += col.b;
-                                    a += col.a;
-                                }
-                                ind = xx + ((yy + 1) * texture.width);
-                                for (int j = 0; j < scale; j++)
-                                {
-                                    Color col = source[ind + j];
-                                    r += col.r;
-                                    g += col.g;
-                                    b += col.b;
-                                    a += col.a;
-                                }
+                //                int ind = xx + (yy * texture.width);
+                //                for (int j = 0; j < xscale; j++)
+                //                {
+                //                    Color col = source[ind + j];
+                //                    r += col.r;
+                //                    g += col.g;
+                //                    b += col.b;
+                //                    a += col.a;
+                //                }
+                //                ind = xx + ((yy + 1) * texture.width);
+                //                for (int j = 0; j < xscale; j++)
+                //                {
+                //                    Color col = source[ind + j];
+                //                    r += col.r;
+                //                    g += col.g;
+                //                    b += col.b;
+                //                    a += col.a;
+                //                }
 
-                                r = r / sca;
-                                g = g / sca;
-                                b = b / sca;
-                                a = a / sca;
-                              
-                                Color sampled = new Color(r, g, b, a);
-                                if (zeroAlpha)
-                                {
-                                    sampled.a = 1;
-                                }
-                                target[x + (y * resolution)] = sampled;
-                            }
-                        }
-                    }
-                    break;
+                //                r = r / sca;
+                //                g = g / sca;
+                //                b = b / sca;
+                //                a = a / sca;
+
+                //                Color sampled = new Color(r, g, b, a);
+                //                if (zeroAlpha)
+                //                {
+                //                    sampled.a = 1;
+                //                }
+                //                target[x + (y * width)] = sampled;
+                //            }
+                //        }
+                //    }
+                //    break;
                 case TextureFilterMode.Nearest:
                     {
-                        for (int x = 0; x < resolution; x++)
+                        for (int x = 0; x < width; x++)
                         {
-                            for (int y = 0; y < resolution; y++)
+                            for (int y = 0; y < height; y++)
                             {
                                 // sample neighbors
-                                int xx = x * scale;
-                                int yy = y * scale;
+                                int xx = x * xscale;
+                                int yy = y * yscale;
                                 int ind = xx + (yy * texture.width);
 
                                 Color col = source[ind];
@@ -120,7 +139,7 @@ namespace JanusVR
                                 {
                                     col.a = 1;
                                 }
-                                target[x + (y * resolution)] = col;
+                                target[x + (y * width)] = col;
                             }
                         }
                     }

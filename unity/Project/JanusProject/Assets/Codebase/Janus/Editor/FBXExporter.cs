@@ -39,14 +39,27 @@ namespace UnityEngine.FBX
 
         public static void ExportMesh(Mesh mesh, string path, bool switchUv = false, bool mirror = true, int fbxVersion = 1)
         {
-            FBXExporter.Initialize(mesh.name);
-            FBXExporter.SetFBXCompatibility(fbxVersion);
-            FBXExporter.AddMesh(mesh.name);
+            if (mesh.GetTopology(0) != MeshTopology.Triangles)
+            {
+                return;
+            }
 
             Vector3[] vertices = mesh.vertices;
             Vector3[] normals = mesh.normals;
             int[] triangles = mesh.triangles;
 
+            // check if we have all the data
+            int maximum = triangles.Max();
+            if (normals.Length < maximum)
+            {
+                Debug.LogWarning("Mesh has not enough normals - " + mesh.name, mesh);
+                return;
+            }
+
+            FBXExporter.Initialize(mesh.name);
+            FBXExporter.SetFBXCompatibility(fbxVersion);
+            FBXExporter.AddMesh(mesh.name);
+          
             FbxVector3[] nvertices = new FbxVector3[vertices.Length];
             FbxVector3[] nnormals = new FbxVector3[triangles.Length];
 
@@ -122,7 +135,7 @@ namespace UnityEngine.FBX
                     {
                         if (LightmappingEnabled && i == 1)
                         {
-                            Debug.LogError("Lightmapping is enabled but mesh has no UV1 channel - " + mesh, mesh);
+                            Debug.LogWarning("Lightmapping is enabled but mesh has no UV1 channel - " + mesh.name + " - Tick the Generate Lightmap UVs", mesh);
                         }
                         continue;
                     }
