@@ -55,6 +55,18 @@
   
   document.getElementById("rotationspeedslider").value =  parent.window.janus.getsetting('rotationspeed');  
   document.getElementById("rotationspeedslidernumber").innerHTML =  parent.window.janus.getsetting('rotationspeed');
+    
+  
+  document.getElementById("volumeenvslider").value =  parent.window.janus.getsetting('volumeenv');  
+  document.getElementById("volumeenvslidernumber").innerHTML =  parent.window.janus.getsetting('volumeenv');
+    
+  
+  document.getElementById("volumevoipslider").value =  parent.window.janus.getsetting('volumevoip');  
+  document.getElementById("volumevoipslidernumber").innerHTML =  parent.window.janus.getsetting('volumevoip');
+    
+  
+  document.getElementById("volumemicslider").value =  parent.window.janus.getsetting('volumemic');  
+  document.getElementById("volumemicslidernumber").innerHTML =  parent.window.janus.getsetting('volumemic');
      
  
   document.getElementById("landingpageform").value =  parent.window.janus.getsetting('launchurl');  
@@ -637,6 +649,42 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					</span>
 					<br>
 					</div>
+
+					
+	
+
+					<div class='item' >
+					<span>
+					<input class="myslider" type='range' id="volumeenvslider" min="0" max="100" onchange="window.janus.setsetting('volumeenv', this.value); document.getElementById('volumeenvslidernumber').innerHTML=this.value;" >
+					Environment Volume: <span id="volumeenvslidernumber"></span>
+
+					</span>
+					<br>
+					</div>		
+
+					
+	
+
+					<div class='item' >
+					<span>
+					<input class="myslider" type='range' id="volumevoipslider" min="0" max="100" onchange="window.janus.setsetting('volumevoip', this.value); document.getElementById('volumevoipslidernumber').innerHTML=this.value;" >
+					Voice Chat Volume: <span id="volumevoipslidernumber"></span>
+
+					</span>
+					<br>
+					</div>		
+
+					
+	
+
+					<div class='item' >
+					<span>
+					<input class="myslider" type='range' id="volumemicslider" min="0" max="100" onchange="window.janus.setsetting('volumemic', this.value); document.getElementById('volumemicslidernumber').innerHTML=this.value;" >
+					Mic Volume: <span id="volumemicslidernumber"></span>
+
+					</span>
+					<br>
+					</div>		
 
 					
 					
