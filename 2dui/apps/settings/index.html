@@ -38,6 +38,8 @@
   document.getElementById("jsdebuggertoggle").checked =  parent.window.janus.getsetting('jsdebugger');
   document.getElementById("avatarlightingtoggle").checked = parent.window.janus.avatarlighting;
   document.getElementById("hidemenutoggle").checked = parent.window.janus.getsetting('hidemenu');
+  document.getElementById("positionalenvtoggle").checked = parent.window.janus.getsetting('positionalenv');
+  document.getElementById("positionalvoiptoggle").checked = parent.window.janus.getsetting('positionalvoip');
   
   
     document.getElementById("hapticstoggle").checked = parent.window.janus.getsetting('haptics');
@@ -661,6 +663,18 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					</span>
 					<br>
 					</div>		
+					
+					
+					
+					
+					<div class='item' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="positionalenvtoggle" onchange="window.janus.setsetting('positionalenv', this.checked); "  >
+					Environment Positional Audio
+
+					</span>
+					<br>
+					</div>	
 
 					
 	
@@ -673,6 +687,18 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					</span>
 					<br>
 					</div>		
+					
+					
+					
+					
+					<div class='item' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="positionalvoiptoggle" onchange="window.janus.setsetting('positionalvoip', this.checked); "  >
+					Voice Chat Positional Audio
+
+					</span>
+					<br>
+					</div>	
 
 					
 	
