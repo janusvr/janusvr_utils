@@ -74,6 +74,9 @@ namespace JanusVR
         [SerializeField]
         private bool exportSkybox = true;
 
+        [SerializeField]
+        private bool compressFiles = false;
+
         /// <summary>
         /// Lower case values that the exporter will consider for being the Main Texture on a shader
         /// </summary>
@@ -123,6 +126,7 @@ namespace JanusVR
             defaultMeshFormat = (ExportMeshFormat)EditorGUILayout.EnumPopup("Default Mesh Format", defaultMeshFormat);
             defaultTexFormat = (ImageFormatEnum)EditorGUILayout.EnumPopup("Default Textures Format", defaultTexFormat);
             filterMode = (TextureFilterMode)EditorGUILayout.EnumPopup("Texture Filter", filterMode);
+            compressFiles = EditorGUILayout.Toggle("Compress Models (SLOW)", compressFiles);
             defaultQuality = EditorGUILayout.IntSlider("Default Textures Quality", defaultQuality, 0, 100);
 
             uniformScale = EditorGUILayout.FloatField("Uniform Scale", uniformScale);
@@ -1145,7 +1149,7 @@ namespace JanusVR
             switch (format)
             {
                 case ExportMeshFormat.FBX:
-                    FBXExporter.ExportMesh(mesh, finalPath, switchUv);
+                    FBXExporter.ExportMesh(mesh, finalPath, compressFiles, switchUv);
                     break;
                 case ExportMeshFormat.OBJ_NotWorking:
                     break;
@@ -1160,9 +1164,24 @@ namespace JanusVR
             }
 
             string formatName = GetImageFormatName(format);
-            using (Stream output = File.OpenWrite(path + formatName))
+            string fpath = path + formatName;
+
+            if (compressFiles && !SupportsQuality(format)) // dont compress lossy texture types
             {
-                TextureUtil.ExportTexture(tex, output, format, data, zeroAlpha);
+                using (Stream output = new MemoryStream())
+                {
+                    TextureUtil.ExportTexture(tex, output, format, data, zeroAlpha);
+
+                    output.Position = 0;
+                    GZipExporter.Save(fpath + ".gz", output);
+                }
+            }
+            else
+            {
+                using (Stream output = File.OpenWrite(fpath))
+                {
+                    TextureUtil.ExportTexture(tex, output, format, data, zeroAlpha);
+                }
             }
         }
     }
