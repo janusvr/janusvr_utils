@@ -24,6 +24,37 @@ ul {
 
 }
 
+.partyitem {
+font-family: 'Open Sans';
+color:white;
+text-align:center;
+border-bottom-style:solid;
+border-bottom-color:white;
+padding-top:16px;
+border-width:1px;
+padding-bottom:16px;
+ word-wrap:break-word;
+}
+
+.partyitem b {
+color: 0EE05A;
+}
+
+.partyitem:hover {
+background-color:white;
+color:#545454;
+cursor:pointer;
+}
+
+.partyitem:hover b{
+background-color:white;
+color:#545454;
+cursor:pointer;
+}
+
+
+
+
 li {
     float: left;
 }

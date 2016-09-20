@@ -46,7 +46,15 @@
   left:48px;
   }
   
-  
+ 
+  .statisticright{
+  background-image: url(icons/newstat/partymode.png);
+  bottom:8px;
+  right:48px;
+
+  }
+
+ 
   .statisticright2{
   background-image: url(icons/newstat/room-locked.png);
   bottom:8px;
@@ -211,6 +219,14 @@ position: fixed;
 
   }
 
+    .quickpartymode {
+    background-image: url("icons/partymode.png");
+   background-repeat: no-repeat;
+   background-size: contain;
+      background-position: center;
+
+  }
+  
   .quickbrowser {
   background-image: url("icons/glyph-04.png");
    background-repeat: no-repeat;
@@ -1009,7 +1025,7 @@ max-height:100%;
 .notificationcontainer {
 visibility: hidden;
 left:4px;
-top:42px;
+top:48px;
 position:absolute;
 opacity: 0.65;
 transition: opacity .2s ease-in-out;
