@@ -51,7 +51,7 @@
   background-image: url(icons/newstat/partymode.png);
   bottom:8px;
   right:48px;
-
+   visibility:hidden;
   }
 
  
@@ -223,6 +223,7 @@ position: fixed;
     background-image: url("icons/partymode.png");
    background-repeat: no-repeat;
    background-size: contain;
+
       background-position: center;
 
   }

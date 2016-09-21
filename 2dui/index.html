@@ -63,16 +63,11 @@ WE REAAAAAALLLY ENCOURAGE YOU TO MAKE CHANGES TO THIS. MAKE IT YOUR OWN! CUSTOMI
 var hueshift;
 function partyHueCycle() {
 
-//check if party mode is disabled
-if (parent.window.janus.partymode == 1)
-{
-document.getElementById("partystatus").style.visibility = "visible";
-}
-else
-{
-document.getElementById("partystatus").style.visibility = "hidden";
-}
 
+
+//check if party mode is disabled
+if (window.janus.getsetting('partymode') == true)
+{
 
 
 	if (hueshift < 360)
@@ -84,8 +79,21 @@ document.getElementById("partystatus").style.visibility = "hidden";
 	hueshift = 0;
 	}
 	
-    document.getElementById("partystatus").setAttribute("style","-webkit-filter:hue-rotate(" + hueshift + "deg)")
+    document.getElementById("partystatus").setAttribute("style","-webkit-filter:hue-rotate(" + hueshift + "deg);visibility: visible !important;")
 
+
+
+}
+else
+{
+	document.getElementById("partystatus").setAttribute("style","visibility: hidden !important;")
+}
+
+
+
+
+	
+	
 }
 
 	function include(src, cb) {
