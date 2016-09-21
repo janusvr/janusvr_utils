@@ -52,8 +52,9 @@
   
   tabSelect("maintabcontainer","maintabbutton")
   window.onresize()
+  document.getElementById("partytoggle").checked = parent.window.janus.getsetting('partymode');
   createParties();
-  document.getElementById("partytoggle").checked =  parent.window.janus.getsetting('partymode');
+
 
   }
 
