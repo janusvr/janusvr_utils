@@ -1,0 +1,190 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>JanusVR Interface</title>
+  <meta name="description" content="JanusVR Interface">
+  <meta name="author" content="JanusVR Inc.">
+  <script src="../../scripts/tabs.js"></script>
+  
+  <script>
+
+  
+    function launchPortal(url) {
+  
+  parent.window.janus.launchurl(url,0);
+  
+  }
+  
+  
+  var partyname;
+  var partysite;
+  var partytitle;
+  
+  partyname = parent.window.janus.partyname;
+  partysite = parent.window.janus.partysite;
+  partytitle = parent.window.janus.partytitle;
+
+
+  function createParties() {
+  document.getElementById("partycontainer").innerHTML = "" //blank out the party container so we can refresh it with new data
+  
+	  var i;
+	  for (i=0;i<partyname.length;i++)
+	  {
+		var newelement=document.createElement("div");
+		newelement.className="partyitem";
+		newelement.innerHTML = partyname[i]+" in <b>"+partytitle[i]+"</b>";
+		newelement.onclick =  function(arg) {
+										return function() {
+											launchPortal(partysite[arg])
+												}
+												}(i);
+												
+		document.getElementById("partycontainer").appendChild(newelement);
+	  
+	  }
+  
+  
+  }
+  
+  window.onload = function () {
+  
+  tabSelect("maintabcontainer","maintabbutton")
+  window.onresize()
+  createParties();
+  document.getElementById("partytoggle").checked =  parent.window.janus.getsetting('partymode');
+
+  }
+
+
+  
+   window.onresize = function(event) { //make sure the window area stays a consistent size
+
+
+ 
+ if (document.getElementById("tabrow").offsetWidth >= 200) //if you change the 200 here, also change the min-width of the window containing it. this is to prevent flicker when vertically resizing a minimally (width) sized window
+ {
+document.getElementById("windowarea").style.height = "calc(100% - "+(document.getElementsByClassName("tabrow")[0].offsetHeight+3)+"px)";	
+ }
+};
+  
+
+
+  
+    </script>
+  
+  
+  <link rel="stylesheet" type="text/css" href="../../skins/emerald/emeraldgenericwindow.css">
+  
+</head>
+
+<body >
+
+<div class="windowcontainer">
+
+<div class="tabrow unselectable" id="tabrow">
+
+	<div class="tabbutton" id="maintabbutton" onmousedown="tabSelect('maintabcontainer','maintabbutton')">HOST</div></li>
+	<div class="tabbutton" id="maintabbutton2" onmousedown="tabSelect('maintabcontainer2','maintabbutton2')">FIND</div></li>
+
+
+
+</div>
+
+
+<div class="windowarea unselectable" id="windowarea" style="background-image: url(../../backgrounds/stars.png);background-size:cover;background-attachment:fixed;" >
+		
+					
+					
+					
+				<div class="tabcontainer" id="maintabcontainer" >
+					<div style="text-align:center;">
+					<p>Party Mode allows users<br>
+to easily find you from<br>
+anywhere in JanusVR.<br>
+<br>
+Bored or just looking to<br>
+spice up your browsing<br>
+experience?<br>
+<br>
+Check the box below<br>
+to start broadcasting in<br>
+Party Mode!</p>
+</div>
+
+
+					<div class='item' style="background-color:545454;margin-top:32px;margin-bottom:32px;" >
+					<span>
+					<input class="myCheckbox" id="partytoggle" type='checkbox' onchange="window.janus.setsetting('partymode', this.checked); " > 
+					Broadcast my location
+
+					</span>
+					<br>
+					</div>
+
+
+
+				</div>	
+
+						<div class="tabcontainer" id="maintabcontainer2">	
+						
+						
+							<div id="partycontainer"> 							
+				
+							<div class="partyitem">Jason in <b>http://vrsites.com/</b></div>
+							
+							<div class="partyitem">Ferrisbuellertheguythisisalongnamewowiezowie in <b>http://github.com/taweteawtwaewaetwetweatawetwaetawetwatwetweates4747e47e47e47se4uyrtghersyse4y4ey4eye4yesyervyse4tyes4y4estyes4tdfstsdfgvsdergser</b></div>
+							
+							<div class="partyitem">Jacknoir in <b>http://thesims.com/</b></div>
+							
+							<div class="partyitem">Tobyf in <b>http://youtube.com/</b></div>
+							
+							<div class="partyitem">SAGoon in <b>http://reddit.com/</b></div>
+							
+							<div class="partyitem">Porkchop in <b>http://yahoo.com/</b></div>
+							
+						</div>				
+
+		
+		
+		
+				</div>							
+					
+	
+					
+					
+		</div>			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+</div>
+
+
+
+</body>
+</html>
