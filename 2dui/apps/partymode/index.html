@@ -8,7 +8,12 @@
   <script src="../../scripts/tabs.js"></script>
   
   <script>
-
+	function strip(html)
+	{
+		var tmp = document.createElement("DIV");
+		tmp.innerHTML = html;
+		return tmp.textContent || tmp.innerText;
+	}
   
     function launchPortal(url) {
   
@@ -45,7 +50,7 @@ var sitename;
 		sitename = parent.window.janus.partymodedata[i].name
 		}
 		
-		newelement.innerHTML = parent.window.janus.partymodedata[i].userId+" in <b>"+sitename+"</b>";
+		newelement.innerHTML = strip(parent.window.janus.partymodedata[i].userId)+" in <b>"+strip(sitename)+"</b>";
 		newelement.onclick =  function(arg) {
 										return function() {
 											launchPortal(parent.window.janus.partymodedata[arg].url)
