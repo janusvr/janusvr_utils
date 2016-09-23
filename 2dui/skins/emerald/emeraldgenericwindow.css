@@ -36,8 +36,14 @@ padding-bottom:16px;
  word-wrap:break-word;
 }
 
+
 .partyitem b {
 color: 0EE05A;
+}
+
+.partynobody {
+text-align:center;
+padding-top:64px;
 }
 
 .partyitem:hover {
