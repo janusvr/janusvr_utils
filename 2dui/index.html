@@ -1056,7 +1056,22 @@ else
 
 
 
+function displayTip() {
 
+			if (getCookie("fact1") != "used")
+			{
+				shownotification('You are now in UI mode. Click on the <b>Main Menu</b> to perform a wide variety of useful features.','notifications/menu.png',"null","#455947");
+				setCookie("fact1","used","100000000")
+			}
+			else if (getCookie("fact2") != "used")
+			{
+				shownotification('Have you tried Party Mode? Click on the <b>balloon icon</b> in the quickbar to meet new users.','notifications/partymode.png',"null","#455947");
+				setCookie("fact2","used","100000000")			
+			}
+			
+			
+tipshown = 0;
+}
 
 
 
@@ -1082,7 +1097,7 @@ else
 	// BEGIN spyduck userid edits
 	var reuse_id_attempt = 0;
 	// END spyduck userid edits
-
+	var tipshown;
 	var opacityoftooltip;
 	var previousroomurl;
 	var previoususerid=window.janus.userid;
@@ -1096,11 +1111,14 @@ else
 
 			//if UI focused for the first time, demonstrate how to use [...] menu
 
-			if (getCookie("fact1") != "used")
+			
+			
+			if ((window.janus.currentkey == "Esc") && (tipshown != 1))
 			{
-				shownotification('You are now in UI mode. Click on the <b>Main Menu</b> to perform a wide variety of useful features.','notifications/menu.png',"null","#455947");
-				setCookie("fact1","used","100000000")
+			setTimeout(function(){ displayTip(); }, 1000);
+			tipshown = 1;
 			}
+
 
 
 			//darken UI on focus
