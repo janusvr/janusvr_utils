@@ -22,6 +22,7 @@ parent.window.janus.updatepartymodedata()
 }
 
 
+var sitename;
 
   function createParties() {
   document.getElementById("partycontainer").innerHTML = "" //blank out the party container so we can refresh it with new data
@@ -34,7 +35,17 @@ parent.window.janus.updatepartymodedata()
 	  {
 		var newelement=document.createElement("div");
 		newelement.className="partyitem";
-		newelement.innerHTML = parent.window.janus.partymodedata[i].userId+" in <b>"+parent.window.janus.partymodedata[i].name+"</b>";
+		
+		if (parent.window.janus.partymodedata[i].name == null)
+		{
+		sitename = parent.window.janus.partymodedata[i].url
+		}
+		else
+		{
+		sitename = parent.window.janus.partymodedata[i].name
+		}
+		
+		newelement.innerHTML = parent.window.janus.partymodedata[i].userId+" in <b>"+sitename+"</b>";
 		newelement.onclick =  function(arg) {
 										return function() {
 											launchPortal(parent.window.janus.partymodedata[arg].url)
