@@ -27,7 +27,8 @@ parent.window.janus.updatepartymodedata()
   document.getElementById("partycontainer").innerHTML = "" //blank out the party container so we can refresh it with new data
   
 
-  
+  if (parent.window.janus.partymodedata.length > 0)
+  {
 	  var i;
 	  for (i=0;i<parent.window.janus.partymodedata.length;i++)
 	  {
@@ -43,6 +44,15 @@ parent.window.janus.updatepartymodedata()
 		document.getElementById("partycontainer").appendChild(newelement);
 	  
 	  }
+	}
+	else
+	{
+	var newelement=document.createElement("div");
+		newelement.className="partynobody";
+	newelement.innerHTML = "<img style='width:128px;text-align:center;' src='search.png'></img><p>Searching for parties...</p>"
+	document.getElementById("partycontainer").appendChild(newelement);	
+	}
+	
   
   
   }
@@ -132,8 +142,7 @@ setInterval(function(){   createParties(); }, 5000); //rebuild the list every fi
 						
 						
 							<div id="partycontainer"> 							
-							<p>Searching for users...</p>
-
+							<div class="partynobody"><img style='width:128px;text-align:center;' src='search.png'></img><p>Searching for parties...</p></div>
 							</div>				
 
 		
