@@ -17,27 +17,26 @@
   }
   
   
-  var partyname;
-  var partysite;
-  var partytitle;
-  
-  partyname = parent.window.janus.partyname;
-  partysite = parent.window.janus.partysite;
-  partytitle = parent.window.janus.partytitle;
+function populatePartyObject() {
+parent.window.janus.updatepartymodedata() 
+}
+
 
 
   function createParties() {
   document.getElementById("partycontainer").innerHTML = "" //blank out the party container so we can refresh it with new data
   
+
+  
 	  var i;
-	  for (i=0;i<partyname.length;i++)
+	  for (i=0;i<parent.window.janus.partymodedata.length;i++)
 	  {
 		var newelement=document.createElement("div");
 		newelement.className="partyitem";
-		newelement.innerHTML = partyname[i]+" in <b>"+partytitle[i]+"</b>";
+		newelement.innerHTML = parent.window.janus.partymodedata[i].userId+" in <b>"+parent.window.janus.partymodedata[i].name+"</b>";
 		newelement.onclick =  function(arg) {
 										return function() {
-											launchPortal(partysite[arg])
+											launchPortal(parent.window.janus.partymodedata[arg].url)
 												}
 												}(i);
 												
@@ -53,6 +52,7 @@
   tabSelect("maintabcontainer","maintabbutton")
   window.onresize()
   document.getElementById("partytoggle").checked = parent.window.janus.getsetting('partymode');
+  populatePartyObject()
   createParties();
 
 
@@ -69,10 +69,10 @@
 document.getElementById("windowarea").style.height = "calc(100% - "+(document.getElementsByClassName("tabrow")[0].offsetHeight+3)+"px)";	
  }
 };
-  
-setInterval(function(){   createParties(); }, 5000);
 
-  
+setInterval(function(){ populatePartyObject(); },15000) //update the list every 15 seconds   
+setInterval(function(){   createParties(); }, 5000); //rebuild the list every five seconds 
+
     </script>
   
   
