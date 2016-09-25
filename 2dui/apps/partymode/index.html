@@ -53,11 +53,22 @@ var sitename;
 		newelement.innerHTML = strip(parent.window.janus.partymodedata[i].userId)+" in <b>"+strip(sitename)+"</b>";
 		newelement.onclick =  function(arg) {
 										return function() {
-											launchPortal(parent.window.janus.partymodedata[arg].url)
+											launchPortal(document.getElementById("myurl"+[arg]).innerHTML)
 												}
 												}(i);
 												
 		document.getElementById("partycontainer").appendChild(newelement);
+		
+		var urlcontainer=document.createElement("div");
+		urlcontainer.className="partyhideurl";
+		urlcontainer.id = function(arg) {
+										return "myurl"+[arg];
+												}(i);
+												
+		urlcontainer.innerHTML = parent.window.janus.partymodedata[i].url;
+		newelement.appendChild(urlcontainer);
+		
+		
 	  
 	  }
 	}
@@ -158,7 +169,6 @@ setInterval(function(){   createParties(); }, 5000); //rebuild the list every fi
 						
 						
 							<div id="partycontainer"> 							
-							<div class="partynobody"><img style='width:128px;text-align:center;' src='search.png'></img><p>Searching for parties...</p></div>
 							</div>				
 
 		
