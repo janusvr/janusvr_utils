@@ -12,7 +12,7 @@
 }
 
 @font-face {
-    font-family: "Open Sans Regular";
+    font-family: "Open Sans";
     src: url(OpenSans-Regular.ttf);
 }
 
@@ -25,7 +25,7 @@ ul {
 }
 
 .partyitem {
-font-family: 'Open Sans Regular';
+font-family: 'Open Sans';
 color:white;
 text-align:center;
 border-bottom-style:solid;
@@ -137,12 +137,12 @@ color:#848484;
 width:100%;
 background-color: rgba(0,0,0,0.1);
 border-style: none;
-  font-family: "Open Sans Regular";
+  font-family: "Open Sans";
   color:white;
 }
 
  p {
-   font-family: "Open Sans Regular";
+   font-family: "Open Sans";
   color:white;
 
 
@@ -150,7 +150,7 @@ border-style: none;
 
        .entryform {
   position:fixed;
-  font-family: "Open Sans Regular";
+  font-family: "Open Sans";
   width: 100%;
   bottom: 0px;
   padding: 0 0 0 0;
@@ -198,7 +198,7 @@ resize: none;
   resize: none;
   background-color: rgba(0,0,0,0);
   color:white;
-   font-family: "Open Sans Regular";
+   font-family: "Open Sans";
    text-decoration: none !important;
  	 font-size:14px;
 
@@ -378,6 +378,9 @@ white-space: nowrap;
 overflow:hidden;
 }
 
+.partyhideurl {
+display:none;
+}
 
 
 
@@ -420,7 +423,7 @@ overflow:hidden;
 
 .inputminiurl {
 
-  font-family: "Open Sans Regular";
+  font-family: "Open Sans";
   color:white;
 
 max-width:100%;
@@ -550,7 +553,7 @@ width:100%;
 
 .mapiconname {
 text-align:center;
-font-family: "Open Sans Regular";
+font-family: "Open Sans";
 color:white;
     text-shadow: -1px 0 #545454, 0 1px #545454, 1px 0 #545454, 0 -1px #545454;
 bottom:24px;
@@ -581,7 +584,7 @@ background-size: contain;
 	 font-size:14px;
 
 padding: 8px 8px;
- font-family: "Open Sans Regular";
+ font-family: "Open Sans";
  color: #CCCCCC;
 }
 
@@ -591,7 +594,7 @@ padding: 8px 8px;
 	 font-size:14px;
 
 padding: 8px 8px;
- font-family: "Open Sans Regular";
+ font-family: "Open Sans";
  color: #CCCCCC;
 }
 
