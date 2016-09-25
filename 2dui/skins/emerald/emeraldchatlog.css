@@ -11,19 +11,19 @@
 } 
   
 @font-face {
-    font-family: "Open Sans Regular";
+    font-family: "Open Sans";
     src: url(OpenSans-Regular.ttf);
 }
 
   
   .username {
-  font-family:"Open Sans Regular";
+  font-family:"Open Sans";
   color: #0EE05A ;
   
   }
   
    .dialogue {
-  font-family:"Open Sans Regular";
+  font-family:"Open Sans";
   color: white ;
   
   }
@@ -37,7 +37,7 @@
   
   .entryform {
   position:fixed;
-  font-family: "Open Sans Regular";
+  font-family: "Open Sans";
   width: 100%;
   bottom: -16px;
   padding: 0 0 0 0;

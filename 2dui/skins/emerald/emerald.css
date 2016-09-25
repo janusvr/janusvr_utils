@@ -5,7 +5,7 @@
 }
 
 @font-face {
-    font-family: "Open Sans Regular";
+    font-family: "Open Sans";
     src: url(OpenSans-Regular.ttf);
 }
 
@@ -261,7 +261,7 @@ position: fixed;
   color:white;
   visibility:hidden;
   overflow:visible;
-  font-family: "Open Sans Regular";
+  font-family: "Open Sans";
   z-index:22222222222222;
   padding: 4px 4px;
   border-color:white;
@@ -435,7 +435,7 @@ width: 256px;
   border-width: 1px;
   border-color: #0E705A;
   color: #E4E4E4;
-  font-family: "Open Sans Regular";
+  font-family: "Open Sans";
   padding: 5px;
   padding-left:16px;
   padding-right:16px;
@@ -1009,7 +1009,7 @@ max-height:100%;
 
 .notificationtext {
 
-	font-family: "Open Sans Regular";
+	font-family: "Open Sans";
 	color:white;
 	 font-size:14px;
 
