@@ -39,12 +39,18 @@ break-inside: avoid-column;
 }
 
 
+#partycontainer {
+    -webkit-column-gap: 0px; /* Chrome, Safari, Opera */
+    -moz-column-gap: 0px; /* Firefox */
+    column-gap: 0px;
+
+}
+
 @media screen and (min-width: 400px) {
     #partycontainer {
     -webkit-column-count: 2; /* Chrome, Safari, Opera */
     -moz-column-count: 2; /* Firefox */
     column-count: 2;
-	column-gap: 0px;
     }
 	
 	.partyitem {
