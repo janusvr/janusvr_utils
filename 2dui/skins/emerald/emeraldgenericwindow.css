@@ -52,6 +52,7 @@ break-inside: avoid-column;
     -webkit-column-count: 2; /* Chrome, Safari, Opera */
     -moz-column-count: 2; /* Firefox */
     column-count: 2;
+
     }
 	
 	.partyitem {
@@ -59,6 +60,9 @@ break-inside: avoid-column;
 	border-right-color:white;
 	border-left-color: white;
 	border-left-style: solid;
+		height:64px;
+		padding: 8px;
+		overflow:hidden;
 	}
 }
 
@@ -93,10 +97,7 @@ color: 0EE05A;
 }
 
 .partynobody {
-text-align:center;
-padding-top:64px;
-break-inside: avoid-column;
--webkit-column-break-inside: avoid;
+
 }
 
 .partyitem:hover {
