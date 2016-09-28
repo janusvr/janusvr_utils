@@ -159,7 +159,7 @@ setInterval(function(){   createParties(); }, 5000); //rebuild the list every fi
 
 <body >
 
-<div class="windowcontainer">
+<div class="windowcontainer" style="height:calc(100% - 36px);">
 
 <div class="tabrow unselectable" id="tabrow">
 
@@ -177,16 +177,16 @@ setInterval(function(){   createParties(); }, 5000); //rebuild the list every fi
 					
 
 
-				<div class="tabcontainer" id="maintabcontainer">	
+				<div class="tabcontainer" id="maintabcontainer" >	
 						
 						
 							<div id="partycontainer"> 							
 							</div>			
 							
-					<div class='item' style="background-color:545454;position:absolute;bottom:0px;width:100%;" >
+					<div class='item' style="position:absolute;bottom:0px;width:100%;" >
 					<span>
 					<input style="float:left;margin-right:8px;" class="myCheckbox" id="partytoggle" type='checkbox' onchange="window.janus.setsetting('partymode', this.checked); " > 
-					Let users join my location from this list.
+					Host a party at active URL.
 
 					</span>
 					<br>
