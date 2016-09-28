@@ -30,15 +30,37 @@ color:white;
 text-align:center;
 border-bottom-style:solid;
 border-bottom-color:white;
-padding-top:16px;
+padding-top:32px;
 border-width:1px;
-padding-bottom:16px;
+padding-bottom:32px;
+font-size:12px;
  word-wrap:break-word;
 break-inside: avoid-column;
 -webkit-column-break-inside: avoid;
+/* Internet Explorer 10 */
+display:-ms-flexbox;
+-ms-flex-pack:center;
+-ms-flex-align:center;
 
+/* Firefox */
+display:-moz-box;
+-moz-box-pack:center;
+-moz-box-align:center;
+
+/* Safari, Opera, and Chrome */
+display:-webkit-box;
+-webkit-box-pack:center;
+-webkit-box-align:center;
+
+/* W3C */
+display:box;
+box-pack:center;
+box-align:center;
 }
 
+.partyitem .partytext {
+
+}
 
 #partycontainer {
     -webkit-column-gap: 0px; /* Chrome, Safari, Opera */
@@ -94,6 +116,7 @@ break-inside: avoid-column;
 
 .partyitem b {
 color: 0EE05A;
+
 }
 
 .partynobody {
