@@ -15,6 +15,16 @@
 		return tmp.textContent || tmp.innerText;
 	}
 	
+	function trimString(text,mylength) {
+	
+
+	var trimmedString = text.length > mylength ? 
+                    text.substring(0, mylength - 3) + "..." : 
+                    text;	 
+					
+	return trimmedString;
+	
+	}
 	
 	function extractDomain(url) {
     var domain;
@@ -80,7 +90,7 @@ var sitename;
 		sitename = parent.window.janus.partymodedata[i].name
 		}
 		
-		newelement.innerHTML = strip(parent.window.janus.partymodedata[i].userId)+" in <b>"+strip(sitename)+"</b>";
+		newelement.innerHTML = "<div class='partytext'><b>"+strip(sitename)+"</b><br>with "+trimString(strip(parent.window.janus.partymodedata[i].userId),32)+"</div>";
 		newelement.onclick =  function(arg) {
 										return function() {
 											launchPortal(document.getElementById("myurl"+[arg]).innerHTML)
