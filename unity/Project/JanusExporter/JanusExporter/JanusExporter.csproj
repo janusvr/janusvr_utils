@@ -73,11 +73,12 @@
     <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\OutputBuffer.cs" />
     <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\OutputWindow.cs" />
     <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\SR.cs" />
+    <Compile Include="Codebase\Janus\Editor\Content\Texture\DDSExporter.cs" />
     <Compile Include="Codebase\Janus\Editor\ExportedObject.cs" />
     <Compile Include="Codebase\Janus\Editor\ExportMeshFormat.cs" />
-    <Compile Include="Codebase\Janus\Editor\FBXExporter.cs" />
-    <Compile Include="Codebase\Janus\Editor\FbxVector2.cs" />
-    <Compile Include="Codebase\Janus\Editor\FbxVector3.cs" />
+    <Compile Include="Codebase\Janus\Editor\Content\Model\FBX\FBXExporter.cs" />
+    <Compile Include="Codebase\Janus\Editor\Content\Model\FBX\FbxVector2.cs" />
+    <Compile Include="Codebase\Janus\Editor\Content\Model\FBX\FbxVector3.cs" />
     <Compile Include="Codebase\Janus\Editor\ImageFormatEnum.cs" />
     <Compile Include="Codebase\Janus\Editor\JanusVRExporter.cs" />
     <Compile Include="Codebase\Janus\Editor\LightmapExportType.cs" />

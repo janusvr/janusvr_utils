@@ -13,67 +13,75 @@ using UObject = UnityEngine.Object;
 
 namespace JanusVR
 {
+    /// <summary>
+    /// Main class for the Janus VR Exporter
+    /// </summary>
     public class JanusVRExporter : EditorWindow
     {
-        private const int PreviewSize = 64;
-        public const int Version = 201;
-
-        internal class ExportedData
-        {
-            internal List<ExportedObject> exportedObjs;
-
-            internal ExportedData()
-            {
-                exportedObjs = new List<ExportedObject>();
-            }
-        }
-
-        public JanusVRExporter()
-        {
-            this.titleContent = new GUIContent("Janus VR Exporter");
-        }
-
-        [MenuItem("Edit/JanusVR Exporter v2.0")]
-        private static void Init()
-        {
-            // Get existing open window or if none, make a new one:
-            JanusVRExporter window = EditorWindow.GetWindow<JanusVRExporter>();
-            window.Show();
-
-            if (string.IsNullOrEmpty(window.exportPath))
-            {
-                string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                string workspace = Path.Combine(documents, @"JanusVR\workspaces");
-                string proj = Path.Combine(workspace, Application.productName);
-                window.exportPath = proj;
-            }
-        }
-
+        /// <summary>
+        /// The folder were exporting the scene to
+        /// </summary>
         [SerializeField]
         private string exportPath = @"";
+
+        /// <summary>
+        /// The format to default every texture to export to. PNG are lossless, so quality options are ignored. Supported formats are PNG and JPG
+        /// </summary>
         [SerializeField]
         private ImageFormatEnum defaultTexFormat = ImageFormatEnum.PNG;
+
+        /// <summary>
+        /// The quality to initialize every texture that's using a lossy export format (like JPG).
+        /// </summary>
         [SerializeField]
         private int defaultQuality = 100;
+
+        /// <summary>
+        /// The filtering mode to use when downsampling textures
+        /// </summary>
         [SerializeField]
         private TextureFilterMode filterMode = TextureFilterMode.Nearest;// TextureFilterMode.Average;
 
+        /// <summary>
+        /// The format to default every mesh to export to. Only FBX is supported right now, but OBJ support is coming.
+        /// </summary>
         [SerializeField]
         private ExportMeshFormat defaultMeshFormat = ExportMeshFormat.FBX;
+
+        /// <summary>
+        /// An uniform scale to apply to the whole scene (useful for matching VR scale inside janus)
+        /// </summary>
         [SerializeField]
         private float uniformScale = 1;
 
+        /// <summary>
+        /// The type of lightmaps you want to export
+        /// </summary>
         [SerializeField]
         private LightmapExportType lightmapExportType = LightmapExportType.Packed;
+
+        /// <summary>
+        /// The maximum resolution a lightmap atlas can have
+        /// </summary>
         [SerializeField]
         private int maxLightMapResolution = 1024;
 
+        /// <summary>
+        /// If the exporter should output the materials (if disabled, lightmaps are still exported, so you can take a look at only lightmap
+        /// data with a gray tone)
+        /// </summary>
         [SerializeField]
         private bool exportMaterials = true;
 
+        /// <summary>
+        /// Exports the scene's skybox, if it's a 6-sided skybox
+        /// </summary>
         [SerializeField]
         private bool exportSkybox = true;
 
+        /// <summary>
+        /// Compress the scene models using GZip (WIP and extremely slow)
+        /// </summary>
         [SerializeField]
         private bool compressFiles = false;
 
@@ -85,6 +93,9 @@ namespace JanusVR
             "_maintex"
         };
 
+        /// <summary>
+        /// The semantic names for all the skybox 6-sided faces
+        /// </summary>
         private string[] skyboxTexNames = new string[]
         {
             "_FrontTex", "_BackTex", "_LeftTex", "_RightTex", "_UpTex", "_DownTex"
@@ -106,10 +117,49 @@ namespace JanusVR
         private bool perModelOptions = false;
 
         private bool updateOnlyHtml = false;
+
+        /// <summary>
+        /// The farplane distance of the camera
+        /// </summary>
         private float farPlaneDistance = 1000;
+
         private Bounds sceneSize;
 
         private Vector2 scrollPosition;
+
+        public const int PreviewSize = 64;
+        public const int Version = 202;
+
+        internal class ExportedData
+        {
+            internal List<ExportedObject> exportedObjs;
+
+            internal ExportedData()
+            {
+                exportedObjs = new List<ExportedObject>();
+            }
+        }
+
+        public JanusVRExporter()
+        {
+            this.titleContent = new GUIContent("Janus Exporter");
+        }
+
+        [MenuItem("Edit/JanusVR Exporter v2.0")]
+        private static void Init()
+        {
+            // Get existing open window or if none, make a new one:
+            JanusVRExporter window = EditorWindow.GetWindow<JanusVRExporter>();
+            window.Show();
+
+            if (string.IsNullOrEmpty(window.exportPath))
+            {
+                string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                string workspace = Path.Combine(documents, @"JanusVR\workspaces");
+                string proj = Path.Combine(workspace, Application.productName);
+                window.exportPath = proj;
+            }
+        }
 
         private void OnGUI()
         {
@@ -125,9 +175,9 @@ namespace JanusVR
 
             defaultMeshFormat = (ExportMeshFormat)EditorGUILayout.EnumPopup("Default Mesh Format", defaultMeshFormat);
             defaultTexFormat = (ImageFormatEnum)EditorGUILayout.EnumPopup("Default Textures Format", defaultTexFormat);
+            defaultQuality = EditorGUILayout.IntSlider("Default Textures Quality", defaultQuality, 0, 100);
             filterMode = (TextureFilterMode)EditorGUILayout.EnumPopup("Texture Filter", filterMode);
             compressFiles = EditorGUILayout.Toggle("Compress Models (SLOW)", compressFiles);
-            defaultQuality = EditorGUILayout.IntSlider("Default Textures Quality", defaultQuality, 0, 100);
 
             uniformScale = EditorGUILayout.FloatField("Uniform Scale", uniformScale);
             exportMaterials = EditorGUILayout.Toggle("Export Materials", exportMaterials);
@@ -138,9 +188,7 @@ namespace JanusVR
             {
                 maxLightMapResolution = Math.Max(32, EditorGUILayout.IntField("Max Lightmap Resolution", maxLightMapResolution));
             }
-
-            farPlaneDistance = Math.Max(5, EditorGUILayout.FloatField("View Distance", farPlaneDistance));
-
+            
             if (GUILayout.Button("Export HTML only"))
             {
                 updateOnlyHtml = true;
@@ -160,6 +208,7 @@ namespace JanusVR
             scrollPosition = GUILayout.BeginScrollView(scrollPosition);
             if (exported != null)
             {
+                farPlaneDistance = Math.Max(5, EditorGUILayout.FloatField("View Distance", farPlaneDistance));
                 GUILayout.Label("Scene size " + sceneSize.size);
 
                 perTextureOptions = EditorGUILayout.Foldout(perTextureOptions, "Per Texture Options");
@@ -838,8 +887,6 @@ namespace JanusVR
             }
             return times;
         }
-
-
 
         private void DoExport()
         {

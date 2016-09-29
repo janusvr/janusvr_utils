@@ -1,0 +1,138 @@
+<html>
+<head>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
+<body>
+    <p><b>1. If you want to export lightmaps, make sure your scene is using only Baked GI, not Precomputed Realtime GI.</b></p>
+    <br>
+    <img src="step1.png" />
+    <br>
+
+    <p><b>2. Import the JanusVR Package by going on "Assets/Import Package/Custom Package"</b></p>
+    <br>
+    <img src="step2.png" />
+    <br>
+    <img src="step3.png" />
+    <br>
+
+    <p><b>3. Exporter Options</b></p>
+	<br>
+    <table>
+        <tr>
+            <th>Option</th>
+            <th>Description
+            <th>
+        </tr>
+        <tr>
+            <td>Export Path</td>
+            <td>The folder were exporting the scene to</td>
+        </tr>
+        <tr>
+            <td>Default Mesh format</td>
+            <td>The format to default every mesh to export to. Only FBX is supported right now, but OBJ support is coming.</td>
+        </tr>
+        <tr>
+            <td>Default Texture Format</td>
+            <td>The format to default every texture to export to. PNG are lossless, so quality options are ignored. Supported formats are PNG and JPG.</td>
+        </tr>
+        <tr>
+            <td>Default Textures Quality</td>
+            <td>The quality to initialize every texture that's using a lossy export format (like JPG).</td>
+        </tr>
+        <tr>
+            <td>Texture Filter</td>
+            <td>The filtering mode to use when downsampling textures.</td>
+        </tr>
+        <tr>
+            <td>Compress Models</td>
+            <td>Compress the scene models using GZip (WIP and extremely slow)</td>
+        </tr>
+        <tr>
+            <td>Uniform Scale</td>
+            <td>A uniform scale to transform the entire scene.</td>
+        </tr>
+        <tr>
+            <td>Export Materials</td>
+            <td>If the exporter should output the materials (if disabled, lightmaps are still exported, so you can take a look at only lightmap data with a gray tone)</td>
+        </tr>
+        <tr>
+            <td>Export Skybox</td>
+            <td>Exports the scene's skybox, if it's a 6-sided skybox</td>
+        </tr>
+        <tr>
+            <td><a href="#lightmap">Lightmap Type</a></td>
+            <td>The type of lightmaps you want to export</td>
+        </tr>
+        <tr>
+            <td>Max Lightmap Resolution</td>
+            <td>The maximum resolution a lightmap atlas can have</td>
+        </tr>
+    </table>
+	<br>
+	
+    <p><b>3.1. Export HTML only</b></p>
+    <p>This button is intended for when you have already exported the entire scene, but made a change that doesnt impact the already exported models/textures (like changing the position of an object in the scene).</p>
+	<br>
+	
+	<p><b>3.2. Start Export</b></p>
+	<p>This is used to look up the entire scene and cache what is going to be exported on the next step.<p>	
+	<table>
+		<tr>
+			<th>Option</th>
+			<th>Description<th>
+		</tr>
+		<tr>
+			<td>View Distance</td>
+			<td>The farplane distance. This is calculated from the bounds of your scene, so changing it is inadvisable.</td>
+		</tr>
+		<tr>
+			<td>Per-Texture options</td>
+			<td>The farplane distance. This is calculated from the bounds of your scene, so changing it is inadvisable.</td>
+		</tr>
+	</table>
+	<br>
+	
+	<a name="lightmap" />
+	<p><b>4. Lightmap Options</b>
+	<br>
+	<table>
+		<tr>
+			<th>Option</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>None</td>
+			<td>No lightmaps are exported.</td>
+		</tr>
+		<tr>
+			<td>Packed</td>
+			<td>The optimal type of lightmaps: everything is exported straight out from Unity, packed into multiple atlases.</td>
+		</tr>
+		<tr>
+			<td>Unpacked</td>
+			<td>Unpacks the atlases into smaller textures, so no objects share the same lightmap texture. Consumes more memory with no gain. (Exists only for compatibility/debugging purposes)</td>
+		</tr>
+		<tr>
+			<td>Baked</td>
+			<td>Bakes the lightmap into the object material. Consumes too much memory while making the main material look poor. (Exists only for compatibility/debugging purposes)</td>
+		</tr>
+	</table>
+	
+</body>
+</html>
