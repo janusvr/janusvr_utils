@@ -25,6 +25,9 @@ ul {
 }
 
 .partyitem {
+
+		background-image: url("bg.png");
+		background-size:cover;
 font-family: 'Open Sans';
 color:white;
 text-align:center;
@@ -66,8 +69,7 @@ box-align:center;
     -webkit-column-gap: 0px; /* Chrome, Safari, Opera */
     -moz-column-gap: 0px; /* Firefox */
     column-gap: 0px;
-		background-image: url("bg.png");
-		background-size:cover;
+
 }
 
 @media screen and (min-width: 400px) {
