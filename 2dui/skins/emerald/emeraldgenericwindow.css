@@ -85,6 +85,8 @@ box-align:center;
 		height:64px;
 		padding: 8px;
 		overflow:hidden;
+		background-image: url("bg.png");
+		background-size:cover;
 	}
 }
 
@@ -127,6 +129,7 @@ color: 0EE05A;
 background-color:white;
 color:#545454;
 cursor:pointer;
+background-image: none;
 }
 
 .partyitem:hover b{
