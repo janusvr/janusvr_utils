@@ -25,6 +25,9 @@ ul {
 }
 
 .partyitem {
+
+		background-image: url("bg.png");
+		background-size:cover;
 font-family: 'Open Sans';
 color:white;
 text-align:center;
@@ -85,6 +88,7 @@ box-align:center;
 		height:64px;
 		padding: 8px;
 		overflow:hidden;
+
 	}
 }
 
@@ -127,6 +131,7 @@ color: 0EE05A;
 background-color:white;
 color:#545454;
 cursor:pointer;
+background-image: none;
 }
 
 .partyitem:hover b{

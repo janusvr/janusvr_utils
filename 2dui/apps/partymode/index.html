@@ -8,6 +8,24 @@
   <script src="../../scripts/tabs.js"></script>
   
   <script>
+  
+
+
+  
+	function randomNumber(seed) {
+	
+	var origseed = seed;
+		if (typeof seed == "string")
+		{
+		seed = origseed.length*origseed.charCodeAt(1);
+		}
+	
+    var x = Math.sin(seed++) * 10000;
+
+    return x - Math.floor(x);
+	
+	}
+  
 	function strip(html)
 	{
 		var tmp = document.createElement("DIV");
@@ -89,7 +107,8 @@ var sitename;
 		{
 		sitename = parent.window.janus.partymodedata[i].name
 		}
-		
+		newelement.setAttribute("style","-webkit-filter:hue-rotate(" + (randomNumber(strip(parent.window.janus.partymodedata[i].userId))*360) + "deg);visibility: visible !important;")
+
 		newelement.innerHTML = "<div class='partytext'><b>"+strip(sitename)+"</b><br>with "+trimString(strip(parent.window.janus.partymodedata[i].userId),32)+"</div>";
 		newelement.onclick =  function(arg) {
 										return function() {
