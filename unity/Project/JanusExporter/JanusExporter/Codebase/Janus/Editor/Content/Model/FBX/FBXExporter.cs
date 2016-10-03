@@ -50,6 +50,12 @@ namespace UnityEngine.FBX
             Vector3[] normals = mesh.normals;
             int[] triangles = mesh.triangles;
 
+            if (triangles == null || triangles.Length == 0)
+            {
+                Debug.LogWarning("Mesh is empty " + mesh.name, mesh);
+                return;
+            }
+
             // check if we have all the data
             int maximum = triangles.Max();
             if (normals.Length < maximum)
