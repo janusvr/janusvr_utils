@@ -204,6 +204,8 @@ namespace JanusVR
 
             bitmap.Dispose();
 #else
+
+
             Texture2D inp;
             if (zeroAlpha)
             {
@@ -218,7 +220,9 @@ namespace JanusVR
             switch (imageFormat)
             {
                 case ImageFormatEnum.JPG:
-                    exported = inp.EncodeToJPG((int)data);
+                    {
+                        exported = inp.EncodeToJPG((int)data);
+                    }
                     break;
                 default:
                 case ImageFormatEnum.PNG:

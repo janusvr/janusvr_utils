@@ -28,13 +28,13 @@ namespace JanusVR
         /// The format to default every texture to export to. PNG are lossless, so quality options are ignored. Supported formats are PNG and JPG
         /// </summary>
         [SerializeField]
-        private ImageFormatEnum defaultTexFormat = ImageFormatEnum.PNG;
+        private ImageFormatEnum defaultTexFormat = ImageFormatEnum.JPG;
 
         /// <summary>
         /// The quality to initialize every texture that's using a lossy export format (like JPG).
         /// </summary>
         [SerializeField]
-        private int defaultQuality = 100;
+        private int defaultQuality = 70;
 
         /// <summary>
         /// The filtering mode to use when downsampling textures
@@ -64,7 +64,7 @@ namespace JanusVR
         /// The maximum resolution a lightmap atlas can have
         /// </summary>
         [SerializeField]
-        private int maxLightMapResolution = 1024;
+        private int maxLightMapResolution = 2048;
 
         /// <summary>
         /// If the exporter should output the materials (if disabled, lightmaps are still exported, so you can take a look at only lightmap
@@ -380,6 +380,8 @@ namespace JanusVR
                     }
                 }
             }
+
+          
 
             if (lightmapExportType != LightmapExportType.None &&
                 lightmapped.Count > 0)
@@ -928,12 +930,12 @@ namespace JanusVR
                     if (tex.Resolution != texture.width)
                     {
                         Texture2D scaled = TextureUtil.ScaleTexture(tex, tex.Resolution, true, filterMode);
-                        ExportTexture(scaled, expPath, defaultTexFormat, null, true);
+                        ExportTexture(scaled, expPath, defaultTexFormat, tex.Quality, true);
                         UObject.DestroyImmediate(scaled);
                     }
                     else
                     {
-                        ExportTexture(tex.Texture, expPath, defaultTexFormat, null, true);
+                        ExportTexture(texture, expPath, defaultTexFormat, tex.Quality, true);
                     }
                 }
                 else
@@ -959,12 +961,12 @@ namespace JanusVR
                     if (tex.Resolution != texture.width)
                     {
                         Texture2D scaled = TextureUtil.ScaleTexture(tex, tex.Resolution, !alpha, filterMode);
-                        ExportTexture(scaled, expPath, defaultTexFormat, null, !alpha);
+                        ExportTexture(scaled, expPath, defaultTexFormat, tex.Quality, !alpha);
                         UObject.DestroyImmediate(scaled);
                     }
                     else
                     {
-                        ExportTexture(tex.Texture, expPath, tex.Format, tex.Quality, !alpha);
+                        ExportTexture(texture, expPath, tex.Format, tex.Quality, !alpha);
                     }
                     tex.ExportedPath = tex.Texture.name + GetImageFormatName(tex.Format);
 
