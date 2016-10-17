@@ -25,7 +25,7 @@ return tmp.textContent || tmp.innerText;
   }
   
   window.onload = function () {
-  setScale(10)
+  setScale(7)
   tabSelect("maptabcontainer","maptabbutton")
   window.onresize()
   
@@ -262,7 +262,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 <div class="windowcontainer">
 
-<div class="tabrow unselectable" id="tabrow"  style="z-index:3;">
+<div class="tabrow unselectable" id="tabrow"  style="z-index:3;display:none;">
 
 	<div class="tabbutton" id="maptabbutton" onmousedown="tabSelect('maptabcontainer','maptabbutton')">MAP</div>
 	<!--<div class="tabbutton" id="historytabbutton" onmousedown="tabSelect('historytabcontainer','historytabbutton')">HISTORY</div>-->
@@ -270,7 +270,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 </div>
 
 
-<div class="windowarea unselectable" id="windowarea">
+<div class="windowarea unselectable" id="windowarea" style="background-color:transparent;border-top-style:none;">
 
 
 
