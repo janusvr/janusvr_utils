@@ -58,7 +58,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 	
 	
 	
-
+var lastlocation = "";
 	
   //update map
    setInterval(function() {
@@ -170,25 +170,45 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 	
 	}
 	
+
+	var fullurl = parent.window.janus.currenturl();
 	
-	var mapbackground= "url(../../backgrounds/grid.png)";
-	//var mapbackground= "url(../../backgrounds/numred.jpg)";	
+	if (fullurl.charAt(fullurl.lastIndexOf('/')-1) != '/') //If the last instance of a slash isn't the http:// bit of the url and if you're not in an unclosed path (no extension)
+	{
+	var currentroomsmaplocation = fullurl.substring(0, fullurl.lastIndexOf('/')+1);
+	}
+	else
+	{
+	currentroomsmaplocation = fullurl+"/";
+	}
+	
+	
+	currentroomsmaplocation = currentroomsmaplocation+"indexmap.png";
+	var mapbackground= " url("+currentroomsmaplocation+"),url(../../backgrounds/grid.png)";
+
+	
+	
 	var mapsizex=2*scale;
 	var mapsizey=2*scale;
 	
 	//custom images
 	//var mapsizex=565*(scale*0.1);
 	//var mapsizey=450*(scale*0.1);
-		
-	document.getElementById("map").style.backgroundImage = mapbackground;
 	
+	if (lastlocation != fullurl)
+	{
+
+		//alert(currentroomsmaplocation);
+	document.getElementById("map").style.background = mapbackground;
+	lastlocation = parent.window.janus.currenturl();
+	}
 	
 		//set background scale and position
-	document.getElementById("map").style.backgroundPosition  = -(((0)-xview))+"px "+(-(((0)-zview))+"px");
+	document.getElementById("map").style.backgroundPosition  = (-(((mapsizex*50)-xview-(2*scale)))+"px "+(-(((mapsizey*50)-zview-(2*scale)))+"px"))+","+(-(((0)-xview))+"px "+(-(((0)-zview))+"px"));
 
-	document.getElementById("map").style.backgroundSize  = (mapsizex)+"px "+(mapsizey)+"px";
+	document.getElementById("map").style.backgroundSize  = (mapsizex*100)+"px "+(mapsizey*100)+"px,"+(mapsizex)+"px "+(mapsizey)+"px";
     document.getElementById("map").style.backgroundAttachment = "fixed";
-	
+	document.getElementById("map").style.backgroundRepeat = "no-repeat,repeat";
 	
 	
 	//scan through all the map icons and make sure there's a player correlated with it. if there isn't, delete it.
