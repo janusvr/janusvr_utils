@@ -46,7 +46,7 @@
   
   
   //set the radio buttons for posture
-  if (parent.window.janus.getsetting('posture') == "standing") 
+  if (parent.window.janus.getsetting('seated') == false) 
 	  {
 		document.getElementById("posturestandingradiobutton").checked = 1;
 	  }
@@ -529,9 +529,9 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 						<span>
 						Posture:<br>
 							<div >
-								<input  type='radio' name="posture" class="myCheckbox" id="postureseatedradiobutton" onchange="if (this.checked == true){window.janus.setsetting('posture', 'seated');}" >
+								<input  type='radio' name="posture" class="myCheckbox" id="postureseatedradiobutton" onchange="if (this.checked == true){window.janus.setsetting('seated', true);}" >
 								Seated Mode - Physical and virtual orientations can vary. Controllers modify orientation.<br>
-								<input  type='radio' name="posture" class="myCheckbox" id="posturestandingradiobutton" onchange="if (this.checked == true){window.janus.setsetting('posture', 'standing');}" >
+								<input  type='radio' name="posture" class="myCheckbox" id="posturestandingradiobutton" onchange="if (this.checked == true){window.janus.setsetting('seated', false);}" >
 								Standing Mode - Physical and virtual orientations stay constant. Controllers do not modify orientation.
 							</div>
 						</span>
