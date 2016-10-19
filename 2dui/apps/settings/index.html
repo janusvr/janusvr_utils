@@ -45,6 +45,20 @@
     document.getElementById("hapticstoggle").checked = parent.window.janus.getsetting('haptics');
   
   
+  //set the radio buttons for posture
+  if (parent.window.janus.getsetting('posture') == "standing") 
+	  {
+		document.getElementById("posturestandingradiobutton").checked = 1;
+	  }
+  else
+	  {
+		document.getElementById("postureseatedradiobutton").checked = 1;
+	  }
+    
+  
+  
+
+  
   //set all the default values
   document.getElementById("displaynameform").value =  parent.window.janus.userid;
 
@@ -132,6 +146,20 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
   
   <link rel="stylesheet" type="text/css" href="../../skins/emerald/emeraldgenericwindow.css">
   
+  <style>
+  .item {
+  padding-left:16px;
+  }
+  .myCheckbox {
+  float:none; !important;
+  }
+  
+  .item span input {
+  
+  float:none; !important;
+  }
+  </style>
+  
 </head>
 
 <body >
@@ -168,7 +196,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					Fallback Server
+					Fallback Server:<br>
 					<input  type='text' class="longerinput" id="serverform"  onchange="window.janus.setsetting('server', this.value);"  >
 
 					</span>
@@ -178,8 +206,8 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					Fallback Server Port
-					<input  type='text'  id="portform"  onchange="window.janus.setsetting('port', this.value);"  >
+					Fallback Server Port:<br>
+					<input  type='text' class="longerinput"  id="portform"  onchange="window.janus.setsetting('port', this.value);"  >
 
 					</span>
 
@@ -189,8 +217,8 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					Fallback Server Polling Rate
-					<input  type='text'  id="rateform"  onchange="window.janus.setsetting('rate', this.value);"  >
+					Fallback Server Polling Rate:<br>
+					<input  type='text'  id="rateform" class="longerinput"  onchange="window.janus.setsetting('rate', this.value);"  >
 
 					</span>
 
@@ -222,7 +250,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					Display Name
+					Display Name:<br>
 					<input  type='text' class="longerinput" id="displaynameform"  onchange="changename(this)"  >
 
 					</span>
@@ -341,8 +369,9 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
+					Rotation Speed: <span id="rotationspeedslidernumber"></span><br>
 					<input class="myslider" type='range' id="rotationspeedslider" min="10" max="100" onchange="window.janus.setsetting('rotationspeed', this.value); document.getElementById('rotationspeedslidernumber').innerHTML=this.value;" >
-					Rotation Speed: <span id="rotationspeedslidernumber"></span>
+					
 
 					</span>
 					<br>
@@ -494,6 +523,24 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 										
 				<div class="tabcontainer" id="vrtabcontainer">	
 				
+					<div class='header'>GENERAL</div>
+					
+						<div class='item' >
+						<span>
+						Posture:<br>
+							<div >
+								<input  type='radio' name="posture" class="myCheckbox" id="postureseatedradiobutton" onchange="if (this.checked == true){window.janus.setsetting('posture', 'seated');}" >
+								Seated Mode - Physical and virtual orientations can vary. Controllers modify orientation.<br>
+								<input  type='radio' name="posture" class="myCheckbox" id="posturestandingradiobutton" onchange="if (this.checked == true){window.janus.setsetting('posture', 'standing');}" >
+								Standing Mode - Physical and virtual orientations stay constant. Controllers do not modify orientation.
+							</div>
+						</span>
+						<br>
+						</div>											
+				
+				
+				
+				
 					<div class='header'>INPUT</div>
 					
 					
@@ -538,8 +585,10 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='header'>GRAPHICS</div>				
 						<div class='item' >
 						<span>
+						
+						Interpupillary Distance: <span id="ipdslidernumber"></span><br>
 						<input step="0.1" class="myslider" type='range' id="ipdslider" min="54" max="74" oninput="window.janus.setsetting('ipd', this.value/1000); document.getElementById('ipdslidernumber').innerHTML=this.value+'mm';" >
-						Interpupillary Distance: <span id="ipdslidernumber"></span>
+						
 
 						</span>
 						<br>
@@ -567,8 +616,10 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
+					
+					Field of View: <span id="fovslidernumber"></span><br>
 					<input class="myslider" type='range' id="fovslider" min="50" max="120" oninput="window.janus.setsetting('fov', this.value); document.getElementById('fovslidernumber').innerHTML=this.value;" >
-					Field of View: <span id="fovslidernumber"></span>
+					
 
 					</span>
 					<br>
@@ -619,7 +670,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					
 					<div class='item' >
 					<span>
-					Landing Page
+					Landing Page:<br>
 					<input  type='text' class="longerinput" id="landingpageform"  onchange="window.janus.setsetting('launchurl', this.value);"  >
 
 					</span>
@@ -657,8 +708,10 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
+					
+					Environment Volume: <span id="volumeenvslidernumber"></span><br>
 					<input class="myslider" type='range' id="volumeenvslider" min="0" max="100" onchange="window.janus.setsetting('volumeenv', this.value); document.getElementById('volumeenvslidernumber').innerHTML=this.value;" >
-					Environment Volume: <span id="volumeenvslidernumber"></span>
+					
 
 					</span>
 					<br>
@@ -681,8 +734,9 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
+					Voice Chat Volume: <span id="volumevoipslidernumber"></span><br>
 					<input class="myslider" type='range' id="volumevoipslider" min="0" max="100" onchange="window.janus.setsetting('volumevoip', this.value); document.getElementById('volumevoipslidernumber').innerHTML=this.value;" >
-					Voice Chat Volume: <span id="volumevoipslidernumber"></span>
+					
 
 					</span>
 					<br>
@@ -705,8 +759,10 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
+					
+					Mic Volume: <span id="volumemicslidernumber"></span><br>
 					<input class="myslider" type='range' id="volumemicslider" min="0" max="100" onchange="window.janus.setsetting('volumemic', this.value); document.getElementById('volumemicslidernumber').innerHTML=this.value;" >
-					Mic Volume: <span id="volumemicslidernumber"></span>
+					
 
 					</span>
 					<br>
@@ -750,8 +806,10 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 			
 					<div class='item' >
 					<span>
+					
+					Maximum Memory Usage: <span id="maxmemoryslidernumber"></span><br>
 					<input class="myslider" type='range' id="maxmemoryslider" min="1024" max="8192" oninput="window.janus.setsetting('maxmemory', this.value); document.getElementById('maxmemoryslidernumber').innerHTML=this.value+'MB';" >
-					Maximum Memory Usage: <span id="maxmemoryslidernumber"></span>
+					
 
 					</span>
 					<br>
