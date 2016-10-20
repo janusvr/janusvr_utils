@@ -183,6 +183,19 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 <div class="windowarea unselectable" id="windowarea">
 
 		<div class="tabcontainer" id="servertabcontainer">
+		
+					<div class='header'>HOMEPAGE</div>
+					
+					<div class='item' >
+					<span>
+					URL:<br>
+					<input  type='text' class="longerinput" id="landingpageform"  onchange="window.janus.setsetting('launchurl', this.value);"  >
+
+					</span>
+
+					</div>	
+										
+		
 					<div class='header' > PRESENCE</div>
 
 					<div class='item' >
@@ -523,11 +536,11 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 										
 				<div class="tabcontainer" id="vrtabcontainer">	
 				
-					<div class='header'>GENERAL</div>
+					<div class='header'>ROOM SCALE</div>
 					
 						<div class='item' >
 						<span>
-						Posture:<br>
+						<!--<div>Mode:</div>-->
 							<div >
 								<input  type='radio' name="posture" class="myCheckbox" id="postureseatedradiobutton" onchange="if (this.checked == true){window.janus.setsetting('seated', true);}" >
 								Seated Mode - Physical and virtual orientations can vary. Controllers modify orientation.<br>
@@ -668,15 +681,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					</div>
 
 					
-					<div class='item' >
-					<span>
-					Landing Page:<br>
-					<input  type='text' class="longerinput" id="landingpageform"  onchange="window.janus.setsetting('launchurl', this.value);"  >
 
-					</span>
-
-					</div>	
-					
 					
 					
 					
