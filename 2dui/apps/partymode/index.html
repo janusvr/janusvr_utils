@@ -86,20 +86,12 @@ var sitename;
 		var newelement=document.createElement("div");
 		newelement.className="partyitem";
 		
-		if (parent.window.janus.partymodedata[i].name == null)
+		if (parent.window.janus.partymodedata[i].name == null || parent.window.janus.partymodedata[i].name == "" )
 		{
 			
-			if (parent.window.janus.partymodedata[i].url.substring(0,7) == "file://")
-			{
-			sitename = "<b>Local harddrive</b>";
-		
-			}
-			else
-			{
+
 			sitename = extractDomain(parent.window.janus.partymodedata[i].url);
 
-			}
-				
 		
 		
 		}
