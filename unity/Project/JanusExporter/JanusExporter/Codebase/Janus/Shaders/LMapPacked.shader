@@ -22,6 +22,7 @@
 			{
 				float4 vertex			: POSITION;
 				float2 uv1				: TEXCOORD1;
+				float3 normal			: NORMAL0;
 			};
 
 			struct v2f
@@ -52,11 +53,9 @@
 				float2 tc = i.uv1;
 				tc.xy *= _LightMapUV.xy;
 				tc.xy += _LightMapUV.zw;
-
-				fixed4 lightData = tex2D(_LightMapTex, tc);
-				float3 lightmap = DecodeLightmap(lightData);
-
-				return half4(lightmap.rgb, 1);
+				float3 lightmap = DecodeLightmap(tex2D(_LightMapTex, i.uv1));
+				float3 gamma = pow(lightmap, 0.454545);
+				return half4(gamma, 1);
 			}
 			ENDCG
 		}

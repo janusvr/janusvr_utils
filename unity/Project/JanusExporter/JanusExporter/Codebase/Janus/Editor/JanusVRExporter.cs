@@ -188,7 +188,7 @@ namespace JanusVR
             {
                 maxLightMapResolution = Math.Max(32, EditorGUILayout.IntField("Max Lightmap Resolution", maxLightMapResolution));
             }
-            
+
             if (GUILayout.Button("Export HTML only"))
             {
                 updateOnlyHtml = true;
@@ -234,21 +234,28 @@ namespace JanusVR
                         float wid = half * 0.6f;
 
                         GUI.Label(new Rect(half, y, half * 0.3f, last.height), "Format");
-                        tex.Format = (ImageFormatEnum)EditorGUI.EnumPopup(new Rect(x1, y, wid, last.height), tex.Format);
-                        y += last.height;
-
-                        GUI.Label(new Rect(half, y, half * 0.3f, last.height), "Resolution");
-                        tex.Resolution = EditorGUI.IntSlider(new Rect(x1, y, wid, last.height), tex.Resolution, 32, tex.Texture.width);
-                        y += last.height;
-
-                        GUI.Label(new Rect(half, y, half * 0.3f, last.height), "Export Alpha");
-                        tex.ExportAlpha = EditorGUI.Toggle(new Rect(x1, y, wid, last.height), tex.ExportAlpha);
-                        y += last.height;
-
-                        if (SupportsQuality(tex.Format))
+                        if (tex.Created && tex.Texture.name.StartsWith("Lightmap"))
                         {
-                            GUI.Label(new Rect(half, y, half * 0.3f, last.height), "Quality");
-                            tex.Quality = EditorGUI.IntSlider(new Rect(x1, y, wid, last.height), tex.Quality, 0, 100);
+                            GUI.Label(new Rect(x1, y, wid, last.height), "EXR");
+                        }
+                        else
+                        {
+                            tex.Format = (ImageFormatEnum)EditorGUI.EnumPopup(new Rect(x1, y, wid, last.height), tex.Format);
+                            y += last.height;
+
+                            GUI.Label(new Rect(half, y, half * 0.3f, last.height), "Resolution");
+                            tex.Resolution = EditorGUI.IntSlider(new Rect(x1, y, wid, last.height), tex.Resolution, 32, tex.Texture.width);
+                            y += last.height;
+
+                            GUI.Label(new Rect(half, y, half * 0.3f, last.height), "Export Alpha");
+                            tex.ExportAlpha = EditorGUI.Toggle(new Rect(x1, y, wid, last.height), tex.ExportAlpha);
+                            y += last.height;
+
+                            if (SupportsQuality(tex.Format))
+                            {
+                                GUI.Label(new Rect(half, y, half * 0.3f, last.height), "Quality");
+                                tex.Quality = EditorGUI.IntSlider(new Rect(x1, y, wid, last.height), tex.Quality, 0, 100);
+                            }
                         }
                     }
                 }
@@ -381,7 +388,7 @@ namespace JanusVR
                 }
             }
 
-          
+
 
             if (lightmapExportType != LightmapExportType.None &&
                 lightmapped.Count > 0)
@@ -472,7 +479,7 @@ namespace JanusVR
                                     }
 
                                     // This is the only way to access data from a RenderTexture
-                                    Texture2D tex = new Texture2D(renderTexture.width, renderTexture.height);
+                                    Texture2D tex = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.ARGB32, false, false);
                                     tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
                                     tex.name = "Lightmap" + lmap;
                                     tex.Apply(); // send the data back to the GPU so we can draw it on the preview area
@@ -559,6 +566,32 @@ namespace JanusVR
                         }
                         #endregion
                         break;
+                    case LightmapExportType.PackedSourceEXR:
+                        {
+                            foreach (var lightPair in lightmapped)
+                            {
+                                int id = lightPair.Key;
+                                List<GameObject> toRender = lightPair.Value;
+
+                                // get the path to the lightmap file
+                                string lightMapFile = Path.Combine(lightMapsFolder, "Lightmap-" + id + "_comp_light.exr");
+                                Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(lightMapFile);
+                                if (texture == null)
+                                {
+                                    continue;
+                                }
+
+                                for (int i = 0; i < toRender.Count; i++)
+                                {
+                                    GameObject obj = toRender[i];
+                                    ExportedObject eobj = exported.exportedObjs.First(c => c.GameObject == obj);
+                                    eobj.LightMapTex = texture;
+                                }
+
+                                texturesExported.Add(texture);
+                            }
+                        }
+                        break;
                     case LightmapExportType.Unpacked:
                         #region Unpacked
                         {
@@ -604,7 +637,7 @@ namespace JanusVR
                                     lightMapSize = (int)Math.Pow(2, Math.Ceiling(Math.Log(lightMapSize) / Math.Log(2)));
                                     lightMapSize = Math.Min(maxLightMapResolution, Math.Max(lightMapSize, 16));
 
-                                    RenderTexture renderTexture = RenderTexture.GetTemporary(lightMapSize, lightMapSize, 0, RenderTextureFormat.ARGB32);
+                                    RenderTexture renderTexture = RenderTexture.GetTemporary(lightMapSize, lightMapSize, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
                                     Graphics.SetRenderTarget(renderTexture);
                                     GL.Clear(true, true, new Color(0, 0, 0, 0)); // clear to transparent
 
@@ -613,13 +646,15 @@ namespace JanusVR
                                     {
                                         Material mat = mats[j];
 
+                                        Shader shader = mat.shader;
+
                                         lightMap.SetVector("_LightMapUV", renderer.lightmapScaleOffset);
                                         lightMap.SetPass(0);
                                         Graphics.DrawMeshNow(mesh, world, j);
                                     }
 
                                     // This is the only way to access data from a RenderTexture
-                                    Texture2D tex = new Texture2D(renderTexture.width, renderTexture.height);
+                                    Texture2D tex = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.ARGB32, false, false);
                                     tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
                                     tex.name = "Lightmap" + lmap;
                                     tex.Apply(); // send the data back to the GPU so we can draw it on the preview area
@@ -907,6 +942,7 @@ namespace JanusVR
 
             FBXExporter.LightmappingEnabled = lightmapExportType != LightmapExportType.None;
 
+            int lmapCounter = 0;
             for (int i = 0; i < texturesExportedData.Count; i++)
             {
                 TextureExportData tex = texturesExportedData[i];
@@ -940,42 +976,61 @@ namespace JanusVR
                 }
                 else
                 {
-                    TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(path);
-                    bool wasReadable = importer.isReadable;
-                    TextureImporterFormat lastFormat = importer.textureFormat;
-                    bool changed = false;
-                    bool alpha = importer.alphaIsTransparency;
-                    if (!importer.isReadable || importer.textureFormat != TextureImporterFormat.ARGB32) // only reimport if truly needed
+                    string lowerPath = path.ToLower();
+                    if (lightmapExportType == LightmapExportType.PackedSourceEXR &&
+                        lowerPath.EndsWith("exr"))
                     {
-                        changed = true;
-                        importer.isReadable = true;
-                        if (!tex.Texture.name.Contains("comp_light"))
+                        lmapCounter++;
+
+                        string expName = "Lightmap" + lmapCounter + ".exr";
+                        string destination = Path.Combine(exportPath, expName);
+                        if (File.Exists(destination))
                         {
-                            importer.textureFormat = TextureImporterFormat.ARGB32;
+                            File.Delete(destination);
                         }
-                    }
 
-                    AssetDatabase.Refresh();
-                    AssetDatabase.ImportAsset(path);
-
-                    if (tex.Resolution != texture.width)
-                    {
-                        Texture2D scaled = TextureUtil.ScaleTexture(tex, tex.Resolution, !alpha, filterMode);
-                        ExportTexture(scaled, expPath, defaultTexFormat, tex.Quality, !alpha);
-                        UObject.DestroyImmediate(scaled);
+                        File.Copy(path, destination);
+                        tex.ExportedPath = expName;
                     }
                     else
                     {
-                        ExportTexture(texture, expPath, tex.Format, tex.Quality, !alpha);
-                    }
-                    tex.ExportedPath = tex.Texture.name + GetImageFormatName(tex.Format);
+                        TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(path);
+                        bool wasReadable = importer.isReadable;
+                        TextureImporterFormat lastFormat = importer.textureFormat;
+                        bool changed = false;
+                        bool alpha = importer.alphaIsTransparency;
+                        if (!importer.isReadable || importer.textureFormat != TextureImporterFormat.ARGB32) // only reimport if truly needed
+                        {
+                            changed = true;
+                            importer.isReadable = true;
+                            if (!tex.Texture.name.Contains("comp_light"))
+                            {
+                                importer.textureFormat = TextureImporterFormat.ARGB32;
+                            }
+                        }
 
-                    if (changed)
-                    {
-                        importer.isReadable = wasReadable;
-                        importer.textureFormat = lastFormat;
                         AssetDatabase.Refresh();
                         AssetDatabase.ImportAsset(path);
+
+                        if (tex.Resolution != texture.width)
+                        {
+                            Texture2D scaled = TextureUtil.ScaleTexture(tex, tex.Resolution, !alpha, filterMode);
+                            ExportTexture(scaled, expPath, defaultTexFormat, tex.Quality, !alpha);
+                            UObject.DestroyImmediate(scaled);
+                        }
+                        else
+                        {
+                            ExportTexture(texture, expPath, tex.Format, tex.Quality, !alpha);
+                        }
+                        tex.ExportedPath = tex.Texture.name + GetImageFormatName(tex.Format);
+
+                        if (changed)
+                        {
+                            importer.isReadable = wasReadable;
+                            importer.textureFormat = lastFormat;
+                            AssetDatabase.Refresh();
+                            AssetDatabase.ImportAsset(path);
+                        }
                     }
                 }
             }
@@ -1083,7 +1138,7 @@ namespace JanusVR
                 }
             }
 
-            index.Append("\n\t\t\t</Assets>\n\t\t\t<Room far_dist=\""+ farPlaneDistance + "\"" + skyboxdata + ">");
+            index.Append("\n\t\t\t</Assets>\n\t\t\t<Room far_dist=\"" + farPlaneDistance + "\"" + skyboxdata + ">");
 
             for (int i = 0; i < exported.exportedObjs.Count; i++)
             {
@@ -1120,7 +1175,8 @@ namespace JanusVR
                 if (!string.IsNullOrEmpty(lmapID))
                 {
                     index.Append("lmap_id=\"" + lmapID + "\" ");
-                    if (lightmapExportType == LightmapExportType.Packed)
+                    if (lightmapExportType == LightmapExportType.Packed || 
+                        lightmapExportType == LightmapExportType.PackedSourceEXR)
                     {
                         MeshRenderer renderer = go.GetComponent<MeshRenderer>();
                         Vector4 lmap = renderer.lightmapScaleOffset;

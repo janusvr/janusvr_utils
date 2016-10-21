@@ -15,9 +15,12 @@ namespace JanusVR
         // (memory redundant, wastes space)
         BakedMaterial,
 
-        // Packed: Default Unity configuration,
+        // Packed: Default Unity configuration but converted to SDR,
         // exports all lightmaps on their original packed configuration
         Packed,
+
+        // PackedSource: Exports exactly the HDR lighting data straight from Unity with no modifications
+        PackedSourceEXR,
 
         // Unpacked: Exports all lightmaps, but 
         // each object gets its own texture instead of sharing one.
