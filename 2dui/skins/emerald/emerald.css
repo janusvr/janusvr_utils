@@ -750,14 +750,18 @@ opacity:0.75;
 
   .pinbuttonactive {
 
-   content: url("window-pin-hover.png");
+   content: url("window-pinned.png");
    width:16px;
    height:16px;
    float:right;
    padding-right:8px;
    padding-top:8px;
   }
-  
+  .pinbuttonactive:hover {
+
+   content: url("window-pin-hover.png");
+
+  }  
   
   .pinnedwindow {
   opacity:1 !important;
