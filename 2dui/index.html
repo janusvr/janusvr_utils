@@ -280,6 +280,10 @@ else
 
 
 	}
+	pinsound = function() {
+		document.getElementById('pinsound').play();
+	}	
+	
 	<!-- Menu List -->
 
 	function togglemenulist(closeornot) {
@@ -556,7 +560,25 @@ else
 
 
 
+	<!--Window pin button-->
 
+	function pinWindow(callerid,winid,pinbutton)
+	{
+		var win = document.getElementById(winid);
+		
+		if (win.classList.contains('pinnedwindow')) {
+			win.classList.remove('pinnedwindow');
+			pinbutton.className = "pinbutton";
+			}
+			else
+			{
+			win.classList.add('pinnedwindow');
+			pinbutton.className = "pinbuttonactive";
+			}
+			
+		pinsound();
+
+	}
 
 
 
@@ -779,6 +801,13 @@ else
 			div2.onmousedown = function(ev) { closeWindow(callerid,winid); ev.stopPropagation() };
 
 			span.appendChild(div2);
+			
+			<!--Create pinbutton-->
+			var divp1 = document.createElement("div");
+			divp1.className  = "pinbutton";
+			divp1.onmousedown = function(ev) { pinWindow(callerid,winid,divp1); ev.stopPropagation() };
+
+			span.appendChild(divp1);
 
 			<!--Create shadebutton-->
 			var sb = document.createElement("div");
@@ -1201,7 +1230,7 @@ tipshown = 0;
 						var lastid = window.janus.userid;
 						window.janus.userid = prefix+preferred_userid;
 						previoususerid = window.janus.userid;
-						shownotification('Username <b>'+lastid+'</b> is already in use.<br>Others now see you as <b>'+window.janus.userid+'</b>.','notifications/user.png',"null","#455947");
+						shownotification('Username <b>'+lastid+'</b> is already in use.<br>Others now see you as <b>'+strip(window.janus.userid)+'</b>.','notifications/user.png',"null","#455947");
 					}
 				}
 			}
@@ -1461,7 +1490,7 @@ tipshown = 0;
 
 		if ((window.janus.userid != previoususerid) && (previoususerid != ""))
 		{
-			shownotification('Others now see you as <b>'+window.janus.userid+'</b>.','notifications/user.png',"null","#455947");
+			shownotification('Others now see you as <b>'+strip(window.janus.userid)+'</b>.','notifications/user.png',"null","#455947");
 			previoususerid = window.janus.userid;
 			// BEGIN Spyduck userid edits
 			setCookie("janusvr_userid", window.janus.userid, "100000000");
@@ -1722,14 +1751,15 @@ tipshown = 0;
 
 
 
-<audio id="notifysound" src="sounds\notify.wav" preload="auto"></audio>
+<audio id="notifysound" src="sounds\notify.wav" preload="auto" type="audio/mpeg" autostart="0"></audio>
 
-<audio id="shadesound" src="sounds\shade.wav" preload="auto"></audio>
-<audio id="closesound" src="sounds\closewin.wav" preload="auto"></audio>
-<audio id="sound1" src="sounds\click.wav" preload="auto"></audio>
+<audio id="shadesound" src="sounds\shade.wav" preload="auto" type="audio/mpeg" autostart="0"></audio>
+<audio id="closesound" src="sounds\closewin.wav" preload="auto" type="audio/mpeg" autostart="0"></audio>
+<audio id="pinsound" src="sounds\pinwin.wav" preload="auto" type="audio/mpeg" autostart="0"></audio>
+<audio id="sound1" src="sounds\click.wav" preload="auto" type="audio/mpeg" autostart="0"></audio>
 
-<audio id="dragon" src="sounds\dragon.wav" preload="auto"></audio>
-<audio id="dragoff" src="sounds\dragoff.wav" preload="auto"></audio>
+<audio id="dragon" src="sounds\dragon.wav" preload="auto" type="audio/mpeg" autostart="0"></audio>
+<audio id="dragoff" src="sounds\dragoff.wav" preload="auto" type="audio/mpeg" autostart="0"></audio>
 
 
 </body>

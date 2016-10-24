@@ -733,8 +733,43 @@ opacity:0.75;
 
   }
 
+    .pinbutton {
 
+   content: url("window-pin.png");
+   width:16px;
+   height:16px;
+   float:right;
+   padding-right:8px;
+   padding-top:8px;
+  }
+  .pinbutton:hover {
 
+   content: url("window-pin-hover.png");
+
+  }
+
+  .pinbuttonactive {
+
+   content: url("window-pinned.png");
+   width:16px;
+   height:16px;
+   float:right;
+   padding-right:8px;
+   padding-top:8px;
+  }
+  .pinbuttonactive:hover {
+
+   content: url("window-pin-hover.png");
+
+  }  
+  
+  .pinnedwindow {
+  opacity:1 !important;
+  border-style:solid;
+  border-color: #8E8E8E;
+  border-width:1px;
+  }
+  
     .notifbuttonleft {
 
    content: url("notif_left.png");
