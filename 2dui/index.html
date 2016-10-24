@@ -280,6 +280,10 @@ else
 
 
 	}
+	pinsound = function() {
+		document.getElementById('pinsound').play();
+	}	
+	
 	<!-- Menu List -->
 
 	function togglemenulist(closeornot) {
@@ -571,6 +575,8 @@ else
 			win.classList.add('pinnedwindow');
 			pinbutton.className = "pinbuttonactive";
 			}
+			
+		pinsound();
 
 	}
 
@@ -1745,14 +1751,15 @@ tipshown = 0;
 
 
 
-<audio id="notifysound" src="sounds\notify.wav" preload="auto"></audio>
+<audio id="notifysound" src="sounds\notify.wav" preload="auto" type="audio/mpeg" autostart="0"></audio>
 
-<audio id="shadesound" src="sounds\shade.wav" preload="auto"></audio>
-<audio id="closesound" src="sounds\closewin.wav" preload="auto"></audio>
-<audio id="sound1" src="sounds\click.wav" preload="auto"></audio>
+<audio id="shadesound" src="sounds\shade.wav" preload="auto" type="audio/mpeg" autostart="0"></audio>
+<audio id="closesound" src="sounds\closewin.wav" preload="auto" type="audio/mpeg" autostart="0"></audio>
+<audio id="pinsound" src="sounds\pinwin.wav" preload="auto" type="audio/mpeg" autostart="0"></audio>
+<audio id="sound1" src="sounds\click.wav" preload="auto" type="audio/mpeg" autostart="0"></audio>
 
-<audio id="dragon" src="sounds\dragon.wav" preload="auto"></audio>
-<audio id="dragoff" src="sounds\dragoff.wav" preload="auto"></audio>
+<audio id="dragon" src="sounds\dragon.wav" preload="auto" type="audio/mpeg" autostart="0"></audio>
+<audio id="dragoff" src="sounds\dragoff.wav" preload="auto" type="audio/mpeg" autostart="0"></audio>
 
 
 </body>
