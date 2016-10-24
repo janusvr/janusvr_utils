@@ -733,8 +733,36 @@ opacity:0.75;
 
   }
 
+    .pinbutton {
 
+   content: url("window-pin.png");
+   width:16px;
+   height:16px;
+   float:right;
+   padding-right:8px;
+   padding-top:8px;
+  }
+  .pinbutton:hover {
 
+   content: url("window-pin-hover.png");
+
+  }
+
+  .pinbuttonactive {
+
+   content: url("window-pin-hover.png");
+   width:16px;
+   height:16px;
+   float:right;
+   padding-right:8px;
+   padding-top:8px;
+  }
+  
+  
+  .pinnedwindow {
+  opacity:1 !important;
+  }
+  
     .notifbuttonleft {
 
    content: url("notif_left.png");
