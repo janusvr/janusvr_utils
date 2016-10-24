@@ -43,5 +43,9 @@ namespace JanusVR
             get { return col; }
             set { col = value; }
         }
+
+        public Color? Color
+        {get;set;
+        }
     }
 }

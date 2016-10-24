@@ -17,6 +17,12 @@ namespace JanusVR
         private int resolution;
         private bool created;
         private bool exportAlpha;
+        private Color bakeColor;
+
+        public Color BakeColor
+        {
+            get { return bakeColor; }
+        }
 
         public bool Created
         {

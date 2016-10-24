@@ -94,6 +94,14 @@ namespace JanusVR
         };
 
         /// <summary>
+        /// Lower case values that the exporter will consider for being the Color off a shader
+        /// </summary>
+        private string[] colorSemantics = new string[]
+        {
+            "_color"
+        };
+
+        /// <summary>
         /// The semantic names for all the skybox 6-sided faces
         /// </summary>
         private string[] skyboxTexNames = new string[]
@@ -388,8 +396,6 @@ namespace JanusVR
                 }
             }
 
-
-
             if (lightmapExportType != LightmapExportType.None &&
                 lightmapped.Count > 0)
             {
@@ -463,7 +469,8 @@ namespace JanusVR
                                         {
                                             string name = ShaderUtil.GetPropertyName(shader, k);
 
-                                            if (ShaderUtil.GetPropertyType(shader, k) == ShaderUtil.ShaderPropertyType.TexEnv)
+                                            ShaderUtil.ShaderPropertyType propType = ShaderUtil.GetPropertyType(shader, k);
+                                            if (propType == ShaderUtil.ShaderPropertyType.TexEnv)
                                             {
                                                 if (mainTexSemantics.Contains(name.ToLower()))
                                                 {
@@ -823,7 +830,8 @@ namespace JanusVR
                             {
                                 string name = ShaderUtil.GetPropertyName(shader, k);
 
-                                if (ShaderUtil.GetPropertyType(shader, k) == ShaderUtil.ShaderPropertyType.TexEnv)
+                                ShaderUtil.ShaderPropertyType propType = ShaderUtil.GetPropertyType(shader, k);
+                                if (propType == ShaderUtil.ShaderPropertyType.TexEnv)
                                 {
                                     if (mainTexSemantics.Contains(name.ToLower()))
                                     {
@@ -838,6 +846,15 @@ namespace JanusVR
                                         {
                                             texturesExported.Add(tex);
                                         }
+                                    }
+                                }
+                                else if (propType == ShaderUtil.ShaderPropertyType.Color)
+                                {
+                                    string nameLower = name.ToLower();
+                                    if (colorSemantics.Contains(nameLower))
+                                    {
+                                        Color c = mat.GetColor(name);
+                                        exp.Color = c;
                                     }
                                 }
                             }
@@ -1191,6 +1208,16 @@ namespace JanusVR
                 if (obj.Col != null)
                 {
                     index.Append("collision_id=\"" + meshName + "\" ");
+                }
+
+                if (obj.Color != null)
+                {
+                    Color objColor = obj.Color.Value;
+                    int r = (int)(objColor.r * 255);
+                    int g = (int)(objColor.g * 255);
+                    int b = (int)(objColor.b * 255);
+                    string hex = r.ToString("X2") + g.ToString("X2") + b.ToString("X2");
+                    index.Append("col=\"#f" + hex + "\" ");
                 }
 
                 Transform trans = go.transform;
