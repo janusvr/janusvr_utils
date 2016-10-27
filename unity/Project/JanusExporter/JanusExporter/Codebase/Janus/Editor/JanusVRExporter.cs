@@ -8,6 +8,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.FBX;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UObject = UnityEngine.Object;
 
@@ -25,13 +26,13 @@ namespace JanusVR
         private string exportPath = @"";
 
         /// <summary>
-        /// The format to default every texture to export to. PNG are lossless, so quality options are ignored. Supported formats are PNG and JPG
+        /// The format to export all textures to
         /// </summary>
         [SerializeField]
         private ImageFormatEnum defaultTexFormat = ImageFormatEnum.JPG;
 
         /// <summary>
-        /// The quality to initialize every texture that's using a lossy export format (like JPG).
+        /// The quality to export all textures
         /// </summary>
         [SerializeField]
         private int defaultQuality = 70;
@@ -40,13 +41,13 @@ namespace JanusVR
         /// The filtering mode to use when downsampling textures
         /// </summary>
         [SerializeField]
-        private TextureFilterMode filterMode = TextureFilterMode.Nearest;// TextureFilterMode.Average;
+        private TextureFilterMode filterMode = TextureFilterMode.Nearest;
 
         /// <summary>
-        /// The format to default every mesh to export to. Only FBX is supported right now, but OBJ support is coming.
+        /// The format to export all meshes in
         /// </summary>
         [SerializeField]
-        private ExportMeshFormat defaultMeshFormat = ExportMeshFormat.FBX;
+        private ExportMeshFormat meshFormat = ExportMeshFormat.FBX;
 
         /// <summary>
         /// An uniform scale to apply to the whole scene (useful for matching VR scale inside janus)
@@ -74,10 +75,16 @@ namespace JanusVR
         private bool exportMaterials = true;
 
         /// <summary>
-        /// Exports the scene's skybox, if it's a 6-sided skybox
+        /// Exports the scene's skybox
         /// </summary>
         [SerializeField]
         private bool exportSkybox = true;
+
+        /// <summary>
+        /// The resolution to render the skybox to, if it's a procedural one
+        /// </summary>
+        [SerializeField]
+        private int exportSkyboxResolution = 1024;
 
         /// <summary>
         /// Compress the scene models using GZip (WIP and extremely slow)
@@ -91,6 +98,14 @@ namespace JanusVR
         private string[] mainTexSemantics = new string[]
         {
             "_maintex"
+        };
+
+        /// <summary>
+        /// Lower case values that the exporter will consider for being the Tiling
+        /// </summary>
+        private string[] tilingSemantics = new string[]
+        {
+            "_maintex_st"
         };
 
         /// <summary>
@@ -121,9 +136,6 @@ namespace JanusVR
 
         private ExportedData exported;
 
-        private bool perTextureOptions = false;
-        private bool perModelOptions = false;
-
         private bool updateOnlyHtml = false;
 
         /// <summary>
@@ -133,18 +145,18 @@ namespace JanusVR
 
         private Bounds sceneSize;
 
-        private Vector2 scrollPosition;
-
         public const int PreviewSize = 64;
         public const int Version = 202;
 
         internal class ExportedData
         {
             internal List<ExportedObject> exportedObjs;
+            internal List<ExportedObject> exportedProbes;
 
             internal ExportedData()
             {
                 exportedObjs = new List<ExportedObject>();
+                exportedProbes = new List<ExportedObject>();
             }
         }
 
@@ -181,20 +193,26 @@ namespace JanusVR
             }
             EditorGUILayout.EndHorizontal();
 
-            defaultMeshFormat = (ExportMeshFormat)EditorGUILayout.EnumPopup("Default Mesh Format", defaultMeshFormat);
-            defaultTexFormat = (ImageFormatEnum)EditorGUILayout.EnumPopup("Default Textures Format", defaultTexFormat);
-            defaultQuality = EditorGUILayout.IntSlider("Default Textures Quality", defaultQuality, 0, 100);
-            filterMode = (TextureFilterMode)EditorGUILayout.EnumPopup("Texture Filter", filterMode);
-            compressFiles = EditorGUILayout.Toggle("Compress Models (SLOW)", compressFiles);
+            meshFormat = (ExportMeshFormat)EditorGUILayout.EnumPopup("Mesh Format", meshFormat);
+            defaultTexFormat = (ImageFormatEnum)EditorGUILayout.EnumPopup("Textures Format", defaultTexFormat);
+            if (SupportsQuality(defaultTexFormat))
+            {
+                defaultQuality = EditorGUILayout.IntSlider("Textures Quality", defaultQuality, 0, 100);
+            }
+            //compressFiles = EditorGUILayout.Toggle("Compress Models", compressFiles);
 
             uniformScale = EditorGUILayout.FloatField("Uniform Scale", uniformScale);
             exportMaterials = EditorGUILayout.Toggle("Export Materials", exportMaterials);
-            exportSkybox = EditorGUILayout.Toggle("Export Skybox (6-sided)", exportSkybox);
+            exportSkybox = EditorGUILayout.Toggle("Export Skybox", exportSkybox);
+            if (exportSkybox && IsProceduralSkybox())
+            {
+                exportSkyboxResolution = Math.Max(4, EditorGUILayout.IntField("Skybox Render Resolution", exportSkyboxResolution));
+            }
 
             lightmapExportType = (LightmapExportType)EditorGUILayout.EnumPopup("Lightmap Type", lightmapExportType);
             if (lightmapExportType != LightmapExportType.None)
             {
-                maxLightMapResolution = Math.Max(32, EditorGUILayout.IntField("Max Lightmap Resolution", maxLightMapResolution));
+                maxLightMapResolution = Math.Max(4, EditorGUILayout.IntField("Max Lightmap Resolution", maxLightMapResolution));
             }
 
             if (GUILayout.Button("Export HTML only"))
@@ -202,93 +220,23 @@ namespace JanusVR
                 updateOnlyHtml = true;
                 PreExport();
                 DoExport();
-                Clean();
+                updateOnlyHtml = false;
             }
 
             if (!string.IsNullOrEmpty(exportPath))
             {
-                if (GUILayout.Button("Start Export"))
+                if (GUILayout.Button("Full Export"))
                 {
                     PreExport();
-                }
-            }
-
-            scrollPosition = GUILayout.BeginScrollView(scrollPosition);
-            if (exported != null)
-            {
-                farPlaneDistance = Math.Max(5, EditorGUILayout.FloatField("View Distance", farPlaneDistance));
-                GUILayout.Label("Scene size " + sceneSize.size);
-
-                perTextureOptions = EditorGUILayout.Foldout(perTextureOptions, "Per Texture Options");
-
-                Rect last = GUILayoutUtility.GetLastRect();
-                last.y = last.y + last.height;
-
-                float size = Math.Min(Screen.width * 0.3f, Screen.height * 0.1f);
-                float half = Screen.width * 0.5f;
-
-                if (perTextureOptions)
-                {
-                    for (int i = 0; i < texturesExportedData.Count; i++)
-                    {
-                        TextureExportData tex = texturesExportedData[i];
-                        Rect r = GUILayoutUtility.GetRect(Screen.width, size * 1.05f);
-
-                        GUI.DrawTexture(new Rect(size * 0.1f, r.y, size, size), tex.Preview);
-                        GUI.Label(new Rect(size * 1.1f, r.y, half - size, size), tex.Texture.name);
-
-                        float x1 = half * 1.3f;
-                        float y = r.y;
-                        float wid = half * 0.6f;
-
-                        GUI.Label(new Rect(half, y, half * 0.3f, last.height), "Format");
-                        if (tex.Created && tex.Texture.name.StartsWith("Lightmap"))
-                        {
-                            GUI.Label(new Rect(x1, y, wid, last.height), "EXR");
-                        }
-                        else
-                        {
-                            tex.Format = (ImageFormatEnum)EditorGUI.EnumPopup(new Rect(x1, y, wid, last.height), tex.Format);
-                            y += last.height;
-
-                            GUI.Label(new Rect(half, y, half * 0.3f, last.height), "Resolution");
-                            tex.Resolution = EditorGUI.IntSlider(new Rect(x1, y, wid, last.height), tex.Resolution, 32, tex.Texture.width);
-                            y += last.height;
-
-                            GUI.Label(new Rect(half, y, half * 0.3f, last.height), "Export Alpha");
-                            tex.ExportAlpha = EditorGUI.Toggle(new Rect(x1, y, wid, last.height), tex.ExportAlpha);
-                            y += last.height;
-
-                            if (SupportsQuality(tex.Format))
-                            {
-                                GUI.Label(new Rect(half, y, half * 0.3f, last.height), "Quality");
-                                tex.Quality = EditorGUI.IntSlider(new Rect(x1, y, wid, last.height), tex.Quality, 0, 100);
-                            }
-                        }
-                    }
-                }
-
-                //perModelOptions = EditorGUILayout.Foldout(perModelOptions, "Per Model Options");
-                //if (perModelOptions)
-                //{
-                //    for (int i = 0; i < meshesExportedData.Count; i++)
-                //    {
-                //        MeshExportData model = meshesExportedData[i];
-                //        string name = meshesNames[model.Mesh];
-                //        Rect r = GUILayoutUtility.GetRect(Screen.width, size * 1.05f);
-                //        //GUI.DrawTexture(new Rect(size * 0.1f, r.y, size, size), model.Preview);
-                //        GUI.Label(new Rect(size * 1.1f, r.y, half - size, size), name);
-                //        GUI.Label(new Rect(half, r.y, half * 0.3f, last.height), "Format");
-                //        model.Format = (ExportMeshFormat)EditorGUI.EnumPopup(new Rect(half * 1.3f, r.y, half * 0.7f, last.height), model.Format);
-                //    }
-                //}
-
-                if (GUILayout.Button("Do Export"))
-                {
                     DoExport();
                 }
             }
-            GUILayout.EndScrollView();
+
+            if (exported != null)
+            {
+                GUILayout.Label("Scene size " + sceneSize.size);
+                GUILayout.Label("Far plane " + farPlaneDistance);
+            }
         }
 
         private static string GetMeshFormat(ExportMeshFormat format)
@@ -320,9 +268,9 @@ namespace JanusVR
             {
                 case ImageFormatEnum.JPG:
                     return true;
-                case ImageFormatEnum.PNG:
+                case ImageFormatEnum.PNG:// PNG is lossless
                 default:
-                    return false;// lossless PNG
+                    return false;
             }
         }
 
@@ -343,6 +291,44 @@ namespace JanusVR
                 Debug.LogError("Shaders not found! Please reimport the Janus Exporter package");
             }
         }
+
+        private Texture2D RenderSkyBoxSide(Vector3 direction, string name, RenderTexture tmpTex, Camera cam)
+        {
+            cam.gameObject.transform.LookAt(direction);
+            cam.Render();
+
+            Graphics.SetRenderTarget(tmpTex);
+            Texture2D left = new Texture2D(tmpTex.width, tmpTex.height, TextureFormat.ARGB32, false, false);
+            left.ReadPixels(new Rect(0, 0, tmpTex.width, tmpTex.height), 0, 0);
+            left.name = "SkyBox" + name;
+
+            texturesExported.Add(left);
+
+            return left;
+        }
+
+        private bool IsProceduralSkybox()
+        {
+            Material skybox = RenderSettings.skybox;
+            if (skybox != null)
+            {
+                for (int i = 0; i < skyboxTexNames.Length; i++)
+                {
+                    if (!skybox.HasProperty(skyboxTexNames[i]))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private Texture2D skyBoxLeft;
+        private Texture2D skyBoxRight;
+        private Texture2D skyBoxUp;
+        private Texture2D skyBoxDown;
+        private Texture2D skyBoxForward;
+        private Texture2D skyBoxBack;
 
         private void PreExport()
         {
@@ -391,6 +377,44 @@ namespace JanusVR
                             {
                                 texturesExported.Add(tex);
                             }
+                        }
+
+                        skyBoxForward = (Texture2D)skybox.GetTexture("_FrontTex");
+                        skyBoxBack = (Texture2D)skybox.GetTexture("_BackTex");
+                        skyBoxLeft = (Texture2D)skybox.GetTexture("_LeftTex");
+                        skyBoxRight = (Texture2D)skybox.GetTexture("_RightTex");
+                        skyBoxUp = (Texture2D)skybox.GetTexture("_UpTex");
+                        skyBoxDown = (Texture2D)skybox.GetTexture("_DownTex");
+                    }
+                    else
+                    {
+                        if (!updateOnlyHtml)
+                        {
+                            // the skybox is not a 6-texture skybox
+                            // lets render it to one then
+                            GameObject temp = new GameObject("__TempSkyRender");
+                            Camera cam = temp.AddComponent<Camera>();
+
+                            cam.enabled = false;
+
+                            RenderTexture tex = new RenderTexture(exportSkyboxResolution, exportSkyboxResolution, 0);
+                            cam.targetTexture = tex;
+                            cam.clearFlags = CameraClearFlags.Skybox;
+                            cam.cullingMask = 0;
+                            cam.orthographic = true;
+
+                            skyBoxLeft = RenderSkyBoxSide(Vector3.left, "Left", tex, cam);
+                            skyBoxRight = RenderSkyBoxSide(Vector3.right, "Right", tex, cam);
+                            skyBoxForward = RenderSkyBoxSide(Vector3.forward, "Forward", tex, cam);
+                            skyBoxBack = RenderSkyBoxSide(Vector3.back, "Back", tex, cam);
+                            skyBoxUp = RenderSkyBoxSide(Vector3.up, "Up", tex, cam);
+                            skyBoxDown = RenderSkyBoxSide(Vector3.down, "Down", tex, cam);
+
+                            cam.targetTexture = null;
+                            Graphics.SetRenderTarget(null);
+
+                            GameObject.DestroyImmediate(tex);
+                            GameObject.DestroyImmediate(temp);
                         }
                     }
                 }
@@ -574,6 +598,7 @@ namespace JanusVR
                         #endregion
                         break;
                     case LightmapExportType.PackedSourceEXR:
+                        #region Packed Source EXR
                         {
                             foreach (var lightPair in lightmapped)
                             {
@@ -598,6 +623,7 @@ namespace JanusVR
                                 texturesExported.Add(texture);
                             }
                         }
+                        #endregion
                         break;
                     case LightmapExportType.Unpacked:
                         #region Unpacked
@@ -699,45 +725,6 @@ namespace JanusVR
                 data.Resolution = tex.width;
                 data.Quality = defaultQuality;
 
-                if (tex.width <= PreviewSize && tex.height <= PreviewSize)
-                {
-                    data.Preview = data.Texture;
-                }
-                else
-                {
-                    if (data.Created)
-                    {
-                        data.Preview = TextureUtil.ScaleTexture(data, PreviewSize, true);
-                        data.ExportAlpha = false;
-                    }
-                    else
-                    {
-                        TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(path);
-                        bool wasReadable = importer.isReadable;
-                        TextureImporterFormat lastFormat = importer.textureFormat;
-                        if (!importer.isReadable || importer.textureFormat != TextureImporterFormat.ARGB32) // only reimport if truly needed
-                        {
-                            importer.isReadable = true;
-                            if (!tex.name.Contains("comp_light"))
-                            {
-                                importer.textureFormat = TextureImporterFormat.ARGB32;
-                            }
-                        }
-
-                        AssetDatabase.Refresh();
-                        AssetDatabase.ImportAsset(path);
-
-                        data.Preview = TextureUtil.ScaleTexture(data, PreviewSize, true);
-                        data.ExportAlpha = importer.alphaIsTransparency;
-
-                        if (!wasReadable)
-                        {
-                            importer.isReadable = false;
-                            importer.textureFormat = lastFormat;
-                        }
-                    }
-                }
-
                 texturesExportedData.Add(data);
             }
 
@@ -745,9 +732,8 @@ namespace JanusVR
             {
                 Mesh mesh = meshesExported[i];
                 MeshExportData data = new MeshExportData();
-                data.Format = this.defaultMeshFormat;
+                data.Format = this.meshFormat;
                 data.Mesh = mesh;
-                data.Preview = AssetPreview.GetAssetPreview(mesh);
 
                 string name = mesh.name;
                 if (string.IsNullOrEmpty(name))
@@ -760,7 +746,7 @@ namespace JanusVR
                 meshesExportedData.Add(data);
             }
 
-            farPlaneDistance = sceneSize.size.magnitude;
+            farPlaneDistance = sceneSize.size.magnitude * 1.3f;
         }
 
         private void RecursiveSearch(GameObject root, ExportedData data)
@@ -822,6 +808,13 @@ namespace JanusVR
                             if (mat == null)
                             {
                                 continue;
+                            }
+
+                            Vector2 sca = mat.mainTextureScale;
+                            Vector2 off = mat.mainTextureOffset;
+                            if (sca != Vector2.one || off != Vector2.zero)
+                            {
+                                exp.Tiling = new Vector4(sca.x, sca.y, off.x, off.y);
                             }
 
                             Shader shader = mat.shader;
@@ -888,6 +881,16 @@ namespace JanusVR
                     }
                     exp.Col = col;
                 }
+                else if (comp is ReflectionProbe)
+                {
+                    ReflectionProbe probe = (ReflectionProbe)comp;
+
+                    ExportedObject exp = new ExportedObject();
+                    exp.GameObject = root;
+                    exp.Texture = probe.texture;
+
+                    data.exportedProbes.Add(exp);
+                }
             }
 
             foreach (Transform child in root.transform)
@@ -898,8 +901,14 @@ namespace JanusVR
 
         private void Clean()
         {
+            skyBoxLeft = null;
+            skyBoxRight = null;
+            skyBoxForward = null;
+            skyBoxBack = null;
+            skyBoxUp = null;
+            skyBoxDown = null;
+
             sceneSize = new Bounds();
-            updateOnlyHtml = false;
 
             if (texturesExportedData != null)
             {
@@ -979,17 +988,7 @@ namespace JanusVR
                 {
                     // we created this texture, just export it (were free to read it)
                     tex.ExportedPath = tex.Texture.name + GetImageFormatName(tex.Format);
-
-                    if (tex.Resolution != texture.width)
-                    {
-                        Texture2D scaled = TextureUtil.ScaleTexture(tex, tex.Resolution, true, filterMode);
-                        ExportTexture(scaled, expPath, defaultTexFormat, tex.Quality, true);
-                        UObject.DestroyImmediate(scaled);
-                    }
-                    else
-                    {
-                        ExportTexture(texture, expPath, defaultTexFormat, tex.Quality, true);
-                    }
+                    ExportTexture(texture, expPath, defaultTexFormat, tex.Quality, true);
                 }
                 else
                 {
@@ -1001,52 +1000,50 @@ namespace JanusVR
 
                         string expName = "Lightmap" + lmapCounter + ".exr";
                         string destination = Path.Combine(exportPath, expName);
-                        if (File.Exists(destination))
-                        {
-                            File.Delete(destination);
-                        }
 
-                        File.Copy(path, destination);
                         tex.ExportedPath = expName;
+                        if (!updateOnlyHtml)
+                        {
+                            if (File.Exists(destination))
+                            {
+                                File.Delete(destination);
+                            }
+                            File.Copy(path, destination);
+                        }
                     }
                     else
                     {
-                        TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(path);
-                        bool wasReadable = importer.isReadable;
-                        TextureImporterFormat lastFormat = importer.textureFormat;
-                        bool changed = false;
-                        bool alpha = importer.alphaIsTransparency;
-                        if (!importer.isReadable || importer.textureFormat != TextureImporterFormat.ARGB32) // only reimport if truly needed
-                        {
-                            changed = true;
-                            importer.isReadable = true;
-                            if (!tex.Texture.name.Contains("comp_light"))
-                            {
-                                importer.textureFormat = TextureImporterFormat.ARGB32;
-                            }
-                        }
-
-                        AssetDatabase.Refresh();
-                        AssetDatabase.ImportAsset(path);
-
-                        if (tex.Resolution != texture.width)
-                        {
-                            Texture2D scaled = TextureUtil.ScaleTexture(tex, tex.Resolution, !alpha, filterMode);
-                            ExportTexture(scaled, expPath, defaultTexFormat, tex.Quality, !alpha);
-                            UObject.DestroyImmediate(scaled);
-                        }
-                        else
-                        {
-                            ExportTexture(texture, expPath, tex.Format, tex.Quality, !alpha);
-                        }
                         tex.ExportedPath = tex.Texture.name + GetImageFormatName(tex.Format);
 
-                        if (changed)
+                        if (!updateOnlyHtml)
                         {
-                            importer.isReadable = wasReadable;
-                            importer.textureFormat = lastFormat;
+                            TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(path);
+                            bool wasReadable = importer.isReadable;
+                            TextureImporterFormat lastFormat = importer.textureFormat;
+                            bool changed = false;
+                            bool alpha = importer.alphaIsTransparency;
+                            if (!importer.isReadable || importer.textureFormat != TextureImporterFormat.ARGB32) // only reimport if truly needed
+                            {
+                                changed = true;
+                                importer.isReadable = true;
+                                if (!tex.Texture.name.Contains("comp_light"))
+                                {
+                                    importer.textureFormat = TextureImporterFormat.ARGB32;
+                                }
+                            }
+
                             AssetDatabase.Refresh();
                             AssetDatabase.ImportAsset(path);
+
+                            ExportTexture(texture, expPath, tex.Format, tex.Quality, !alpha);
+
+                            if (changed)
+                            {
+                                importer.isReadable = wasReadable;
+                                importer.textureFormat = lastFormat;
+                                AssetDatabase.Refresh();
+                                AssetDatabase.ImportAsset(path);
+                            }
                         }
                     }
                 }
@@ -1100,59 +1097,43 @@ namespace JanusVR
 
             if (exportSkybox)
             {
-                Material skybox = RenderSettings.skybox;
-                if (skybox != null)
+                fronttex = texturesExportedData.FirstOrDefault(c => c.Texture == skyBoxForward);
+                backtex = texturesExportedData.FirstOrDefault(c => c.Texture == skyBoxBack);
+                lefttex = texturesExportedData.FirstOrDefault(c => c.Texture == skyBoxLeft);
+                righttex = texturesExportedData.FirstOrDefault(c => c.Texture == skyBoxRight);
+                uptex = texturesExportedData.FirstOrDefault(c => c.Texture == skyBoxUp);
+                downtex = texturesExportedData.FirstOrDefault(c => c.Texture == skyBoxDown);
+
+                if (fronttex != null)
                 {
-                    bool proceed = true;
-                    for (int i = 0; i < skyboxTexNames.Length; i++)
-                    {
-                        if (!skybox.HasProperty(skyboxTexNames[i]))
-                        {
-                            proceed = false;
-                        }
-                    }
-
-                    if (proceed)
-                    {
-                        fronttex = texturesExportedData.FirstOrDefault(c => c.Texture == (Texture2D)skybox.GetTexture("_FrontTex"));
-                        backtex = texturesExportedData.FirstOrDefault(c => c.Texture == (Texture2D)skybox.GetTexture("_BackTex"));
-                        lefttex = texturesExportedData.FirstOrDefault(c => c.Texture == (Texture2D)skybox.GetTexture("_LeftTex"));
-                        righttex = texturesExportedData.FirstOrDefault(c => c.Texture == (Texture2D)skybox.GetTexture("_RightTex"));
-                        uptex = texturesExportedData.FirstOrDefault(c => c.Texture == (Texture2D)skybox.GetTexture("_UpTex"));
-                        downtex = texturesExportedData.FirstOrDefault(c => c.Texture == (Texture2D)skybox.GetTexture("_DownTex"));
-
-                        if (fronttex != null)
-                        {
-                            skyboxdata += "skybox_front_id=\"" + Path.GetFileNameWithoutExtension(fronttex.ExportedPath) + "\" ";
-                        }
-                        if (backtex != null)
-                        {
-                            skyboxdata += "skybox_back_id=\"" + Path.GetFileNameWithoutExtension(backtex.ExportedPath) + "\" ";
-                        }
-                        if (lefttex != null)
-                        {
-                            skyboxdata += "skybox_left_id=\"" + Path.GetFileNameWithoutExtension(lefttex.ExportedPath) + "\" ";
-                        }
-                        if (righttex != null)
-                        {
-                            skyboxdata += "skybox_right_id=\"" + Path.GetFileNameWithoutExtension(righttex.ExportedPath) + "\" ";
-                        }
-                        if (uptex != null)
-                        {
-                            skyboxdata += "skybox_up_id=\"" + Path.GetFileNameWithoutExtension(uptex.ExportedPath) + "\" ";
-                        }
-                        if (downtex != null)
-                        {
-                            skyboxdata += "skybox_down_id=\"" + Path.GetFileNameWithoutExtension(downtex.ExportedPath) + "\"";
-                        }
-
-                        if (skyboxdata.EndsWith(" "))
-                        {
-                            skyboxdata = skyboxdata.Remove(skyboxdata.Length - 1, 1);
-                        }
-                        skyboxdata = " " + skyboxdata;
-                    }
+                    skyboxdata += "skybox_front_id=\"" + Path.GetFileNameWithoutExtension(fronttex.ExportedPath) + "\" ";
                 }
+                if (backtex != null)
+                {
+                    skyboxdata += "skybox_back_id=\"" + Path.GetFileNameWithoutExtension(backtex.ExportedPath) + "\" ";
+                }
+                if (lefttex != null)
+                {
+                    skyboxdata += "skybox_left_id=\"" + Path.GetFileNameWithoutExtension(lefttex.ExportedPath) + "\" ";
+                }
+                if (righttex != null)
+                {
+                    skyboxdata += "skybox_right_id=\"" + Path.GetFileNameWithoutExtension(righttex.ExportedPath) + "\" ";
+                }
+                if (uptex != null)
+                {
+                    skyboxdata += "skybox_up_id=\"" + Path.GetFileNameWithoutExtension(uptex.ExportedPath) + "\" ";
+                }
+                if (downtex != null)
+                {
+                    skyboxdata += "skybox_down_id=\"" + Path.GetFileNameWithoutExtension(downtex.ExportedPath) + "\"";
+                }
+
+                if (skyboxdata.EndsWith(" "))
+                {
+                    skyboxdata = skyboxdata.Remove(skyboxdata.Length - 1, 1);
+                }
+                skyboxdata = " " + skyboxdata;
             }
 
             index.Append("\n\t\t\t</Assets>\n\t\t\t<Room far_dist=\"" + farPlaneDistance + "\"" + skyboxdata + ">");
@@ -1192,7 +1173,7 @@ namespace JanusVR
                 if (!string.IsNullOrEmpty(lmapID))
                 {
                     index.Append("lmap_id=\"" + lmapID + "\" ");
-                    if (lightmapExportType == LightmapExportType.Packed || 
+                    if (lightmapExportType == LightmapExportType.Packed ||
                         lightmapExportType == LightmapExportType.PackedSourceEXR)
                     {
                         MeshRenderer renderer = go.GetComponent<MeshRenderer>();
@@ -1203,6 +1184,12 @@ namespace JanusVR
                         lmap.w = Mathf.Clamp(lmap.w, 0, 1);
                         index.Append("lmap_sca=\"" + lmap.x.ToString(c) + " " + lmap.y.ToString(c) + " " + lmap.z.ToString(c) + " " + lmap.w.ToString(c) + "\" ");
                     }
+                }
+
+                if (obj.Tiling != null)
+                {
+                    Vector4 tiling = obj.Tiling.Value;
+                    index.Append("tile=\"" + tiling.x.ToString(c) + " " + tiling.y.ToString(c) + " " + tiling.z.ToString(c) + " " + tiling.w.ToString(c) + "\" ");
                 }
 
                 if (obj.Col != null)
@@ -1281,7 +1268,7 @@ namespace JanusVR
             switch (format)
             {
                 case ExportMeshFormat.FBX:
-                    FBXExporter.ExportMesh(mesh, finalPath, compressFiles, switchUv);
+                    FBXExporter.ExportMesh(mesh, finalPath, switchUv);
                     break;
                 case ExportMeshFormat.OBJ_NotWorking:
                     break;
@@ -1298,22 +1285,9 @@ namespace JanusVR
             string formatName = GetImageFormatName(format);
             string fpath = path + formatName;
 
-            if (compressFiles && !SupportsQuality(format)) // dont compress lossy texture types
+            using (Stream output = File.OpenWrite(fpath))
             {
-                using (Stream output = new MemoryStream())
-                {
-                    TextureUtil.ExportTexture(tex, output, format, data, zeroAlpha);
-
-                    output.Position = 0;
-                    GZipExporter.Save(fpath + ".gz", output);
-                }
-            }
-            else
-            {
-                using (Stream output = File.OpenWrite(fpath))
-                {
-                    TextureUtil.ExportTexture(tex, output, format, data, zeroAlpha);
-                }
+                TextureUtil.ExportTexture(tex, output, format, data, zeroAlpha);
             }
         }
     }

@@ -39,7 +39,7 @@ namespace UnityEngine.FBX
         [DllImport("UnityFBXExporter", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public extern static void Export([MarshalAs(UnmanagedType.LPStr)] string SceneName);
 
-        public static void ExportMesh(Mesh mesh, string path, bool compress, bool switchUv = false, bool mirror = true, int fbxVersion = 1)
+        public static void ExportMesh(Mesh mesh, string path, bool switchUv = false, bool mirror = true, int fbxVersion = 1)
         {
             if (mesh.GetTopology(0) != MeshTopology.Triangles)
             {
@@ -160,16 +160,6 @@ namespace UnityEngine.FBX
             }
 
             FBXExporter.Export(path);
-
-            if (compress)
-            {
-                using (Stream src = File.OpenRead(path))
-                {
-                    GZipExporter.Save(path + ".gz", src);
-                }
-
-                File.Delete(path);
-            }
         }
     }
 }

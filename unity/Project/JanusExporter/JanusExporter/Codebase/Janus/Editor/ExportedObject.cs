@@ -32,6 +32,8 @@ namespace JanusVR
             set { diffuseMapTex = value; }
         }
 
+        public Texture Texture { get; set; }
+
         public GameObject GameObject
         {
             get { return go; }
@@ -44,8 +46,8 @@ namespace JanusVR
             set { col = value; }
         }
 
-        public Color? Color
-        {get;set;
-        }
+        public Color? Color { get; set; }
+
+        public Vector4? Tiling { get; set; }
     }
 }
