@@ -60,10 +60,44 @@ WE REAAAAAALLLY ENCOURAGE YOU TO MAKE CHANGES TO THIS. MAKE IT YOUR OWN! CUSTOMI
 <link rel="stylesheet" type="text/css" href="skins/emerald/emerald.css">
 <script>
 
+ function loadjscssfile(filename, filetype) {
+                if (filetype == "js") { //if filename is a external JavaScript file
+                   // alert('called');
+                    var fileref = document.createElement('script')
+                    fileref.setAttribute("type", "text/javascript")
+                    fileref.setAttribute("src", filename)
+                    alert('called');
+                }
+                else if (filetype == "css") { //if filename is an external CSS file
+                    var fileref = document.createElement("link")
+                    fileref.setAttribute("rel", "stylesheet")
+                    fileref.setAttribute("type", "text/css")
+                    fileref.setAttribute("href", filename)
+                }
+                if (typeof fileref != "undefined")
+                    document.getElementsByTagName("head")[0].appendChild(fileref)
+            }
+			
+			
+function injectVRCSS() {
+
+	if (window.janus.hmd != null)
+	{
+		if (window.janus.hmd == 1)
+		{
+			loadjscssfile("skins/emerald/emeraldVR.css","css");
+		}
+	}
+}
+
+
+
+	
+
+
+
 var hueshift;
 function partyHueCycle() {
-
-
 
 //check if party mode is disabled
 if (window.janus.getsetting('partymode') == true)
@@ -1105,7 +1139,7 @@ tipshown = 0;
 
 
 	window.onload = function() {
-
+		injectVRCSS()	
 		showUpdateNotification();
 
 		if ((getCookie("lastversion") == "")||(getCookie("lastversion") != window.janus.version)) //if you have never previously used janus, or the last used version of janus is not the current version
