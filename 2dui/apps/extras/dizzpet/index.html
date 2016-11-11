@@ -6,7 +6,7 @@
   <meta name="description" content="JanusVR Interface Settings Menu">
   <meta name="author" content="JanusVR Inc.">
   <script src="../../../scripts/tabs.js"></script>
-  
+  <script src="../../../skins/theme.js"></script>
   <script>
   function clickSound() {
   document.getElementById('sound1').play();
@@ -304,6 +304,8 @@ function getRandomInt(min, max) {
 
   
     window.onload = function() {
+	
+	 initializeAppTheme("../../../")
     document.getElementById("dizzpet").src = "images/"+dizzpetname+"/"+"1"+".png";
   
   //set cookies from file
@@ -381,10 +383,7 @@ function getRandomInt(min, max) {
   
   
     </script>
-  
-  
-  <link rel="stylesheet" type="text/css" href="../../../skins/emerald/emeraldgenericwindow.css">
-  
+
   
 
     
