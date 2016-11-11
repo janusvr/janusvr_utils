@@ -6,7 +6,7 @@
   <meta name="description" content="JanusVR Interface Settings Menu">
   <meta name="author" content="JanusVR Inc.">
   <script src="../../scripts/tabs.js"></script>
-  
+  <script src="../../skins/theme.js"></script>
   <script>
   function clickSound() {
   document.getElementById('sound1').play();
@@ -78,7 +78,7 @@
   
   
   window.onload = function () {
-  
+    initializeAppTheme("../../")
   tabSelect("codetabcontainer","codetabbutton")
   window.onresize()
   
@@ -106,8 +106,7 @@ document.getElementById("textinput").style.height = "calc(100% - "+((document.ge
   
     </script>
   
-  
-  <link rel="stylesheet" type="text/css" href="../../skins/emerald/emeraldgenericwindow.css">
+
   
 </head>
 
