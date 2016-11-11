@@ -15,23 +15,23 @@ min-width:300px;
 }
 
 .shadebutton {
-height:24px;
-width:24px;
+height:25px;
+width:33px;
 padding-top:12px;
 }
 .pinbutton {
-height:24px;
-width:24px;
+height:25px;
+width:33px;
 padding-top:12px;
 }
 .pinbuttonactive {
-height:24px;
-width:24px;
+height:25px;
+width:33px;
 padding-top:12px;
 }
 .closebutton {
-height:24px;
-width:24px;
+height:25px;
+width:33px;
 padding-top:12px;
 }
 
@@ -44,17 +44,7 @@ transform: translate(5px);
 border-radius:15px;
 }
 
-.containerbutton {
-height:40px;
-}
 
-.inputfield {
-height: 40px;
-}
-
-.menulist  {
-top:50px;
-}
 
 .stat {
 width:42px;
@@ -80,5 +70,5 @@ min-width: 48px;
 }
 
 .notificationcontainer {
-top:50px;
+top:70px;
 }
