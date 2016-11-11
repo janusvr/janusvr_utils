@@ -1,0 +1,229 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>JanusVR Interface Settings Menu</title>
+  <meta name="description" content="JanusVR Interface Settings Menu">
+  <meta name="author" content="JanusVR Inc.">
+  <script src="../../scripts/tabs.js"></script>
+  <script src="../../skins/theme.js"></script>
+  <script>
+
+  function setDefaults() {
+
+
+  //set all the default booleans
+
+  //set all the default values
+
+  
+  
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  window.onload = function () {
+   initializeAppTheme("../../");
+  tabSelect("logtabcontainer","logtabbutton")
+  window.onresize()
+  setDefaults() 
+  }
+
+  
+  
+   window.onresize = function(event) { //make sure the window area stays a consistent size
+
+
+ 
+ if (document.getElementById("tabrow").offsetWidth >= 200) //if you change the 200 here, also change the min-width of the window containing it. this is to prevent flicker when vertically resizing a minimally (width) sized window
+ {
+document.getElementById("windowarea").style.height = "calc(100% - "+(document.getElementsByClassName("tabrow")[0].offsetHeight+3)+"px)";	
+ }
+};
+  
+
+   setInterval(function() {
+
+   		 
+
+   //update variables
+   document.getElementById("networkstatus").innerHTML = "Network Status: "+parent.window.janus.networkstatus;
+   //update variables
+   document.getElementById("networkerror").innerHTML = "Network Error: "+parent.window.janus.networkerror;
+    //update variables
+   document.getElementById("progressstatus").innerHTML = "Room Load Progress: "+parent.window.janus.roomprogress();
+           
+     document.getElementById("currentkey").innerHTML = "Current Key Pressed: "+parent.window.janus.currentkey;
+
+           
+     document.getElementById("uifocus").innerHTML = "UI focus: "+parent.window.janus.hasFocus();
+        
+	     document.getElementById("active").innerHTML = "Active Element: "+parent.document.activeElement.tagName;
+         
+		 
+		 
+		 
+		 
+		 
+
+		 
+   }, 1); 
+
+  
+    </script>
+  
+<style>
+
+#logtabcontainer 
+{
+background-color:#0F161B;
+height:100%;
+white-space: pre;
+padding-left:16px;
+color:#61BE6C;
+font-family: "Open Sans";
+ overflow: auto;
+    user-select: auto;
+	-webkit-user-select: auto;
+}
+::selection {
+  background: #61BE6C; /* WebKit/Blink Browsers */
+  color:#0F161B;
+}
+</style>
+  
+</head>
+
+<body >
+
+<div class="windowcontainer">
+
+<div class="tabrow unselectable" id="tabrow">
+	<div class="tabbutton" id="logtabbutton" onmousedown="tabSelect('logtabcontainer','logtabbutton')">LOG</div></li>
+	<div class="tabbutton" id="maintabbutton" onmousedown="tabSelect('maintabcontainer','maintabbutton')">NETWORK</div></li>
+	<div class="tabbutton" id="roomtabbutton" onmousedown="tabSelect('roomtabcontainer','roomtabbutton')">ROOM</div></li>
+	<div class="tabbutton" id="misctabbutton" onmousedown="tabSelect('misctabcontainer','misctabbutton')">MISC</div></li>
+
+</div>
+
+
+<div class="windowarea unselectable" id="windowarea">
+
+
+					
+					
+				<div class="tabcontainer" id="logtabcontainer">
+> JanusVR Console v0.1 has begun listening to the client;
+You can safely close the console without losing data.
+
+				</div>
+					
+								
+					
+					
+					
+				<div class="tabcontainer" id="maintabcontainer">
+					<div class='header'>STATUS</div>
+
+					<div class='item' id="networkstatus" >
+					</div>	
+
+					<div class='item' id="networkerror" >
+					</div>						
+
+				</div>
+					
+			
+
+				<div class="tabcontainer" id="roomtabcontainer">
+					<div class='header'>STATUS</div>
+
+					<div class='item' id="progressstatus" >
+					</div>	
+
+						
+
+				</div>
+					
+								
+					
+				<div class="tabcontainer" id="misctabcontainer">
+					<div class='header'>STATUS</div>
+
+					<div class='item' >Splines: Reticulated
+					</div>	
+
+					<div class='item' id="currentkey" >
+					</div>								
+
+					<div class='item' id="uifocus" >
+					</div>
+
+					<div class='item' id="active" >
+					</div>							
+										
+					
+				</div>
+					
+												
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+		</div>			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+</div>
+
+
+
+</body>
+</html>
