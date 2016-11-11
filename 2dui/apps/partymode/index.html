@@ -6,7 +6,7 @@
   <meta name="description" content="JanusVR Interface">
   <meta name="author" content="JanusVR Inc.">
   <script src="../../scripts/tabs.js"></script>
-  
+  <script src="../../skins/theme.js"></script>
   <script>
   
 
@@ -136,7 +136,7 @@ var sitename;
   }
   
   window.onload = function () {
-  
+  initializeAppTheme("../../")
   tabSelect("maintabcontainer","maintabbutton")
   window.onresize()
   document.getElementById("partytoggle").checked = parent.window.janus.getsetting('partymode');
@@ -163,8 +163,7 @@ setInterval(function(){   createParties(); }, 5000); //rebuild the list every fi
 
     </script>
   
-  
-  <link rel="stylesheet" type="text/css" href="../../skins/emerald/emeraldgenericwindow.css">
+
   
 </head>
 
