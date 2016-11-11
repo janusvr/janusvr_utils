@@ -6,7 +6,7 @@
   <meta name="description" content="JanusVR Interface Settings Menu">
   <meta name="author" content="JanusVR Inc.">
  <script src="../../scripts/tabs.js"></script>
-  
+  <script src="../../skins/theme.js"></script>
   <script>
 
     
@@ -25,6 +25,7 @@ return tmp.textContent || tmp.innerText;
   }
   
   window.onload = function () {
+   initializeAppTheme("../../")
   setScale(7)
   tabSelect("maptabcontainer","maptabbutton")
   window.onresize()
@@ -273,9 +274,7 @@ var lastlocation = "";
   
     </script>
   
-  
-  <link rel="stylesheet" type="text/css" href="../../skins/emerald/emeraldgenericwindow.css">
-  
+
 </head>
 
 <body >
@@ -310,7 +309,7 @@ var lastlocation = "";
 				
 
 				
-<input type="range" id="myRange" value="10" style="width:100%;" onChange="setScale(this.value)" min="1" max="15">
+<input type="range" class="myslider" id="myRange" value="10" style="width:100% !important;" onChange="setScale(this.value)" min="1" max="15">
 		</div>
 		
 		
