@@ -6,7 +6,7 @@
   <meta name="description" content="JanusVR Interface">
   <meta name="author" content="JanusVR Inc.">
   <script src="../../scripts/tabs.js"></script>
-  
+  <script src="../../skins/theme.js"></script>
   <script>
 
   
@@ -14,9 +14,9 @@
   
   window.onload = function () {
   
-  tabSelect("maintabcontainer","maintabbutton")
-  window.onresize()
-
+	  initializeAppTheme("../../");
+	  tabSelect("maintabcontainer","maintabbutton")
+	  window.onresize()
 
   }
 
@@ -37,8 +37,6 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
   
     </script>
   
-  
-  <link rel="stylesheet" type="text/css" href="../../skins/emerald/emeraldgenericwindow.css">
   
 </head>
 
