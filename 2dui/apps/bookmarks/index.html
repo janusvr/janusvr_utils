@@ -6,7 +6,7 @@
   <meta name="description" content="JanusVR Interface">
   <meta name="author" content="JanusVR Inc.">
   <script src="../../scripts/tabs.js"></script>
-  
+  <script src="../../skins/theme.js"></script>
   <script>
 
   
@@ -136,7 +136,7 @@
   
   window.onload = function () {
   
-  
+   initializeAppTheme("../../");
   showElement('bookmarkstopbarcontainer');
   hideElement('workspacesstopbarcontainer');
   tabSelect("bookmarkstabcontainer","bookmarkstabbutton")
@@ -238,8 +238,7 @@ parent.window.janus.saveworkspace(n);
     </script>
   
   
-  <link rel="stylesheet" type="text/css" href="../../skins/emerald/emeraldgenericwindow.css">
-  
+
 </head>
 
 <body >
