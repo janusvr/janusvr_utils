@@ -108,7 +108,7 @@ var sitename;
 				sitename = mainarray[i].name
 			}
 		}
-		else if (arraytype == "bookmarks")
+		else if ((arraytype == "bookmarks"))
 		{
 			if (mainarray[i].title == null || mainarray[i].title == "" )
 			{
@@ -124,6 +124,10 @@ var sitename;
 				sitename = mainarray[i].title
 			}			
 		}
+		else if (arraytype == "workspaces")
+		{
+			sitename = "";
+		}
 		
 		
 		
@@ -132,11 +136,21 @@ var sitename;
 			newelement.setAttribute("style","-webkit-filter:hue-rotate(" + (randomNumber(strip(mainarray[i].userId))*360) + "deg);visibility: visible !important;")
 			var specificname = trimString(strip(mainarray[i].userId),32);
 		}
-		else if (arraytype == "bookmarks")
+		else if ((arraytype == "bookmarks") || (arraytype == "workspaces"))
 		{
 			newelement.setAttribute("style","background:linear-gradient(rgba(0, 0, 0, 0.7),rgba(0, 0, 0, 0.7)), url(" + mainarray[i].thumbnail + ") no-repeat scroll center;visibility: visible !important;")
 			
+			
+		
+			if (arraytype == "bookmarks")
+			{
 			var filename = getFileName(mainarray[i].url);
+			}
+			else
+			{
+			var filename = mainarray[i].url;
+			}
+			
 			
 			if (filename != "")
 			{
@@ -146,6 +160,8 @@ var sitename;
 			{
 				var specificname = ""
 			}
+			
+			
 		}
 		
 		
@@ -154,7 +170,7 @@ var sitename;
 		newelement.innerHTML = "<div class='partytext'><b>"+strip(sitename)+"</b><br>"+specificname+"</div>";
 		newelement.onclick =  function(arg) {
 										return function() {
-											launchPortal(document.getElementById("myurl"+[arg]).innerHTML)
+											launchPortal(document.getElementById(arraytype+"myurl"+[arg]).innerHTML)
 												}
 												}(i);
 												
@@ -163,7 +179,7 @@ var sitename;
 		var urlcontainer=document.createElement("div");
 		urlcontainer.className="partyhideurl";
 		urlcontainer.id = function(arg) {
-										return "myurl"+[arg];
+										return arraytype+"myurl"+[arg];
 												}(i);
 												
 		urlcontainer.innerHTML = mainarray[i].url;
@@ -207,6 +223,11 @@ function returnMainArray(arraytype) {
 	else if (arraytype == "bookmarks")
 	{
 		xx = parent.window.janus.bookmarks;		
+	}
+	else if (arraytype == "workspaces")
+	{
+		
+		xx = parent.window.janus.workspaces;
 	}
 	return xx;		
 }
