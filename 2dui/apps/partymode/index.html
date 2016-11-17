@@ -7,161 +7,22 @@
   <meta name="author" content="JanusVR Inc.">
   <script src="../../scripts/tabs.js"></script>
   <script src="../../skins/theme.js"></script>
+  <script src="../../scripts/partylistgen.js"></script>
+ 
   <script>
   
 
-
   
-	function randomNumber(seed) {
-	
-	var origseed = seed;
-		if (typeof seed == "string")
-		{
-		seed = origseed.length*origseed.charCodeAt(1);
-		}
-	
-    var x = Math.sin(seed++) * 10000;
-
-    return x - Math.floor(x);
-	
-	}
-  
-	function strip(html)
-	{
-		var tmp = document.createElement("DIV");
-		tmp.innerHTML = html;
-		return tmp.textContent || tmp.innerText;
-	}
-	
-	function trimString(text,mylength) {
-	
-
-	var trimmedString = text.length > mylength ? 
-                    text.substring(0, mylength - 3) + "..." : 
-                    text;	 
-					
-	return trimmedString;
-	
-	}
-	
-	function extractDomain(url) {
-    var domain;
-    //find & remove protocol (http, ftp, etc.) and get domain
-    if (url.indexOf("://") > -1) {
-        domain = url.split('/')[2];
-    }
-    else {
-        domain = url.split('/')[0];
-    }
-
-    //find & remove port number
-    domain = domain.split(':')[0];
-
-    return domain;
-}
-  
-    function launchPortal(url) {
-  
-  parent.window.janus.launchurl(url,0);
-  
-  }
-  
-  
-function populatePartyObject() {
-parent.window.janus.updatepartymodedata() 
-}
-
-
-var sitename;
-
-  function createParties() {
-  document.getElementById("partycontainer").innerHTML = "" //blank out the party container so we can refresh it with new data
-  
-
-  if (parent.window.janus.partymodedata.length > 0)
-  {
-	  var i;
-	  for (i=0;i<parent.window.janus.partymodedata.length;i++)
-	  {
-		var newelement=document.createElement("div");
-		newelement.className="partyitem";
-		
-		if (parent.window.janus.partymodedata[i].name == null || parent.window.janus.partymodedata[i].name == "" )
-		{
-			
-
-			sitename = extractDomain(parent.window.janus.partymodedata[i].url);
-
-		
-		
-		}
-		else
-		{
-		sitename = parent.window.janus.partymodedata[i].name
-		}
-		newelement.setAttribute("style","-webkit-filter:hue-rotate(" + (randomNumber(strip(parent.window.janus.partymodedata[i].userId))*360) + "deg);visibility: visible !important;")
-
-		newelement.innerHTML = "<div class='partytext'><b>"+strip(sitename)+"</b><br>with "+trimString(strip(parent.window.janus.partymodedata[i].userId),32)+"</div>";
-		newelement.onclick =  function(arg) {
-										return function() {
-											launchPortal(document.getElementById("myurl"+[arg]).innerHTML)
-												}
-												}(i);
-												
-		document.getElementById("partycontainer").appendChild(newelement);
-		
-		var urlcontainer=document.createElement("div");
-		urlcontainer.className="partyhideurl";
-		urlcontainer.id = function(arg) {
-										return "myurl"+[arg];
-												}(i);
-												
-		urlcontainer.innerHTML = parent.window.janus.partymodedata[i].url;
-		newelement.appendChild(urlcontainer);
-		
-		
-	  
-	  }
-	
-	document.getElementById("windowarea").style.backgroundImage = "url(../../backgrounds/stars.png)"
-
-	}
-	else
-	{
-	document.getElementById("windowarea").style.backgroundImage = "url(../../backgrounds/starssearch.png)"
-	}
-	
-  
-  
-  }
-  
-  window.onload = function () {
+   window.onload = function () {
   initializeAppTheme("../../")
   tabSelect("maintabcontainer","maintabbutton")
   window.onresize()
   document.getElementById("partytoggle").checked = parent.window.janus.getsetting('partymode');
-  populatePartyObject()
-  createParties();
 
+  setRegularPartyUpdate(document.getElementById("partycontainer"),"partymode",5000,1); //create a party list based on certain data to a certain container
 
   }
-
-
-  
-   window.onresize = function(event) { //make sure the window area stays a consistent size
-
-
- 
- if (document.getElementById("tabrow").offsetWidth >= 200) //if you change the 200 here, also change the min-width of the window containing it. this is to prevent flicker when vertically resizing a minimally (width) sized window
- {
-document.getElementById("windowarea").style.height = "calc(100% - "+(document.getElementsByClassName("tabrow")[0].offsetHeight+3)+"px)";	
- }
-};
-
-setInterval(function(){ populatePartyObject(); },15000) //update the list every 15 seconds   
-setInterval(function(){   createParties(); }, 5000); //rebuild the list every five seconds 
-
-    </script>
+  </script>
   
 
   
