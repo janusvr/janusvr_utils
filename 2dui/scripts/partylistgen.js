@@ -134,7 +134,7 @@ var sitename;
 		if (arraytype == "partymode")
 		{
 			newelement.setAttribute("style","-webkit-filter:hue-rotate(" + (randomNumber(strip(mainarray[i].userId))*360) + "deg);visibility: visible !important;")
-			var specificname = trimString(strip(mainarray[i].userId),32);
+			var specificname = "with "+trimString(strip(mainarray[i].userId),32);
 		}
 		else if ((arraytype == "bookmarks") || (arraytype == "workspaces"))
 		{
