@@ -5,8 +5,10 @@
   <title>JanusVR Interface Settings Menu</title>
   <meta name="description" content="JanusVR Interface Settings Menu">
   <meta name="author" content="JanusVR Inc.">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <script src="../../scripts/tabs.js"></script>
   <script src="../../skins/theme.js"></script>
+  <script src="../../scripts/cookiemanagement.js"></script>
   <script>
 
   function setDefaults() {
@@ -23,6 +25,9 @@
   
   
   
+  function generateRandomNumber(start,limit) {
+  return Math.floor(Math.random() * limit) + start; 
+  }
   
   
   
@@ -32,18 +37,65 @@
   
   
   
+  function printSessionQuote() {
+  var d = new Date();
+  var n = d.getHours();
+  
+  if ((n >= 12) && (n < 18)) //If time is after/equal to NOON or before to 6PM
+  {
+	  var sessionquotes = [
+	  "Remember to get up, stretch, and go outside.",":)","A million tiny steps lead to something big.",
+	  ":D","Hmm...","Keep up the good work.","Thank you.",":p","","Don't be afraid to ask for help.","Can't wait to see what you're working on :p","Hehe...","Let's get started!",
+	  "Hope you're well today!","How's the weather outside?","","","","","",""
+	  ]
+  }
+   if ((n >= 18)) //If time is after/equal 6PM 
+  {
+	  var sessionquotes = ["Hope you're having a good night.",":p","What phase is the moon tonight?","Can you see the stars tonight?",
+	  "Can't wait to see what you're working on :p","Hehe...","Let's get started!","A million tiny steps lead to something big.",
+	  "How is the weather tonight?",":)","","","","","",""
+	  
+	  ]
+  } 
+  
+   if ((n <= 4)) //If time is before/equal to 4AM
+  {
+	  var sessionquotes = [
+	  "Don't mind me... I'm just snoozing...","You're still up?","With plenty of rest the solution will arise.","","","","","Don't wear yourself out.","It's "+n+" in the morning, you should rest.",":)",":p",":D","","zZz...",
+	  "Hope you're feeling well.","u_u... zZzZzZz...","","","","","",""
+	  
+	  ]
+  }   
+  
+  if ((n > 4) && (n < 12)) //If time is before NOON and after 4 AM
+  {
+	  var sessionquotes = [
+	  "The sun is rising soon!","I hope you're having a good morning.",":p",":)","Have you had breakfast?","Good morning!","Have a wonderful morning.","(yawn...) Oh, good morning.","I'm in the mood for bacon and eggs...",
+	  "I could go for some coffee.","Do you drink coffee?","Either you woke up early or haven't slept yet... hehe.","Morning :p","Good morrow.","Yo!",";D","c:","","How're things?","","","","","",""
+	  ]
+  }  
   
   
+  var myquote = sessionquotes[generateRandomNumber(0,sessionquotes.length)];
+
+  if (myquote.length > 0)
+  {
+	parent.logToConsole("<b>"+myquote+"</b>")
+  }
+  
+  }
   
   
   
   
   
   window.onload = function () {
+  setCookie("consoledata","","100000000")	
    initializeAppTheme("../../");
   tabSelect("logtabcontainer","logtabbutton")
   window.onresize()
   setDefaults() 
+  printSessionQuote();
   }
 
   
@@ -57,11 +109,56 @@
 document.getElementById("windowarea").style.height = "calc(100% - "+(document.getElementsByClassName("tabrow")[0].offsetHeight+3)+"px)";	
  }
 };
+
+
+
+var logging = 1; 
+function toggleLogging() {
+	if (logging == 1)
+	{
+	
+		logging = 0;
+		document.getElementById("logtext").setAttribute("style","-webkit-filter:hue-rotate(180deg);")
+		parent.logToConsole("===-LOGGING CEASED-===")
+		updateConsole();
+	}
+	else
+	{
+		logging = 1;
+		document.getElementById("logtext").setAttribute("style","")
+	parent.logToConsole("===+LOGGING ENABLED+===")
+	}
+	
+}
+
   
+ function updateConsole() {
+ 
 
+ 		 if (parent.getCookie("consoledata") != "")
+		 {
+		 document.getElementById("logtext").innerHTML += "<br>*"+parent.getCookie("consoledata");
+		 parent.setCookie("consoledata","","100000000")	
+		 var objDiv = document.getElementById("logtabcontainer");
+		 objDiv.scrollTop = objDiv.scrollHeight;
+		 }
+
+ }
+
+
+  
+  
    setInterval(function() {
-
-   		 
+		 
+		if (logging == 1)
+		{		 
+		updateConsole();
+		}
+		else
+		{
+		parent.setCookie("consoledata","","100000000")	
+		}
+	 
 
    //update variables
    document.getElementById("networkstatus").innerHTML = "Network Status: "+parent.window.janus.networkstatus;
@@ -78,33 +175,41 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 	     document.getElementById("active").innerHTML = "Active Element: "+parent.document.activeElement.tagName;
          
 		 
-		 
-		 
-		 
-		 
 
 		 
-   }, 1); 
+   }, 100); 
 
   
     </script>
   
 <style>
 
-#logtabcontainer 
-{
-background-color:#0F161B;
-height:100%;
-white-space: pre;
-padding-left:16px;
+#logtext {
+
+
+padding:16px 16px 16px 16px;
 color:#61BE6C;
 font-family: "Open Sans";
+}
+
+#logtext b {
+color:#6C8F87;
+}
+
+#logtabcontainer 
+{
+height: calc(100% - 43px) !important;
+background-color:#0F161B;
+height:100%;
+
+
+
  overflow: auto;
     user-select: auto;
 	-webkit-user-select: auto;
 }
 ::selection {
-  background: #61BE6C; /* WebKit/Blink Browsers */
+  background: #61BE6C;
   color:#0F161B;
 }
 </style>
@@ -130,9 +235,18 @@ font-family: "Open Sans";
 					
 					
 				<div class="tabcontainer" id="logtabcontainer">
-> JanusVR Console v0.1 has begun listening to the client;
-You can safely close the console without losing data.
+				<div id="logtext">
+				* JanusVR Console v0.1 has begun listening to the client!<br>
+				You can safely close the console without losing data.<br>
+				</div>
+				<div id="bottombar" class="bottombar">
+				
+				<div class="button" style="float:right;" onmousedown="toggleLogging()">
+				ON/OFF
+				</div>
 
+							
+				</div>
 				</div>
 					
 								
