@@ -1,6 +1,6 @@
 
 
-
+//to log to the F2 console use logToConsole(consolestring), or from an app add parent. to the front of the function
 
 
 function updatePartyMode() {
@@ -151,27 +151,6 @@ function updatePartyMode() {
 
 
 
-	function setCookie(cname, cvalue, exdays) {
-		var d = new Date();
-		d.setTime(d.getTime() + (exdays*24*60*60*1000));
-		var expires = "expires="+d.toUTCString();
-		document.cookie = cname + "=" + cvalue + "; " + expires;
-	}
-
-	function getCookie(cname) {
-		var name = cname + "=";
-		var ca = document.cookie.split(';');
-		for(var i = 0; i < ca.length; i++) {
-			var c = ca[i];
-			while (c.charAt(0) == ' ') {
-				c = c.substring(1);
-			}
-			if (c.indexOf(name) == 0) {
-				return c.substring(name.length, c.length);
-			}
-		}
-		return "";
-	}
 
 
 	function strip(html)
@@ -1480,9 +1459,9 @@ function initsound() {
 			{
 
 				//if chatlog doesn't exist, create it
-				if (document.getElementById("window_CONSOLE_windowarea") == null)
+				if ((document.getElementById("window_CONSOLE_windowarea") == null) || (document.getElementById("window_CONSOLE").style.display == "none") )
 				{
-					toggleWindow("null",500,400," CONSOLE","apps/console/index.html","40vw","35vh",Anchor.TopLeft,true);
+					toggleWindow("null",500,400,"CONSOLE","apps/console/index.html","40vw","35vh",Anchor.TopLeft,true);
 				}
 
 
