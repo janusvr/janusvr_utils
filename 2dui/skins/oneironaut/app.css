@@ -28,7 +28,9 @@ ul {
 
 		background-image: url("bg.png");
 		background-size:cover;
+		
 font-family: 'Open Sans';
+
 color:white;
 text-align:center;
 border-bottom-style:solid;
@@ -40,15 +42,7 @@ font-size:12px;
  word-wrap:break-word;
 break-inside: avoid-column;
 -webkit-column-break-inside: avoid;
-/* Internet Explorer 10 */
-display:-ms-flexbox;
--ms-flex-pack:center;
--ms-flex-align:center;
 
-/* Firefox */
-display:-moz-box;
--moz-box-pack:center;
--moz-box-align:center;
 
 /* Safari, Opera, and Chrome */
 display:-webkit-box;
@@ -128,11 +122,14 @@ color: 61BE6C;
 }
 
 .partyitem:hover {
-background-color:white;
+background-color:white !important;
 color:#545454;
 cursor:pointer;
-background-image: none;
+background-image: none !important;
+
 }
+
+
 
 .partyitem:hover b{
 background-color:white;
