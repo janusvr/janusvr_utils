@@ -35,10 +35,9 @@
 	}
 	
 	function extractDomain(url) {
-		
+		var domain;
 		if (url != null)
 		{
-		var domain;
 		//find & remove protocol (http, ftp, etc.) and get domain
 		if (url.indexOf("://") > -1) {
 			domain = url.split('/')[2];
