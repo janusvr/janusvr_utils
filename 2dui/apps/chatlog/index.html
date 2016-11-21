@@ -5,10 +5,13 @@
   <title>JanusVR Interface Chatlog</title>
   <meta name="description" content="Chatlog Interface for JanusVR">
   <meta name="author" content="JanusVR Inc.">
- 
+ <script src="../../skins/theme.js"></script>
   
   <script>
   
+  window.onload = function() {
+    initializeAppTheme("../../");
+  }
   
   function strip(html)
 {
@@ -114,11 +117,10 @@ window.onresize = function(event) {
     </script>
   
   
-  <link rel="stylesheet" type="text/css" href="../../skins/emerald/emeraldgenericwindow.css">
-  
+
 </head>
 
-<body style="background-color:#545454;">
+<body>
 
 <div class="entryform"   ><input onkeydown="sendmessagewithenter()" id="entryform" maxlength="245" type="text" placeholder="Click here or press T to chat." > </input>  </div>
 
