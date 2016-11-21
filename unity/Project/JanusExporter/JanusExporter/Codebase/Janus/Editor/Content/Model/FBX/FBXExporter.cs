@@ -76,12 +76,12 @@ namespace UnityEngine.FBX
                 for (int i = 0; i < vertices.Length; i++)
                 {
                     Vector3 v = vertices[i];
-                    nvertices[i] = new FbxVector3(-v.x, v.y, v.z);
+                    vertices[i] = new Vector3(-v.x, v.y, v.z);
                 }
-                for (int i = 0; i < triangles.Length; i++)
+                for (int i = 0; i < normals.Length; i++)
                 {
-                    Vector3 v = normals[triangles[i]];
-                    nnormals[i] = new FbxVector3(-v.x, v.y, v.z);
+                    Vector3 v = normals[i];
+                    normals[i] = new Vector3(-v.x, v.y, v.z);
                 }
 
                 // change triangles order
@@ -96,18 +96,16 @@ namespace UnityEngine.FBX
                     triangles[i + 2] = i0;
                 }
             }
-            else
+
+            for (int i = 0; i < vertices.Length; i++)
             {
-                for (int i = 0; i < vertices.Length; i++)
-                {
-                    Vector3 v = vertices[i];
-                    nvertices[i] = new FbxVector3(v.x, v.y, v.z);
-                }
-                for (int i = 0; i < triangles.Length; i++)
-                {
-                    Vector3 v = normals[triangles[i]];
-                    nnormals[i] = new FbxVector3(v.x, v.y, v.z);
-                }
+                Vector3 v = vertices[i];
+                nvertices[i] = new FbxVector3(v.x, v.y, v.z);
+            }
+            for (int i = 0; i < triangles.Length; i++)
+            {
+                Vector3 v = normals[triangles[i]];
+                nnormals[i] = new FbxVector3(v.x, v.y, v.z);
             }
 
             FBXExporter.AddMaterial(new FbxVector3(0.7, 0.7, 0.7));
