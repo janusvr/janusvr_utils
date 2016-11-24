@@ -48,7 +48,7 @@
 		//note that the prefix argument is how many folders away from the root directory the application is
 		//for instance, if your app is two folders away from root, your function may be initializeAppTheme("../../");
 		loadjscssfile(prefix+myapptheme,"css");	
-		setTimeout(function(){ 	window.onresize(); }, 15); //This should solve the problem with apps that depend on an instant resize event since the css loads after the first resize takes place. However, you may have to call this event again if it still fails.
+		setTimeout(function(){ 	window.onresize(); }, 50); //This should solve the problem with apps that depend on an instant resize event since the css loads after the first resize takes place. However, you may have to call this event again if it still fails.
 	
 	}
 
