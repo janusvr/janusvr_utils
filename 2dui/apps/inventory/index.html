@@ -12,6 +12,13 @@
     <!--script src="lib/ipfs.js"></script-->
 
     <script>
+      function showtooltip(text) {
+		//temporary until parent.showtooltip works
+        //parent.showtooltip(text);
+      }
+      function hidetooltip() {
+        parent.hidetooltip();
+      }
       function setCookie(cname, cvalue, exdays) {
         var d = new Date();
         d.setTime(d.getTime() + (exdays*24*60*60*1000));
@@ -133,11 +140,11 @@
             </tr>
             <tr class='bottom-bar'>
               <td>
-                <div class='menu-icon left menu-icon-rez action-rezselected disabled'></div>
-                <div class='menu-icon left menu-icon-copyselected action-copyselected'></div>
-                <div class='menu-icon left menu-icon-createfolder action-createfolder'></div>
-                <div class='menu-icon left menu-icon-geturl action-getselectedurl'></div>
-                <div class='menu-icon left action-rezrandom'></div>
+                <div class='menu-icon left menu-icon-rez action-rezselected disabled' onmouseout='hidetooltip()' onmouseover='showtooltip("Spawn selected in world")'></div>
+                <div class='menu-icon left menu-icon-copyselected action-copyselected' onmouseout='hidetooltip()' onmouseover='showtooltip("Copy selected to inventory")'></div>
+                <div class='menu-icon left menu-icon-createfolder action-createfolder' onmouseout='hidetooltip()' onmouseover='showtooltip("Create folder")'></div>
+                <div class='menu-icon left menu-icon-geturl action-getselectedurl' onmouseout='hidetooltip()' onmouseover='showtooltip("Show selected URL")'></div>
+                <div class='menu-icon left action-rezrandom' onmouseout='hidetooltip()' onmouseover='showtooltip("Spawn random image")'></div>
                 <div class='menu-icon right menu-icon-trash action-trashselected disabled'></div>
               </td>
             </tr>

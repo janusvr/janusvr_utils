@@ -282,7 +282,8 @@ function InventoryUI(options) {
     var active = $('.active').parent();
     var hash = active.data('hash');
     var file = InventoryAPI.getFile(hash);
-    alert('http://ipfs.io/ipfs/' + hash + '?.' + file.filetype);
+    //alert('http://ipfs.io/ipfs/' + hash + '?.' + file.filetype);
+	parent.shownotification('http://ipfs.io/ipfs/' + hash + '?.' + file.filetype,'notifications/call.png','null','#323232')
   }.bind(this))
 
   this.spawnRandom = function() {
@@ -313,7 +314,7 @@ function InventoryUI(options) {
         rezData.zdir = [plr.zdir.x*-1, plr.zdir.y*-1, plr.zdir.z*-1].join(' ');
 
         parent.window.janus.createobject('Image', rezData);
-      } catch (e) { alert(e)}
+      } catch (e) { parent.logToConsole(e) }
     })
   }
 
@@ -382,7 +383,7 @@ InventoryUI.prototype.rezEntry = function(entry) {
     }
 
     if (assetType == 'Link') {
-      alert('?');
+      //alert('?');
       rezData.url = url;
       delete rezData.id;
       rezData.scale = [1,1.75,1].join(' ');
@@ -399,7 +400,7 @@ InventoryUI.prototype.rezEntry = function(entry) {
   //alert(o);
   }
   catch (e) {
-    alert(':(' + e + ' ' + JSON.stringify(plr));
+    parent.logToConsole(':(' + e + ' ' + JSON.stringify(plr));
   }
   //fileData.filetype
 }
