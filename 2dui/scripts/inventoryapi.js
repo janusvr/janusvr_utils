@@ -40,6 +40,7 @@ function Task() {
 */
 function log(a) {
   console.log.apply(console, arguments);
+  parent.logToConsole(a);
 //  alert(a)
 }
 
@@ -53,7 +54,7 @@ window.InventoryAPI = new (function InventoryAPI() {
 
   Dispatcher.call(this);
 
-  var apiProxies = ['http://ipfs.strandedin.space:8082'];
+  var apiProxies = ['http://sduck.sytes.net:80/inventory'];
 
   function getAPIUrl() {
     return apiProxies[Math.floor(Math.random() * apiProxies.length)];
@@ -122,7 +123,8 @@ window.InventoryAPI = new (function InventoryAPI() {
       },
 
       error : function(error) {
-        alert('Error :( ' + JSON.stringify(error));
+        log('Error :( ' + JSON.stringify(error));
+		parent.shownotification('Error uploading file to Inventory!','notifications/error.png','null','#442332')
         console.log('upload error', error);
         self.dispatch('uploaderror', {
           id : fileId,
