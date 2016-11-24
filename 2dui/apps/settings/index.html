@@ -18,7 +18,9 @@
  <script>
 
   
-  
+  function roundToTwo(num) {    
+    return +(Math.round(num + "e+2")  + "e-2");
+}
   
   function setDefaults() {
 
@@ -103,8 +105,8 @@
 	document.getElementById("rateform").value =  parent.window.janus.getsetting('rate');  	
 	document.getElementById("portform").value =  parent.window.janus.getsetting('port');  
  
-  	document.getElementById("ipdslider").value =  parent.window.janus.getsetting('ipd')*1000;  
-    document.getElementById("ipdslidernumber").innerHTML =  (parent.window.janus.getsetting('ipd')*1000)+"mm";
+  	document.getElementById("ipdslider").value =  roundToTwo(parent.window.janus.getsetting('ipd')*1000);  
+    document.getElementById("ipdslidernumber").innerHTML =  (roundToTwo(parent.window.janus.getsetting('ipd')*1000))+"mm";
   
   
   }
