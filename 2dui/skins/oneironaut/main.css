@@ -1,12 +1,12 @@
 
  @font-face {
     font-family: "Montserrat";
-    src: url(Montserrat-Regular.ttf);
+    src: url('Montserrat-Regular.ttf');
 }
 
 @font-face {
     font-family: "Open Sans";
-    src: url(OpenSans-Regular.ttf);
+    src: url('OpenSans-Regular.ttf');
 }
 
 
