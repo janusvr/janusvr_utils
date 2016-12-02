@@ -1115,7 +1115,7 @@ function displayTip() {
 			}
 			
 			
-tipshown = 0;
+
 }
 
 
@@ -1176,7 +1176,7 @@ function initsound() {
 
 			
 			
-			if ((window.janus.currentkey == "Esc") && (tipshown != 1))
+			if (tipshown != 1)
 			{
 			setTimeout(function(){ displayTip(); }, 1000);
 			tipshown = 1;
@@ -1194,7 +1194,7 @@ function initsound() {
 		else
 		{
 			document.getElementById("fader").style.backgroundColor = "";
-
+			tipshown = 0;
 		}
 
 
