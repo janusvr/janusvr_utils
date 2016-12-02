@@ -1058,7 +1058,7 @@ function updatePartyMode() {
 			break;
 
 		default:
-			window.janus.launchurl(document.getElementById("progressbar").value,0);
+			window.janus.launchurl(document.getElementById("progressbar").value,1);
 		}
 
 	}
