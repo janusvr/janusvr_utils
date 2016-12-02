@@ -1223,8 +1223,20 @@ function initsound() {
 
 		switch(window.janus.networkstatus) {
 		case 0:
+			
+			if (window.janus.roomserver == "private")
+			{
+			document.getElementById("onlinestatus").onmousemove = function() {showtooltip('This room is <b>private</b>. Nobody can see you here.')}
+			document.getElementById("onlinestatus").className = "stat statisticleftprivate";				
+			}
+			else
+			{
 			document.getElementById("onlinestatus").onmousemove = function() {showtooltip('You are <b>not connected</b> to a presence server.')}
-			document.getElementById("onlinestatus").className = "stat statisticleftdisconnected";
+			document.getElementById("onlinestatus").className = "stat statisticleftdisconnected";				
+			}
+			
+
+			
 			break;
 		case 1:
 			document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Attempting to connect to the <b>'+window.janus.roomserver+'</b> presence server.')}
