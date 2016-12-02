@@ -1140,7 +1140,7 @@ function initsound() {
 
 		if ((getCookie("lastversion") == "")||(getCookie("lastversion") != window.janus.version)) //if you have never previously used janus, or the last used version of janus is not the current version
 		{
-			shownotification('Welcome to JanusVR v'+window.janus.version+'! Press <b>ESC</b> to interact with the HUD.','notifications/logo.png',"null","#323232");
+			shownotification('Welcome to JanusVR v'+window.janus.version+'! <b>Right Click</b> to interact with the HUD.','notifications/logo.png',"null","#323232");
 
 			//set last version checker to current version
 			setCookie("lastversion",window.janus.version,36500)
