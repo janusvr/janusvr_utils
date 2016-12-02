@@ -34,6 +34,12 @@
   bottom:8px;
   left:8px;
   }
+   .statisticleftprivate{
+  background-image: url(icons/newstat/network-private.png);
+  bottom:8px;
+  left:8px;
+  } 
+  
     .statisticleftpending {
   background-image: url(icons/newstat/network-pending.png);
   bottom:8px;
