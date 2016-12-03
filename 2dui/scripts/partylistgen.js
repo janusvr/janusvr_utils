@@ -58,7 +58,7 @@
   
     function launchPortal(url) {
   
-  parent.window.janus.launchurl(url,0);
+  parent.window.janus.launchurl(url,1);
   
   }
   
