@@ -16,7 +16,18 @@
 
 
  <script>
-
+function findGetParameter(parameterName) {
+    var result = null,
+        tmp = [];
+    location.search
+    .substr(1)
+        .split("&")
+        .forEach(function (item) {
+        tmp = item.split("=");
+        if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+    });
+    return result;
+}
   
   function roundToTwo(num) {    
     return +(Math.round(num + "e+2")  + "e-2");
@@ -24,7 +35,10 @@
   
   function setDefaults() {
 
-
+  if (findGetParameter("dashboard") == "true")
+  {
+  document.getElementsByTagName("body")[0].style.zoom = "200%";
+  }
   //set all the default booleans
   document.getElementById("multiplayertoggle").checked = parent.window.janus.getsetting('multiplayer');
   
