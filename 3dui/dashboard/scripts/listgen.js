@@ -1,0 +1,207 @@
+
+  	function extractDomain(url) {
+  	    
+		var domain;
+		if (url != null)
+		{
+		//find & remove protocol (http, ftp, etc.) and get domain
+		if (url.indexOf("://") > -1) {
+			domain = url.split('/')[2];
+		}
+		else {
+			domain = url.split('/')[0];
+		}
+
+		//find & remove port number
+		domain = domain.split(':')[0];
+		}
+		else
+		{
+		domain = "URL Not Found";	
+		}
+		return domain;
+}
+  
+  
+  	function strip(html)
+	{
+		var tmp = document.createElement("DIV");
+		tmp.innerHTML = html;
+		return tmp.textContent || tmp.innerText;
+	}
+	
+  
+  
+  
+ function returnMainArray(arraytype) {
+	if (arraytype == "partymode")
+	{
+		xx = parent.window.janus.partymodedata;
+		
+		
+	}
+	else if (arraytype == "bookmarks")
+	{
+		xx = parent.window.janus.bookmarks;		
+	}
+	else if (arraytype == "workspaces")
+	{
+		
+		xx = parent.window.janus.workspaces;
+	}
+	return xx;		
+} 
+  
+	function trimString(text,mylength) {
+	
+
+	var trimmedString = text.length > mylength ? 
+                    text.substring(0, mylength - 3) + "..." : 
+                    text;	 
+					
+	return trimmedString;
+	
+	}
+	
+	
+function populatePartyObject(){
+    parent.window.janus.updatepartymodedata() 
+    
+}	
+	
+	
+        function generateList(arraytype) {
+
+            var containertopopulate = document.getElementById("cardholder");
+            containertopopulate.innerHTML = ""
+            var mainarray = returnMainArray(arraytype);
+      
+                
+            
+            
+            for (var i=0;i<parent.window.janus.bookmarks.length;i++)
+            {
+                
+            
+                
+                
+                
+            		if (arraytype == "partymode")
+            		{
+            			if (mainarray[i].name == null || mainarray[i].name == "" )
+            			{
+            				
+            
+            				sitename = extractDomain(mainarray[i].url);
+            
+            			
+            			
+            			}
+            			else
+            			{
+            				sitename = mainarray[i].name
+            				sitename = trimString(sitename,32);
+            			}
+            		}
+            		else if ((arraytype == "bookmarks"))
+            		{
+            			if (mainarray[i].title == null || mainarray[i].title == "" )
+            			{
+            				
+            
+            				sitename = extractDomain(mainarray[i].url);
+                            
+            			
+            			
+            			}
+            			else
+            			{
+            				sitename = mainarray[i].title
+            				sitename = trimString(sitename,32);
+            			}			
+            		}
+            		else if (arraytype == "workspaces")
+            		{
+            			sitename = "";
+            		}	
+                
+                
+                var partymodeprefix="";
+                var partymodestring="";
+                
+                if (arraytype == "partymode")
+                {
+                     partymodeprefix = "<b>"
+                     partymodestring = "</b><br> with "+trimString(mainarray[i].userId,24);
+                }
+                
+                
+                
+                
+                //generate elements
+
+          
+                var dashcard=document.createElement("div");
+                dashcard.className = "dashcard"
+                
+                
+                if (arraytype =="bookmarks")
+                {
+                dashcard.style.backgroundImage = "url('../thumbs/bg.png') , url('"+mainarray[i].thumbnail+"')"
+                }
+                else if (arraytype =="partymode")
+                {
+                //               
+                }
+                
+                
+                containertopopulate.appendChild(dashcard)
+                
+                
+              
+                if (sitename == "")
+                {
+                sitename = "Untitled"
+                }
+                
+                var dashtitle=document.createElement("div");
+                dashtitle.innerHTML = (partymodeprefix+strip(sitename)+partymodestring).toUpperCase();  
+                dashtitle.className = "dashtitle"
+                dashcard.appendChild(dashtitle);   
+                
+          
+                
+                if (dashtitle.offsetHeight >54 )
+                {
+                dashtitle.style.bottom = "15px";
+				
+                }
+       
+       
+                var hiddenurlcontainer=document.createElement("div");
+                hiddenurlcontainer.innerHTML = mainarray[i].url;   
+                hiddenurlcontainer.className = "hiddenurlcontainer";
+                hiddenurlcontainer.id = function(arg) {
+								return "myurl"+[arg];
+										}(i);
+				
+           								
+												
+                dashcard.appendChild(hiddenurlcontainer);    
+           
+                              	dashcard.onclick =  function(arg) {
+								return function() {
+									parent.window.janus.launchurl(document.getElementById("myurl"+[arg]).innerHTML,0)
+										}
+										}(i);
+								
+           
+           
+                    
+            }
+            
+        }
+  
+  
+
+        

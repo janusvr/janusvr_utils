@@ -1,0 +1,77 @@
+<!-- Written with Janus VR.  URL: file:///D:/Work/Web Development/Projects/Pocketspace 2/space/index.html -->
+<html>
+<head>
+<title>PocketSpace</title>
+</head>
+<body>
+<FireBoxRoom>
+<Assets>
+<AssetObject id="Xart" src="whiteroom.dae.gz" />
+<AssetImage id="mirror" src="mirror.png" />
+
+<AssetImage id="upsky" src="arctic-ice_up.png" /><AssetImage id="downsky" src="arctic-ice_dn.png" /><AssetImage id="leftsky" src="arctic-ice_lf.png" /><AssetImage id="rightsky" src="arctic-ice_rt.png" /><AssetImage id="frontsky" src="arctic-ice_ft.png" /><AssetImage id="backsky" src="arctic-ice_bk.png" />
+
+<AssetWebSurface height="1000" id="site" show_url_bar="false" src="dashboard/index.html" width="1400" />
+
+
+<AssetImage id="browseportal" src="kportal-36.png" />
+<AssetImage id="socialportal" src="kportal-35.png" />
+<AssetImage id="buildportal" src="kportal-34.png" />
+
+<AssetObject id="tronplane" src="TronTextureTestplane.dae.gz" />
+
+<AssetImage id="radiance" src="cubemap_radiance256.dds" tex_clamp="true" />
+<AssetImage id="irradiance" src="cubemap_irradiance64.dds" tex_clamp="true" />
+
+</Assets>
+<Room cubemap_radiance_id="radiance" cubemap_irradiance_id="irradiance" server="private" port="private" use_local_asset="room_plane" visible="false"  far_dist="10000"  pos="0 0 0"  skybox_right_id="rightsky" skybox_left_id="leftsky" skybox_up_id="upsky" skybox_down_id="downsky" skybox_front_id="backsky" skybox_back_id="frontsky"  >
+    
+   
+
+<Object id="cube"  pos="-65 0 16" xdir="0.000003 -1 0.000005" ydir="0.707106 0.000006 0.707108" zdir="-0.707108 0.000001 0.707106" scale="10 15 30" collision_id="cube" />
+<Object id="cube"  pos="66 0.5 -43" xdir="0.000001 0 1" ydir="-1 0 0.000001" zdir="0 -1 0" scale="10 15 30" collision_id="cube" />
+<Object id="cube" pos="-32 -1 -47" xdir="-1 0 0" ydir="0 0 -1" zdir="0 -1 0" scale="10 15 30" collision_id="cube" />
+<Object id="cube"  pos="-27 -1 69" xdir="-1 0 0.000001" ydir="-0.000001 0 -1" zdir="0 -1 0" scale="5 10 15" collision_id="cube" />
+<Object id="cube"  pos="111 6 -53" xdir="0.000001 0 1" ydir="-1 0 0.000001" zdir="0 -1 0" scale="5 10 15" collision_id="cube" />
+<Object id="cube"  pos="66 -1 -58" xdir="0 0 -1" ydir="0 -1 0" zdir="-1 0 0" scale="5 10 15" collision_id="cube" />
+<Object id="cube"  pos="-27 14 70" xdir="0 0 1" ydir="-1 0 0" zdir="0 -1 0" scale="5 2 8" collision_id="cube" />
+<Object id="cube"  pos="112 74 101" xdir="0.000001 0 1" ydir="-1 0 0.000001" zdir="0 -1 0" scale="5 2 8" collision_id="cube" />
+<Object id="cube"  pos="112 81 101" xdir="0.000001 0 1" ydir="-1 0 0.000001" zdir="0 -1 0" scale="5 2 2" collision_id="cube" />
+<Object id="cube"  pos="-214 2 -199" xdir="-0.866024 0 -0.500002" ydir="0.500002 0 -0.866024" zdir="0 -1 0" scale="24 6 61" collision_id="cube" />
+<Object id="cube"  pos="91 -4 -325" xdir="1 0 -0.000001" ydir="0.000001 0 1" zdir="0 -1 0" scale="3 6 30" collision_id="cube" />
+
+<Object visible="false" id="plane"  pos="5 1 0" xdir="0.000001 0 1" zdir="-1 0 0.000001" scale="13 6 1" collision_id="plane" />
+<Object visible="false" id="plane"  pos="-5 1 0" xdir="-0.000004 0 -1" zdir="1 0 -0.000004" scale="13 6 1" collision_id="plane" />
+<Object visible="false" id="plane"  pos="0 3.59 0" xdir="-1 -0 -0" ydir="0 0.000001 -1" zdir="0 -1 -0.000001" scale="14 14 3" collision_id="plane" />
+
+<Object id="tronplane"  xdir="0.000001 0 -1" zdir="1 0 0.000001" pos="0 -0.35  0" scale="4 5 4"/>
+
+
+
+    
+    
+<Object id="Xart"  pos="0 0 6.5" xdir="0.000001 0 -1" zdir="1 0 0.000001" scale="1 1 1" lighting="false" />
+
+<Link  pos="-2 0 -5" xdir="1 0 0.000002" zdir="-0.000002 0 1" scale="1.5 3 1" col="#40c080" thumb_id="buildportal" url="http://reddit.com/r/vrsites/" draw_glow="false" draw_text="false" />
+<Link  pos="0 0 -5" xdir="1 0 0.000002" zdir="-0.000002 0 1" scale="1.5 3 1" col="#40c080" thumb_id="socialportal" url="http://www.janusvr.com/newlobby/index.html" draw_glow="false" draw_text="false" />
+<Link  pos="2 0 -5" xdir="1 0 0.000002" zdir="-0.000002 0 1" scale="1.5 3 1" col="#40c080" thumb_id="browseportal" url="http://vesta.janusvr.com/" draw_glow="false" draw_text="false" />
+
+
+
+
+<Object id="plane"  locked="true"  pos="0 1.65 4.9" xdir="-1 0 -0.000002" zdir="0.000002 0 -1" scale="7 3 5" lighting="false" collision_id="plane"  websurface_id="site"  />
+
+
+
+<Link pos="0 0 5.15" xdir="-1 0 -0.000001" zdir="0.000001 0 -1" scale="11.5 4 1" col="#4080c0" thumb_id="i" url="" auto_load="true" draw_glow="false" draw_text="false" mirror="true" />
+<Link pos="0 0 -5.15" xdir="1 0 0.000003" zdir="-0.000003 0 1" scale="11.5 4 1" col="#4080c0" thumb_id="i" url="" auto_load="true" draw_glow="false" draw_text="false" mirror="true" />
+
+
+
+<Object id="plane" pos="0 1 -5" xdir="0 1 -0.000001" ydir="1 0 0.000002" zdir="0.000002 -0.000001 -1" scale="5 14 4" lighting="false" collision_id="plane" image_id="mirror" />
+<Object id="plane" pos="0 1 5" xdir="0.00001 1 0.000001" ydir="-1 0.00001 0.000005" zdir="0.000005 -0.000001 1" scale="5 14 4" lighting="false" collision_id="plane" image_id="mirror" />
+
+</Room>
+</FireBoxRoom>
+</body>
+</html>
