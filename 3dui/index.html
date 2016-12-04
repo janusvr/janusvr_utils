@@ -11,7 +11,7 @@
 
 <AssetImage id="upsky" src="arctic-ice_up.png" /><AssetImage id="downsky" src="arctic-ice_dn.png" /><AssetImage id="leftsky" src="arctic-ice_lf.png" /><AssetImage id="rightsky" src="arctic-ice_rt.png" /><AssetImage id="frontsky" src="arctic-ice_ft.png" /><AssetImage id="backsky" src="arctic-ice_bk.png" />
 
-<AssetWebSurface height="1000" id="site" show_url_bar="false" src="dashboard/index.html" width="1400" />
+<AssetWebSurface width="1600" height="1000" id="site" show_url_bar="false" src="dashboard/index.html"  />
 
 
 <AssetImage id="browseportal" src="kportal-36.png" />
@@ -24,7 +24,7 @@
 <AssetImage id="irradiance" src="cubemap_irradiance64.dds" tex_clamp="true" />
 
 </Assets>
-<Room cubemap_radiance_id="radiance" cubemap_irradiance_id="irradiance" server="private" port="private" use_local_asset="room_plane" visible="false"  far_dist="10000"  pos="0 0 0"  skybox_right_id="rightsky" skybox_left_id="leftsky" skybox_up_id="upsky" skybox_down_id="downsky" skybox_front_id="backsky" skybox_back_id="frontsky"  >
+<Room cubemap_radiance_id="radiance" cubemap_irradiance_id="irradiance" server="private" port="private" use_local_asset="room_plane" visible="false"  far_dist="10000"  pos="0 0 1"  skybox_right_id="rightsky" skybox_left_id="leftsky" skybox_up_id="upsky" skybox_down_id="downsky" skybox_front_id="backsky" skybox_back_id="frontsky"  >
     
    
 
@@ -59,7 +59,7 @@
 
 
 
-<Object id="plane"  locked="true"  pos="0 1.65 4.9" xdir="-1 0 -0.000002" zdir="0.000002 0 -1" scale="7 3 5" lighting="false" collision_id="plane"  websurface_id="site"  />
+<Object id="plane"  locked="true"  pos="0 1.65 4.9" xdir="-1 0 -0.000002" zdir="0.000002 0 -1" scale="6 3 5" lighting="false" collision_id="plane"  websurface_id="site"  />
 
 
 
