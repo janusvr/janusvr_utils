@@ -76,7 +76,22 @@ function populatePartyObject(){
             containertopopulate.innerHTML = ""
             var mainarray = returnMainArray(arraytype);
       
-                
+              	if (arraytype == "partymode")
+            		{
+						if ((mainarray.length < 1))
+						{
+							
+							document.getElementById("mainbody").style.backgroundImage = "url('../../backgrounds/parties.png')";
+							
+							
+						}
+						else
+						{
+							document.getElementById("mainbody").style.backgroundImage = "";
+						}
+					
+					
+					}
             
             
             for (var i=0;i<parent.window.janus.bookmarks.length;i++)
