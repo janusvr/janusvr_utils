@@ -16,6 +16,8 @@
 
 
  <script>
+
+ 
 function findGetParameter(parameterName) {
     var result = null,
         tmp = [];
@@ -37,8 +39,41 @@ function findGetParameter(parameterName) {
 
   if (findGetParameter("dashboard") == "true")
   {
-  document.getElementsByTagName("body")[0].style.zoom = "200%";
+  document.getElementsByTagName("body")[0].style.zoom = "300%";
+  document.getElementById("windowarea").style.textAlign = "center";	 
+  document.getElementById("windowarea").style.backgroundColor = "rgba(0,0,0,0)";
+  
+	  // this gets all h4 tags
+	var myList = document.getElementsByClassName("item"); // get all p elements
+
+	// this loops through them until it finds one with the class 'icontitle' then it assigns the style to it
+	var i = 0;
+	while(i < myList.length) {
+		
+			myList[i].style.backgroundColor="#2F363B";
+			myList[i].style.borderRadius = "5px"
+			myList[i].style.margin = "5px 75px";
+		
+		i++;
+	}
+	
+	var myList = document.getElementsByClassName("header"); // get all p elements
+
+	// this loops through them until it finds one with the class 'icontitle' then it assigns the style to it
+	var i = 0;
+	while(i < myList.length) {
+		
+			myList[i].style.textAlign="center";
+
+		
+		i++;
+	}
+	
+  
+  
   }
+  
+  
   //set all the default booleans
   document.getElementById("multiplayertoggle").checked = parent.window.janus.getsetting('multiplayer');
   
@@ -555,7 +590,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 						<!--<div>Mode:</div>-->
 							<div >
 								<input  type='radio' name="posture" class="myCheckbox" id="postureseatedradiobutton" onchange="if (this.checked == true){window.janus.setsetting('seated', true);}" >
-								Seated Mode - Physical and virtual orientations can vary. Controllers modify orientation.<br>
+								Seated Mode - Physical and virtual orientations can vary. Controllers modify orientation.<br><hr>
 								<input  type='radio' name="posture" class="myCheckbox" id="posturestandingradiobutton" onchange="if (this.checked == true){window.janus.setsetting('seated', false);}" >
 								Standing Mode - Physical and virtual orientations stay constant. Controllers do not modify orientation.
 							</div>
