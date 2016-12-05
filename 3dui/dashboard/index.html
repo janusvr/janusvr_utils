@@ -20,9 +20,58 @@
 	    }
 	    
 	    window.onload = function(){
+		
+		
+		 		getPartySetting();    
 	        window.janus.updatepartymodedata() 
+			
+			
+			
+			
+					setInterval(
+        function(){
+        getPartySetting();   
+        },500);
+            
 	    }
 	    
+		
+				function getPartySetting() {
+		  
+		if (parent.window.janus.getsetting('partymode') == true)
+		{
+		document.getElementById("cardoption").className = "cardoptiontoggled";
+		document.getElementById("cardoption").innerHTML = "CLICK TO END PARTY";		
+		}
+		else
+		{
+		document.getElementById("cardoption").className = "cardoption";		
+		document.getElementById("cardoption").innerHTML = "HOST A PARTY AT MY LOCATION";				
+		}
+
+		
+		}
+		
+		function togglePartySetting() {
+		
+		
+		if (parent.window.janus.getsetting('partymode') == true)
+		{
+		parent.window.janus.setsetting('partymode',false)
+		}
+		else
+		{
+		parent.window.janus.setsetting('partymode',true)	
+		}
+		
+
+		}
+		
+		
+		
+		
+		
+		
 	</script>
 	
 	<body class="noselect">
@@ -36,7 +85,7 @@
 			<li class="panelbutton settingsbutton" onmousedown="document.getElementById('dashdisplay').src='../../2dui/apps/settings/index.html?dashboard=true'; setClass(this)"></li>	
 			<li class="panelbutton quitbutton" onmousedown="document.getElementById('dashdisplay').src='apps/quit/index.html'; setClass(this)"></li>		
 		</ul>
-		
+         		<div class="cardoption" onclick="togglePartySetting();" id="cardoption">HOST A PARTY AT MY LOCATION</div>	   		
 	</body>
 
 </html>
