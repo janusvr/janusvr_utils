@@ -7,7 +7,7 @@
         
         <script>
                     window.onload = function() {
-      
+		getPartySetting();    
         parent.window.janus.updatepartymodedata();
 
         setTimeout(
@@ -24,23 +24,57 @@
             
          setInterval(
         function(){
-        populatePartyObject()
+        populatePartyObject();
         },5000);
                        
-            
+         setInterval(
+        function(){
+        getPartySetting();   
+        },500);
             
         
         }
         
             
+		function getPartySetting() {
+		  
+		if (parent.window.janus.getsetting('partymode') == true)
+		{
+		document.getElementById("cardoption").className = "cardoptiontoggled";
+		document.getElementById("cardoption").innerHTML = "CLICK TO END PARTY";		
+		}
+		else
+		{
+		document.getElementById("cardoption").className = "cardoption";		
+		document.getElementById("cardoption").innerHTML = "HOST A PARTY AT MY LOCATION";				
+		}
+
+		
+		}
+		
+		function togglePartySetting() {
+		
+		
+		if (parent.window.janus.getsetting('partymode') == true)
+		{
+		parent.window.janus.setsetting('partymode',false)
+		}
+		else
+		{
+		parent.window.janus.setsetting('partymode',true)	
+		}
+		
+
+		}
+			
         </script>
         
 	</head>
-	<body class="noselect"  >
+	<body class="noselect" id="mainbody" >
 
 
         		<div class="cardtitle" id="cardtitle">PARTIES</div>
-        			
+        		<div class="cardoption" onclick="togglePartySetting();" id="cardoption">HOST A PARTY AT MY LOCATION</div>	
         		<ul class="cardholder" id="cardholder" >
 
         		</ul>
