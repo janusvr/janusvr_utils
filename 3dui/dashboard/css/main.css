@@ -37,7 +37,7 @@ background-repeat: no-repeat;
 
 .dashdisplay {
 width:100%;
-height:calc(100% - 164px);
+height:calc(100% - 196px);
 display:block;
 border-style: none;
 }
@@ -54,7 +54,10 @@ margin: 0 0 0 0;
 }
 
 .panelbutton {
-margin: 32px;
+margin-top: 32px;
+margin-left: 32px;
+margin-right: 32px;
+margin-bottom:8px;
 background-color: white;
 border-radius:10px;
 padding-left:96px;
@@ -219,11 +222,11 @@ color:white;
 text-align:center;
 background-color:#111111;
    z-index: 1000;
-bottom:0px;
+bottom:128px;
 font-size:24px;
-margin-left:calc(50% - 154px) ;
+margin-left:calc(50% - 208px) ;
 margin-right:50%;
-width:300px;
+width:400px;
 cursor:pointer;
 padding:8px;
 
@@ -243,11 +246,12 @@ color:white;
 text-align:center;
 background-color:#555555;
 
-bottom:0px;
+bottom:128px;
+
 font-size:24px;
-margin-left:calc(50% - 154px) ;
+margin-left:calc(50% - 208px) ;
 margin-right:50%;
-width:300px;
+width:400px;
 cursor:pointer;
 padding:8px;
 
