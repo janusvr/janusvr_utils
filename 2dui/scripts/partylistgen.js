@@ -200,7 +200,11 @@ var sitename;
 	}
 	else
 	{
-	document.getElementById("windowarea").style.backgroundImage = "url(../../backgrounds/starssearch.png)"
+	
+		if (arraytype == "partymode")
+		{
+			document.getElementById("windowarea").style.backgroundImage = "url(../../backgrounds/starssearch.png)"
+		}
 	}
 	
   
