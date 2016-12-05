@@ -218,7 +218,7 @@ font-family: 'Open Sans';
 color:white;
 text-align:center;
 background-color:#111111;
-
+   z-index: 1000;
 bottom:32px;
 font-size:24px;
 margin-left:calc(50% - 154px) ;
@@ -237,6 +237,7 @@ color:#111111;
 .cardoptiontoggled {
     border-radius:5px;
 	position:fixed;
+	   z-index: 1000;
 font-family: 'Open Sans';
 color:white;
 text-align:center;
