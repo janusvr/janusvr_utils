@@ -744,7 +744,8 @@ opacity:0.75;
   body {
   background-color: rgba(0,0,0,0);
   overflow:hidden;
-  margin: 0px 0px;
+  margin: 0px 0px 0px 0px;
+  margin-top: 1px;
   }
 
 
