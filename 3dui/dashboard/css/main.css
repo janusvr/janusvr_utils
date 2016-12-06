@@ -132,11 +132,11 @@ background-image: url('../images/settingshover.png');
 background-position:center;
 background-size: 96px 96px;
 background-repeat: no-repeat;
-padding-left:48px;
-padding-right:48px;
-right:128px;
+padding-left:32px;
+padding-right:32px;
+right:96px;
 position:absolute;
-bottom:0px;
+top:0px;
 background-color:rgba(0,0,0,0);
 }
 .settingsbutton:hover {
@@ -152,11 +152,11 @@ background-position:center;
 background-size: 96px 96px;
 background-repeat: no-repeat;
 background-color:rgba(0,0,0,0);
-padding-left:48px;
-padding-right:48px;
+padding-left:32px;
+padding-right:32px;
 right:8px;
 position:absolute;
-bottom:0px;
+top:0px;
 
 }
 .quitbutton:hover {
@@ -210,7 +210,7 @@ border-bottom-right-radius:5px;
 font-family: 'Montserrat';
 color:white;
 text-align:center;
-background-color:#111111;
+background-color:rgba(0,0,0,0);
 
 font-size:42px;
 margin-left:2.5%;
