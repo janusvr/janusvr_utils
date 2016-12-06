@@ -238,9 +238,9 @@ border-color:white;
    z-index: 1000;
 bottom:128px;
 font-size:24px;
-margin-left:calc(50% - 108px) ;
+margin-left:calc(50% - 96px) ;
 margin-right:50%;
-width:200px;
+width:176px;
 cursor:pointer;
 padding:8px;
 
@@ -266,9 +266,9 @@ border-color:white;
    z-index: 1000;
 bottom:128px;
 font-size:24px;
-margin-left:calc(50% - 108px) ;
+margin-left:calc(50% - 96px) ;
 margin-right:50%;
-width:200px;
+width:176px;
 cursor:pointer;
 padding:8px;
 
