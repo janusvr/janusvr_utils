@@ -68,9 +68,18 @@
 		}
 		
 		
+		function setWidth(mywidth) {
 		
+		document.getElementById('dashdisplay').style.width = mywidth;
+
+		document.getElementById('dashdisplay').style.marginLeft = (document.getElementsByTagName('body')[0].offsetWidth-document.getElementById('dashdisplay').offsetWidth)*0.5+"px";
+	
+		}
 		
-		
+	function retnum(str) { 
+    var num = str.replace(/[^0-9]/g, ''); 
+    return num; 
+}	
 		
 	</script>
 	
@@ -80,15 +89,15 @@
 		<ul class="panel">
 		
 
-	<li class="panelbutton popularbutton" onmousedown="document.getElementById('dashdisplay').src='apps/popular/index.html'; setClass(this)"></li>
-	<li class="panelbutton partiesbutton" onmousedown="document.getElementById('dashdisplay').src='apps/parties/index.html'; setClass(this)"></li>
-	<li class="panelbutton bookmarksbutton selected" onmousedown="document.getElementById('dashdisplay').src='apps/bookmarks/index.html'; setClass(this)"></li>
+	<li class="panelbutton popularbutton" onmousedown="document.getElementById('dashdisplay').src='apps/popular/index.html'; setClass(this); setWidth('100%');"></li>
+	<li class="panelbutton partiesbutton" onmousedown="document.getElementById('dashdisplay').src='apps/parties/index.html'; setClass(this); setWidth('100%');"></li>
+	<li class="panelbutton bookmarksbutton selected" onmousedown="document.getElementById('dashdisplay').src='apps/bookmarks/index.html'; setClass(this); setWidth('100%');"></li>
 			
 		
 		</ul>
-         		<div class="cardoption" onclick="togglePartySetting();" id="cardoption">HOST A PARTY AT MY LOCATION</div>
-				<div class="panelbutton quitbutton" onmousedown="document.getElementById('dashdisplay').src='apps/quit/index.html'; setClass(this)"></div>	
-				<li class="panelbutton settingsbutton" onmousedown="document.getElementById('dashdisplay').src='../../2dui/apps/settings/index.html?dashboard=true'; setClass(this)"></li>	
+         		<div class="cardoption" onclick="togglePartySetting();" id="cardoption">HOST PARTY</div>
+				<div class="panelbutton quitbutton" onmousedown="document.getElementById('dashdisplay').src='apps/quit/index.html'; setClass(this); setWidth('100%');"></div>	
+				<li class="panelbutton settingsbutton" onmousedown="document.getElementById('dashdisplay').src='../../2dui/apps/settings/index.html?dashboard=true'; setClass(this); setWidth('73%');"></li>	
 	</body>
 
 </html>
