@@ -41,12 +41,12 @@
 		if (parent.window.janus.getsetting('partymode') == true)
 		{
 		document.getElementById("cardoption").className = "cardoptiontoggled";
-		document.getElementById("cardoption").innerHTML = "CLICK TO END PARTY";		
+		document.getElementById("cardoption").innerHTML = "HOST PARTY";		
 		}
 		else
 		{
 		document.getElementById("cardoption").className = "cardoption";		
-		document.getElementById("cardoption").innerHTML = "HOST A PARTY AT MY LOCATION";				
+		document.getElementById("cardoption").innerHTML = "END PARTY";				
 		}
 
 		
@@ -79,10 +79,10 @@
 		<iframe id="dashdisplay" class="dashdisplay" src="apps/bookmarks/index.html"></iframe>
 		<ul class="panel">
 		
-	<li class="panelbutton bookmarksbutton selected" onmousedown="document.getElementById('dashdisplay').src='apps/bookmarks/index.html'; setClass(this)"></li>
+
 	<li class="panelbutton popularbutton" onmousedown="document.getElementById('dashdisplay').src='apps/popular/index.html'; setClass(this)"></li>
 	<li class="panelbutton partiesbutton" onmousedown="document.getElementById('dashdisplay').src='apps/parties/index.html'; setClass(this)"></li>
-
+	<li class="panelbutton bookmarksbutton selected" onmousedown="document.getElementById('dashdisplay').src='apps/bookmarks/index.html'; setClass(this)"></li>
 			
 		
 		</ul>
