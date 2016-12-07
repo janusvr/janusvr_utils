@@ -1,0 +1,54 @@
+<html>
+	<head>
+		<title>JanusVR Dashboard App</title>
+		<link rel="stylesheet" type="text/css" href="../../css/main.css" />
+	
+	
+	
+		
+	<script>
+	function getRandomInt(min, max) {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
+	function setText() {
+		var possible = ["See you, webspace cowboy.","Good luck!","Thanks for stopping by.","See you soon!","Take care!","Have a great day!"]
+		
+		var mychoice = possible[getRandomInt(0,possible.length-1)];
+
+		if (document.getElementById("maincardtitle").innerHTML == "ARE YOU SURE YOU WANT TO LEAVE?")
+			{
+				document.getElementById("maincardtitle").innerHTML = mychoice.toUpperCase();
+			}
+		
+		setTimeout(
+		function(){
+		parent.window.janus.quit();
+		}
+		,500)
+	}
+	</script>
+	
+	
+	
+	</head>
+
+	
+	<body class="noselect">
+
+
+	    
+		<div class="cardtitle" id="maincardtitle" >ARE YOU SURE YOU WANT TO LEAVE?</div>
+
+		<ul class="cardholder" style="padding-top:9%;">
+	
+			
+
+			<div class="dashcard" style="background-image:url('../../thumbs/quit.png');" onclick="setText();" >
+				<div class="dashtitle">CLICK HERE TO LEAVE</div>
+			</div>
+		
+			
+		</ul>
+	</body>
+</html>

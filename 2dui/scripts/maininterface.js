@@ -1058,7 +1058,7 @@ function updatePartyMode() {
 			break;
 
 		default:
-			window.janus.launchurl(document.getElementById("progressbar").value,0);
+			window.janus.launchurl(document.getElementById("progressbar").value,1);
 		}
 
 	}
@@ -1115,7 +1115,7 @@ function displayTip() {
 			}
 			
 			
-tipshown = 0;
+
 }
 
 
@@ -1140,7 +1140,7 @@ function initsound() {
 
 		if ((getCookie("lastversion") == "")||(getCookie("lastversion") != window.janus.version)) //if you have never previously used janus, or the last used version of janus is not the current version
 		{
-			shownotification('Welcome to JanusVR v'+window.janus.version+'! Press <b>ESC</b> to interact with the HUD.','notifications/logo.png',"null","#323232");
+			shownotification('Welcome to JanusVR v'+window.janus.version+'! <b>Right Click</b> to interact with the HUD.','notifications/logo.png',"null","#323232");
 
 			//set last version checker to current version
 			setCookie("lastversion",window.janus.version,36500)
@@ -1176,7 +1176,7 @@ function initsound() {
 
 			
 			
-			if ((window.janus.currentkey == "Esc") && (tipshown != 1))
+			if (tipshown != 1)
 			{
 			setTimeout(function(){ displayTip(); }, 1000);
 			tipshown = 1;
@@ -1194,7 +1194,7 @@ function initsound() {
 		else
 		{
 			document.getElementById("fader").style.backgroundColor = "";
-
+			tipshown = 0;
 		}
 
 
@@ -1223,8 +1223,20 @@ function initsound() {
 
 		switch(window.janus.networkstatus) {
 		case 0:
+			
+			if (window.janus.roomserver == "private")
+			{
+			document.getElementById("onlinestatus").onmousemove = function() {showtooltip('This room is <b>private</b>. Nobody can see you here.')}
+			document.getElementById("onlinestatus").className = "stat statisticleftprivate";				
+			}
+			else
+			{
 			document.getElementById("onlinestatus").onmousemove = function() {showtooltip('You are <b>not connected</b> to a presence server.')}
-			document.getElementById("onlinestatus").className = "stat statisticleftdisconnected";
+			document.getElementById("onlinestatus").className = "stat statisticleftdisconnected";				
+			}
+			
+
+			
 			break;
 		case 1:
 			document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Attempting to connect to the <b>'+window.janus.roomserver+'</b> presence server.')}

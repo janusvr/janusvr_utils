@@ -1,12 +1,12 @@
 
  @font-face {
     font-family: "Montserrat";
-    src: url(Montserrat-Regular.ttf);
+    src: url('Montserrat-Regular.ttf');
 }
 
 @font-face {
     font-family: "Open Sans";
-    src: url(OpenSans-Regular.ttf);
+    src: url('OpenSans-Regular.ttf');
 }
 
 
@@ -34,6 +34,12 @@
   bottom:8px;
   left:8px;
   }
+   .statisticleftprivate{
+  background-image: url(icons/newstat/network-private.png);
+  bottom:8px;
+  left:8px;
+  } 
+  
     .statisticleftpending {
   background-image: url(icons/newstat/network-pending.png);
   bottom:8px;
@@ -738,7 +744,8 @@ opacity:0.75;
   body {
   background-color: rgba(0,0,0,0);
   overflow:hidden;
-  margin: 0px 0px;
+  margin: 0px 0px 0px 0px;
+  margin-top: 1px;
   }
 
 

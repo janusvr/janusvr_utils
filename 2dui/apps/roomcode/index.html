@@ -21,7 +21,7 @@
   }
   else
   {
-  document.getElementById("textinput").value = "The webspace you're in is locked. Try going elsewhere."  
+  document.getElementById("textinput").value = window.janus.roomcode();
   }
   
   
@@ -42,8 +42,8 @@
   }
   else
   {
-  //parent.shownotification('You can\'t make changes to a locked webspace. ','notifications/locked.png',"null","#442332");
-   window.janus.setroomcode(document.getElementById("textinput").value);
+  parent.shownotification('You can\'t make changes to a locked webspace. ','notifications/locked.png',"null","#442332");
+  //window.janus.setroomcode(document.getElementById("textinput").value);
   }
   
   

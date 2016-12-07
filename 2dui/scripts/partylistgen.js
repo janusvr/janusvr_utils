@@ -58,7 +58,7 @@
   
     function launchPortal(url) {
   
-  parent.window.janus.launchurl(url,0);
+  parent.window.janus.launchurl(url,1);
   
   }
   
@@ -200,7 +200,11 @@ var sitename;
 	}
 	else
 	{
-	document.getElementById("windowarea").style.backgroundImage = "url(../../backgrounds/starssearch.png)"
+	
+		if (arraytype == "partymode")
+		{
+			document.getElementById("windowarea").style.backgroundImage = "url(../../backgrounds/starssearch.png)"
+		}
 	}
 	
   

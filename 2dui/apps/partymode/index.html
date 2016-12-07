@@ -17,7 +17,13 @@
   initializeAppTheme("../../")
   tabSelect("maintabcontainer","maintabbutton")
   window.onresize()
-  document.getElementById("partytoggle").checked = parent.window.janus.getsetting('partymode');
+  
+           setInterval(
+        function(){
+        document.getElementById("partytoggle").checked = parent.window.janus.getsetting('partymode');
+        },500);
+  
+
 
   setRegularPartyUpdate(document.getElementById("partycontainer"),"partymode",5000,1); //create a party list based on certain data to a certain container
 

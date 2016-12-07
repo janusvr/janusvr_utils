@@ -1,0 +1,291 @@
+ @font-face {
+    font-family: "Montserrat";
+    src: url('Montserrat-Regular.ttf');
+}
+
+@font-face {
+    font-family: "Open Sans";
+    src: url('OpenSans-Regular.ttf');
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Chrome/Safari/Opera */
+     -khtml-user-select: none; /* Konqueror */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  not supported by any browser */
+}
+
+
+
+
+
+
+body{
+
+width:100%; 
+height:100%;
+margin: 0 0 0 0;
+overflow-x:hidden;
+
+background-position: center;
+background-repeat: no-repeat;
+}
+
+
+.dashdisplay {
+width:100%;
+height:calc(100% - 196px);
+display:block;
+border-style: none;
+}
+
+.panel {
+
+display:block;
+text-align:center;
+position:absolute;
+bottom:0;
+width:inherit;
+margin: 0 0 0 0;
+
+}
+
+.panelbutton {
+margin-top: 32px;
+margin-left: 32px;
+margin-right: 32px;
+margin-bottom:8px;
+background-color: white;
+border-radius:10px;
+padding-left:96px;
+padding-right:96px;
+display:inline-block;
+text-align:center;
+padding-top:48px;
+padding-bottom:48px;
+-webkit-filter: brightness(0.35);
+
+}
+
+.hiddenurlcontainer {
+    
+display:none;
+}
+
+.panelbutton.selected {
+
+-webkit-filter: brightness(1.25);
+}
+
+
+.panelbutton:hover {
+background-color:#61BE6C;
+-webkit-filter: brightness(1);
+}
+
+.popularbutton {
+background-image: url('../images/popular.png');
+background-position:center;
+background-size: 96px 96px;
+background-repeat: no-repeat;
+
+}
+.popularbutton:hover {
+background-image: url('../images/popularhover.png');
+background-position:center;
+background-size: 96px 96px;
+background-repeat: no-repeat;
+}
+
+.bookmarksbutton {
+background-image: url('../images/bookmarks.png');
+background-position:center;
+background-size: 96px 96px;
+background-repeat: no-repeat;
+}
+.bookmarksbutton:hover {
+background-image: url('../images/bookmarkshover.png');
+background-position:center;
+background-size: 96px 96px;
+background-repeat: no-repeat;
+}
+
+.partiesbutton {
+background-image: url('../images/parties.png');
+background-position:center;
+background-size: 96px 96px;
+background-repeat: no-repeat;
+}
+.partiesbutton:hover {
+background-image: url('../images/partieshover.png');
+background-position:center;
+background-size: 96px 96px;
+background-repeat: no-repeat;
+}
+
+
+.settingsbutton {
+background-image: url('../images/settingshover.png');
+background-position:center;
+background-size: 96px 96px;
+background-repeat: no-repeat;
+padding-left:32px;
+padding-right:32px;
+right:96px;
+position:absolute;
+top:0px;
+background-color:rgba(0,0,0,0);
+}
+.settingsbutton:hover {
+background-image: url('../images/settingshover.png');
+background-position:center;
+background-size: 96px 96px;
+background-repeat: no-repeat;
+}
+
+.quitbutton {
+background-image: url('../images/quithover.png');
+background-position:center;
+background-size: 96px 96px;
+background-repeat: no-repeat;
+background-color:rgba(0,0,0,0);
+padding-left:32px;
+padding-right:32px;
+right:8px;
+position:absolute;
+top:0px;
+
+}
+.quitbutton:hover {
+background-image: url('../images/quithover.png');
+background-position:center;
+background-size: 96px 96px;
+background-repeat: no-repeat;
+background-color:#EB0064;
+}
+
+
+.dashcard {
+display:inline-block;
+margin: 10px 10px;
+padding-top:256px;
+background-image:url('../thumbs/bg.png');
+max-height:61px;
+min-height:61px;
+
+width:400px;
+max-width:400px;
+min-width:400px;
+
+
+border-radius:5px;
+background-color:white;
+background-position:center;
+background-size:cover;
+}
+
+.dashcard:hover {
+-webkit-filter: brightness(1.5) !important;
+cursor:pointer;
+}
+
+.dashtitle {
+color:white;
+padding-top:16px;
+padding-bottom:16px;
+font-family: 'Montserrat';
+background-color: rgba(0,0,0,0.75);
+font-size:18px;
+bottom:-7px;
+position:relative;
+border-bottom-left-radius:5px;
+border-bottom-right-radius:5px;
+}
+
+.cardtitle {
+    
+font-family: 'Montserrat';
+color:white;
+text-align:center;
+background-color:rgba(0,0,0,0);
+
+font-size:42px;
+margin-left:2.5%;
+margin-right:2.5%;
+margin-top:32px;
+padding-top:8px;
+padding-bottom:8px;
+    margin-bottom:32px;
+}
+
+ul {
+padding: 0 0 0 0;
+}
+
+.cardoption {
+    border-radius:5px;
+	position:fixed;
+font-family: 'Open Sans';
+color:white;
+text-align:center;
+background-color:rgba(0,0,0,0);
+border-style:solid;
+border-width:2px;
+border-color:white;
+   z-index: 1000;
+bottom:128px;
+font-size:24px;
+margin-left:calc(50% - 96px) ;
+margin-right:50%;
+width:176px;
+cursor:pointer;
+padding:8px;
+
+}
+
+.cardoption:hover {
+border-style:none;
+background-color:white;
+color:black;
+
+}
+
+.cardoptiontoggled {
+    border-radius:5px;
+	position:fixed;
+font-family: 'Open Sans';
+color:white;
+text-align:center;
+background-color:rgba(0,0,0,0);
+border-style:solid;
+border-width:2px;
+border-color:white;
+   z-index: 1000;
+bottom:128px;
+font-size:24px;
+margin-left:calc(50% - 96px) ;
+margin-right:50%;
+width:176px;
+cursor:pointer;
+padding:8px;
+
+}
+
+.cardoptiontoggled:hover {
+border-style:none;
+background-color:white;
+color:black;
+
+}
+
+.dashtitle b {
+color: #61BE6C;
+
+}
+
+.cardholder {
+text-align:center;
+}
