@@ -1,4 +1,19 @@
+	function randomNumber(seed) {
+	
+	var origseed = seed;
+		if (typeof seed == "string")
+		{
+		seed = origseed.length*origseed.charCodeAt(1);
+		}
+	
+    var x = Math.sin(seed++) * 10000;
 
+    return x - Math.floor(x);
+	
+	}
+	
+	
+	
   	function extractDomain(url) {
   	    
 		var domain;
@@ -97,7 +112,7 @@ function populatePartyObject(){
             for (var i=0;i<parent.window.janus.bookmarks.length;i++)
             {
                 
-            
+
                 
                 
                 
@@ -160,14 +175,15 @@ function populatePartyObject(){
                 dashcard.className = "dashcard"
                 
                 
-                if (arraytype =="bookmarks")
-                {
-                dashcard.style.backgroundImage = "url('../thumbs/bg.png') , url('"+mainarray[i].thumbnail+"')"
-                }
-                else if (arraytype =="partymode")
-                {
-                //               
-                }
+					if (arraytype == "partymode")
+					{
+						dashcard.setAttribute("style","-webkit-filter:hue-rotate(" + (randomNumber(strip(mainarray[i].userId))*360) + "deg);visibility: visible !important;")	
+					}
+					else if ((arraytype == "bookmarks") || (arraytype == "workspaces"))
+					{
+						dashcard.setAttribute("style","background:linear-gradient(rgba(0, 0, 0, 0.7),rgba(0, 0, 0, 0.1)), url('" + mainarray[i].thumbnail + "') no-repeat scroll center;visibility: visible !important;background-size:cover;")
+						
+					}	
                 
                 
                 containertopopulate.appendChild(dashcard)
@@ -218,5 +234,4 @@ function populatePartyObject(){
         }
   
   
-
         
