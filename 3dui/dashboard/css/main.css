@@ -188,7 +188,7 @@ background-size:cover;
 }
 
 .dashcard:hover {
--webkit-filter: brightness(2) !important;
+-webkit-filter: brightness(1.5) !important;
 cursor:pointer;
 }
 
