@@ -180,7 +180,7 @@ width:400px;
 max-width:400px;
 min-width:400px;
 
--webkit-filter: brightness(0.75);
+
 border-radius:5px;
 background-color:white;
 background-position:center;
@@ -188,7 +188,7 @@ background-size:cover;
 }
 
 .dashcard:hover {
--webkit-filter: brightness(1.25);
+-webkit-filter: brightness(2);
 cursor:pointer;
 }
 
