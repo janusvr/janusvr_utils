@@ -175,13 +175,13 @@ function populatePartyObject(){
                 dashcard.className = "dashcard"
                 
                 
-					if (arraytype == "partymode")
+					if ((arraytype == "partymode")||(arraytype == "popular"))
 					{
-						dashcard.setAttribute("style","-webkit-filter:hue-rotate(" + (randomNumber(strip(mainarray[i].userId))*360) + "deg);visibility: visible !important;")	
+						dashcard.setAttribute("style","-webkit-filter:hue-rotate(" + (randomNumber(strip(mainarray[i].userId))*360) + "deg) brightness(0.75);visibility: visible !important;")	
 					}
 					else if ((arraytype == "bookmarks") || (arraytype == "workspaces"))
 					{
-						dashcard.setAttribute("style","background:linear-gradient(rgba(0, 0, 0, 0.7),rgba(0, 0, 0, 0.1)), url('" + mainarray[i].thumbnail + "') no-repeat scroll center;visibility: visible !important;background-size:cover;")
+						dashcard.setAttribute("style","background:linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.2)), url('" + mainarray[i].thumbnail + "') no-repeat scroll center;visibility: visible !important;background-size:cover;")
 						
 					}	
                 
