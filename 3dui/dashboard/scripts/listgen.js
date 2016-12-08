@@ -93,7 +93,7 @@ function populatePartyObject(){
 	
 function populatePopularObject(){
 
-    parent.window.janus.updatepopulardata("?orderBy=weight&desc=true") 
+    parent.window.janus.updatepopulardata("?orderBy=weight&desc=true&limit=50") 
 
 }	
 		
