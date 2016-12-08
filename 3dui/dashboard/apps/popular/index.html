@@ -2,25 +2,67 @@
 	<head>
 		<title>JanusVR Dashboard App</title>
 		<link rel="stylesheet" type="text/css" href="../../css/main.css" />
+
+        <script src="../../scripts/listgen.js"></script>
+        
+        <script>
+                    window.onload = function() {
+	
+        parent.window.janus.updatepopulardata("?orderBy=weight&desc=true");
+
+        setTimeout(
+        function(){
+        generateList("popular")
+        },250);
+     
+        
+        
+        setInterval(
+        function(){
+        generateList("popular")
+        },1000);
+            
+         setInterval(
+        function(){
+        populatePopularObject();
+        },5000);
+                       
+
+        
+        }
+        
+            
+	
+        </script>
+        
 	</head>
-	<body class="noselect">
+	<body class="noselect" id="mainbody" >
+
+
+        		<div class="cardtitle" id="cardtitle">POPULAR</div>
+
+        		<ul class="cardholder" id="cardholder" >
+
+        		</ul>
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	    
-		<div class="cardtitle">POPULAR</div>
 
-		<ul class="cardholder">
-	
-			
-
-
-			<div class="dashcard" style="background-image:url('../../thumbs/popular.png');">
-				<div class="dashtitle">COMING SOON</div>
-			</div>			
-
-
-		
-			
-		</ul>
 	</body>
 </html>
