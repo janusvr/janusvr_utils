@@ -66,6 +66,7 @@
 	else if (arraytype == "popular")
 	{	
 		xx = parent.window.janus.populardata;
+
 	
 	}	
 	
@@ -125,7 +126,7 @@ function populatePopularObject(){
 					
             
             
-            for (var i=0;i<parent.window.janus.bookmarks.length;i++)
+            for (var i=0;i<mainarray.length;i++)
             {
                 
 
@@ -275,7 +276,7 @@ function populatePopularObject(){
 										}(i);
 								
            
-       
+	
             window.scrollTo(0, currentscroll);        
             }
 		   
