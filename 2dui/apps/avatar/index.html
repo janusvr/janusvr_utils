@@ -201,6 +201,7 @@
 	}
 	function load_avatar(avatar)
 	{
+		setTimeout(function() { if (timer) { clearTimeout(timer); timer = null; } }, 10);
 		if (settings.length > avatar)
 		{
 			var avatar_string = unescape(settings[avatar].string);
