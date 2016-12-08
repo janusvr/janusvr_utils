@@ -49,11 +49,10 @@
   
   
  function returnMainArray(arraytype) {
+
 	if (arraytype == "partymode")
 	{
-		xx = parent.window.janus.partymodedata;
-		
-		
+		xx = parent.window.janus.partymodedata;	
 	}
 	else if (arraytype == "bookmarks")
 	{
@@ -64,7 +63,14 @@
 		
 		xx = parent.window.janus.workspaces;
 	}
-	return xx;		
+	else if (arraytype == "popular")
+	{	
+		xx = parent.window.janus.populardata;
+	
+	}	
+	
+	return xx;
+	
 } 
   
 	function trimString(text,mylength) {
@@ -85,12 +91,21 @@ function populatePartyObject(){
 }	
 	
 	
-        function generateList(arraytype) {
+function populatePopularObject(){
 
+    parent.window.janus.updatepopulardata("?orderBy=weight&desc=true") 
+
+}	
+		
+	
+	
+        function generateList(arraytype) {
+		
             var containertopopulate = document.getElementById("cardholder");
+			var currentscroll = window.pageYOffset;
             containertopopulate.innerHTML = ""
             var mainarray = returnMainArray(arraytype);
-      
+			
               	if (arraytype == "partymode")
             		{
 						if ((mainarray.length < 1))
@@ -107,6 +122,7 @@ function populatePartyObject(){
 					
 					
 					}
+					
             
             
             for (var i=0;i<parent.window.janus.bookmarks.length;i++)
@@ -116,7 +132,7 @@ function populatePartyObject(){
                 
                 
                 
-            		if (arraytype == "partymode")
+            		if ((arraytype == "partymode"))
             		{
             			if (mainarray[i].name == null || mainarray[i].name == "" )
             			{
@@ -153,7 +169,24 @@ function populatePartyObject(){
             		else if (arraytype == "workspaces")
             		{
             			sitename = "";
-            		}	
+            		}
+					else if ((arraytype == "popular"))
+            		{
+            			if (mainarray[i].roomName == null || mainarray[i].roomName == "" )
+            			{
+            				
+            
+            				sitename = extractDomain(mainarray[i].roomUrl);
+            
+            			
+            			
+            			}
+            			else
+            			{
+            				sitename = mainarray[i].roomName
+            				sitename = trimString(sitename,32);
+            			}
+            		}					
                 
                 
                 var partymodeprefix="";
@@ -175,7 +208,7 @@ function populatePartyObject(){
                 dashcard.className = "dashcard"
                 
                 
-					if ((arraytype == "partymode")||(arraytype == "popular"))
+					if ((arraytype == "partymode"))
 					{
 						dashcard.setAttribute("style","-webkit-filter:hue-rotate(" + (randomNumber(strip(mainarray[i].userId))*360) + "deg) brightness(0.75);visibility: visible !important;")	
 					}
@@ -183,12 +216,19 @@ function populatePartyObject(){
 					{
 						dashcard.setAttribute("style","background:linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.2)), url('" + mainarray[i].thumbnail + "') no-repeat scroll center;visibility: visible !important;background-size:cover;")
 						
-					}	
+					}
+					else if ((arraytype == "popular"))
+					{
+						
+						dashcard.style.backgroundImage = "url('../../thumbs/popular.png')"
+				
+						
+					}					
                 
                 
                 containertopopulate.appendChild(dashcard)
                 
-                
+            
               
                 if (sitename == "")
                 {
@@ -210,8 +250,16 @@ function populatePartyObject(){
        
        
                 var hiddenurlcontainer=document.createElement("div");
+				
+				if (arraytype == "popular")
+				{
+				hiddenurlcontainer.innerHTML = mainarray[i].roomUrl;
+				}
+				else
+				{
                 hiddenurlcontainer.innerHTML = mainarray[i].url;   
-                hiddenurlcontainer.className = "hiddenurlcontainer";
+                }
+				hiddenurlcontainer.className = "hiddenurlcontainer";
                 hiddenurlcontainer.id = function(arg) {
 								return "myurl"+[arg];
 										}(i);
@@ -227,9 +275,10 @@ function populatePartyObject(){
 										}(i);
 								
            
-           
-                    
+       
+            window.scrollTo(0, currentscroll);        
             }
+		   
             
         }
   
