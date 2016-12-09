@@ -144,7 +144,7 @@ var sitename;
 		}
 		else if ((arraytype == "bookmarks") || (arraytype == "workspaces"))
 		{
-			newelement.setAttribute("style","background:linear-gradient(rgba(0, 0, 0, 0.7),rgba(0, 0, 0, 0.7)), url(" + mainarray[i].thumbnail + ") no-repeat scroll center;visibility: visible !important;")
+			newelement.setAttribute("style","background:linear-gradient(rgba(0, 0, 0, 0.7),rgba(0, 0, 0, 0.7)), url('" + mainarray[i].thumbnail + "') no-repeat scroll center;visibility: visible !important;")
 			
 			
 		
