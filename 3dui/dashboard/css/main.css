@@ -83,6 +83,7 @@ display:none;
 
 .panelbutton:hover {
 background-color:#61BE6C;
+cursor:pointer;
 -webkit-filter: brightness(1);
 }
 
@@ -99,6 +100,21 @@ background-position:center;
 background-size: 96px 96px;
 background-repeat: no-repeat;
 }
+
+.vestabutton {
+background-image: url('../images/vesta.png');
+background-position:center;
+background-size: 96px 96px;
+background-repeat: no-repeat;
+
+}
+.vestabutton:hover {
+background-image: url('../images/vestahover.png');
+background-position:center;
+background-size: 96px 96px;
+background-repeat: no-repeat;
+}
+
 
 .bookmarksbutton {
 background-image: url('../images/bookmarks.png');
@@ -288,4 +304,64 @@ color: #61BE6C;
 
 .cardholder {
 text-align:center;
+}
+
+
+
+		.feedpost {
+		width:60%;
+		border-color:white;
+		border-style:solid;
+		border-width:2px;
+		left:20%;
+		position:relative;
+		text-align:center;
+		min-height:128px;
+		margin-top:32px; 
+
+		}
+		
+		.postavatar {
+		width:96px;
+		height:96px;
+		background-image: url('../images/pegman.png');
+		background-position:middle;
+		background-size:cover;
+		border-radius:100px;
+		margin: 16px 16px 16px;
+		float:left;
+		}
+		
+		.posttext {
+
+		font-family: "Open Sans";
+		color:white;
+		float:left;
+		padding-left:16px;
+		padding-top:48px;
+		bottom:0;
+		font-size:24px;
+		vertical-align:middle;
+		}
+		
+		.posttext b {
+		color: #61BE6C;
+		}
+		
+.heartbutton {
+background-image: url('../images/heart.png');
+background-position:center;
+background-size: cover;
+cursor:pointer;
+background-color:rgba(0,0,0,0);
+height:96px;
+width:96px;
+right:32px;
+position:absolute;
+top:16px;
+
+}
+.heartbutton:hover {
+background-image: url('../images/hearthover.png');
+
 }
