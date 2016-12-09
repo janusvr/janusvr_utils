@@ -211,7 +211,8 @@ function populatePopularObject(){
                 
 					if ((arraytype == "partymode"))
 					{
-						dashcard.setAttribute("style","-webkit-filter:hue-rotate(" + (randomNumber(strip(mainarray[i].userId))*360) + "deg) brightness(0.75);visibility: visible !important;")	
+						dashcard.setAttribute("style","background:linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.2)), url('" + "url('../../thumbs/parties.png')" + "') no-repeat scroll center;visibility: visible !important;background-size:cover;")
+
 					}
 					else if ((arraytype == "bookmarks") || (arraytype == "workspaces"))
 					{
