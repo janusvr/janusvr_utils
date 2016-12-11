@@ -6,12 +6,13 @@
 	<meta name="description" content="JanusVR Interface">
 	<meta name="author" content="JanusVR Inc.">
 	<link rel="stylesheet" type="text/css" href="style.css" />
-
+	<script src="../../scripts/spyduck.js"></script>
 	<script src="../../scripts/tabs.js"></script>
 	<script src="../../skins/theme.js"></script>
 	<script>
 	var populated = false;
 	var settings = null;
+	var roomavatars = [];
 	var renaming_input_div = "";
 	var renaming_input = null;
 	var renaming_avatar = 0;
@@ -26,12 +27,28 @@
 		}
 		return point2;
 	}
+	var last_random_color = "";
+	randomColor()
+	
+	function randomColor()
+	{
+		last_random_color = '"#'+Math.floor(Math.random()*16777215).toString(16) + '"';
+		return last_random_color;
+	}
+	function lastRandomColor()
+	{
+		return last_random_color;
+	}
 	function loadsettings()
 	{
 		settings = JSON.parse(window.janus.getsetting('avatarData'));
 		if (settings == null)
 		{
-			settings = [{ name:"Unnamed Avatar", string: escape(janus.getavatar()), }];
+			settings = [];
+			settings.push({ name:"Janus Knight", string: escape("<FireBoxRoom><Assets><AssetObject id=\"walk_right\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk_right.fbx.gz\" /><AssetObject id=\"speak\" src=\"http://www.janusvr.com/avatars/animated/Beta/speak.fbx.gz\" /><AssetObject id=\"walk_left\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk_left.fbx.gz\" /><AssetObject id=\"idle\" src=\"http://www.janusvr.com/avatars/animated/Beta/idle.fbx.gz\" /><AssetObject id=\"walk_back\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk_back.fbx.gz\" /><AssetObject id=\"body\" src=\"http://janusvr.com/avatars/animated/ks/janus_knight.fbx.gz\" /><AssetObject id=\"portal\" src=\"http://www.janusvr.com/avatars/animated/Beta/portal.fbx.gz\" /><AssetObject id=\"jump\" src=\"http://www.janusvr.com/avatars/animated/Beta/jump.fbx.gz\" /><AssetObject id=\"walk\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk.fbx.gz\" /><AssetObject id=\"type\" src=\"http://www.janusvr.com/avatars/animated/Beta/type.fbx.gz\" /><AssetObject id=\"run\" src=\"http://www.janusvr.com/avatars/animated/Beta/run.fbx.gz\" /><AssetObject id=\"fly\" src=\"http://www.janusvr.com/avatars/animated/Beta/fly.fbx.gz\" /></Assets><Room><Ghost id=\"JANUS_KNIGHT\" scale=\"0.0095 0.0095 0.0095\" col=\"randomColor()\" body_id=\"body\" userid_pos=\"0 0.5 0\" /></Room></FireBoxRoom>")});
+			settings.push({ name:"Handyman", string: escape("<FireBoxRoom><Assets><AssetObject id=\"bracelet\" src=\"http://janusvr.com/avatars/animated/ks/rbracelet.fbx.gz\" /><AssetObject id=\"hands\" src=\"http://janusvr.com/avatars/animated/ks/jvr_hands.fbx.gz\" /><AssetObject id=\"run\" src=\"http://www.janusvr.com/avatars/animated/Beta/run.fbx.gz\" /><AssetObject id=\"speak\" src=\"http://www.janusvr.com/avatars/animated/Beta/speak.fbx.gz\" /><AssetObject id=\"portal\" src=\"http://www.janusvr.com/avatars/animated/Beta/portal.fbx.gz\" /><AssetObject id=\"walk_right\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk_right.fbx.gz\" /><AssetObject id=\"idle\" src=\"http://www.janusvr.com/avatars/animated/Beta/idle.fbx.gz\" /><AssetObject id=\"jump\" src=\"http://www.janusvr.com/avatars/animated/Beta/jump.fbx.gz\" /><AssetObject id=\"walk_back\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk_back.fbx.gz\" /><AssetObject id=\"fly\" src=\"http://www.janusvr.com/avatars/animated/Beta/fly.fbx.gz\" /><AssetObject id=\"walk\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk.fbx.gz\" /><AssetObject id=\"type\" src=\"http://www.janusvr.com/avatars/animated/Beta/type.fbx.gz\" /><AssetObject id=\"walk_left\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk_left.fbx.gz\" /></Assets><Room><Ghost id=\"Handyman\" scale=\"0.0095 0.0095 0.0095\" col=\"randomColor()\" head_pos=\"0 0 0\" body_id=\"hands\" userid_pos=\"0 0.5 0\"><Object id=\"bracelet\" col=\"lastRandomColor()\" bone_id=\"RightForeArm\" /><Object id=\"bracelet\" pos=\"41.713 0 0\" col=\"lastRandomColor()\" bone_id=\"LeftForeArm\" /></Ghost></Room></FireBoxRoom>")});
+			settings.push({ name:"Inconspicuous Man", string: escape("<FireBoxRoom><Assets><AssetObject id=\"body\" src=\"http://www.janusvr.com/avatars/animated/Beta/Beta.fbx.gz\" /><AssetObject id=\"ball_cap\" src=\"http://janusvr.com/avatars/animated/ks/ball_cap.fbx.gz\" /><AssetObject id=\"sunglasses\" src=\"http://janusvr.com/avatars/animated/ks/sunglasses.fbx.gz\" /><AssetObject id=\"stache\" src=\"http://janusvr.com/avatars/animated/ks/stache.fbx.gz\" /><AssetObject id=\"run\" src=\"http://www.janusvr.com/avatars/animated/Beta/run.fbx.gz\" /><AssetObject id=\"speak\" src=\"http://www.janusvr.com/avatars/animated/Beta/speak.fbx.gz\" /><AssetObject id=\"portal\" src=\"http://www.janusvr.com/avatars/animated/Beta/portal.fbx.gz\" /><AssetObject id=\"walk_right\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk_right.fbx.gz\" /><AssetObject id=\"idle\" src=\"http://www.janusvr.com/avatars/animated/Beta/idle.fbx.gz\" /><AssetObject id=\"jump\" src=\"http://www.janusvr.com/avatars/animated/Beta/jump.fbx.gz\" /><AssetObject id=\"walk_back\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk_back.fbx.gz\" /><AssetObject id=\"fly\" src=\"http://www.janusvr.com/avatars/animated/Beta/fly.fbx.gz\" /><AssetObject id=\"walk\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk.fbx.gz\" /><AssetObject id=\"type\" src=\"http://www.janusvr.com/avatars/animated/Beta/type.fbx.gz\" /><AssetObject id=\"walk_left\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk_left.fbx.gz\" /></Assets><Room><Ghost id=\"Inconspicuous_Man\" scale=\"0.0095 0.0095 0.0095\" col=\"randomColor()\" body_id=\"body\" userid_pos=\"0 0.5 0\"><Object id=\"sunglasses\"  bone_id=\"Head\" col=\"#000000\" /><Object id=\"stache\" pos=\"0 3 15\" xdir=\"0 -1 0\" ydir=\"0 0 1\" zdir=\"-1 0 0\" scale=\"0.5 0.5 0.5\" col=\"#000000\" bone_id=\"Head\" /><Object id=\"ball_cap\" bone_id=\"Head\" col=\"randomColor()\" /></Ghost></Room></FireBoxRoom>")});
+			settings.push({ name:"Unnamed Avatar", string: escape(janus.getavatar()), });
 		}
 		else if (settings.length == 0)
 		{
@@ -149,8 +166,17 @@
 			//log('cancel failed');
 		}
 	}
-	function addAvatarToList(avatar)
+	function addAvatarToList(avatar,avname)
 	{
+		var avname = "";
+		if (settings.length > avatar)
+		{
+			avname = settings[avatar].name;
+		}
+		else
+		{
+			avname = "[ CURRENT PAGE ] "+roomavatars[avatar - settings.length].name;
+		}
 		var list = document.getElementById("avatar_list");
 		var avatar_list = document.getElementById("avatar_list");
 		var itemli = document.createElement('li');
@@ -158,7 +184,7 @@
 		var shirtimage = document.createElement('div');
 		shirtimage.className = "shirticon";
 		shirtimage.setAttribute('onclick', 'load_avatar('+avatar+');');
-		var text = document.createTextNode(settings[avatar].name)
+		var text = document.createTextNode(avname)
 		itemdiv.id = 'avatar_div_'+avatar;
 		itemdiv.setAttribute('onclick', 'avatar_clicked('+avatar+');');
 		itemdiv.class = 'avatarcontainer';
@@ -197,19 +223,122 @@
 			
 			//log(settings[avatar].name);
 		}
+		load_room_avatars()
 		populated = true;
+	}
+	function replace_Colors(input)
+	{
+		var output = input;
+		while (output.match(/"randomColor\(\)"/i) || output.match(/"lastRandomColor\(\)"/i))
+		{
+			if (output.match(/"randomColor\(\)"/i) && output.match(/"lastRandomColor\(\)"/i) )
+			{
+				// both
+				if (output.match(/"randomColor\(\)"/i).index < output.match(/"lastRandomColor\(\)"/i).index)
+				{
+					// randomColor() first
+					output = output.replace( /"randomColor\(\)"/i, randomColor() );
+				}
+				else
+				{
+					// lastRandomColor() first
+					output = output.replace( /"lastRandomColor\(\)"/i, lastRandomColor() );
+				}
+			}
+			else if (output.match(/"randomColor\(\)"/i) )
+			{
+				// randomColor() only
+				output = output.replace( /"randomColor\(\)"/i, randomColor() );
+			}
+			else if (output.match(/"lastRandomColor\(\)"/i) )
+			{
+				// lastRandomColor() only
+				output = output.replace( /"lastRandomColor\(\)"/i, lastRandomColor() );
+			}
+		}
+		return output;
 	}
 	function load_avatar(avatar)
 	{
 		setTimeout(function() { if (timer) { clearTimeout(timer); timer = null; } }, 10);
+		var settingsavatar = null;
 		if (settings.length > avatar)
 		{
-			var avatar_string = unescape(settings[avatar].string);
-			avatar_string = avatar_string.replace( /Ghost id="(.*?)"/i, "Ghost id=\""+parent.window.janus.userid+"\"" );
-			janus.setavatar(avatar_string);
-			notify('Wearing avatar: "' + settings[avatar].name + '"');
-			preview_start();
-			document.getElementById('togList_Preview').checked = true;
+			settingsavatar = settings[avatar];
+		}
+		else
+		{
+			settingsavatar = roomavatars[avatar - settings.length];
+		}
+		var avatar_string = unescape(settingsavatar.string.replace(/></g,">"+decodeURIComponent("%0A")+"<"));
+		avatar_string = avatar_string.replace( /Ghost id="(.*?)"/i, "Ghost id=\""+parent.window.janus.userid+"\"" );
+		avatar_string = replace_Colors(avatar_string)
+		janus.setavatar(avatar_string);
+		notify('Wearing avatar: "' + settingsavatar.name + '"');
+		preview_start();
+	}
+	function ParseJsonString(str)
+	{
+		var returnval = null;
+		try {
+			returnval = JSON.parse(str);
+		} catch (e) {
+			returnval = null;
+		}
+		return returnval;
+	}
+	function unescapeHtml(safe)
+	{
+		return decodeURI(safe).replace("%3B",";").replace("%2C",",").replace("%2F","/").replace("%3F","?").replace("%3A",":").replace("%40","@").replace("%26","&").replace("%3D","=").replace("%2B","+").replace("%24","$");
+	}
+	function escapeHtml(unsafe)
+	{
+		return safe.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&#039;");
+	}
+	function load_room_avatars()
+	{
+		roomavatars = [];
+		var results = GetRoomText()
+		var added = 0;
+		for (var index in results)
+		{
+			if (results[index][0].indexOf('JanusVRAvatarUI_Item') != -1)
+			{
+				var json_string = decodeURIComponent(results[index][1]);
+				var json_avatar = null;
+				try
+				{
+					json_avatar = JSON.parse(json_string);
+				}
+				catch(e)
+				{
+					return;
+				}
+				if (json_avatar)
+				{
+					if ('name' in json_avatar && 'string' in json_avatar)
+					{
+						added += 1;
+						roomavatars.push({name:json_avatar.name, string:unescape(json_avatar.string)});
+						addAvatarToList(settings.length-1+added);
+					}
+				}
+			}
+		}
+	}
+	function save_avatar_string(input, do_notify)
+	{
+		var avatar = input;
+		if (avatar == "")
+		{
+			avatar = escape(janus.getavatar())
+		}
+		settings.push({ name:"Unnamed Avatar", string: avatar, });
+		savesettings();
+		addAvatarToList(settings.length-1);
+		if (do_notify)
+		{
+			notify('Saved current avatar');
 		}
 	}
 	function save_avatar()
@@ -245,6 +374,7 @@
 	}
 	function preview_start()
 	{
+		previewbuttonmode = 1;
 		var spawn_distance = 1.5;
 		var pos = parent.window.janus.playerlist[0].pos;
 		var zdir = parent.window.janus.playerlist[0].zdir;
@@ -281,12 +411,13 @@
 	
 	function preview_end()
 	{
+		previewbuttonmode = 0;
 		parent.window.janus.removeobject(ghost_name, false);
 		ghost_preview = false;
 	}
 
 	window.onbeforeunload  = function() {
-		log('test');
+
 	}
 	window.onload = function () {
 	
@@ -296,7 +427,14 @@
 	onload = function() {
 		populatelist()
 	}
-
+	setInterval(function()
+	{
+		if (renaming_div == null)
+		{
+			populatelist()
+		}
+	}
+	, 1000);
 
 	
 	 window.onresize = function(event) { //make sure the window area stays a consistent size
