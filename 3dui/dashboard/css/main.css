@@ -365,3 +365,44 @@ top:16px;
 background-image: url('../images/hearthover.png');
 
 }
+
+.welcomecard {
+		font-family: "Open Sans";
+		color:white;
+		text-align:center;
+		font-size:48px;
+		opacity:0;
+		
+}
+
+.welcomecard b {
+		color: #61BE6C;
+		font-weight:normal;
+}
+
+.welcomeholder {
+		background-color:black;
+		padding:16px;
+
+		border-radius:10px;
+}
+
+.welcomecontainer {
+    width:100%;
+	height:100%;
+
+    /* Firefox */
+    display:-moz-box;
+    -moz-box-pack:center;
+    -moz-box-align:center;
+
+    /* Safari and Chrome */
+    display:-webkit-box;
+    -webkit-box-pack:center;
+    -webkit-box-align:center;
+
+    /* W3C */
+    display:box;
+    box-pack:center;
+    box-align:center;
+}
