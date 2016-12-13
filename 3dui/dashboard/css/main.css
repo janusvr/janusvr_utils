@@ -1,10 +1,10 @@
  @font-face {
-    font-family: "Montserrat";
+    font-family: 'Montserrat';
     src: url('Montserrat-Regular.ttf');
 }
 
 @font-face {
-    font-family: "Open Sans";
+    font-family: 'Open Sans';
     src: url('OpenSans-Regular.ttf');
 }
 
@@ -332,7 +332,7 @@ text-align:center;
 		
 		.posttext {
 
-		font-family: "Open Sans";
+		font-family: 'Open Sans';
 		color:white;
 		float:left;
 		padding-left:16px;
@@ -365,7 +365,7 @@ background-image: url('../images/hearthover.png');
 }
 
 .welcomecard {
-		font-family: "Open Sans";
+		font-family: 'Open Sans';
 		color:white;
 		text-align:center;
 		font-size:48px;
