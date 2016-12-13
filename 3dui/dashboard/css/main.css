@@ -256,14 +256,13 @@ bottom:128px;
 font-size:24px;
 margin-left:calc(50% - 96px) ;
 margin-right:50%;
-width:176px;
+width:172px;
 cursor:pointer;
 padding:8px;
 
 }
 
 .cardoption:hover {
-border-style:none;
 background-color:white;
 color:black;
 
@@ -284,14 +283,13 @@ bottom:128px;
 font-size:24px;
 margin-left:calc(50% - 96px) ;
 margin-right:50%;
-width:176px;
+width:172px;
 cursor:pointer;
 padding:8px;
 
 }
 
 .cardoptiontoggled:hover {
-border-style:none;
 background-color:white;
 color:black;
 
