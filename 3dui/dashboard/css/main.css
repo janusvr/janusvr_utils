@@ -183,6 +183,29 @@ background-repeat: no-repeat;
 background-color:#EB0064;
 }
 
+.outfitbutton {
+background-image: url('../images/outfithover.png');
+background-position:center;
+background-size: 96px 96px;
+background-repeat: no-repeat;
+background-color:rgba(0,0,0,0);
+padding-left:32px;
+padding-right:32px;
+left:8px;
+position:absolute;
+top:0px;
+
+}
+.outfitbutton:hover {
+background-image: url('../images/outfithover.png');
+background-position:center;
+background-size: 96px 96px;
+background-repeat: no-repeat;
+
+}
+
+
+
 
 .dashcard {
 display:inline-block;
