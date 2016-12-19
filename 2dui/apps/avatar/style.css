@@ -21,6 +21,23 @@ html, body {
 background-color:#2F363B;
 }
 
+.cardtitle {
+   
+font-family: 'Montserrat';
+color:white;
+text-align:center;
+background-color:rgba(0,0,0,0);
+
+font-size:13.9px;
+margin-left:0.8%;
+margin-right:0.8%;
+margin-top:10.6px;
+padding-top:2.6px;
+padding-bottom:2.6px;
+    margin-bottom:10.6px;
+}
+
+
 .top-bar {
   font-size: 28px;
   height: 32px;
