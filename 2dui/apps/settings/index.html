@@ -106,6 +106,10 @@ function findGetParameter(parameterName) {
   document.getElementById("positionalvoiptoggle").checked = parent.window.janus.getsetting('positionalvoip');
   
   
+  
+   document.getElementById("performanceloggingtoggle").checked = parent.window.janus.getsetting('perflog');
+   
+  
     document.getElementById("hapticstoggle").checked = parent.window.janus.getsetting('haptics');
   
   
@@ -286,19 +290,19 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</div>	
 
-<!--
-					<div class='header'>PRIVACY</div>
+
+					<div class='header'>ANALYTICS</div>
 
 
 					<div class='item' >
 					<span>
-					<input class="myCheckbox" type='checkbox' id="statisticstoggle" onchange="window.janus.setsetting('sessiontracking', this.checked); "   >
-					Anonymous Statistics
+					<input class="myCheckbox" type='checkbox' id="performanceloggingtoggle" onchange="window.janus.setsetting('perflog', this.checked); "   >
+					Log Performance - Helps the developers improve JanusVR by uploading anonymous usage statistics like FPS.
 
 					</span>
 					<br>
 					</div>
--->
+
 					</div>
 
 					
