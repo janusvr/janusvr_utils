@@ -7,7 +7,14 @@
   <meta name="author" content="JanusVR Inc.">
   <script src="../../scripts/tabs.js"></script>
   <script src="../../skins/theme.js"></script>
- 
+  
+  
+  <!--Avatars Related-->
+ 	<link rel="stylesheet" type="text/css" href="../../skins/oneironaut/app.css" />
+	<script src="../../scripts/spyduck.js"></script>
+	<script src="avatar/main.js"></script>	
+
+
 
   <style>
 
@@ -182,11 +189,12 @@ function findGetParameter(parameterName) {
   
   window.onload = function () {
   initializeAppTheme("../../")
-
+  dashboardSetup() 
   tabSelect("avatartabcontainer","avatartabbutton")
   window.onresize()
   setDefaults() 
-
+  
+  populatelist()
   }
 
   
@@ -221,7 +229,8 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 <div class="tabrow unselectable" id="tabrow">
 
-	<div class="tabbutton" id="avatartabbutton" onmousedown="tabSelect('avatartabcontainer','avatartabbutton')">AVATAR</div></li>
+	<div class="tabbutton" id="avatartabbutton" onmousedown="tabSelect('avatartabcontainer','avatartabbutton')">USER</div></li>
+	<div class="tabbutton" id="avatarstabbutton" onmousedown="tabSelect('avatarscontainer','avatarstabbutton')">OUTFITS</div></li>
 	<div class="tabbutton" id="servertabbutton" onmousedown="tabSelect('servertabcontainer','servertabbutton')">SERVER</div></li>
 	<div class="tabbutton" id="inputtabbutton" onmousedown="tabSelect('inputtabcontainer','inputtabbutton')" >INPUT</div></li>
 	<div class="tabbutton" id="graphicstabbutton" onmousedown="tabSelect('graphicstabcontainer','graphicstabbutton')" >GRAPHICS</div></li>
@@ -235,7 +244,32 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 <div class="windowarea unselectable" id="windowarea">
 
-		<div class="tabcontainer" id="servertabcontainer">
+    			
+		<div  class="tabcontainer" id="avatarscontainer">
+
+    		
+			<div class="avatarlist" >
+				<div id="avatar_list" >
+				</div>
+			</div>
+			
+			
+			<div style="text-align:left;">
+				
+				<div onclick="togglePreview();" class="bottombutton previewbutton"></div>
+				<div onclick="save_avatar();" class="bottombutton savebutton"></div>
+						
+			</div>
+			
+		</div>	
+
+
+
+
+
+
+
+	<div class="tabcontainer" id="servertabcontainer">
 		
 					<div class='header'>HOMEPAGE</div>
 					
