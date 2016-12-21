@@ -16,6 +16,128 @@
     src: url('OpenSans-Regular.ttf');
 }
 
+
+
+#avatarscontainer {
+background-color:#2F363B;
+}
+
+
+.top-bar {
+  font-size: 28px;
+  height: 32px;
+  background: #181818;
+}
+
+
+.name-input {
+ display:inline;
+}
+.menu-icon {
+  display:inline-block;
+  width: 28px;
+  height: 28px;
+  background-position: center;
+  background-size: 100%;
+  border-style: hidden;
+  -webkit-filter: brightness(0.85);
+}
+
+.menu-image {
+  width: 28px;
+  height: 28px;
+  display:inline-block;
+}
+
+.menu-icon:hover {
+  -webkit-filter: brightness(1);
+}
+
+.menu-icon:active {
+  -webkit-filter: brightness(0.65);
+}
+	
+.menu-icon-trash {
+  background-image: url('../inventory/images/icons/icon-trash.png');
+}
+.inline {
+  display:inline-block;
+}
+.left {
+  float: left;
+}
+.right {
+  float: right;
+}
+
+.avatarlist {
+height:calc(100% - 38px);
+background-color:#242A2D;
+overflow-y:scroll;
+}
+
+
+	.bottombutton {
+	width:32px;
+	height:32px;
+	background-size:cover;
+	display:inline-block;
+	background-position:middle;
+
+	}
+	.previewbutton {
+	background-image: url('icons/icon-preview.png');
+
+	}
+	.previewbutton:hover {
+	background-image: url('icons/icon-previewhover.png');
+	background-color: white;
+	}	
+
+	.savebutton {
+	background-image: url('icons/icon-save.png');
+
+	}
+	.savebutton:hover {
+	background-image: url('icons/icon-savehover.png');
+	background-color: white;
+	}	
+
+	.shirticon {
+	background-image: url('icons/icon-shirt.png');
+	padding: 8px 8px 8px 8px;
+	background-size:cover;
+	position:relative;
+	display:inline-block;
+	background-position:middle;
+	margin-right:8px;
+	}
+	
+	.shirticon:hover {
+	background-image: url('icons/icon-shirthover.png');
+
+	}	
+	
+#avatar_list li {
+  list-style-type: none;
+  width: calc(100% - 8px);
+  padding-left: 8px;
+  padding-top:8px;
+  padding-bottom:8px;
+  text-align:left;
+  max-height:32px;
+  font-family: 'Open Sans';
+  color:white;
+  display:block;
+}
+
+#avatar_list li:hover {
+background-color:#343A3D;
+}
+
+
+
+
 ul {
     list-style-type: none;
     margin: 0;
@@ -23,6 +145,8 @@ ul {
     overflow: hidden;
 
 }
+
+
 
 .partyitem {
 
