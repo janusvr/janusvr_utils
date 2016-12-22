@@ -129,10 +129,7 @@ function populatePopularObject(){
             for (var i=0;i<mainarray.length;i++)
             {
                 
-
-                
-                
-                
+   
             		if ((arraytype == "partymode"))
             		{
             			if (mainarray[i].name == null || mainarray[i].name == "" )
@@ -209,23 +206,16 @@ function populatePopularObject(){
                 dashcard.className = "dashcard"
                 
                 
-					if ((arraytype == "partymode"))
-					{
-						dashcard.setAttribute("style","background:linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.2)), url('" + "url('../../thumbs/parties.png')" + "') no-repeat scroll center;visibility: visible !important;background-size:cover;")
-
-					}
-					else if ((arraytype == "bookmarks") || (arraytype == "workspaces"))
-					{
-						dashcard.setAttribute("style","background:linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.2)), url('" + mainarray[i].thumbnail + "') no-repeat scroll center;visibility: visible !important;background-size:cover;")
-						
-					}
-					else if ((arraytype == "popular"))
-					{
-						
-						dashcard.style.backgroundImage = "url('../../thumbs/popular.png')"
-				
-						
-					}					
+				//apply thumbnail image
+				if ( (mainarray[i].thumbnail) && (mainarray[i].thumbnail != ""))
+				{
+					dashcard.setAttribute("style","background:linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.2)), url('" + mainarray[i].thumbnail + "') no-repeat scroll center;visibility: visible !important;background-size:cover;")
+				}
+				else
+				{
+					dashcard.setAttribute("style","background:linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.2)), url('" + "url('../../thumbs/parties.png')" + "') no-repeat scroll center;visibility: visible !important;background-size:cover;")							
+				}
+					
                 
                 
                 containertopopulate.appendChild(dashcard)
