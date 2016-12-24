@@ -1186,7 +1186,7 @@ function initsound() {
 
 			//darken UI on focus
 
-			document.getElementById("fader").style.backgroundColor = "rgba(0,0,0,0.3)";
+			//document.getElementById("fader").style.backgroundColor = "rgba(0,0,0,0.3)";
 
 
 
