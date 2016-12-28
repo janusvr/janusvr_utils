@@ -19,8 +19,14 @@
 }
 
 
-
-
+::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+}
+/* optional: show position indicator in red */
+::-webkit-scrollbar-thumb {
+    background: #FF0000;
+}
 
 
 body{
@@ -277,8 +283,7 @@ border-color:white;
    z-index: 1000;
 bottom:128px;
 font-size:24px;
-margin-left:calc(50% - 96px) ;
-margin-right:50%;
+
 width:172px;
 cursor:pointer;
 padding:8px;
@@ -289,6 +294,24 @@ padding:8px;
 background-color:white;
 color:black;
 
+}
+
+.partybutton
+{
+left:calc(50% - 96px) ;
+
+}
+
+.downscrollbutton
+{
+right:192px;
+width:calc(50% - 240px);
+}
+
+.upscrollbutton
+{
+left:192px;
+width:calc(50% - 240px);
 }
 
 .cardoptiontoggled {
