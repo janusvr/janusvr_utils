@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 	<head>
@@ -47,69 +48,60 @@ function readCookie(name) {
 	    
 		
 		function checkStartup() {
-		var x = readCookie('startup')
-		if (x) {
-			//nothing
-		}
-		else
-		{
-		createCookie('startup','true',90000);
-		window.location.assign("apps/welcome/index.html")
-		}
-		
+			var x = readCookie('startup')
+			if (x) {
+				//nothing
+			}
+			else if (window.janus)
+			{
+			createCookie('startup','true',90000);
+			window.location.assign("apps/welcome/index.html")
+			}
+			
 		}
 		
 		
 		checkStartup();
+		
+		
 	    window.onload = function(){
 		
-
-		
-		
-		
-		
-		 		getPartySetting();    
-	        window.janus.updatepartymodedata() 
-			
-			
-			
-			
-					setInterval(
-        function(){
-        getPartySetting();   
-        },500);
-            
+				setInterval(
+				function(){
+				scrollFrame();
+				//getPartySetting();   
+				},50);	
+				
+			//getPartySetting();    
+			window.janus.updatepartymodedata() 
 	    }
-	    
 		
-				function getPartySetting() {
+		function getPartySetting() {
 		  
-		if (parent.window.janus.getsetting('partymode') == true)
-		{
-		document.getElementById("cardoption").className = "cardoptiontoggled";
-		document.getElementById("cardoption").innerHTML = "END PARTY";		
-		}
-		else
-		{
-		document.getElementById("cardoption").className = "cardoption";		
-		document.getElementById("cardoption").innerHTML = "HOST PARTY";				
-		}
-
-		
+			if (parent.window.janus.getsetting('partymode') == true)
+			{
+			document.getElementById("cardoption").className = "cardoptiontoggled";
+			document.getElementById("cardoption").innerHTML = "END PARTY";		
+			}
+			else
+			{
+			document.getElementById("cardoption").className = "cardoption";		
+			document.getElementById("cardoption").innerHTML = "HOST PARTY";				
+			}		
 		}
 		
 		function togglePartySetting() {
 		
-		
-		if (parent.window.janus.getsetting('partymode') == true)
-		{
-		parent.window.janus.setsetting('partymode',false)
-		}
-		else
-		{
-		parent.window.janus.setsetting('partymode',true)	
-		}
-		
+			
+			if (parent.window.janus.getsetting('partymode') == true)
+			{
+			parent.window.janus.setsetting('partymode',false)
+			}
+			else
+			{
+			parent.window.janus.setsetting('partymode',true)	
+			}
+			
 
 		}
 		
@@ -126,7 +118,36 @@ function readCookie(name) {
     var num = str.replace(/[^0-9]/g, ''); 
     return num; 
 }	
-		
+
+var scrollamount = 0;
+var continuetoscroll = 0;
+
+function scrollFrame() {
+
+	if (continuetoscroll != 0)
+		{
+			var myIframe = window.frames[0];
+			
+			var ycoord = myIframe.scrollY;
+			
+			myIframe.scrollTo(0,ycoord+scrollamount);
+		}
+}		
+
+function keepScroll(amount) {
+ continuetoscroll = 1;
+ scrollamount = amount;
+}
+
+function stopScroll() {
+ continuetoscroll = 0;
+}
+
+function toggleScrollButtons(state) {
+	document.getElementById("downscroll").style.display = state;
+	document.getElementById("upscroll").style.display = state;
+}
+
 	</script>
 	
 	<body class="noselect" style="overflow:hidden;">
@@ -135,16 +156,21 @@ function readCookie(name) {
 		<ul class="panel">
 		
 	<!--<li class="panelbutton vestabutton" onmousedown="document.getElementById('dashdisplay').src='apps/vesta/index.html'; setClass(this); setWidth('100%');"></li>-->
-	<li class="panelbutton popularbutton " onmousedown="document.getElementById('dashdisplay').src='apps/popular/index.html'; setClass(this); setWidth('100%');"></li>
-	<li class="panelbutton partiesbutton" onmousedown="document.getElementById('dashdisplay').src='apps/parties/index.html'; setClass(this); setWidth('100%');"></li>
-	<li class="panelbutton bookmarksbutton selected" onmousedown="document.getElementById('dashdisplay').src='apps/bookmarks/index.html'; setClass(this); setWidth('100%');"></li>
+	<li class="panelbutton popularbutton " onmousedown="document.getElementById('dashdisplay').src='apps/popular/index.html'; setClass(this); setWidth('100%'); toggleScrollButtons('')"></li>
+	<li class="panelbutton partiesbutton" onmousedown="document.getElementById('dashdisplay').src='apps/parties/index.html'; setClass(this); setWidth('100%'); toggleScrollButtons('')"></li>
+	<li class="panelbutton bookmarksbutton selected" onmousedown="document.getElementById('dashdisplay').src='apps/bookmarks/index.html'; setClass(this); setWidth('100%'); toggleScrollButtons('')"></li>
 			
 		
 		</ul>
-         		<div class="cardoption" onclick="togglePartySetting();" id="cardoption">HOST PARTY</div>
+	         	<div onmousedown="keepScroll(-15)" id="upscroll" onmouseup="stopScroll()" onmouseout="stopScroll()"  class="cardoption upscrollbutton"  >&#9650;</div>
+         		<div onmousedown="keepScroll(15)" id="downscroll" onmouseup="stopScroll()" onmouseout="stopScroll()" class="cardoption downscrollbutton"  >&#9660;</div>
+
+			
+		
+         		<!--<div class="cardoption partybutton" onclick="togglePartySetting();" id="cardoption">HOST PARTY</div>-->
 	
-				<div class="panelbutton quitbutton" onmousedown="document.getElementById('dashdisplay').src='apps/quit/index.html'; setClass(this); setWidth('100%');"></div>	
-				<li class="panelbutton settingsbutton" onmousedown="document.getElementById('dashdisplay').src='../../2dui/apps/settings/index.html?dashboard=true'; setClass(this); setWidth('100%');"></li>	
+				<div class="panelbutton quitbutton" onmousedown="document.getElementById('dashdisplay').src='apps/quit/index.html'; setClass(this); setWidth('100%'); toggleScrollButtons('')"></div>	
+				<li class="panelbutton settingsbutton" onmousedown="document.getElementById('dashdisplay').src='../../2dui/apps/settings/index.html?dashboard=true'; setClass(this); setWidth('100%'); toggleScrollButtons('none')"></li>	
 	</body>
 
 </html>
