@@ -282,8 +282,10 @@ function InventoryUI(options) {
     var active = $('.active').parent();
     var hash = active.data('hash');
     var file = InventoryAPI.getFile(hash);
-    //alert('http://ipfs.io/ipfs/' + hash + '?.' + file.filetype);
-	parent.shownotification('http://ipfs.io/ipfs/' + hash + '?.' + file.filetype,'notifications/call.png','null','#323232')
+	var progbar = parent.document.getElementById("progressbar");
+	progbar.value = 'http://ipfs.io/ipfs/' + hash + '?.' + file.filetype;
+	progbar.focus();
+	parent.shownotification('URL copied to your address bar.','notifications/call.png','null','#323232')
   }.bind(this))
 
   this.spawnRandom = function() {
