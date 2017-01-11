@@ -156,7 +156,7 @@ background-size: 96px 96px;
 background-repeat: no-repeat;
 padding-left:32px;
 padding-right:32px;
-right:96px;
+right:8px;
 position:absolute;
 top:0px;
 background-color:rgba(0,0,0,0);
@@ -169,15 +169,14 @@ background-repeat: no-repeat;
 }
 
 .quitbutton {
-background-image: url('../images/quithover.png');
+background-image: url('../images/quit.png');
 background-position:center;
 background-size: 96px 96px;
 background-repeat: no-repeat;
-background-color:rgba(0,0,0,0);
-padding-left:32px;
-padding-right:32px;
-right:8px;
-position:absolute;
+
+background-color:#460b24;
+
+
 top:0px;
 
 }
