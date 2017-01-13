@@ -91,6 +91,20 @@ function populatePartyObject(){
     
 }	
 	
+function togglePartyMode() {
+	
+			if ( parent.window.janus.getsetting('partymode') == true )
+			{
+				parent.window.janus.setsetting('partymode',false)
+			}
+			else
+			{
+				parent.window.janus.setsetting('partymode',true)		
+			}
+			
+			generateList("partymode");
+	
+}
 	
 function populatePopularObject(){
 
@@ -98,13 +112,30 @@ function populatePopularObject(){
 
 }	
 		
-	
+	var partytogglethumb="";
 	
         function generateList(arraytype) {
 		
             var containertopopulate = document.getElementById("cardholder");
 			var currentscroll = window.pageYOffset;
             containertopopulate.innerHTML = ""
+			
+			
+			
+			if ( parent.window.janus.getsetting('partymode') )
+			{
+				var partytogglethumb = "partytoggled";
+			}
+			else
+			{
+				var partytogglethumb = "partytoggle";				
+			}
+			
+			if (arraytype == "partymode")
+			{
+				containertopopulate.innerHTML += "<div onclick='togglePartyMode()' class='dashcard' style='background-image:url(../../thumbs/"+partytogglethumb+".png);' onclick='setText();' ><div class='dashtitle' style='bottom: 15px;'><b>CLICK TO BROADCAST PARTY</b><br>LET OTHER USERS FIND YOU</div></div>"
+			}
+			
             var mainarray = returnMainArray(arraytype);
 			
               	if (arraytype == "partymode")
