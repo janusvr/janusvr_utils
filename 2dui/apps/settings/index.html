@@ -100,7 +100,7 @@ function findGetParameter(parameterName) {
   document.getElementById("comfortmodetoggle").checked =  parent.window.janus.getsetting('comfortmode');
   document.getElementById("leapmotionhmdtoggle").checked =  parent.window.janus.getsetting('leapmotionhmd');
   document.getElementById("antialiasingtoggle").checked =  parent.window.janus.getsetting('antialiasing');
-  document.getElementById("assetimagestoggle").checked =  parent.window.janus.getsetting('assetimages');
+
   document.getElementById("assetshaderstoggle").checked =  parent.window.janus.getsetting('assetshaders');
   document.getElementById("crosshairtoggle").checked =  parent.window.janus.getsetting('crosshair');
   document.getElementById("soundstoggle").checked =  parent.window.janus.getsetting('sounds');
@@ -728,14 +728,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					
 					<div class='header'>CONTENT</div>					
 					
-					<div class='item' >
-					<span>
-					<input class="myCheckbox" type='checkbox' id="assetimagestoggle" onchange="window.janus.setsetting('assetimages', this.checked); "  >
-					AssetImages
 
-					</span>
-					<br>
-					</div>
 
 					<div class='item' >
 					<span>
