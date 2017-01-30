@@ -19,6 +19,9 @@ namespace JanusVR
     /// </summary>
     public class JanusVRExporter : EditorWindow
     {
+        public static bool UpdateOnlyHTML { get; private set; }
+        public const int Version = 203;
+
         /// <summary>
         /// The folder were exporting the scene to
         /// </summary>
@@ -117,6 +120,14 @@ namespace JanusVR
         };
 
         /// <summary>
+        /// Lower case values that the exporter will consider for the shader using transparent textures
+        /// </summary>
+        private string[] transparentSemantics = new string[]
+        {
+            "transparent"
+        };
+
+        /// <summary>
         /// The semantic names for all the skybox 6-sided faces
         /// </summary>
         private string[] skyboxTexNames = new string[]
@@ -146,7 +157,6 @@ namespace JanusVR
         private Bounds sceneSize;
 
         public const int PreviewSize = 64;
-        public const int Version = 202;
 
         internal class ExportedData
         {
@@ -719,6 +729,21 @@ namespace JanusVR
                 TextureExportData data = new TextureExportData();
                 string path = AssetDatabase.GetAssetPath(tex);
 
+                // look for at least 1 object exported that uses us as a transparent texture
+                for (int j = 0; j < exported.exportedObjs.Count; j++)
+                {
+                    ExportedObject obj = exported.exportedObjs[j];
+                    if (obj.IsTransparent)
+                    {
+                        if (obj.DiffuseMapTex == tex ||
+                            obj.LightMapTex == tex ||
+                            obj.Texture == tex)
+                        {
+                            data.ExportAlpha = true;
+                        }
+                    }
+                }
+
                 data.Created = string.IsNullOrEmpty(path);
                 data.Format = this.defaultTexFormat; // start up with a default format
                 data.Texture = tex;
@@ -818,6 +843,19 @@ namespace JanusVR
                             }
 
                             Shader shader = mat.shader;
+                            if (!string.IsNullOrEmpty(shader.name))
+                            {
+                                string shaderLowercase = shader.name.ToLower();
+                                for (int k = 0; k < transparentSemantics.Length; k++)
+                                {
+                                    if (shaderLowercase.Contains(transparentSemantics[k]))
+                                    {
+                                        exp.IsTransparent = true;
+                                        break;
+                                    }
+                                }
+                            }
+
                             int props = ShaderUtil.GetPropertyCount(shader);
                             for (int k = 0; k < props; k++)
                             {
@@ -939,6 +977,8 @@ namespace JanusVR
             {
                 exported = null;
             }
+
+            UpdateOnlyHTML = updateOnlyHtml;
         }
 
         private int GetExponentOf2(int value)
@@ -987,8 +1027,7 @@ namespace JanusVR
                 if (string.IsNullOrEmpty(path))
                 {
                     // we created this texture, just export it (were free to read it)
-                    tex.ExportedPath = tex.Texture.name + GetImageFormatName(tex.Format);
-                    ExportTexture(texture, expPath, defaultTexFormat, tex.Quality, true);
+                    tex.ExportedPath = ExportTexture(texture, expPath, defaultTexFormat, tex.Quality, true);
                 }
                 else
                 {
@@ -1013,38 +1052,9 @@ namespace JanusVR
                     }
                     else
                     {
-                        tex.ExportedPath = tex.Texture.name + GetImageFormatName(tex.Format);
-
-                        if (!updateOnlyHtml)
-                        {
-                            TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(path);
-                            bool wasReadable = importer.isReadable;
-                            TextureImporterFormat lastFormat = importer.textureFormat;
-                            bool changed = false;
-                            bool alpha = importer.alphaIsTransparency;
-                            if (!importer.isReadable || importer.textureFormat != TextureImporterFormat.ARGB32) // only reimport if truly needed
-                            {
-                                changed = true;
-                                importer.isReadable = true;
-                                if (!tex.Texture.name.Contains("comp_light"))
-                                {
-                                    importer.textureFormat = TextureImporterFormat.ARGB32;
-                                }
-                            }
-
-                            AssetDatabase.Refresh();
-                            AssetDatabase.ImportAsset(path);
-
-                            ExportTexture(texture, expPath, tex.Format, tex.Quality, !alpha);
-
-                            if (changed)
-                            {
-                                importer.isReadable = wasReadable;
-                                importer.textureFormat = lastFormat;
-                                AssetDatabase.Refresh();
-                                AssetDatabase.ImportAsset(path);
-                            }
-                        }
+                        TextureUtil.TempTextureData data = TextureUtil.LockTexture(texture, path);
+                        tex.ExportedPath = ExportTexture(texture, expPath, tex.Format, tex.Quality, !data.alphaIsTransparency && !tex.ExportAlpha);
+                        TextureUtil.UnlockTexture(data);
                     }
                 }
             }
@@ -1275,20 +1285,33 @@ namespace JanusVR
             }
         }
 
-        private void ExportTexture(Texture2D tex, string path, ImageFormatEnum format, object data, bool zeroAlpha)
+        private string ExportTexture(Texture2D tex, string path, ImageFormatEnum format, object data, bool zeroAlpha)
         {
-            if (updateOnlyHtml)
+            // see if the exporting format supports alpha
+            if (!zeroAlpha && !TextureUtil.SupportsAlpha(format))
             {
-                return;
+                format = ImageFormatEnum.PNG;
             }
 
             string formatName = GetImageFormatName(format);
+            string fileName = tex.name + formatName;
+
+            if (updateOnlyHtml)
+            {
+                return fileName;
+            }
             string fpath = path + formatName;
 
-            using (Stream output = File.OpenWrite(fpath))
+            try
             {
-                TextureUtil.ExportTexture(tex, output, format, data, zeroAlpha);
+                using (Stream output = File.OpenWrite(fpath))
+                {
+                    TextureUtil.ExportTexture(tex, output, format, data, zeroAlpha);
+                }
             }
+            catch { }
+
+            return fileName;
         }
     }
 }

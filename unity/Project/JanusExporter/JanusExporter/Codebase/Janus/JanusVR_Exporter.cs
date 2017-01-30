@@ -643,7 +643,7 @@ namespace JanusVR
                     var tImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
                     if (tImporter != null)
                     {
-                        tImporter.textureType = TextureImporterType.Advanced;
+                        tImporter.textureType = TextureImporterType.Default;
 
                         if (!tImporter.isReadable)
                         {

@@ -36,11 +36,15 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UnityEditor">
-      <HintPath>..\..\..\..\..\..\Election\Election\Library\UnityAssemblies\UnityEditor.dll</HintPath>
+    <Reference Include="UnityEditor, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\PixelRipped\Library\UnityAssemblies\UnityEditor.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\Election\Election\Library\UnityAssemblies\UnityEngine.dll</HintPath>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\PixelRipped\Library\UnityAssemblies\UnityEngine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -84,7 +88,8 @@
     <Compile Include="Codebase\Janus\Editor\MTL\MtlImporterWindow.cs" />
     <Compile Include="Codebase\Janus\Editor\TextureExportData.cs" />
     <Compile Include="Codebase\Janus\Editor\TextureFilterMode.cs" />
-    <Compile Include="Codebase\Janus\Editor\TextureUtil.cs" />
+    <Compile Include="Codebase\Janus\Editor\Util\TextureUtil.cs" />
+    <Compile Include="Codebase\Janus\JanusLink.cs" />
     <Compile Include="Codebase\Janus\JanusVR_Exporter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

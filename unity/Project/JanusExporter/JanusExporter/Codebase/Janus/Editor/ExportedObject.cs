@@ -14,6 +14,8 @@ namespace JanusVR
         private GameObject go;
         private Collider col;
 
+        public bool IsTransparent { get; set; }
+
         public Mesh Mesh
         {
             get { return mesh; }
