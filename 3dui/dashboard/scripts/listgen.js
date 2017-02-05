@@ -125,15 +125,17 @@ function populatePopularObject(){
 			if ( parent.window.janus.getsetting('partymode') )
 			{
 				var partytogglethumb = "partytoggled";
+				var partytext="<b>CLICK TO END PARTY</b><br>CURRENTLY BROADCASTING..."
 			}
 			else
 			{
-				var partytogglethumb = "partytoggle";				
+				var partytogglethumb = "partytoggle";
+				var partytext="<b>CLICK TO BROADCAST PARTY</b><br>LET OTHER USERS FIND YOU"				
 			}
 			
 			if (arraytype == "partymode")
 			{
-				containertopopulate.innerHTML += "<div onclick='togglePartyMode()' class='dashcard' style='background-image:url(../../thumbs/"+partytogglethumb+".png);' onclick='setText();' ><div class='dashtitle' style='bottom: 15px;'><b>CLICK TO BROADCAST PARTY</b><br>LET OTHER USERS FIND YOU</div></div>"
+				containertopopulate.innerHTML += "<div onclick='togglePartyMode()' class='dashcard' style='background-image:url(../../thumbs/"+partytogglethumb+".png);' onclick='setText();' ><div class='dashtitle' style='bottom: 15px;'>"+partytext+"</div></div>"
 			}
 			
             var mainarray = returnMainArray(arraytype);
