@@ -32,7 +32,13 @@
 	color: #62BD6C;
 	margin-left:15%;
 	margin-right:15%;
-
+	border-style:solid;
+	border-color:#62BD6C;
+	border-width:2px;
+	background-image:url("../../skins/oneironaut/textures/progress.png");
+	background-repeat:repeat-y;
+	background-size:0px;
+	transition: background-size 0.25s;
 	}
 	
 	
