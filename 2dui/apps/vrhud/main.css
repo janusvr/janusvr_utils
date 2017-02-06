@@ -63,6 +63,51 @@
 	border-radius:4px;
 	}
 	
+	
+	
+	
+	
+		.vrchatcontainer {
+	border-radius:4px;
+	background-color: #282828;
+	top:calc(50% - 24px);
+	position:relative;
+	color: #62BD6C;
+	margin-left:15%;
+	margin-right:15%;
+	border-style:solid;
+	border-color:white;
+	border-width:2px;
+	background-image:url("../../skins/oneironaut/textures/progress.png");
+	background-repeat:repeat-y;
+	background-size:0px;
+	transition: background-size 0.25s;
+	}
+	
+	
+	
+	.vrchatcontainer input {
+
+	height:48px;
+	width:calc(100% - 16px);
+	border-style:none;
+	background-color:transparent;
+	font-size:24px;
+	color: white;
+	padding-left:8px;
+	padding-right:8px;
+	margin:0;
+	font-family: "Open Sans";
+	}
+	
+	.vrchatcontainer input:focus {
+	outline:none;
+	background-color:#383838;
+	border-radius:4px;
+	}
+	
+	
+	
 	.midsection {
 	height:32px;
 	}

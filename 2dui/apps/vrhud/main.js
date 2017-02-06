@@ -8,6 +8,17 @@
 		}
 	}
 	
+	function sendChat(chatobject) {
+		
+	var keyPressed = event.keyCode || event.which;
+
+	if(keyPressed==13)
+		{
+			window.janus.chatsend(chatobject.value)
+			chatobject.value = "";
+			
+		}
+	}
 	
 	var prevURL;
 	function updateRoomURL(){

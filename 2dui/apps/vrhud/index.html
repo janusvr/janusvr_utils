@@ -13,7 +13,13 @@
 	<div class="content">
 		<div class="vrurlcontainer" id="vrurlcontainer">
 		
-			<input id="myurl" onchange="resizeBar()" onkeydown="goToRoom(this.value)"></input>
+			<input id="myurl" onchange="resizeBar()" placeholder="Type a URL Here..." onkeydown="goToRoom(this.value)"></input>
+
+		</div>
+		
+		<div class="vrchatcontainer" id="vrurlcontainer">
+		
+			<input id="myurl" onchange="resizeBar()" placeholder="Type a chat message here..." onkeydown="sendChat(this)"></input>
 
 		</div>
 
