@@ -632,9 +632,11 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 						<!--<div>Mode:</div>-->
 							<div >
 								<input  type='radio' name="posture" class="myCheckbox" id="postureseatedradiobutton" onchange="if (this.checked == true){window.janus.setsetting('seated', true);}" >
-								Seated Mode - Physical and virtual orientations can vary. Controllers modify orientation.<br><hr>
+								<label for="postureseatedradiobutton" class="css-label-radio">Seated Mode</label>
+								- Physical and virtual orientations can vary. Controllers modify orientation.<br><hr>
 								<input  type='radio' name="posture" class="myCheckbox" id="posturestandingradiobutton" onchange="if (this.checked == true){window.janus.setsetting('seated', false);}" >
-								Standing Mode - Physical and virtual orientations stay constant. Controllers do not modify orientation.
+								<label for="posturestandingradiobutton" class="css-label-radio">Standing Mode</label>								
+								- Physical and virtual orientations stay constant. Controllers do not modify orientation.
 							</div>
 						</span>
 						<br>
