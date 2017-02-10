@@ -950,7 +950,7 @@ input[type=checkbox].myCheckbox {
 							padding-left:30px;
 							height:25px; 
 							display:inline-block;
-							line-height:25px;
+							line-height:21px;
 							background-repeat:no-repeat;
 							background-position: 0 0;
 							color:#0ee05a;
@@ -975,6 +975,40 @@ input[type=checkbox].myCheckbox {
 				-ms-user-select: none;
 				user-select: none;
 			}
+			
+			
+			
+input[type=radio].myCheckbox {
+							position:absolute; z-index:-1000; left:-1000px; overflow: hidden; clip: rect(0 0 0 0); height:1px; width:1px; margin:-1px; padding:0; border:0;
+						}
+
+						input[type=radio].myCheckbox + label.css-label-radio {
+							padding-left:30px;
+							height:25px; 
+							display:inline-block;
+							line-height:21px;
+							background-repeat:no-repeat;
+							background-position: 0 0;
+
+							vertical-align:middle;
+							cursor:pointer;
+
+						}
+
+						input[type=radio].myCheckbox:checked + label.css-label-radio {
+							background-position: 0 -25px;
+														color:#0ee05a;
+						}
+						label.css-label-radio {
+				background-image:url('radios.png');
+				-webkit-touch-callout: none;
+				-webkit-user-select: none;
+				-khtml-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+			}			
+			
   .item span input {
   float:none; !important;
   }
