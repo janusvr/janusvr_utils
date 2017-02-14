@@ -27,6 +27,11 @@
 		}
 		,500)
 	}
+	
+	function redirectPage(myurl) {
+		window.parent.document.getElementById("dashdisplay").src = myurl;
+	}
+	
 	</script>
 	
 	
@@ -43,11 +48,14 @@
 		<ul class="cardholder" style="padding-top:9%;">
 	
 			
-
+			<div class="dashcard" style="background-image:url('../../thumbs/nevermind.png');" onclick="redirectPage('apps/bookmarks/index.html')" >
+				<div class="dashtitle">NEVER MIND. TAKE ME BACK!</div>
+			</div>
 			<div class="dashcard" style="background-image:url('../../thumbs/quit.png');" onclick="setText();" >
 				<div class="dashtitle">CLICK HERE TO LEAVE</div>
 			</div>
-		
+
+				
 			
 		</ul>
 	</body>
