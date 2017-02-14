@@ -131,6 +131,8 @@ function scrollFrame() {
 			var ycoord = myIframe.scrollY;
 			
 			myIframe.scrollTo(0,ycoord+scrollamount);
+			
+			 continuetoscroll = 0;
 		}
 }		
 
@@ -163,8 +165,8 @@ function toggleScrollButtons(state) {
 				
 		</ul>
 	    
-		<div onmousedown="keepScroll(-15)" id="upscroll" onmouseup="stopScroll()" onmouseout="stopScroll()"  class="cardoption upscrollbutton"  >&#9650;</div>
-        <div onmousedown="keepScroll(15)" id="downscroll" onmouseup="stopScroll()" onmouseout="stopScroll()" class="cardoption downscrollbutton"  >&#9660;</div>
+		<div onmousedown="keepScroll(-250)" id="upscroll" onmouseup="stopScroll()" onmouseout="stopScroll()"  class="cardoption upscrollbutton"  >&#9650;</div>
+        <div onmousedown="keepScroll(250)" id="downscroll" onmouseup="stopScroll()" onmouseout="stopScroll()" class="cardoption downscrollbutton"  >&#9660;</div>
 
 			
 		

@@ -1,5 +1,15 @@
 
 
+function loadVR2DUI() {
+	if (window.janus.hmd != null)
+	{
+			if (window.janus.hmd == 1)
+			{
+				window.location = "apps/vrhud/index.html";
+			}
+	}
+}
+
 //to log to the F2 console use logToConsole(consolestring), or from an app add parent. to the front of the function
 
 
@@ -1133,7 +1143,8 @@ function initsound() {
 		
 		
 		initializeMainInterfaceTheme()
-		initializeMainInterfaceVRTheme()
+		//initializeMainInterfaceVRTheme()
+		loadVR2DUI()
 		showUpdateNotification();
 		initsound()		//init sounds (prevents webkit bug)
 

@@ -9,18 +9,15 @@
                     window.onload = function() {
 	
         parent.window.janus.updatepartymodedata();
-
+        populatePartyObject();
+		generateList("partymode")
+		
         setTimeout(
         function(){
         generateList("partymode")
-        },250);
+        },2500);
      
-        
-        
-        setInterval(
-        function(){
-        generateList("partymode")
-        },1000);
+
             
          setInterval(
         function(){

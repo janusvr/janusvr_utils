@@ -9,18 +9,15 @@
                     window.onload = function() {
 	
         parent.window.janus.updatepopulardata("?orderBy=weight&desc=true&limit=50");
-
+        populatePopularObject();
+		generateList("popular")
+		
         setTimeout(
         function(){
         generateList("popular")
-        },250);
+        },2500);
      
-        
-        
-        setInterval(
-        function(){
-        generateList("popular")
-        },1000);
+
             
          setInterval(
         function(){
