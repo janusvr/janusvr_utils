@@ -7,7 +7,7 @@ namespace JanusVR
 {
     public enum ExportMeshFormat
     {
-        FBX,
-        OBJ_NotWorking
+        FBX//,
+        //OBJ_NotWorking
     }
 }
