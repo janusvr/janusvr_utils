@@ -20,25 +20,25 @@ namespace JanusVR
     public class JanusVRExporter : EditorWindow
     {
         public static bool UpdateOnlyHTML { get; private set; }
-        public const int Version = 203;
+        public const int Version = 204;
 
         /// <summary>
         /// The folder were exporting the scene to
         /// </summary>
         [SerializeField]
-        private string exportPath = @"";
+        private string exportPath;
 
         /// <summary>
         /// The format to export all textures to
         /// </summary>
         [SerializeField]
-        private ImageFormatEnum defaultTexFormat = ImageFormatEnum.JPG;
+        private ImageFormatEnum defaultTexFormat;
 
         /// <summary>
         /// The quality to export all textures
         /// </summary>
         [SerializeField]
-        private int defaultQuality = 70;
+        private int defaultQuality;
 
         /// <summary>
         /// The filtering mode to use when downsampling textures
@@ -50,44 +50,44 @@ namespace JanusVR
         /// The format to export all meshes in
         /// </summary>
         [SerializeField]
-        private ExportMeshFormat meshFormat = ExportMeshFormat.FBX;
+        private ExportMeshFormat meshFormat;
 
         /// <summary>
         /// An uniform scale to apply to the whole scene (useful for matching VR scale inside janus)
         /// </summary>
         [SerializeField]
-        private float uniformScale = 1;
+        private float uniformScale;
 
         /// <summary>
         /// The type of lightmaps you want to export
         /// </summary>
         [SerializeField]
-        private LightmapExportType lightmapExportType = LightmapExportType.Packed;
+        private LightmapExportType lightmapExportType;
 
         /// <summary>
         /// The maximum resolution a lightmap atlas can have
         /// </summary>
         [SerializeField]
-        private int maxLightMapResolution = 2048;
+        private int maxLightMapResolution ;
 
         /// <summary>
         /// If the exporter should output the materials (if disabled, lightmaps are still exported, so you can take a look at only lightmap
         /// data with a gray tone)
         /// </summary>
         [SerializeField]
-        private bool exportMaterials = true;
+        private bool exportMaterials;
 
         /// <summary>
         /// Exports the scene's skybox
         /// </summary>
         [SerializeField]
-        private bool exportSkybox = true;
+        private bool exportSkybox;
 
         /// <summary>
         /// The resolution to render the skybox to, if it's a procedural one
         /// </summary>
         [SerializeField]
-        private int exportSkyboxResolution = 1024;
+        private int exportSkyboxResolution;
 
         /// <summary>
         /// Compress the scene models using GZip (WIP and extremely slow)
@@ -182,19 +182,47 @@ namespace JanusVR
             JanusVRExporter window = EditorWindow.GetWindow<JanusVRExporter>();
             window.Show();
 
-            if (string.IsNullOrEmpty(window.exportPath))
+            window.ResetParameters();
+        }
+
+        private void ResetParameters()
+        {
+            if (string.IsNullOrEmpty(exportPath))
             {
                 string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 string workspace = Path.Combine(documents, @"JanusVR\workspaces");
                 string proj = Path.Combine(workspace, Application.productName);
-                window.exportPath = proj;
+                exportPath = proj;
             }
+
+            meshFormat = ExportMeshFormat.FBX;
+            uniformScale = 1;
+            defaultTexFormat = ImageFormatEnum.JPG;
+            defaultQuality = 70;
+
+            exportMaterials = true;
+            exportSkybox = true;
+            exportSkyboxResolution = 1024;
+
+            lightmapExportType = LightmapExportType.PackedSourceEXR;
+
+            maxLightMapResolution = 2048;
         }
+
+        private Rect border = new Rect(10, 5, 10, 15);
 
         private void OnGUI()
         {
+            Rect rect = this.position;
+            GUILayout.BeginArea(new Rect(border.x, border.y, rect.width - border.width, rect.height - border.height));
+
+            GUILayout.Label("Janus Exporter " + (Version / 100.0).ToString("F2"), EditorStyles.boldLabel);
+
+            // Main Parameters
+            GUILayout.Label("Main", EditorStyles.boldLabel);
+
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Export Path");
+            EditorGUILayout.PrefixLabel("Export Path");
             exportPath = EditorGUILayout.TextField(exportPath);
             if (GUILayout.Button("..."))
             {
@@ -203,28 +231,72 @@ namespace JanusVR
             }
             EditorGUILayout.EndHorizontal();
 
+            // Models
+            GUILayout.Label("Model", EditorStyles.boldLabel);
+
             meshFormat = (ExportMeshFormat)EditorGUILayout.EnumPopup("Mesh Format", meshFormat);
+            uniformScale = EditorGUILayout.FloatField("Uniform Scale", uniformScale);
+
+            // Texture
+            GUILayout.Label("Texture", EditorStyles.boldLabel);
             defaultTexFormat = (ImageFormatEnum)EditorGUILayout.EnumPopup("Textures Format", defaultTexFormat);
             if (SupportsQuality(defaultTexFormat))
             {
                 defaultQuality = EditorGUILayout.IntSlider("Textures Quality", defaultQuality, 0, 100);
             }
-            //compressFiles = EditorGUILayout.Toggle("Compress Models", compressFiles);
 
-            uniformScale = EditorGUILayout.FloatField("Uniform Scale", uniformScale);
+            // Scene
+            GUILayout.Label("Scene", EditorStyles.boldLabel);
+
             exportMaterials = EditorGUILayout.Toggle("Export Materials", exportMaterials);
+            EditorGUILayout.LabelField("    Useful for testing lighting results in Janus");
+
             exportSkybox = EditorGUILayout.Toggle("Export Skybox", exportSkybox);
             if (exportSkybox && IsProceduralSkybox())
             {
                 exportSkyboxResolution = Math.Max(4, EditorGUILayout.IntField("Skybox Render Resolution", exportSkyboxResolution));
             }
+            EditorGUILayout.LabelField("    Will render the Skybox into 6 textures with the specified resolution");
 
             lightmapExportType = (LightmapExportType)EditorGUILayout.EnumPopup("Lightmap Type", lightmapExportType);
-            if (lightmapExportType != LightmapExportType.None)
+            if (lightmapExportType != LightmapExportType.None && lightmapExportType != LightmapExportType.PackedSourceEXR)
             {
                 maxLightMapResolution = Math.Max(4, EditorGUILayout.IntField("Max Lightmap Resolution", maxLightMapResolution));
             }
 
+            switch (lightmapExportType)
+            {
+                case LightmapExportType.None:
+                    EditorGUILayout.LabelField("    No lightmaps are going to be exported");
+                    break;
+                case LightmapExportType.Packed:
+                    EditorGUILayout.LabelField("    Converts the source EXR files to Low-Dynamic Range");
+                    break;
+                case LightmapExportType.PackedSourceEXR:
+                    EditorGUILayout.LabelField("    Copies the source EXR High-Dynamic Range lightmaps");
+                    EditorGUILayout.LabelField("    directly into the exported project (only on Janus 56.0)");
+                    break;
+                case LightmapExportType.BakedMaterial:
+                    EditorGUILayout.LabelField("    Bakes the lightmap into the material (for testing purposes)");
+                    break;
+                case LightmapExportType.Unpacked:
+                    EditorGUILayout.LabelField("    Converts the source EXR files to Low-Dynamic Range and unpacks");
+                    EditorGUILayout.LabelField("    into individual textures (for testing purposes)");
+                    break;
+            }
+
+            GUILayout.FlexibleSpace();
+
+            if (exported != null)
+            {
+                // Exported
+                GUILayout.Label("Exported", EditorStyles.boldLabel);
+
+                GUILayout.Label("Scene size " + sceneSize.size);
+                GUILayout.Label("Far plane " + farPlaneDistance);
+            }
+
+            EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Export HTML only"))
             {
                 updateOnlyHtml = true;
@@ -233,20 +305,22 @@ namespace JanusVR
                 updateOnlyHtml = false;
             }
 
+            if (GUILayout.Button("Reset Parameters"))
+            {
+                ResetParameters();
+            }
+            EditorGUILayout.EndHorizontal();
+
             if (!string.IsNullOrEmpty(exportPath))
             {
-                if (GUILayout.Button("Full Export"))
+                if (GUILayout.Button("Full Export", GUILayout.Height(30)))
                 {
                     PreExport();
                     DoExport();
                 }
             }
 
-            if (exported != null)
-            {
-                GUILayout.Label("Scene size " + sceneSize.size);
-                GUILayout.Label("Far plane " + farPlaneDistance);
-            }
+            GUILayout.EndArea();
         }
 
         private static string GetMeshFormat(ExportMeshFormat format)
@@ -255,8 +329,8 @@ namespace JanusVR
             {
                 case ExportMeshFormat.FBX:
                     return ".fbx";
-                case ExportMeshFormat.OBJ_NotWorking:
-                    return ".obj";
+                //case ExportMeshFormat.OBJ_NotWorking:
+                    //return ".obj";
                 default:
                     return "";
             }
@@ -1280,8 +1354,8 @@ namespace JanusVR
                 case ExportMeshFormat.FBX:
                     FBXExporter.ExportMesh(mesh, finalPath, switchUv);
                     break;
-                case ExportMeshFormat.OBJ_NotWorking:
-                    break;
+                //case ExportMeshFormat.OBJ_NotWorking:
+                    //break;
             }
         }
 
