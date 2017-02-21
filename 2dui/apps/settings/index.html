@@ -890,7 +890,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					
-					Playback Device: <span id="playbackdevice" onclick="var arrow = (document.getElementById('playbackdevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('playbackdevice').innerHTML = parent.window.janus.getsetting('playbackdevice') + arrow; document.getElementById('playbackdevicelist').style.display = (document.getElementById('playbackdevicelist').style.display == 'block')?'none':'block';"></span><br>
+					Playback Device: <div id="playbackdevice" onclick="var arrow = (document.getElementById('playbackdevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('playbackdevice').innerHTML = parent.window.janus.getsetting('playbackdevice') + arrow; document.getElementById('playbackdevicelist').style.display = (document.getElementById('playbackdevicelist').style.display == 'block')?'none':'block';"></div>
 					<div class="devicelist" id="playbackdevicelist">
 						<div class="device_list" id="playback_list" >
 						</div>
@@ -905,7 +905,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					
-					Capture Device: <span id="capturedevice" onclick="var arrow = (document.getElementById('capturedevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('capturedevice').innerHTML = parent.window.janus.getsetting('capturedevice') + arrow; document.getElementById('capturedevicelist').style.display = (document.getElementById('capturedevicelist').style.display == 'block')?'none':'block';"></span><br>
+					Capture Device: <div id="capturedevice" onclick="var arrow = (document.getElementById('capturedevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('capturedevice').innerHTML = parent.window.janus.getsetting('capturedevice') + arrow; document.getElementById('capturedevicelist').style.display = (document.getElementById('capturedevicelist').style.display == 'block')?'none':'block';"></div>
 					<div class="devicelist" id="capturedevicelist">
 						<div class="device_list" id="capture_list">
 						</div>
