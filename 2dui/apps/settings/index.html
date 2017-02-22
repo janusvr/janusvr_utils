@@ -217,8 +217,16 @@ function findGetParameter(parameterName) {
   }
   
   function setDevice(id, device){
-	parent.window.janus.setsetting(id, device);
-	document.getElementById(id).innerHTML = device + "&#9650;";
+	if (id == "capturedevice" && device == "No device"){
+		parent.window.janus.setsetting(id, device);
+		parent.window.janus.setsetting("secondarycapturedevice", device);
+		document.getElementById(id).innerHTML = device + "&#9650;";	
+		document.getElementById("secondarycapturedevice").innerHTML = device + "&#9650;";	
+	}	
+	else if ((device == "No device") || (device == "Default device") || (id == "capturedevice" && parent.window.janus.getsetting("secondarycapturedevice") != device) || (id == "secondarycapturedevice" && parent.window.janus.getsetting("capturedevice") != device) || (id != "capturedevice" && id != "secondarycapturedevice")){
+		parent.window.janus.setsetting(id, device);
+		document.getElementById(id).innerHTML = device + "&#9650;";	
+	}	
   }
   
 
