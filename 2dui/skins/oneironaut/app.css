@@ -149,7 +149,7 @@ background-color:#343A3D;
 background-color:#343A3D;
 }
 
-#playbackdevice {
+.device {
   list-style-type: none;
   width: calc(100% - 8px);
   text-align:left;
@@ -158,25 +158,9 @@ background-color:#343A3D;
   color:white;
 }
 
-#capturedevice {
-  list-style-type: none;
-  width: calc(100% - 8px);
-  text-align:left;
-  max-height:32px;
-  font-family: 'Open Sans';
-  color:white;
-}
-
-#capturedevice:hover {
+.device:hover {
 background-color:#343A3D;
 }
-
-#playbackdevice:hover {
-background-color:#343A3D;
-}
-
-
-
 
 ul {
     list-style-type: none;
