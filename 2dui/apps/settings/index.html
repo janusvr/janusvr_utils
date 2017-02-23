@@ -931,7 +931,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<div class='item' >
 					<span>
 					
-					Capture Device<span class="device" id="capturedevicel"></span>: <div id="capturedevice" onclick="var arrow = (document.getElementById('capturedevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('capturedevice').innerHTML = parent.window.janus.getsetting('capturedevice') + arrow; document.getElementById('capturedevicelist').style.display = (document.getElementById('capturedevicelist').style.display == 'block')?'none':'block';"></div>
+					Capture Device<span id="capturedevicel"></span>: <div id="capturedevice" class="device" onclick="var arrow = (document.getElementById('capturedevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('capturedevice').innerHTML = parent.window.janus.getsetting('capturedevice') + arrow; document.getElementById('capturedevicelist').style.display = (document.getElementById('capturedevicelist').style.display == 'block')?'none':'block';"></div>
 					<div class="devicelist" id="capturedevicelist">
 						<div class="device_list" id="capture_list">
 						</div>
