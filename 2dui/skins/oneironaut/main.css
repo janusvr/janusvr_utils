@@ -23,7 +23,35 @@
   background-size:cover;
 
   }
+ 
   
+
+ .quitb {
+
+background-image:url('textures/quit.png');
+background-size:cover;
+width:38px;
+height:38px;
+right:4px;
+cursor:pointer;
+top:4px;
+opacity:0.5;
+position:absolute;
+transition: opacity 0.25s;
+ }
+
+.quitb:hover {
+background-image:url('textures/quithover.png');
+background-size:cover;
+opacity:1;
+transition: opacity 0;
+
+}
+
+
+
+
+ 
   .statisticleft {
   background-image: url(icons/newstat/network-online.png);
   bottom:8px;
