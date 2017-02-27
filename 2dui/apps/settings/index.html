@@ -158,6 +158,49 @@ function findGetParameter(parameterName) {
   
   document.getElementById("volumemicslider").value =  parent.window.janus.getsetting('volumemic');  
   document.getElementById("volumemicslidernumber").innerHTML =  parent.window.janus.getsetting('volumemic');
+  
+  document.getElementById("playbackdevice").innerHTML =  parent.window.janus.getsetting('playbackdevice') + "&#9660;";
+  document.getElementById("capturedevice").innerHTML =  parent.window.janus.getsetting('capturedevice') + "&#9660;";
+  document.getElementById("secondarycapturedevice").innerHTML =  parent.window.janus.getsetting('secondarycapturedevice') + "&#9660;";
+  document.getElementById("playbackdevicelist").style.display = "none";
+  document.getElementById("capturedevicelist").style.display = "none";
+  document.getElementById("secondarycapturedevicelist").style.display = "none";
+  var list = document.getElementById('playback_list');
+  for (i = 0; i < parent.window.janus.playbackdevices.length; i++){
+	var itemli = document.createElement('li');
+	var itemdiv = document.createElement('div');
+	var text = document.createTextNode(parent.window.janus.playbackdevices[i]);
+	itemdiv.appendChild(text);
+	itemdiv.setAttribute('onclick', 'setDevice("playbackdevice",this.innerHTML);');
+	itemli.appendChild(itemdiv);
+	list.appendChild(itemli);
+  }
+  var list = document.getElementById('capture_list');
+  for (i = 0; i < parent.window.janus.capturedevices.length; i++){
+	var itemli = document.createElement('li');
+	var itemdiv = document.createElement('div');
+	var text = document.createTextNode(parent.window.janus.capturedevices[i]);
+	itemdiv.appendChild(text);
+	itemdiv.setAttribute('onclick', 'setDevice("capturedevice",this.innerHTML);');
+	itemli.appendChild(itemdiv);
+	list.appendChild(itemli);
+  }
+  var list = document.getElementById('secondary_capture_list');
+  if (parent.window.janus.capturedevices.length > 3){
+	  document.getElementById('capturedevicel').innerHTML = " L";
+	  for (i = 0; i < parent.window.janus.capturedevices.length; i++){
+		var itemli = document.createElement('li');
+		var itemdiv = document.createElement('div');
+		var text = document.createTextNode(parent.window.janus.capturedevices[i]);
+		itemdiv.appendChild(text);
+		itemdiv.setAttribute('onclick', 'setDevice("secondarycapturedevice",this.innerHTML);');
+		itemli.appendChild(itemdiv);
+		list.appendChild(itemli);
+	  }
+  }
+  else{
+	document.getElementById("secondarycapturedevice_div").style.display = "none";
+  }
      
  
   document.getElementById("landingpageform").value =  parent.window.janus.getsetting('launchurl');  
@@ -173,7 +216,18 @@ function findGetParameter(parameterName) {
   
   }
   
-  
+  function setDevice(id, device){
+	if (id == "capturedevice" && device == "No device"){
+		parent.window.janus.setsetting(id, device);
+		parent.window.janus.setsetting("secondarycapturedevice", device);
+		document.getElementById(id).innerHTML = device + "&#9650;";	
+		document.getElementById("secondarycapturedevice").innerHTML = device + "&#9650;";	
+	}	
+	else if ((device == "No device") || (device == "Default device") || (id == "capturedevice" && parent.window.janus.getsetting("secondarycapturedevice") != device) || (id == "secondarycapturedevice" && parent.window.janus.getsetting("capturedevice") != device) || (id != "capturedevice" && id != "secondarycapturedevice")){
+		parent.window.janus.setsetting(id, device);
+		document.getElementById(id).innerHTML = device + "&#9650;";	
+	}	
+  }
   
 
   
@@ -857,6 +911,53 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					</span>
 					<br>
 					</div>		
+
+
+					<div class='item' >
+					<span>
+					
+					Playback Device: <div class="device" id="playbackdevice" onclick="var arrow = (document.getElementById('playbackdevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('playbackdevice').innerHTML = parent.window.janus.getsetting('playbackdevice') + arrow; document.getElementById('playbackdevicelist').style.display = (document.getElementById('playbackdevicelist').style.display == 'block')?'none':'block';"></div>
+					<div class="devicelist" id="playbackdevicelist">
+						<div class="device_list" id="playback_list" >
+						</div>
+					</div>
+
+					</span>
+					<br>
+					</div>	
+
+					
+					
+					<div class='item' >
+					<span>
+					
+					Capture Device<span id="capturedevicel"></span>: <div id="capturedevice" class="device" onclick="var arrow = (document.getElementById('capturedevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('capturedevice').innerHTML = parent.window.janus.getsetting('capturedevice') + arrow; document.getElementById('capturedevicelist').style.display = (document.getElementById('capturedevicelist').style.display == 'block')?'none':'block';"></div>
+					<div class="devicelist" id="capturedevicelist">
+						<div class="device_list" id="capture_list">
+						</div>
+					</div>
+					
+
+					</span>
+					<br>
+					</div>
+					
+					
+					
+					
+					<div class='item' id="secondarycapturedevice_div">
+					<span>
+					
+					Capture Device R: <div class="device" id="secondarycapturedevice" onclick="var arrow = (document.getElementById('secondarycapturedevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('secondarycapturedevice').innerHTML = parent.window.janus.getsetting('secondarycapturedevice') + arrow; document.getElementById('secondarycapturedevicelist').style.display = (document.getElementById('secondarycapturedevicelist').style.display == 'block')?'none':'block';"></div>
+					<div class="devicelist" id="secondarycapturedevicelist">
+						<div class="device_list" id="secondary_capture_list">
+						</div>
+					</div>
+					
+
+					</span>
+					<br>
+					</div>
 
 					
 					

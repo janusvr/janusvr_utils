@@ -1,10 +1,36 @@
-	function goToRoom(url) {
+	var getActiveElement = function( document ){
+
+		document = document || window.document;
+
+		// Check if the active element is in the main web or iframe
+		if( document.body === document.activeElement
+				|| document.activeElement.tagName == 'IFRAME' ){
+			// Get iframes
+			var iframes = document.getElementsByTagName('iframe');
+			for(var i = 0; i<iframes.length; i++ ){
+				// Recall
+				var focused = getActiveElement( iframes[i].contentWindow.document );
+				if( focused !== false ){
+					return focused; // The focused
+				}
+			}
+		}
+
+		else return document.activeElement;
+
+		return false;
+	};	
+	
+	function goToRoom(urlobject) {
 		
 	var keyPressed = event.keyCode || event.which;
 
 	if(keyPressed==13)
 		{
-			window.janus.launchurl(url,1);
+			window.janus.launchurl(urlobject.value,1);
+			urlobject.blur;
+			window.janus.unfocus();
+			
 		}
 	}
 	
@@ -16,7 +42,8 @@
 		{
 			window.janus.chatsend(chatobject.value)
 			chatobject.value = "";
-			
+			chatobject.blur;
+			window.janus.unfocus();			
 		}
 	}
 	
@@ -41,6 +68,37 @@
 
 		
 	}
+	
+	function pollFocus() {
+		//this function polls to see if T or TAB has been pressed. if it has, focus on the chatlog/URL Bar
+		
+		if (window.janus.currentkey == "Tab" )
+		{
+			var eletemp=getActiveElement();
+			if (   ((eletemp.tagName != "INPUT" && eletemp.tagName != "TEXTAREA") && window.janus.hasFocus()) ||(!(window.janus.hasFocus())))
+			{
+				if (!(window.janus.hasFocus()))
+				{
+					window.janus.focus();
+				}
+				document.getElementById("myurl").focus();
+			}
+		}
+		
+		if (window.janus.currentkey == "T" )
+		{
+			var eletemp=getActiveElement();
+			if (   ((eletemp.tagName != "INPUT" && eletemp.tagName != "TEXTAREA") && window.janus.hasFocus()) ||(!(window.janus.hasFocus())))
+			{
+				if (!(window.janus.hasFocus()))
+				{
+					window.janus.focus();
+				}
+				document.getElementById("mychat").focus();
+			}
+		}		
+		
+	}
 
 	window.onload = function() {
 		
@@ -48,5 +106,12 @@
 		updateProgressBar();
 		updateRoomURL();	
 		},500)
+		
+		setInterval(function() {
+		pollFocus()
+		},10)
+				
+		
+				
 		
 	}
