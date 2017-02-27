@@ -26,7 +26,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;UNITY_EDITOR</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -48,56 +48,65 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Codebase\Janus\Editor\Compression\GZipExporter.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\BlockType.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\CompressionMode.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\CopyEncoder.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\Crc32Helper.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\DeflateInput.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\DeflaterManaged.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\DeflateStream.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\DeflateStreamAsyncResult.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\FastEncoder.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\FastEncoderStatics.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\FastEncoderWindow.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\FileFormats.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\GZipDecoder.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\GZipStream.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\GZipUtils.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\HuffmanTree.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\IDeflater.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\Inflater.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\InflaterState.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\InputBuffer.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\InvalidDataException.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\Match.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\MatchState.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\OutputBuffer.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\OutputWindow.cs" />
-    <Compile Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\SR.cs" />
-    <Compile Include="Codebase\Janus\Editor\Content\Texture\DDSExporter.cs" />
-    <Compile Include="Codebase\Janus\Editor\ExportedObject.cs" />
-    <Compile Include="Codebase\Janus\Editor\ExportMeshFormat.cs" />
-    <Compile Include="Codebase\Janus\Editor\Content\Model\FBX\FBXExporter.cs" />
-    <Compile Include="Codebase\Janus\Editor\Content\Model\FBX\FbxVector2.cs" />
-    <Compile Include="Codebase\Janus\Editor\Content\Model\FBX\FbxVector3.cs" />
-    <Compile Include="Codebase\Janus\Editor\ImageFormatEnum.cs" />
-    <Compile Include="Codebase\Janus\Editor\JanusVRExporter.cs" />
-    <Compile Include="Codebase\Janus\Editor\LightmapExportType.cs" />
-    <Compile Include="Codebase\Janus\Editor\MeshExportData.cs" />
-    <Compile Include="Codebase\Janus\Editor\MTL\MtlImporterWindow.cs" />
-    <Compile Include="Codebase\Janus\Editor\TextureExportData.cs" />
-    <Compile Include="Codebase\Janus\Editor\TextureFilterMode.cs" />
-    <Compile Include="Codebase\Janus\Editor\Util\TextureUtil.cs" />
+    <Compile Include="Codebase\Janus\Components\JanusVREntryPortal.cs" />
+    <Compile Include="Codebase\Janus\Components\JanusVRLink.cs" />
+    <Compile Include="Codebase\Janus\Compression\GZipExporter.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\BlockType.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\CompressionMode.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\CopyEncoder.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\Crc32Helper.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\DeflateInput.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\DeflaterManaged.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\DeflateStream.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\DeflateStreamAsyncResult.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\FastEncoder.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\FastEncoderStatics.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\FastEncoderWindow.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\FileFormats.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\GZipDecoder.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\GZipStream.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\GZipUtils.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\HuffmanTree.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\IDeflater.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\Inflater.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\InflaterState.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\InputBuffer.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\InvalidDataException.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\Match.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\MatchState.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\OutputBuffer.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\OutputWindow.cs" />
+    <Compile Include="Codebase\Janus\Compression\Unity.IO.Compression\SR.cs" />
+    <Compile Include="Codebase\Janus\Content\Material\MtlImporterWindow.cs" />
+    <Compile Include="Codebase\Janus\Content\Mesh\ExportMeshFormat.cs" />
+    <Compile Include="Codebase\Janus\Content\Mesh\FBX\FbxExporter.cs" />
+    <Compile Include="Codebase\Janus\Content\Mesh\FBX\FbxExporterInterop.cs" />
+    <Compile Include="Codebase\Janus\Content\Mesh\FBX\FbxVector2.cs" />
+    <Compile Include="Codebase\Janus\Content\Mesh\FBX\FbxVector3.cs" />
+    <Compile Include="Codebase\Janus\Content\Mesh\MeshExporter.cs" />
+    <Compile Include="Codebase\Janus\Content\Mesh\MeshExportParameters.cs" />
+    <Compile Include="Codebase\Janus\Content\Texture\DDSExporter.cs" />
+    <Compile Include="Codebase\Janus\Content\Texture\ExportTextureFormat.cs" />
+    <Compile Include="Codebase\Janus\Editor\JanusVREntryPortalEditor.cs" />
+    <Compile Include="Codebase\Janus\Editor\JanusVRLinkEditor.cs" />
+    <Compile Include="Codebase\Janus\ExportedObject.cs" />
     <Compile Include="Codebase\Janus\JanusLink.cs" />
+    <Compile Include="Codebase\Janus\JanusResources.cs" />
+    <Compile Include="Codebase\Janus\JanusVRExporter.cs" />
     <Compile Include="Codebase\Janus\JanusVR_Exporter.cs" />
+    <Compile Include="Codebase\Janus\LightmapExportType.cs" />
+    <Compile Include="Codebase\Janus\MeshExportData.cs" />
+    <Compile Include="Codebase\Janus\TextureExportData.cs" />
+    <Compile Include="Codebase\Janus\TextureFilterMode.cs" />
+    <Compile Include="Codebase\Janus\Util\HtmlUtil.cs" />
+    <Compile Include="Codebase\Janus\Util\JanusUtil.cs" />
+    <Compile Include="Codebase\Janus\Util\MathUtil.cs" />
+    <Compile Include="Codebase\Janus\Util\TextureUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <None Include="Codebase\Janus\Editor\Compression\Unity.IO.Compression\README.md" />
-    <None Include="Codebase\Janus\Shaders\LMapBaked.shader" />
-    <None Include="Codebase\Janus\Shaders\LMapPacked.shader" />
-    <None Include="Codebase\Janus\Shaders\LMapUnpacked.shader" />
+    <Content Include="Codebase\Janus\Editor\Resources\janusvricon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

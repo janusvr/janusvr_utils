@@ -1,8 +1,11 @@
 <html>
 <head>
     <style>
-        table {
-            font-family: arial, sans-serif;
+		body{
+		  font-family: arial, sans-serif;
+		}
+		
+        table {          
             border-collapse: collapse;
             width: 100%;
         }
@@ -30,8 +33,14 @@
     <br>
     <img src="step3.png" />
     <br>
+	
+	<p><b>3. Open the exporter by hitting Window -> Janus VR Exporter</b></p>
+	<br>
+	<img src="step4.png" />
+	<br>
 
-    <p><b>3. Exporter Options</b></p>
+    <p><b>4. Exporter Options</b></p>
+	<img src="step5.png" />
 	<br>
     <table>
         <tr>
@@ -44,36 +53,32 @@
             <td>The folder were exporting the scene to</td>
         </tr>
         <tr>
-            <td>Default Mesh format</td>
-            <td>The format to default every mesh to export to. Only FBX is supported right now, but OBJ support is coming.</td>
+            <td>Mesh format</td>
+            <td>The format were going to export all meshes to (only FBX right now).</td>
         </tr>
-        <tr>
-            <td>Default Texture Format</td>
-            <td>The format to default every texture to export to. PNG are lossless, so quality options are ignored. Supported formats are PNG and JPG.</td>
-        </tr>
-        <tr>
-            <td>Default Textures Quality</td>
-            <td>The quality to initialize every texture that's using a lossy export format (like JPG).</td>
-        </tr>
-        <tr>
-            <td>Texture Filter</td>
-            <td>The filtering mode to use when downsampling textures.</td>
-        </tr>
-        <tr>
-            <td>Compress Models</td>
-            <td>Compress the scene models using GZip (WIP and extremely slow)</td>
-        </tr>
-        <tr>
+		 <tr>
             <td>Uniform Scale</td>
             <td>A uniform scale to transform the entire scene.</td>
         </tr>
+		<tr>
+            <td>Export GIFs</td>
+            <td>If the export should export GIFs. If false, the GIFs get reprocessed to the texture format and only the first frame is exported.</td>
+        </tr>
+        <tr>
+            <td>Texture Format</td>
+            <td>
+				The format to export all textures. Supported formats are PNG and JPG. If the object needs alpha information inside the texture the format will be overriden to PNG always.
+				<br>
+				<b>Texture Quality:</b> Only available when using lossy texture formats, like JPG.
+			</td>
+        </tr>       
         <tr>
             <td>Export Materials</td>
             <td>If the exporter should output the materials (if disabled, lightmaps are still exported, so you can take a look at only lightmap data with a gray tone)</td>
         </tr>
         <tr>
             <td>Export Skybox</td>
-            <td>Exports the scene's skybox, if it's a 6-sided skybox</td>
+            <td>Exports the scene's skybox</td>
         </tr>
         <tr>
             <td><a href="#lightmap">Lightmap Type</a></td>
@@ -86,27 +91,15 @@
     </table>
 	<br>
 	
-    <p><b>3.1. Export HTML only</b></p>
+    <p><b>4.1. Export HTML only</b></p>
     <p>This button is intended for when you have already exported the entire scene, but made a change that doesnt impact the already exported models/textures (like changing the position of an object in the scene).</p>
 	<br>
-	
-	<p><b>3.2. Start Export</b></p>
-	<p>This is used to look up the entire scene and cache what is going to be exported on the next step.<p>	
-	<table>
-		<tr>
-			<th>Option</th>
-			<th>Description<th>
-		</tr>
-		<tr>
-			<td>View Distance</td>
-			<td>The farplane distance. This is calculated from the bounds of your scene, so changing it is inadvisable.</td>
-		</tr>
-		<tr>
-			<td>Per-Texture options</td>
-			<td>The farplane distance. This is calculated from the bounds of your scene, so changing it is inadvisable.</td>
-		</tr>
-	</table>
-	<br>
+	<p><b>4.2. Reset Parameters</b></p>
+    <p>Resets all parameters to their default values.</p>
+	<br>	
+	<p><b>4.3. Full Export</b></p>
+    <p>Exports the entire scene - models, textures and the html file - to the output directory.</p>
+	<br>	
 	
 	<a name="lightmap" />
 	<p><b>4. Lightmap Options</b>
@@ -122,7 +115,11 @@
 		</tr>
 		<tr>
 			<td>Packed</td>
-			<td>The optimal type of lightmaps: everything is exported straight out from Unity, packed into multiple atlases.</td>
+			<td>Packed into multiple atlases.</td>
+		</tr>
+		<tr>
+			<td>Packed Source EXR</td>
+			<td>The optimal type of lightmaps: everything is exported straight out from Unity, packed into multiple atlases with HDR support.</td>
 		</tr>
 		<tr>
 			<td>Unpacked</td>
