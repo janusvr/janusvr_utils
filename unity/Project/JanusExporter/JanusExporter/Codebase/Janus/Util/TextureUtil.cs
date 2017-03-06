@@ -20,10 +20,14 @@ namespace JanusVR
     {
         public struct TempTextureData
         {
+#if UNITY_5_3_OR_NEWER
             public TextureImporterPlatformSettings settings;
+            public TextureImporterCompression textureCompression;
+#else
+            public TextureImporterFormat format;
+#endif
             public bool isReadable;
             public bool alphaIsTransparency;
-            public TextureImporterCompression textureCompression;
             public string path;
 
             public bool changed;
@@ -32,21 +36,33 @@ namespace JanusVR
         public static TempTextureData LockTexture(Texture2D texture, string path)
         {
             TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(path);
-
-            TextureImporterPlatformSettings settings = importer.GetPlatformTextureSettings("Standalone");
             TempTextureData data = new TempTextureData();
+
+#if UNITY_5_3_OR_NEWER
+            TextureImporterPlatformSettings settings = importer.GetPlatformTextureSettings("Standalone");
             data.settings = settings;
+            data.textureCompression = importer.textureCompression;
+#else
+            data.format = importer.textureFormat;
+#endif
             data.isReadable = importer.isReadable;
             data.alphaIsTransparency = importer.alphaIsTransparency;
-            data.textureCompression = importer.textureCompression;
             data.path = path;
 
             if (!JanusVRExporter.UpdateOnlyHTML)
             {
+#if UNITY_5_3_OR_NEWER
                 if (!importer.isReadable || importer.textureCompression != TextureImporterCompression.Uncompressed)
+#else
+                if (!importer.isReadable || importer.textureFormat != TextureImporterFormat.ARGB32)
+#endif
                 {
                     importer.isReadable = true;
+#if UNITY_5_3_OR_NEWER
                     importer.textureCompression = TextureImporterCompression.Uncompressed;
+#else
+                    importer.textureFormat = TextureImporterFormat.ARGB32;
+#endif
                     data.changed = true;
 
                     AssetDatabase.Refresh();
@@ -63,7 +79,11 @@ namespace JanusVR
                 TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(data.path);
 
                 importer.isReadable = data.isReadable;
+#if UNITY_5_3_OR_NEWER
                 importer.textureCompression = data.textureCompression;
+#else
+                importer.textureFormat = data.format;
+#endif
 
                 AssetDatabase.Refresh();
                 AssetDatabase.ImportAsset(data.path);

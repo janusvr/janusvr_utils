@@ -68,7 +68,11 @@ namespace JanusVR
 
         public override string ToString()
         {
-            return texture.width + " - " + texture.height;
+            if (string.IsNullOrEmpty(texture.name))
+            {
+                return "No name: " + texture.width + " - " + texture.height;
+            }
+            return texture.name;
         }
     }
 }

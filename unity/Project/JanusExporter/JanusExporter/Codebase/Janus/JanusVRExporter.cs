@@ -10,8 +10,11 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.SceneManagement;
 using UObject = UnityEngine.Object;
+
+#if UNITY_5_3_OR_NEWER
+using UnityEngine.SceneManagement;
+#endif
 
 namespace JanusVR
 {
@@ -435,6 +438,16 @@ namespace JanusVR
         private Texture2D skyBoxForward;
         private Texture2D skyBoxBack;
 
+        public static IEnumerable<GameObject> SceneRoots()
+        {
+            var prop = new HierarchyProperty(HierarchyType.GameObjects);
+            var expanded = new int[0];
+            while (prop.Next(expanded))
+            {
+                yield return prop.pptrValue as GameObject;
+            }
+        }
+
         private void PreExport()
         {
             Clean();
@@ -447,8 +460,16 @@ namespace JanusVR
             meshesNames = new Dictionary<Mesh, string>();
             meshesCount = 0;
 
+#if UNITY_5_3_OR_NEWER
             Scene scene = SceneManager.GetActiveScene();
             GameObject[] roots = scene.GetRootGameObjects();
+            string scenePath = scene.path;
+            string sceneName = scene.name;
+#else
+            GameObject[] roots = SceneRoots().ToArray();
+            string scenePath = EditorApplication.currentScene;
+            string sceneName = Path.GetFileNameWithoutExtension(scenePath);
+#endif
 
             lightmapped = new Dictionary<int, List<GameObject>>();
             exported = new ExportedData();
@@ -528,14 +549,13 @@ namespace JanusVR
             if (lightmapExportType != LightmapExportType.None &&
                 lightmapped.Count > 0)
             {
-                string scenePath = scene.path;
                 scenePath = Path.GetDirectoryName(scenePath);
-                string lightMapsFolder = Path.Combine(scenePath, scene.name);
+                string lightMapsFolder = Path.Combine(scenePath, sceneName);
 
                 switch (lightmapExportType)
                 {
                     case LightmapExportType.BakedMaterial:
-                        #region Baked
+#region Baked
                         {
                             // only load shader now, so if the user is not exporting lightmaps
                             // he doesn't need to have it on his project folder
@@ -636,10 +656,10 @@ namespace JanusVR
                             }
                             UnityEngine.Object.DestroyImmediate(lightMap);
                         }
-                        #endregion
+#endregion
                         break;
                     case LightmapExportType.Packed:
-                        #region Packed
+#region Packed
                         {
                             Shader lightMapShader = Shader.Find("Hidden/LMapPacked");
                             AssertShader(lightMapShader);
@@ -700,10 +720,10 @@ namespace JanusVR
                             }
                             UObject.DestroyImmediate(lightMap);
                         }
-                        #endregion
+#endregion
                         break;
                     case LightmapExportType.PackedSourceEXR:
-                        #region Packed Source EXR
+#region Packed Source EXR
                         {
                             foreach (var lightPair in lightmapped)
                             {
@@ -728,10 +748,10 @@ namespace JanusVR
                                 texturesExported.Add(texture);
                             }
                         }
-                        #endregion
+#endregion
                         break;
                     case LightmapExportType.Unpacked:
-                        #region Unpacked
+#region Unpacked
                         {
                             Shader lightMapShader = Shader.Find("Hidden/LMapUnpacked");
                             AssertShader(lightMapShader);
@@ -813,7 +833,7 @@ namespace JanusVR
                             }
                             UObject.DestroyImmediate(lightMap);
                         }
-                        #endregion
+#endregion
                         break;
                 }
             }

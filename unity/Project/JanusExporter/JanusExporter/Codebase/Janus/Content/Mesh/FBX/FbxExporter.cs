@@ -104,7 +104,11 @@ namespace JanusVR.FBX
             if (parameters.SwitchUV)
             {
                 List<Vector2> tverts = new List<Vector2>();
+#if UNITY_5_3_OR_NEWER
                 mesh.GetUVs(1, tverts);
+#else
+                tverts.AddRange(mesh.uv2);
+#endif
 
                 if (tverts.Count != 0)
                 {
@@ -123,7 +127,25 @@ namespace JanusVR.FBX
                 for (int i = 0; i < 4; i++)
                 {
                     List<Vector2> tverts = new List<Vector2>();
+#if UNITY_5_3_OR_NEWER
                     mesh.GetUVs(i, tverts);
+#else
+                    switch (i)
+                    {
+                        case 0:
+                            tverts.AddRange(mesh.uv);
+                            break;
+                        case 1:
+                            tverts.AddRange(mesh.uv2);
+                            break;
+                        case 2:
+                            tverts.AddRange(mesh.uv3);
+                            break;
+                        case 3:
+                            tverts.AddRange(mesh.uv4);
+                            break;
+                    }
+#endif
 
                     if (tverts.Count == 0)
                     {
