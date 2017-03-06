@@ -62,7 +62,7 @@
 <Object visible="false" id="plane"  pos="0 3.59 0" xdir="-1 -0 -0" ydir="0 0.000001 -1" zdir="0 -1 -0.000001" scale="14 14 3" collision_id="plane" />
 
 <!--Floor outside-->
-<Object id="tronplane"  xdir="0.000001 0 -1" zdir="1 0 0.000001" pos="0 -0.35  0" scale="4 5 4"/>
+<Object id="tronplane"  xdir="0.000001 0 -1" zdir="1 0 0.000001" pos="0 -0.35  0" scale="4 5 4" draw_layer="-2" />
 
 <!-- Flag counter -->
 <Image id="flagcounter" js_id="12" pos="-4 2.5 -4.9" lighting="false" />
@@ -70,7 +70,7 @@
 
     
 <!--Pocketspace geometry.-->   
-<Object id="Xart"  pos="0 0 6.5" xdir="0.000001 0 -1" zdir="1 0 0.000001" scale="1 1 1" lighting="false" />
+<Object id="Xart"  pos="0 0 6.5" xdir="0.000001 0 -1" zdir="1 0 0.000001" scale="1 1 1" lighting="false" draw_layer="1"/>
 
 
 <!--Portals behind the user.-->
@@ -90,8 +90,8 @@
 
 
 <!--Mirror darkness.-->
-<Object id="plane" pos="0 1 -5" xdir="0 1 -0.000001" ydir="1 0 0.000002" zdir="0.000002 -0.000001 -1" scale="5 14 4" lighting="false" collision_id="plane" image_id="mirror" />
-<Object id="plane" pos="0 1 5" xdir="0.00001 1 0.000001" ydir="-1 0.00001 0.000005" zdir="0.000005 -0.000001 1" scale="5 14 4" lighting="false" collision_id="plane" image_id="mirror" />
+<Object id="plane" pos="0 1 -5" xdir="0 1 -0.000001" ydir="1 0 0.000002" zdir="0.000002 -0.000001 -1" scale="5 14 4" lighting="false" collision_id="plane" image_id="mirror" draw_layer="2" />
+<Object id="plane" pos="0 1 5" xdir="0.00001 1 0.000001" ydir="-1 0.00001 0.000005" zdir="0.000005 -0.000001 1" scale="5 14 4" lighting="false" collision_id="plane" image_id="mirror" draw_layer="2" />
 
 </Room>
 </FireBoxRoom>
