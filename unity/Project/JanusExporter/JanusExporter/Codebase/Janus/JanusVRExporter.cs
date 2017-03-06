@@ -34,6 +34,8 @@ namespace JanusVR
 
         public static bool UpdateOnlyHTML { get; private set; }
         public const int Version = 205;
+        public const string UpdateUrl = "";
+        public const string UnityPkgUrl = "";
 
         /// <summary>
         /// The folder were exporting the scene to
