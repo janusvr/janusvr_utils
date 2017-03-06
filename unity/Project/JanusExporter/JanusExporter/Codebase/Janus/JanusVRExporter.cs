@@ -33,9 +33,6 @@ namespace JanusVR
         }
 
         public static bool UpdateOnlyHTML { get; private set; }
-        public const int Version = 205;
-        public const string UpdateUrl = "";
-        public const string UnityPkgUrl = "";
 
         /// <summary>
         /// The folder were exporting the scene to
@@ -178,7 +175,9 @@ namespace JanusVR
         private float farPlaneDistance = 1000;
 
         private Bounds sceneSize;
-        private Rect border = new Rect(10, 5, 10, 15);
+
+        [NonSerialized]
+        private Rect border = new Rect(10, 5, 20, 15);
 
         public const int PreviewSize = 64;
 
@@ -204,8 +203,17 @@ namespace JanusVR
         {
             instance = this;
 
+            EditorApplication.update += ConnectToUnity;
+
             meshExporters = new Dictionary<ExportMeshFormat, MeshExporter>();
             meshExporters.Add(ExportMeshFormat.FBX, new FbxExporter());
+        }
+
+        private static void ConnectToUnity()
+        {
+            EditorApplication.update -= ConnectToUnity;
+
+            bool shownWelcome = EditorPrefs.GetBool("__JanusVR.Welcome");
         }
 
         private void OnEnable()
@@ -216,7 +224,7 @@ namespace JanusVR
         }
 
         [MenuItem("Window/JanusVR Exporter")]
-        private static void Init()
+        public static void ShowWindow()
         {
             // Get existing open window or if none, make a new one:
             JanusVRExporter window = EditorWindow.GetWindow<JanusVRExporter>();
@@ -256,7 +264,13 @@ namespace JanusVR
             Rect rect = this.position;
             GUILayout.BeginArea(new Rect(border.x, border.y, rect.width - border.width, rect.height - border.height));
 
-            GUILayout.Label("Janus Exporter " + (Version / 100.0).ToString("F2"), EditorStyles.boldLabel);
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Janus Exporter " + (JanusGlobals.Version / 100.0).ToString("F2"), EditorStyles.boldLabel);
+            if (GUILayout.Button("Update"))
+            {
+                JanusVRUpdater.ShowWindow();
+            }
+            GUILayout.EndHorizontal();
 
             // Main Parameters
             GUILayout.Label("Main", EditorStyles.boldLabel);
@@ -1213,7 +1227,7 @@ namespace JanusVR
             }
 
             // Make the index.html file
-            StringBuilder index = new StringBuilder("<html>\n\t<head>\n\t\t<title>Janus Unity Exporter v" + Version + "</title>\n\t</head>\n\t<body>\n\t\t<FireBoxRoom>\n\t\t\t<Assets>");
+            StringBuilder index = new StringBuilder("<html>\n\t<head>\n\t\t<title>Janus Unity Exporter v" + JanusGlobals.Version + "</title>\n\t</head>\n\t<body>\n\t\t<FireBoxRoom>\n\t\t\t<Assets>");
 
             List<Mesh> meshWritten = new List<Mesh>();
 
