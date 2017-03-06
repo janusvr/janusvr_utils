@@ -90,9 +90,12 @@
     <Compile Include="Codebase\Janus\Editor\JanusVREntryPortalEditor.cs" />
     <Compile Include="Codebase\Janus\Editor\JanusVRLinkEditor.cs" />
     <Compile Include="Codebase\Janus\ExportedObject.cs" />
+    <Compile Include="Codebase\Janus\JanusGlobals.cs" />
     <Compile Include="Codebase\Janus\JanusLink.cs" />
     <Compile Include="Codebase\Janus\JanusResources.cs" />
     <Compile Include="Codebase\Janus\JanusVRExporter.cs" />
+    <Compile Include="Codebase\Janus\JanusVRUpdater.cs" />
+    <Compile Include="Codebase\Janus\JanusVRWelcome.cs" />
     <Compile Include="Codebase\Janus\JanusVR_Exporter.cs" />
     <Compile Include="Codebase\Janus\LightmapExportType.cs" />
     <Compile Include="Codebase\Janus\MeshExportData.cs" />

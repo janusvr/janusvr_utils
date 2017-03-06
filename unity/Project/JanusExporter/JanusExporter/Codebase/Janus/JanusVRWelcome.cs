@@ -16,7 +16,7 @@ namespace JanusVR
         private Rect border = new Rect(10, 5, 20, 15);
 
         [MenuItem("Window/JanusVR Welcome")]
-        private static void Init()
+        public static void ShowWindow()
         {
             // Get existing open window or if none, make a new one:
             JanusVRWelcome window = EditorWindow.GetWindow<JanusVRWelcome>();

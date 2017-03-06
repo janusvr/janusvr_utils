@@ -129,7 +129,7 @@ namespace JanusVR
             client.DownloadFileAsync(new Uri(JanusGlobals.UnityPkgUrl), tempFile);
         }
 
-        public bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        public static bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             bool isOk = true;
             // If there are errors in the certificate chain, look at each error to determine the cause.

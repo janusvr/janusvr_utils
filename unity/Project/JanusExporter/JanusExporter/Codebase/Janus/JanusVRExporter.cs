@@ -203,17 +203,22 @@ namespace JanusVR
         {
             instance = this;
 
-            EditorApplication.update += ConnectToUnity;
-
             meshExporters = new Dictionary<ExportMeshFormat, MeshExporter>();
             meshExporters.Add(ExportMeshFormat.FBX, new FbxExporter());
+
+            EditorApplication.update += UnityConnection;
         }
 
-        private static void ConnectToUnity()
+        private void UnityConnection()
         {
-            EditorApplication.update -= ConnectToUnity;
+            EditorApplication.update -= UnityConnection;
 
             bool shownWelcome = EditorPrefs.GetBool("__JanusVR.Welcome");
+            if (!shownWelcome)
+            {
+                EditorPrefs.SetBool("__JanusVR.Welcome", true);
+                JanusVRWelcome.ShowWindow();
+            }
         }
 
         private void OnEnable()

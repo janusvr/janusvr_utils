@@ -7,7 +7,7 @@ namespace JanusVR
 {
     public static class JanusGlobals
     {
-        public const int Version = 206;
+        public const int Version = 207;
         public const string UpdateUrl = @"https://raw.githubusercontent.com/JamesMcCrae/janusvr_utils/master/unity/Release/version.txt";
         public const string UnityPkgUrl = @"https://github.com/JamesMcCrae/janusvr_utils/raw/master/unity/Release/JanusVRExporter.unitypackage";
     }

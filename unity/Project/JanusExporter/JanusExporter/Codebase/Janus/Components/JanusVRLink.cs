@@ -44,6 +44,10 @@ namespace JanusVR
             set
             {
                 color = value;
+                if (!meshRenderer)
+                {
+                    meshRenderer = GetComponent<MeshRenderer>();
+                }
                 meshRenderer.sharedMaterial.color = value;
             }
         }
