@@ -27,6 +27,8 @@
 <!--Dashboard.-->
 <AssetWebSurface width="1650" height="1000" id="site" show_url_bar="false" src="dashboard/index.html"  />
 
+<AssetWebSurface id="vesta_users" src="http://vesta.janusvr.com/janus-server/" show_url_bar="false" />
+
 <!--Portals behind the user.-->
 <AssetImage id="browseportal" src="kportal-36.png" />
 <AssetImage id="socialportal" src="kportal-35.png" />
@@ -83,6 +85,8 @@
 <!--Dashboard geometry.-->
 <Object id="plane"  locked="true"  pos="0 1.65 4.9" xdir="-1 0 -0.000002" zdir="0.000002 0 -1" scale="5.5 3 5" lighting="false" collision_id="plane"  websurface_id="site"  />
 
+<!-- Vesta users -->
+<Object id="plane" websurface_id="vesta_users" pos="-3.75 1.5 -4.8" scale="1.5 1.2 1" lighting="false" />
 
 <!--Mirrors-->
 <Link pos="0 0 5.15" xdir="-1 0 -0.000001" zdir="0.000001 0 -1" scale="11.5 4 1" col="#4080c0"  url="" auto_load="true" draw_glow="false" draw_text="false" mirror="true" />
