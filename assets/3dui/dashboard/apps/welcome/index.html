@@ -1,0 +1,71 @@
+<html>
+	<head>
+		<title>JanusVR Dashboard App</title>
+		<link rel="stylesheet" type="text/css" href="../../css/main.css" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <script>
+                    window.onload = function() {
+       
+	   var startopacity=0;
+	   
+
+	   
+	   var textstuff = ["Welcome to JanusVR","To start, choose a tile.","Press ESC to return here."]
+	   var textindex = 0;
+	   
+		setInterval(function(){
+		
+		startopacity += (1-(startopacity*0.45))*0.005;
+		
+		if (startopacity > 1.7) {
+			if (textindex+1 != textstuff.length)
+			{
+				textindex += 1
+				document.getElementById("welcomecard").innerHTML = textstuff[textindex];
+				startopacity = 0;
+			}
+			else
+			{
+			window.location.assign("../../index.html")
+			}
+		}
+		
+		
+		document.getElementById("welcomecard").style.opacity = startopacity;
+		
+		
+		
+		},1)
+		
+		
+        
+        }
+        
+		
+            
+        </script>
+        
+	</head>
+	<body class="noselect"  >
+
+
+
+
+
+	<div class="welcomecontainer">
+		<div class="welcomeholder"><div class="welcomecard" id="welcomecard">Welcome to JanusVR</div></div>
+	</div>
+
+
+
+
+
+
+
+
+
+	    
+
+	</body>
+</html>
