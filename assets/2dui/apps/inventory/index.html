@@ -12,6 +12,9 @@
     <!--script src="lib/ipfs.js"></script-->
 
     <script>
+      function togglesettings(text) {
+	    parent.toggleWindow("null",480,130,"Inventory Settings","apps/inventory/settings.html","35vw","40vh");
+      }
       function showtooltip(text) {
 		//temporary until parent.showtooltip works
         //parent.showtooltip(text);
@@ -145,6 +148,7 @@
                 <div class='menu-icon left menu-icon-createfolder action-createfolder' onmouseout='hidetooltip()' onmouseover='showtooltip("Create folder")'></div>
                 <div class='menu-icon left menu-icon-geturl action-getselectedurl' onmouseout='hidetooltip()' onmouseover='showtooltip("Show selected URL")'></div>
                 <div class='menu-icon left action-rezrandom' onmouseout='hidetooltip()' onmouseover='showtooltip("Spawn random image")'></div>
+                <div class='menu-icon right icon-js menu-icon-geturl action-settings' onclick="togglesettings()" onmouseout='hidetooltip()' onmouseover='showtooltip("Settings")'></div>
                 <div class='menu-icon right menu-icon-trash action-trashselected disabled'></div>
               </td>
             </tr>
