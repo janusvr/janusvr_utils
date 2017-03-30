@@ -1120,10 +1120,15 @@ function displayTip() {
 			}
 			else if (getCookie("fact2") != "used")
 			{
-				shownotification('Find other people easily! Click on the <b>Parties Icon</b> in the bottom bar to meet new users.','notifications/partymode.png',"null","#323232");
+				shownotification('Want to return to your PocketSpace? Simply press the <b>PocketSpace</b> toggle button to the left of the URL Bar!','notifications/space.png',"null","#323232");
 				setCookie("fact2","used","100000000")			
 			}
-			
+			else if (getCookie("fact3") != "used")
+			{
+				shownotification('Find other people easily! Click on the <b>Parties Icon</b> in the bottom bar to meet new users.','notifications/partymode.png',"null","#323232");
+				setCookie("fact3","used","100000000")			
+			}
+						
 			
 
 }
