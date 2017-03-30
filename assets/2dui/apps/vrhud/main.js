@@ -50,7 +50,7 @@
 	var prevURL;
 	function updateRoomURL(){
 		
-		if ((prevURL != window.janus.currenturl()) || (document.getElementById("myurl").value.length == 0))
+		if ((prevURL != window.janus.currenturl()) || ( (document.getElementById("myurl").value.length == 0) && (window.janus.hasFocus() == 0) ) )
 		{
 			prevURL = window.janus.currenturl();
 			document.getElementById("myurl").value = prevURL;
