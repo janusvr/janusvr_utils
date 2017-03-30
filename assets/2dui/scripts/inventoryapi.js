@@ -54,9 +54,30 @@ window.InventoryAPI = new (function InventoryAPI() {
 
   Dispatcher.call(this);
 
-  var apiProxies = ['http://sduck.sytes.net:80/inventory'];
-
+  var apiProxies = parseProxies();//['http://sduck.sytes.net:80/inventory'];
+  function parseProxies()
+  {
+    var proxies = parent.window.janus.getsetting('inventoryservers');
+    if (proxies == "" || proxies == null)
+    {
+      proxies = "http://sduck.sytes.net:80/inventory";
+      parent.window.janus.setsetting('inventoryservers', proxies);
+    }
+    proxies = proxies.replace(" ","").split(",");
+    var new_proxies = [];
+    for (var i = 0; i < proxies.length; i++)
+    {
+      proxy = proxies[i];
+      if (proxy != "")
+      {
+        new_proxies.push(proxy);
+      }
+    }
+    return new_proxies;
+  }
+  
   function getAPIUrl() {
+    apiProxies = parseProxies();
     return apiProxies[Math.floor(Math.random() * apiProxies.length)];
   }
 
@@ -145,10 +166,10 @@ window.InventoryAPI = new (function InventoryAPI() {
     var id = Math.random();
     pendingUploads[id] = cb;
 
-    var frame = document.createElement('iframe');
+    /*var frame = document.createElement('iframe');
     frame.id = 'f' + id;
     frame.src = 'http://strandedin.space:8082/' + hash + '?frame=' + id + params;
-    document.body.appendChild(frame);
+    document.body.appendChild(frame);*/
 
   }
 
