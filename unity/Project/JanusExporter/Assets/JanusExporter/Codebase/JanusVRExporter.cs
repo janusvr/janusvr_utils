@@ -986,21 +986,21 @@ namespace JanusVR
             farPlaneDistance = sceneSize.size.magnitude * 1.3f;
 
             // find the Reflection probe for the sky, if we have one
-            Cubemap cubemap = RenderSettings.customReflection;
-            if (cubemap == null)
-            {
-                // search thorugh files
-                FileInfo[] probes = lightMapsDir.GetFiles("ReflectionProbe-*");
-                FileInfo first = probes.FirstOrDefault();
-                if (first == null)
-                {
-                    return;
-                }
+            //Cubemap cubemap = RenderSettings.customReflection;
+            //if (cubemap == null)
+            //{
+            //    // search thorugh files
+            //    FileInfo[] probes = lightMapsDir.GetFiles("ReflectionProbe-*");
+            //    FileInfo first = probes.FirstOrDefault();
+            //    if (first == null)
+            //    {
+            //        return;
+            //    }
 
-                string probePath = Path.Combine(lightMapsFolder, first.Name);
-                cubemap = AssetDatabase.LoadAssetAtPath<Cubemap>(probePath);
-            }
-            exported.environmentCubemap = cubemap;
+            //    string probePath = Path.Combine(lightMapsFolder, first.Name);
+            //    cubemap = AssetDatabase.LoadAssetAtPath<Cubemap>(probePath);
+            //}
+            //exported.environmentCubemap = cubemap;
         }
 
         private void RecursiveSearch(GameObject root, ExportedData data)
