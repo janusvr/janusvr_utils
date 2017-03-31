@@ -112,6 +112,7 @@ function findGetParameter(parameterName) {
   document.getElementById("positionalenvtoggle").checked = parent.window.janus.getsetting('positionalenv');
   document.getElementById("positionalvoiptoggle").checked = parent.window.janus.getsetting('positionalvoip');
   
+   document.getElementById("tutorialmodetoggle").checked =  parent.window.janus.getsetting('tutorialmode'); 
   
   
    document.getElementById("performanceloggingtoggle").checked = parent.window.janus.getsetting('perflog');
@@ -480,6 +481,21 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					-->
 					
 					<div class='header'>MISC</div>
+					
+					
+					
+					<div class='item' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="tutorialmodetoggle"   onchange="window.janus.setsetting('tutorialmode', this.checked); " >
+					<label for="tutorialmodetoggle" class="css-label">Tutorial Mode</label>
+
+
+					</span>
+					<br>
+					</div>
+					
+					
+					
 					
 					<div class='item' >
 
