@@ -1286,7 +1286,7 @@ function initsound() {
 					}
 					else if (reuse_id_attempt == 1)
 					{
-						var adjectives = ["Serious","NewAge","Retro","Hippie","Perturbed","Angsty","Delicious","Forlorn","Unpleasant","Macabre","Gallinaceous","Colourful","Striking","Crude","Enamoured","Artsy","Closer","Musical","Stinky","Clean","Humbling","Dedicated","Practicing","Shaped","Accommodating","Laughing","Kafkaesque","Brother","Voxelized","Commissioned","Commissioned","Lurking","Sandwichlike","Terrified","Bearded","Peculiar","Waterproofed","Graduate","Canonical"];
+						var adjectives = ["Cute","NewAge","Retro","Hippie","Uneasy","Red","Super","Ancient","Okay","Silly","Crazy","Gentle","Tasty","Happy","Giant","Tiny","New","Old","Fast","Quick","Mega","Giga","Friendly","Green","Blue","Purple","Artsy","Humble","Mecha","Clean","Shiny","Brave","Worldly","Social","Rainy","Cloudy","Sunny","Magic","Pure"];
 						var index = Math.floor(Math.random() * adjectives.length);
 						var prefix = adjectives[index] + delimiter + adjectives[Math.floor((index + Math.random() * adjectives.length / 2.0) % adjectives.length)] + delimiter;
 						var lastid = window.janus.userid;
