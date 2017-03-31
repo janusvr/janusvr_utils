@@ -1,12 +1,13 @@
 window.janus.createroom = function() 
 {
 	//room properties (entrance portal position, etc)
-	window.janus.room = {pos:"0 0 -13",fwd:"0 0 1",visible:false,
+	window.janus.room = {pos:"0 0 -10",fwd:"0 0 1",visible:false,
 			skybox_down_id:"sky_down",skybox_right_id:"sky_right",skybox_left_id:"sky_left",
 			skybox_up_id:"sky_up",skybox_back_id:"sky_back",skybox_front_id:"sky_front",
 			cubemap_radiance_id:"skybox_radiance",cubemap_irradiance_id:"skybox_irradiance"};
 
 	var trans_path = "http://downloads.janusvr.com/translator/imgur/";
+	var trans_path2 = "file:///home/james/Desktop/projects/2011/firebox/janusvr_www/downloads/translator/imgur/";
 
 	//assets
 	window.janus.createasset("object", {id:"Xart",src:trans_path+"imgur.dae.gz"});
@@ -33,6 +34,10 @@ window.janus.createroom = function()
 	window.janus.createasset("image", {id:"skybox_radiance",src:trans_path+"ImgurSkyboxRadience.dds", tex_clamp:false, tex_linear:true});
 	window.janus.createasset("image", {id:"skybox_irradiance",src:trans_path+"ImgurSkyboxIrRadience.dds", tex_clamp:false, tex_linear:true});
 
+	window.janus.createasset("object", {id:"arrowL",src:trans_path2+"arrowL.dae.gz"});
+	window.janus.createasset("object", {id:"arrowR",src:trans_path2+"arrowR.dae.gz"});
+	window.janus.createasset("script", {src:trans_path2+"script.js"});
+
 	//objects
 	window.janus.createobject("object", {id:"Xart", collision_id:"Xartcol"});
 	window.janus.createobject("object", {id:"XartE", lighting:false});
@@ -46,16 +51,51 @@ window.janus.createroom = function()
 	window.janus.createobject("object", {id:"artdecopiece5", rotate_deg_per_sec:"20"});
 	window.janus.createobject("object", {id:"artdecopiece6", rotate_deg_per_sec:"-20"});
 
+	window.janus.createobject("object", {id:"arrowL", pos:"-1 1 2"});
+	//window.janus.createobject("object", {id:"arrowL", pos:"-1 1 2", onclick:"arrowL();"});
+	//window.janus.createobject("object", {id:"arrowR", pos:"1 1 2", onclick:"arrowR();"});
+
 	//50.23+ use the DOM to generate dynamic content
 	//window.janus.createobject("text", {pos:"5 0.5 0", fwd:"1 0 0", scale:"5 5 5", innertext:"document.title: "+document.title});
 	//window.janus.createobject("text", {pos:"5 1 0", fwd:"1 0 0", scale:"5 5 5", innertext:"document.images.length: "+document.images.length});
 	
-	for (var i=0; i<document.images.length; ++i) {
-		window.janus.createasset("image", {src:document.images[i].src, id:"img"+i});	
+	var x =	document.getElementsByClassName("image-list-link");
 
-		var imgdata = {id:"img"+i, pos:"5 1.5 "+i, fwd:"1 0 0", scale:"0.5 0.5 0.5"};
-		placeImage(imgdata, i);
-		window.janus.createobject("image", imgdata);
+	if (x.length > 0) { //imgur.com
+		var urls = [];
+		for (var i=0; i<x.length; i++) {		
+			urls.push(x[i].href);
+		}
+	
+		var num = Math.min(document.images.length, urls.length);
+		for (var i=0; i<num; ++i) {
+			window.janus.createasset("image", {src:document.images[i].src, id:"img"+i});	
+
+			var imgdata = {thumb_id:"img"+i, pos:"0 1.5 3", fwd:"0 0 -1", scale:"3 3 0.1",url:urls[i],draw_glow:"false"};
+			placeImage(imgdata, i, 21.0, num);
+			window.janus.createobject("link", imgdata);			
+		}
+	}
+	else { //imgur.com/gallery (or single images/gifs/vids)
+		x = document.getElementsByClassName("post-image-placeholder");
+
+		if (x.length == 0) {
+			x = document.getElementsByTagName("img");
+		}
+
+		var urls = [];
+		for (var i=0; i<x.length; i++) {		
+			urls.push(x[i].src);
+		}
+
+		var num = urls.length;
+		for (var i=0; i<num; ++i) {
+			window.janus.createasset("image", {src:urls[i], id:"img"+i});	
+
+			var imgdata = {id:"cube", collision_id:"cube", image_id:"img"+i, pos:"0 1.5 3", fwd:"0 0 -1", scale:"3 3 0.1", lighting:"false"};
+			placeImage(imgdata, i, 21.0, num);
+			window.janus.createobject("object", imgdata);			
+		}
 	}
 
 	//show comments
@@ -65,12 +105,13 @@ window.janus.createroom = function()
 	//}
 }
 
-var placeImage=function(imgdata, index)
+var placeImage=function(imgdata, index, rad, num)
 {
-
-	var angle = index / (document.images.length) * 3.14159; 
-
-	imgdata.pos = "" + (Math.cos(angle)*10.0).toString() + " 2 " + (Math.sin(angle) * 10.0).toString();
-	imgdata.fwd = "" + (-Math.cos(angle)).toString() + " 0 " + (-Math.sin(angle)).toString();
-	imgdata.scale = "2 2 2";
+	var max_per_row = 20;
+	if (num > 1) {
+		var angle = (index % max_per_row) / max_per_row * 3.14159; 
+		imgdata.pos = "" + (Math.cos(angle)*rad).toString() + " " + (1.5+(Math.floor(index/max_per_row))*3.25).toString() + " " + (Math.sin(angle) * rad).toString();
+		imgdata.fwd = "" + (-Math.cos(angle)).toString() + " 0 " + (-Math.sin(angle)).toString();
+		//imgdata.scale = "1.5 1.5 1.5";
+	}
 }
