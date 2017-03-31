@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using System;
 namespace Unity.IO.Compression {
 
@@ -8,3 +10,4 @@ namespace Unity.IO.Compression {
         bool Finish(byte[] outputBuffer, out int bytesRead);
     }
 }
+#endif

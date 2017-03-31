@@ -21,6 +21,8 @@ namespace JanusVR
 
         public override void OnInspectorGUI()
         {
+            EditorGUILayout.LabelField("Update size by changing");
+            EditorGUILayout.LabelField("Uniform Scale on JanusVR Exporter window");
             //instance.Circular = EditorGUILayout.Toggle("Circular", instance.Circular);
         }
     }

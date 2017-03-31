@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 // Copyright (c) Hitcents
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 namespace Unity.IO.Compression {
@@ -38,3 +40,4 @@ namespace Unity.IO.Compression {
         }
     }
 }
+#endif

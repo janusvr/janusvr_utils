@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 namespace Unity.IO.Compression
 {
     using System;
@@ -288,3 +290,4 @@ namespace Unity.IO.Compression
 
     }
 }
+#endif

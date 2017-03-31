@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 ///----------- ----------- ----------- ----------- ----------- ----------- -----------
 /// <copyright file="DeflateStream.cs" company="Microsoft">
 ///     Copyright (c) Microsoft Corporation.  All rights reserved.
@@ -626,3 +628,4 @@ namespace Unity.IO.Compression {
     }  // public class DeflateStream
 
 }  // namespace Unity.IO.Compression
+#endif

@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace JanusVR
 {
-    public class JanusVREntryPortal : MonoBehaviour
+    public class JanusVREntryPortal : MonoBehaviour, IJanusObject
     {
         [SerializeField, HideInInspector]
         private bool circular = false;
@@ -36,6 +37,11 @@ namespace JanusVR
                 }
                 circular = value;
             }
+        }
+
+        public JanusVREntryPortal()
+        {
+            JanusVRExporter.AddObject(this);
         }
 
         public Vector3 GetJanusPosition()
@@ -66,7 +72,27 @@ namespace JanusVR
 
             if (circular)
             {
+                int precision = JanusResources.CylinderBasePrecision;
+                float fullCircumference = Mathf.PI * 2;
+                float step = fullCircumference / (float)precision;
 
+                Vector3 lastPoint = pos;
+                for (int i = 0; i <= precision; i++)
+                {
+                    float angle = step * i;
+                    float cosA = (float)(Math.Cos(angle)) / 2.0f;
+                    float sinA = (float)(Math.Sin(angle)) / 2.0f;
+
+                    Vector3 point = pos + (transform.up * sinA * scale.y) + (transform.right * cosA * scale.x);
+                    if (i == 0)
+                    {
+                        lastPoint = point;
+                        continue;
+                    }
+                    Gizmos.DrawLine(lastPoint, point);
+
+                    lastPoint = point;
+                }
             }
             else
             {
@@ -88,18 +114,27 @@ namespace JanusVR
             Gizmos.DrawLine(target, targetArrow - right);
         }
 
+        public void UpdateScale(float scale)
+        {
+            transform.localScale = new Vector3(1.8f, 2.5f, 1) * (1.0f / scale);
+        }
 
         [MenuItem("GameObject/JanusVR/Room Entry Portal")]
         private static void CreateEntryPortal()
         {
             GameObject go = new GameObject("Room Entry Portal");
             go.transform.localScale = new Vector3(1.8f, 2.5f, 1);
+            
+            Camera cam = SceneView.lastActiveSceneView.camera;
+            Transform trans = cam.transform;
+            go.transform.position = trans.position + (trans.forward * 5);
 
             MeshRenderer renderer = go.AddComponent<MeshRenderer>();
             MeshFilter filter = go.AddComponent<MeshFilter>();
 
             renderer.receiveShadows = false;
-            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
             filter.sharedMesh = JanusResources.PlaneMesh;
 
             Material mat = Material.Instantiate(AssetDatabase.GetBuiltinExtraResource<Material>("Default-Diffuse.mat"));
