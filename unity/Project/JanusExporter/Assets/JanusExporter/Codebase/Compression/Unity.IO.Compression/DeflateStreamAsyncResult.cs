@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 #if !NETFX_CORE
 namespace Unity.IO.Compression {
     using System;
@@ -129,4 +131,5 @@ namespace Unity.IO.Compression {
     }
 
 }
+#endif
 #endif

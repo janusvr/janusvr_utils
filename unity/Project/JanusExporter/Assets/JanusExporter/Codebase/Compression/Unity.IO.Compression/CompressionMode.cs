@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 namespace Unity.IO.Compression
 {
     public enum CompressionMode {
@@ -5,3 +7,4 @@ namespace Unity.IO.Compression
         Compress   = 1
     }
 }
+#endif

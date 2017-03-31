@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 // ==++==
 //
 //  Copyright (c) Microsoft Corporation.  All rights reserved.
@@ -292,3 +294,4 @@ namespace Unity.IO.Compression {
 
     }  // internal class DeflaterManaged
 }  // namespace Unity.IO.Compression
+#endif

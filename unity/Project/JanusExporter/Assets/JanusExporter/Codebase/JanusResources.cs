@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,7 +44,8 @@ namespace JanusVR
                     int[] triangles = new int[]
                     {
                         // plane
-                        0, 1, 2, 0, 2, 3
+                        0, 1, 2, 0, 2, 3,
+                        2, 1, 0, 3, 2, 0
                     };
 
                     planeMesh.vertices = vertices;
@@ -58,6 +61,16 @@ namespace JanusVR
             }
         }
 
+        private static int cylinderBasePrecision = 32;
+        public static int CylinderBasePrecision
+        {
+            get { return cylinderBasePrecision; }
+            set
+            {
+                cylinderBasePrecision = Mathf.Clamp(value, 3, 128);
+            }
+        }
+
         private static Mesh cylinderBaseMesh;
         public static Mesh CylinderBaseMesh
         {
@@ -68,16 +81,14 @@ namespace JanusVR
                     cylinderBaseMesh = new Mesh();
                     cylinderBaseMesh.name = "Janus Circular";
 
-                    int precision = 32;
-
                     float fullCircumference = Mathf.PI * 2;
-                    float step = fullCircumference / (float)precision;
+                    float step = fullCircumference / (float)cylinderBasePrecision;
 
-                    Vector3[] vertices = new Vector3[(precision * 2) + 1];
+                    Vector3[] vertices = new Vector3[(cylinderBasePrecision * 2) + 1];
                     int vIndex = 1;
-                    int[] triangles = new int[precision * 3];
+                    int[] triangles = new int[cylinderBasePrecision * 3];
 
-                    for (int i = 0; i < precision; i++)
+                    for (int i = 0; i < cylinderBasePrecision; i++)
                     {
                         float angle = step * i;
                         float cosA = (float)Math.Cos(angle);
@@ -93,7 +104,6 @@ namespace JanusVR
 
                     triangles[triangles.Length - 1] = triangles[1]; // full circle
 
-
                     cylinderBaseMesh.vertices = vertices;
                     cylinderBaseMesh.triangles = triangles;
 
@@ -107,3 +117,4 @@ namespace JanusVR
         }
     }
 }
+#endif

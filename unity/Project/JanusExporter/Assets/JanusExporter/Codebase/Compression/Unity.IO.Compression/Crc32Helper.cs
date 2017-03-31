@@ -1,4 +1,6 @@
-﻿//   Copyright (c) Microsoft Corporation.  All rights reserved.
+﻿#if UNITY_EDITOR
+
+//   Copyright (c) Microsoft Corporation.  All rights reserved.
 namespace Unity.IO.Compression
 {
     using System.Diagnostics;
@@ -86,3 +88,4 @@ namespace Unity.IO.Compression
 
 
 }
+#endif

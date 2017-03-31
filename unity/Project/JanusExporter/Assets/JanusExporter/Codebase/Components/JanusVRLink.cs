@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace JanusVR
 {
-    public class JanusVRLink : MonoBehaviour
+    public class JanusVRLink : MonoBehaviour, IJanusObject
     {
         [NonSerialized]
         public Texture2D texture;
@@ -74,6 +74,11 @@ namespace JanusVR
             }
         }
 
+        public JanusVRLink()
+        {
+            JanusVRExporter.AddObject(this);
+        }
+
         public Vector3 GetJanusPosition()
         {
             // offset the position so it fits on the main app
@@ -85,6 +90,11 @@ namespace JanusVR
             return bot;
         }
         
+        public void UpdateScale(float scale)
+        {
+            transform.localScale = new Vector3(1.8f, 2.5f, 1) * (1.0f / scale);
+        }
+
         [MenuItem("GameObject/JanusVR/Link")]
         private static void CreateEntryPortal()
         {

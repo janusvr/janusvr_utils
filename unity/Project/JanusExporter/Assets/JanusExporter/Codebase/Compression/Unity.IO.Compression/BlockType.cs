@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 namespace Unity.IO.Compression {
     internal enum BlockType {
         Uncompressed = 0,
@@ -5,3 +7,5 @@ namespace Unity.IO.Compression {
         Dynamic = 2
     }
 }
+
+#endif

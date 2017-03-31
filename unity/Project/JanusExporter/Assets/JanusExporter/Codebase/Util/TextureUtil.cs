@@ -33,7 +33,7 @@ namespace JanusVR
             public bool changed;
         };
 
-        public static TempTextureData LockTexture(Texture2D texture, string path)
+        public static TempTextureData LockTexture(Texture texture, string path)
         {
             TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(path);
             TempTextureData data = new TempTextureData();

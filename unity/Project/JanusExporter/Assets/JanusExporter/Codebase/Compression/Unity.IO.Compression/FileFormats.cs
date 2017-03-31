@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 namespace Unity.IO.Compression
 {
     interface IFileFormatWriter {
@@ -14,3 +16,4 @@ namespace Unity.IO.Compression
     }
 
 }
+#endif
