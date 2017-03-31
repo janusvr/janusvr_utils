@@ -33,7 +33,7 @@
 		if (settings == null)
 		{
 			settings = [];
-			settings.push({ name: "Unnamed Avatar", string: escape(janus.getavatar()), });
+			//settings.push({ name: "Unnamed Avatar", string: escape(janus.getavatar()), });
 			
 			settings.push({ name: "Beta", string: escape("<FireBoxRoom><Assets><AssetObject id=\"body\" src=\"http://www.janusvr.com/avatars/animated/Beta/Beta.fbx.gz\" /><AssetObject id=\"run\" src=\"http://www.janusvr.com/avatars/animated/Beta/run.fbx.gz\" /><AssetObject id=\"walk_back\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk_back.fbx.gz\" /><AssetObject id=\"walk_right\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk_right.fbx.gz\" /><AssetObject id=\"walk\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk.fbx.gz\" /><AssetObject id=\"walk_left\" src=\"http://www.janusvr.com/avatars/animated/Beta/walk_left.fbx.gz\" /><AssetObject id=\"jump\" src=\"http://www.janusvr.com/avatars/animated/Beta/jump.fbx.gz\" /><AssetObject id=\"fly\" src=\"http://www.janusvr.com/avatars/animated/Beta/fly.fbx.gz\" /><AssetObject id=\"type\" src=\"http://www.janusvr.com/avatars/animated/Beta/type.fbx.gz\" /><AssetObject id=\"idle\" src=\"http://www.janusvr.com/avatars/animated/Beta/idle.fbx.gz\" /><AssetObject id=\"speak\" src=\"http://www.janusvr.com/avatars/animated/Beta/speak.fbx.gz\" /><AssetObject id=\"portal\" src=\"http://www.janusvr.com/avatars/animated/Beta/portal.fbx.gz\" /></Assets><Room><Ghost id=\"Beta\" scale=\"0.0095 0.0095 0.0095\" col=\"randomColor()\" body_id=\"body\" userid_pos=\"0 0.5 0\" /></Room></FireBoxRoom>")});
 			settings.push({ name: "Y_Bot", string: escape("<FireBoxRoom><Assets><AssetObject id=\"body\" src=\"https://vesta.janusvr.com/avatars/animated/y_bot/body.fbx.gz\" /><AssetObject id=\"run\" src=\"https://vesta.janusvr.com/avatars/animated/y_bot/run.fbx.gz\" /><AssetObject id=\"walk_back\" src=\"https://vesta.janusvr.com/avatars/animated/y_bot/walk_back.fbx.gz\" /><AssetObject id=\"walk_right\" src=\"https://vesta.janusvr.com/avatars/animated/y_bot/walk_right.fbx.gz\" /><AssetObject id=\"walk\" src=\"https://vesta.janusvr.com/avatars/animated/y_bot/walk.fbx.gz\" /><AssetObject id=\"walk_left\" src=\"https://vesta.janusvr.com/avatars/animated/y_bot/walk_left.fbx.gz\" /><AssetObject id=\"jump\" src=\"https://vesta.janusvr.com/avatars/animated/y_bot/jump.fbx.gz\" /><AssetObject id=\"fly\" src=\"https://vesta.janusvr.com/avatars/animated/y_bot/fly.fbx.gz\" /><AssetObject id=\"type\" src=\"https://vesta.janusvr.com/avatars/animated/y_bot/type.fbx.gz\" /><AssetObject id=\"idle\" src=\"https://vesta.janusvr.com/avatars/animated/y_bot/idle.fbx.gz\" /><AssetObject id=\"speak\" src=\"https://vesta.janusvr.com/avatars/animated/y_bot/speak.fbx.gz\" /><AssetObject id=\"portal\" src=\"https://vesta.janusvr.com/avatars/animated/y_bot/portal.fbx.gz\" /></Assets><Room><Ghost id=\"Y_Bot\" scale=\"0.0095 0.0095 0.0095\" col=\"#ffffff\" body_id=\"body\" userid_pos=\"0 0.5 0\" /></Room></FireBoxRoom>")});
@@ -112,7 +112,7 @@
 			renaming_text = settings[avatar].name;
 			input.value = renaming_text;
 			itemdiv.textContent = '';
-			itemdiv.appendChild(shirtimage);
+			//itemdiv.appendChild(shirtimage);
 			inputdiv.appendChild(input);
 			inputdiv.appendChild(trashicon);
 			inputdiv.appendChild(document.createElement("br"));
@@ -154,7 +154,8 @@
 		
 			renaming_div.removeChild(renaming_input_div);
 
-			renaming_div.innerHTML = "<div class='shirticon' onclick='load_avatar("+avatar+");'></div>"+text;
+			//renaming_div.innerHTML = "<div class='shirticon' onclick='load_avatar("+avatar+");'></div>"+text;
+			renaming_div.innerHTML = text;
 	
 			
 			
@@ -176,7 +177,8 @@
 			//renaming_div.textContent = renaming_input.value;
 			renaming_div.removeChild(renaming_input_div);
 			//renaming_div.innerHTML = "<div class='shirticon'></div>"+renaming_text;
-			renaming_div.innerHTML = "<div class='shirticon' onclick='load_avatar("+renaming_avatar+");'></div>"+renaming_text;
+			//renaming_div.innerHTML = "<div class='shirticon' onclick='load_avatar("+renaming_avatar+");'></div>"+renaming_text;
+			renaming_div.innerHTML = renaming_text;
 			//log('rename cancelled');
 			renaming_input_div = null;
 			renaming_input = null;
@@ -210,26 +212,42 @@
 		itemdiv.id = 'avatar_div_'+avatar;
 		itemdiv.setAttribute('onclick', 'avatar_clicked('+avatar+');');
 		itemdiv.class = 'avatarcontainer';
-		itemdiv.appendChild(shirtimage)
+		//itemdiv.appendChild(shirtimage)
 		itemdiv.appendChild(text);
 		itemli.appendChild(itemdiv);
 		list.appendChild(itemli);
 	}
 	var timer = null;
+	var swap_action = true;
 	function avatar_clicked(avatar)
 	{
 		if (timer)
 		{
 			clearTimeout(timer);
 			timer = null;
-			load_avatar(avatar);
+			if (swap_action)
+			{
+				startrename(avatar);
+			}
+			else
+			{
+				load_avatar(avatar);
+			}
 		}
 		else
 		{
 			timer = setTimeout(function() {
 				clearTimeout(timer);
 				timer = null;
-				startrename(avatar); }
+				if (swap_action)
+				{
+					load_avatar(avatar);
+				}
+				else
+				{
+					startrename(avatar);
+				}
+			}
 			, 250);
 		}
 	}
