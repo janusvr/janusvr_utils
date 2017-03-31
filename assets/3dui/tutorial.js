@@ -2,8 +2,10 @@ var showinstruct = false;
 
 room.update = function(delta_time) 
 {
-	left_update(player.hmd_type);
-	right_update(player.hmd_type);
+	if (player.hmd_type == "rift" || player.hmd_type == "vive") {
+		left_update(player.hmd_type);
+		right_update(player.hmd_type);
+	}
 }
 
 room.onMouseDown = function()
