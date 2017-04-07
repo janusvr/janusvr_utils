@@ -34,10 +34,6 @@ window.janus.createroom = function()
 	window.janus.createasset("image", {id:"skybox_radiance",src:trans_path+"ImgurSkyboxRadience.dds", tex_clamp:false, tex_linear:true});
 	window.janus.createasset("image", {id:"skybox_irradiance",src:trans_path+"ImgurSkyboxIrRadience.dds", tex_clamp:false, tex_linear:true});
 
-	window.janus.createasset("object", {id:"arrowL",src:trans_path2+"arrowL.dae.gz"});
-	window.janus.createasset("object", {id:"arrowR",src:trans_path2+"arrowR.dae.gz"});
-	window.janus.createasset("script", {src:trans_path2+"script.js"});
-
 	//objects
 	window.janus.createobject("object", {id:"Xart", collision_id:"Xartcol"});
 	window.janus.createobject("object", {id:"XartE", lighting:false});
@@ -50,10 +46,6 @@ window.janus.createroom = function()
 	window.janus.createobject("object", {id:"artdecopiece4", rotate_deg_per_sec:"-15"});
 	window.janus.createobject("object", {id:"artdecopiece5", rotate_deg_per_sec:"20"});
 	window.janus.createobject("object", {id:"artdecopiece6", rotate_deg_per_sec:"-20"});
-
-	window.janus.createobject("object", {id:"arrowL", pos:"-1 1 2"});
-	//window.janus.createobject("object", {id:"arrowL", pos:"-1 1 2", onclick:"arrowL();"});
-	//window.janus.createobject("object", {id:"arrowR", pos:"1 1 2", onclick:"arrowR();"});
 
 	//50.23+ use the DOM to generate dynamic content
 	//window.janus.createobject("text", {pos:"5 0.5 0", fwd:"1 0 0", scale:"5 5 5", innertext:"document.title: "+document.title});

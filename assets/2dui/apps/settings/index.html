@@ -112,6 +112,7 @@ function findGetParameter(parameterName) {
   document.getElementById("positionalenvtoggle").checked = parent.window.janus.getsetting('positionalenv');
   document.getElementById("positionalvoiptoggle").checked = parent.window.janus.getsetting('positionalvoip');
   
+   document.getElementById("tutorialmodetoggle").checked =  parent.window.janus.getsetting('tutorialmode'); 
   
   
    document.getElementById("performanceloggingtoggle").checked = parent.window.janus.getsetting('perflog');
@@ -165,6 +166,12 @@ function findGetParameter(parameterName) {
   document.getElementById("playbackdevicelist").style.display = "none";
   document.getElementById("capturedevicelist").style.display = "none";
   document.getElementById("secondarycapturedevicelist").style.display = "none";
+  
+    document.getElementById("tutorialurlform").value =  parent.window.janus.getsetting('tutorialurl');
+
+  
+  
+  
   var list = document.getElementById('playback_list');
   for (i = 0; i < parent.window.janus.playbackdevices.length; i++){
 	var itemli = document.createElement('li');
@@ -480,6 +487,29 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					-->
 					
 					<div class='header'>MISC</div>
+					
+					
+					
+					<div class='item' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="tutorialmodetoggle"   onchange="window.janus.setsetting('tutorialmode', this.checked); " >
+					<label for="tutorialmodetoggle" class="css-label">Tutorial Mode</label>
+
+
+					</span>
+					<br>
+					</div>
+					
+					<div class='item' >
+					<span>
+					Tutorial URL:<br>
+					<input  type='text' class="longerinput"  id="tutorialurlform"  onchange="window.janus.setsetting('tutorialurl', this.value);"  >
+
+					</span>
+
+					</div>	
+
+					
 					
 					<div class='item' >
 
