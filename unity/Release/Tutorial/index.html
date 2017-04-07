@@ -1,0 +1,153 @@
+<html>
+<head>
+    <style>
+		body{
+		  font-family: arial, sans-serif;
+		}
+		
+        table {          
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
+<body>
+    <p><b>1. If you want to export lightmaps, make sure your scene is using only Baked GI, not Precomputed Realtime GI.</b></p>
+    <br>
+    <img src="step1.png" />
+    <br>
+
+    <p><b>2. Import the JanusVR Package by going on "Assets/Import Package/Custom Package"</b></p>
+    <br>
+    <img src="step2.png" />
+    <br>
+    <img src="step3.png" />
+    <br>
+	
+	<p><b>3. Open the exporter by hitting Window -> Janus VR Exporter</b></p>
+	<br>
+	<img src="step4.png" />
+	<br>
+
+    <p><b>4. Exporter Options</b></p>
+	<img src="step5.png" />
+	<br>
+    <table>
+        <tr>
+            <th>Option</th>
+            <th>Description
+            <th>
+        </tr>
+        <tr>
+            <td>Export Path</td>
+            <td>The folder were exporting the scene to</td>
+        </tr>
+        <tr>
+            <td>Mesh format</td>
+            <td>The format were going to export all meshes to (only FBX right now).</td>
+        </tr>
+		 <tr>
+            <td>Uniform Scale</td>
+            <td>A uniform scale to transform the entire scene.</td>
+        </tr>
+		<tr>
+            <td>Export GIFs</td>
+            <td>If the export should export GIFs. If false, the GIFs get reprocessed to the texture format and only the first frame is exported.</td>
+        </tr>
+        <tr>
+            <td>Texture Format</td>
+            <td>
+				The format to export all textures. Supported formats are PNG and JPG. If the object needs alpha information inside the texture the format will be overriden to PNG always.
+				<br>
+				<b>Texture Quality:</b> Only available when using lossy texture formats, like JPG.
+			</td>
+        </tr>       
+        <tr>
+            <td>Export Materials</td>
+            <td>If the exporter should output the materials (if disabled, lightmaps are still exported, so you can take a look at only lightmap data with a gray tone)</td>
+        </tr>
+        <tr>
+            <td>Export Skybox</td>
+            <td>Exports the scene's skybox</td>
+        </tr>
+        <tr>
+            <td><a href="#lightmap">Lightmap Type</a></td>
+            <td>The type of lightmaps you want to export</td>
+        </tr>
+        <tr>
+            <td>Max Lightmap Resolution</td>
+            <td>The maximum resolution a lightmap atlas can have</td>
+        </tr>
+    </table>
+	<br>
+	
+    <p><b>4.1. Export HTML only</b></p>
+    <p>This button is intended for when you have already exported the entire scene, but made a change that doesnt impact the already exported models/textures (like changing the position of an object in the scene).</p>
+	<br>
+	<p><b>4.2. Reset Parameters</b></p>
+    <p>Resets all parameters to their default values.</p>
+	<br>	
+	<p><b>4.3. Full Export</b></p>
+    <p>Exports the entire scene - models, textures and the html file - to the output directory.</p>
+	<br>	
+	
+	<a name="lightmap" />
+	<p><b>4. Lightmap Options</b>
+	<br>
+	<table>
+		<tr>
+			<th>Option</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>None</td>
+			<td>No lightmaps are exported.</td>
+		</tr>
+		<tr>
+			<td>Packed</td>
+			<td>Packed into multiple atlases.</td>
+		</tr>
+		<tr>
+			<td>Packed Source EXR</td>
+			<td>The optimal type of lightmaps: everything is exported straight out from Unity, packed into multiple atlases with HDR support.</td>
+		</tr>
+		<tr>
+			<td>Unpacked</td>
+			<td>Unpacks the atlases into smaller textures, so no objects share the same lightmap texture. Consumes more memory with no gain. (Exists only for compatibility/debugging purposes)</td>
+		</tr>
+		<tr>
+			<td>Baked</td>
+			<td>Bakes the lightmap into the object material. Consumes too much memory while making the main material look poor. (Exists only for compatibility/debugging purposes)</td>
+		</tr>
+	</table>
+	
+	<a name="components" />
+	<p><b>4. Components</b>
+	<br>	
+	<table>
+		<tr>
+			<th>Option</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>GameObject -> JanusVR -> Room Entry Portal</td>
+			<td>Makes an entry portal on your Unity scene. You can position the portal and move it around, and this is going to be the entrance to your JanusVR room.</td>
+		</tr>
+		<tr>
+			<td>GameObject -> JanusVR -> Link</td>
+			<td>Makes a link portal on your Unity scene. You can set up the URL, title and all other options, and this is going to be exported as a Link portal to JanusVR.</td>
+		</tr>
+	</table>
+	
+</body>
+</html>

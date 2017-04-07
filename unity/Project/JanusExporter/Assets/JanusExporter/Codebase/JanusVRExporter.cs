@@ -225,7 +225,7 @@ namespace JanusVR
             meshExporters = new Dictionary<ExportMeshFormat, MeshExporter>();
             meshExporters.Add(ExportMeshFormat.FBX, new FbxExporter());
 
-            EditorApplication.update += UnityConnection;
+            //EditorApplication.update += UnityConnection;
         }
 
         private void UnityConnection()
@@ -306,10 +306,10 @@ namespace JanusVR
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Janus Exporter " + (JanusGlobals.Version / 100.0).ToString("F2"), EditorStyles.boldLabel);
-            if (GUILayout.Button("Update"))
-            {
-                JanusVRUpdater.ShowWindow();
-            }
+            //if (GUILayout.Button("Update"))
+            //{
+            //    //JanusVRUpdater.ShowWindow();
+            //}
             GUILayout.EndHorizontal();
 
             // Main Parameters
@@ -328,7 +328,7 @@ namespace JanusVR
             // Models
             GUILayout.Label("Model", EditorStyles.boldLabel);
 
-            meshFormat = (ExportMeshFormat)EditorGUILayout.EnumPopup("Mesh Format", meshFormat);
+            //meshFormat = (ExportMeshFormat)EditorGUILayout.EnumPopup("Mesh Format", meshFormat);
 
             float scale = EditorGUILayout.FloatField("Uniform Scale", uniformScale);
             if (uniformScale != scale)
