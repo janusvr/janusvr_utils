@@ -20,7 +20,7 @@ room.onMouseUp = function()
 
 function left_update(hmd_type) 
 {
-	var n = hmd_type + "0";
+	var n = "__menu" + hmd_type + "0";
   	if (showinstruct && player.hand0_active) {
       		room.objects[n].visible = true;
       		room.objects[n].pos  = player.hand0_pos;
@@ -35,7 +35,7 @@ function left_update(hmd_type)
 
 function right_update(hmd_type) 
 {
-	var n = hmd_type + "1";
+	var n = "__menu" + hmd_type + "1";
   	if (showinstruct && player.hand1_active) {
     		room.objects[n].visible = true;
     		room.objects[n].pos  = player.hand1_pos;
