@@ -1,6 +1,5 @@
 # Blender v2.76 (sub 0) OBJ File: 'virtualkeyboard.blend'
 # www.blender.org
-mtllib SHIFT.mtl
 o SHIFT
 v -1.270631 -0.404711 -0.816585
 v -1.215321 -0.598395 -0.781039

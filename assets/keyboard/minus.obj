@@ -1,6 +1,5 @@
 # Blender v2.76 (sub 0) OBJ File: 'virtualkeyboard.blend'
 # www.blender.org
-mtllib dash.mtl
 o dash
 v 1.023994 0.000000 -1.181752
 v 1.015233 -0.204101 -1.171642

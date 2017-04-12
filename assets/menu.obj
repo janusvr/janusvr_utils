@@ -1,6 +1,5 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib menu.mtl
 v 0.809018 0.000000 -0.587786
 v 0.743145 0.000000 -0.669131
 v 0.669131 0.000000 -0.743145
@@ -150,8 +149,6 @@ vn 0.743146 0.000000 0.669129
 vn 0.777149 0.000000 0.629317
 vn 0.777149 0.000000 0.629317
 s off
-g menu:pCylinder1
-usemtl lambert2SG
 f 1/1/1 20/4/2 21/3/3 2/2/4
 f 2/2/5 21/3/6 22/6/7 3/5/8
 f 3/5/9 22/6/10 23/8/11 4/7/12

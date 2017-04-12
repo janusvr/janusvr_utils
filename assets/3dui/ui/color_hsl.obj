@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib hlsspindle.mtl
+mtllib color_hsl.mtl
 v 0.250022 0.444464 -0.336783
 v 0.083370 0.111159 -0.048133
 v 0.416674 0.444464 -0.048134
@@ -258,7 +258,7 @@ vn 0.000000 1.000000 0.000000
 vn 0.000000 1.000000 0.000000
 vn 0.000000 1.000000 0.000000
 vn 0.000000 1.000000 0.000000
-usemtl hlsspindle:lambert2SG
+usemtl color_hsl:lambert2SG
 f 1/1/1 2/2/2 5/51/3 4/3/4
 f 2/56/5 3/4/6 6/5/7 5/50/8
 f 3/4/9 1/1/10 4/3/11 6/5/12

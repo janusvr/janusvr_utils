@@ -1,6 +1,5 @@
 # Blender v2.76 (sub 0) OBJ File: 'virtualkeyboard.blend'
 # www.blender.org
-mtllib tilda.mtl
 o tilda
 v -1.315454 0.000000 -0.845391
 v -1.304201 -0.204101 -0.838158
