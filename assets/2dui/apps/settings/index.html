@@ -168,6 +168,8 @@ function findGetParameter(parameterName) {
   document.getElementById("secondarycapturedevicelist").style.display = "none";
   
     document.getElementById("tutorialurlform").value =  parent.window.janus.getsetting('tutorialurl');
+	
+  document.getElementById("micalwaysontoggle").value =  parent.window.janus.getsetting('micalwayson');  
 
   
   
@@ -989,7 +991,14 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<br>
 					</div>
 
-					
+					<div class='item' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="micalwaysontoggle" onchange="window.janus.setsetting('micalwayson', this.checked); "  >
+					<label for="micalwaysontoggle" class="css-label">Mic Always On</label>
+
+					</span>
+					<br>
+					</div>	
 					
 
 					
