@@ -111,6 +111,7 @@ function findGetParameter(parameterName) {
   document.getElementById("hidemenutoggle").checked = parent.window.janus.getsetting('hidemenu');
   document.getElementById("positionalenvtoggle").checked = parent.window.janus.getsetting('positionalenv');
   document.getElementById("positionalvoiptoggle").checked = parent.window.janus.getsetting('positionalvoip');
+  document.getElementById("micalwaysontoggle").checked =  parent.window.janus.getsetting('micalwayson');  
   
    document.getElementById("tutorialmodetoggle").checked =  parent.window.janus.getsetting('tutorialmode'); 
   
@@ -169,7 +170,8 @@ function findGetParameter(parameterName) {
   
     document.getElementById("tutorialurlform").value =  parent.window.janus.getsetting('tutorialurl');
 	
-  document.getElementById("micalwaysontoggle").value =  parent.window.janus.getsetting('micalwayson');  
+  document.getElementById("micsensitivityslider").value =  parent.window.janus.getsetting('micsensitivity');  
+  document.getElementById("micsensitivityslidernumber").innerHTML =  parent.window.janus.getsetting('micsensitivity');
 
   
   
@@ -944,6 +946,25 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<br>
 					</div>		
 
+					<div class='item' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="micalwaysontoggle" onchange="window.janus.setsetting('micalwayson', this.checked); "  >
+					<label for="micalwaysontoggle" class="css-label">Mic Always On</label>
+
+					</span>
+					<br>
+					</div>	
+					
+					<div class='item' >
+					<span>
+					
+					Mic Sensitivity (dB): <span id="micsensitivityslidernumber"></span><br>
+					<input class="myslider" type='range' id="micsensitivityslider" min="-100" max="0" onchange="window.janus.setsetting('micsensitivity', this.value); document.getElementById('micsensitivityslidernumber').innerHTML=this.value;" >
+
+					</span>
+					<br>
+					</div>
+
 
 					<div class='item' >
 					<span>
@@ -990,15 +1011,6 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					</span>
 					<br>
 					</div>
-
-					<div class='item' >
-					<span>
-					<input class="myCheckbox" type='checkbox' id="micalwaysontoggle" onchange="window.janus.setsetting('micalwayson', this.checked); "  >
-					<label for="micalwaysontoggle" class="css-label">Mic Always On</label>
-
-					</span>
-					<br>
-					</div>	
 					
 
 					
