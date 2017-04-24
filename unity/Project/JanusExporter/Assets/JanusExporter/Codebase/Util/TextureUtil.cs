@@ -260,6 +260,40 @@ namespace JanusVR
             }
         }
 
+        public static void ExportTexture(Cubemap input, Stream output, ExportTextureFormat imageFormat, object data)
+        {
+            Texture2D cache = new Texture2D(input.width * 6, input.height);
+
+            for (int i = 0; i < 6; i++)
+            {
+                Color[] pixels = input.GetPixels((CubemapFace)i);
+                cache.SetPixels(i * input.width, 0, input.width, input.height, pixels);
+            }
+
+            cache.Apply();
+
+            byte[] exported;
+            switch (imageFormat)
+            {
+                case ExportTextureFormat.JPG:
+                    {
+                        exported = cache.EncodeToJPG((int)data);
+                    }
+                    break;
+                default:
+                case ExportTextureFormat.PNG:
+                    exported = cache.EncodeToPNG();
+                    break;
+            }
+            if (exported == null)
+            {
+                // log texture name
+                Debug.LogError("Texture failed exporting: " + input.name);
+            }
+
+            output.Write(exported, 0, exported.Length);
+        }
+
         public static void ExportTexture(Texture2D input, Stream output, ExportTextureFormat imageFormat, object data, bool zeroAlpha)
         {
 #if SYSTEM_DRAWING

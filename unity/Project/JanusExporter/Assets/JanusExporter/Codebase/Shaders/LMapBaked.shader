@@ -5,6 +5,7 @@
 		_LightMapUV("LightMapUV", Vector) = (0,0,0,0)
 		_LightMapTex("LightMapTex", 2D) = "White" {}
 		_MainTex("MainTexture", 2D) = "White" {}
+		_Color("MainTexture", Color) = (0,0,0,0)
 	}
 	SubShader
 	{
@@ -35,6 +36,8 @@
 			uniform float4 _LightMapUV;
 			uniform sampler2D _LightMapTex;
 			uniform sampler2D _MainTex;
+			uniform float4 _Color;
+			uniform float _IsLinear;
 
 			v2f vert (appdata v)
 			{
@@ -51,9 +54,18 @@
 			float4 frag (v2f i) : SV_Target
 			{
 				float3 texData = tex2D(_MainTex, i.uv0).rgb;
-				float3 lightmap = DecodeLightmap(tex2D(_LightMapTex, i.uv1));
+				float3 lightmap = 2 * DecodeLightmap(tex2D(_LightMapTex, i.uv1));
+				float3 result = texData * lightmap * _Color.rgb;
 
-				return float4(texData * lightmap, 1);
+				if (_IsLinear > 0)
+				{
+					// output gamma
+					return float4(pow(result, 1 / 2.2), 1);
+				}
+				else
+				{
+					return float4(result, 1);
+				}
 			}
 			ENDCG
 		}

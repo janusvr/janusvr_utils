@@ -11,6 +11,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UObject = UnityEngine.Object;
+using System.Xml;
 
 #if UNITY_5_3_OR_NEWER
 using UnityEngine.SceneManagement;
@@ -185,6 +186,7 @@ namespace JanusVR
         private ExportedData exported;
 
         private bool updateOnlyHtml = false;
+        private GUIStyle errorStyle;
 
         /// <summary>
         /// The farplane distance of the camera
@@ -201,18 +203,18 @@ namespace JanusVR
         internal class ExportedData
         {
             internal List<ExportedObject> exportedObjs;
-            internal List<ExportedObject> exportedProbes;
 
             internal List<JanusVRLink> exportedLinks;
 
             internal JanusVREntryPortal entryPortal;
 
             internal Cubemap environmentCubemap;
+            internal List<ExportedObject> exportedReflectionProbes;
 
             internal ExportedData()
             {
                 exportedObjs = new List<ExportedObject>();
-                exportedProbes = new List<ExportedObject>();
+                exportedReflectionProbes = new List<ExportedObject>();
 
                 exportedLinks = new List<JanusVRLink>();
             }
@@ -245,6 +247,9 @@ namespace JanusVR
             // search for the icon file
             Texture2D icon = Resources.Load<Texture2D>("janusvricon");
             this.titleContent = new GUIContent("Janus", icon);
+
+            errorStyle = new GUIStyle();
+            errorStyle.normal.textColor = Color.red;
         }
 
         [MenuItem("Window/JanusVR Exporter")]
@@ -317,7 +322,8 @@ namespace JanusVR
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Export Path");
-            exportPath = EditorGUILayout.TextField(exportPath);
+            //exportPath = EditorGUILayout.TextField(exportPath);
+            EditorGUILayout.LabelField(exportPath);
             if (GUILayout.Button("..."))
             {
                 // search for a folder
@@ -406,7 +412,7 @@ namespace JanusVR
                 Cubemap cubemap = exported.environmentCubemap;
                 if (cubemap == null)
                 {
-                    GUILayout.Label("Environment Probe: None");
+                    GUILayout.Label("Environment Probe: None (need baked lightmaps)", errorStyle);
                 }
                 else
                 {
@@ -417,10 +423,20 @@ namespace JanusVR
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Export HTML only"))
             {
-                updateOnlyHtml = true;
-                PreExport();
-                DoExport();
-                updateOnlyHtml = false;
+                try
+                {
+                    updateOnlyHtml = true;
+                    PreExport();
+                    DoExport();
+                    updateOnlyHtml = false;
+                }
+                catch
+                {
+                    Clean();
+                    EditorUtility.ClearProgressBar();
+
+                    Debug.Log("Error exporting");
+                }
             }
 
             if (GUILayout.Button("Reset Parameters"))
@@ -433,8 +449,18 @@ namespace JanusVR
             {
                 if (GUILayout.Button("Full Export", GUILayout.Height(30)))
                 {
-                    PreExport();
-                    DoExport();
+                    //try
+                    {
+                        PreExport();
+                        DoExport();
+                    }
+                    //catch (Exception ex)
+                    {
+                        //Clean();
+                        EditorUtility.ClearProgressBar();
+
+                        //Debug.LogError("Error exporting: " + ex);
+                    }
                 }
             }
 
@@ -468,8 +494,6 @@ namespace JanusVR
                     return false;
             }
         }
-
-
 
         private void AssertShader(Shader shader)
         {
@@ -678,6 +702,7 @@ namespace JanusVR
                                 }
 
                                 lightMap.SetTexture("_LightMapTex", texture);
+                                lightMap.SetFloat("_IsLinear", PlayerSettings.colorSpace == ColorSpace.Linear ? 1 : 0);
 
                                 for (int i = 0; i < toRender.Count; i++)
                                 {
@@ -722,6 +747,13 @@ namespace JanusVR
                                                 {
                                                     // main texture texture
                                                     lightMap.SetTexture("_MainTex", mat.GetTexture(name));
+                                                }
+                                            }
+                                            else if (propType == ShaderUtil.ShaderPropertyType.Color)
+                                            {
+                                                if (colorSemantics.Contains(name.ToLower()))
+                                                {
+                                                    lightMap.SetColor("_Color", mat.GetColor(name));
                                                 }
                                             }
                                         }
@@ -986,21 +1018,25 @@ namespace JanusVR
             farPlaneDistance = sceneSize.size.magnitude * 1.3f;
 
             // find the Reflection probe for the sky, if we have one
-            //Cubemap cubemap = RenderSettings.customReflection;
-            //if (cubemap == null)
-            //{
-            //    // search thorugh files
-            //    FileInfo[] probes = lightMapsDir.GetFiles("ReflectionProbe-*");
-            //    FileInfo first = probes.FirstOrDefault();
-            //    if (first == null)
-            //    {
-            //        return;
-            //    }
 
-            //    string probePath = Path.Combine(lightMapsFolder, first.Name);
-            //    cubemap = AssetDatabase.LoadAssetAtPath<Cubemap>(probePath);
-            //}
-            //exported.environmentCubemap = cubemap;
+            Cubemap cubemap = RenderSettings.customReflection;
+            if (cubemap == null)
+            {
+                // search thorugh files
+                if (lightMapsDir.Exists)
+                {
+                    FileInfo[] probes = lightMapsDir.GetFiles("ReflectionProbe-*");
+                    FileInfo first = probes.FirstOrDefault();
+                    if (first == null)
+                    {
+                        return;
+                    }
+
+                    string probePath = Path.Combine(lightMapsFolder, first.Name);
+                    cubemap = AssetDatabase.LoadAssetAtPath<Cubemap>(probePath);
+                }
+            }
+            exported.environmentCubemap = cubemap;
         }
 
         private void RecursiveSearch(GameObject root, ExportedData data)
@@ -1157,8 +1193,9 @@ namespace JanusVR
                     ExportedObject exp = new ExportedObject();
                     exp.GameObject = root;
                     exp.Texture = probe.texture;
+                    exp.ReflectionProbe = probe;
 
-                    data.exportedProbes.Add(exp);
+                    data.exportedReflectionProbes.Add(exp);
                 }
                 else if (comp is JanusVREntryPortal)
                 {
@@ -1229,6 +1266,94 @@ namespace JanusVR
             }
             exported = null;
             UpdateOnlyHTML = updateOnlyHtml;
+        }
+
+        private TextureExportData GenerateCmftRad(Cubemap cubemap, string forceName = "")
+        {
+            string path = AssetDatabase.GetAssetPath(cubemap);
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+
+            // remove assets
+            path = path.Remove(0, path.IndexOf('/'));
+
+            string appPath = Application.dataPath;
+            string fullPath = appPath + path;
+            string name = forceName;
+            if (string.IsNullOrEmpty(name))
+            {
+                name = cubemap.name + "_radiance";
+            }
+            string radPath = Path.Combine(exportPath, name);
+
+            string dstFaceSize = "256";
+            string excludeBase = "false";
+            string mipCount = "9";
+            string glossScale = "10";
+            string glossBias = "1";
+            string lightingModel = "phongbrdf";
+            string inputGammaNumerator = "1.0";
+            string inputGammaDenominator = "1.0";
+            string outputGammaNumerator = "1.0";
+            string outputGammaDenominator = "1.0";
+            string generateMipChain = "false";
+            string numCpuProcessingThreads = "1";
+
+            StringBuilder builder = new StringBuilder();
+            builder.Append("--input \"" + fullPath + "\"");
+            builder.Append(" --srcFaceSize " + cubemap.width);
+            builder.Append(" --filter radiance");
+            builder.Append(" --dstFaceSize " + dstFaceSize);
+            builder.Append(" --excludeBase " + excludeBase);
+            builder.Append(" --mipCount " + mipCount);
+            builder.Append(" --glossBias " + glossBias);
+            builder.Append(" --glossScale " + glossScale);
+            builder.Append(" --lightingModel " + lightingModel);
+            builder.Append(" --numCpuProcessingThreads " + numCpuProcessingThreads);
+            builder.Append(" --inputGammaNumerator " + inputGammaNumerator);
+            builder.Append(" --inputGammaDenominator " + inputGammaDenominator);
+            builder.Append(" --outputGammaNumerator " + outputGammaNumerator);
+            builder.Append(" --outputGammaDenominator " + outputGammaDenominator);
+            builder.Append(" --generateMipChain " + generateMipChain);
+            builder.Append(" --outputNum 1");
+            builder.Append(" --output0 \"" + radPath + "\"");
+            builder.Append(" --output0params dds,bgra8,cubemap");
+            string cmd = builder.ToString();
+
+            CmftInterop.Execute(cmd);
+
+            TextureExportData data = new TextureExportData();
+            data.ExportedPath = name + ".dds";
+            return data;
+        }
+        private TextureExportData GenerateCmftIrrad(Cubemap cubemap, string forceName = "")
+        {
+            string path = AssetDatabase.GetAssetPath(cubemap);
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+
+            // remove assets
+            path = path.Remove(0, path.IndexOf('/'));
+
+            string appPath = Application.dataPath;
+            string fullPath = appPath + path;
+            string name = forceName;
+            if (string.IsNullOrEmpty(name))
+            {
+                name = cubemap.name + "_irradiance";
+            }
+            string irradPath = Path.Combine(exportPath, name);
+
+            string cmd = "--input \"" + fullPath + "\" --srcFaceSize " + cubemap.width + " --filter irradiance --outputNum 1 --output0 \"" + irradPath + "\" --output0params dds,bgra8,cubemap";
+            CmftInterop.Execute(cmd);
+
+            TextureExportData data = new TextureExportData();
+            data.ExportedPath = name + ".dds";
+            return data;
         }
 
         private void DoExport()
@@ -1315,6 +1440,31 @@ namespace JanusVR
                 }
             }
 
+            List<ExportedObject> refProbs = exported.exportedReflectionProbes;
+            for (int i = 0; i < refProbs.Count; i++)
+            {
+                EditorUtility.DisplayProgressBar("Janus VR Exporter", "Generating radiance and irradiance maps using cmft...", i / (float)(refProbs.Count + 1));
+                ExportedObject obj = refProbs[i];
+                ReflectionProbe probe = obj.ReflectionProbe;
+                Cubemap cubemap;
+                if (probe.bakedTexture is Cubemap)
+                {
+                    cubemap = (Cubemap)probe.bakedTexture;
+                }
+                else
+                {
+                    cubemap = probe.customBakedTexture as Cubemap;
+                }
+
+                if (cubemap != null)
+                {
+                    //GenerateCmftIrrad(cubemap);
+                    //GenerateCmftRad(cubemap);
+                }
+            }
+            TextureExportData envIrrad = GenerateCmftIrrad(exported.environmentCubemap, "irradiance");
+            TextureExportData envRad = GenerateCmftRad(exported.environmentCubemap, "radiance");
+
             bool switchUv = lightmapExportType == LightmapExportType.BakedMaterial;
 
             for (int i = 0; i < meshesExportedData.Count; i++)
@@ -1328,9 +1478,27 @@ namespace JanusVR
                 model.ExportedPath = name + GetMeshFormat(model.Format);
             }
 
-            // Make the index.html file
-            StringBuilder index = new StringBuilder("<html>\n\t<head>\n\t\t<title>Janus Unity Exporter v" + JanusGlobals.Version + "</title>\n\t</head>\n\t<body>\n\t\t<FireBoxRoom>\n\t\t\t<Assets>");
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.OmitXmlDeclaration = true;
 
+            StringBuilder builder = new StringBuilder();
+            XmlWriter writer = XmlWriter.Create(builder, settings);
+
+            writer.WriteStartDocument();
+            writer.WriteStartElement("html");
+
+            writer.WriteStartElement("head");
+            writer.WriteStartElement("title");
+            writer.WriteString("Janus Unity Exporter v" + JanusGlobals.Version);
+            writer.WriteEndElement();
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("body");
+            writer.WriteStartElement("FireBoxRoom");
+            writer.WriteStartElement("Assets");
+
+            // Make the index.html file
             List<Mesh> meshWritten = new List<Mesh>();
 
             for (int i = 0; i < exported.exportedObjs.Count; i++)
@@ -1346,9 +1514,23 @@ namespace JanusVR
 
                     string path = data.ExportedPath;
                     string name = meshesNames[obj.Mesh];
-                    index.Append("\n\t\t\t\t<AssetObject id=\"" + name + "\" src=\"" + path + "\" />");
                     meshWritten.Add(obj.Mesh);
+
+                    writer.WriteStartElement("AssetObject");
+                    writer.WriteAttributeString("id", name);
+                    writer.WriteAttributeString("src", path);
+                    writer.WriteEndElement();
                 }
+            }
+
+            string refprobeData = "";
+            if (envIrrad != null && envRad != null)
+            {
+                refprobeData = " cubemap_radiance_id=\"" + Path.GetFileNameWithoutExtension(envRad.ExportedPath) + "\" ";
+                refprobeData += "cubemap_irradiance_id=\"" + Path.GetFileNameWithoutExtension(envIrrad.ExportedPath) + "\"";
+
+                texturesExportedData.Add(envIrrad);
+                texturesExportedData.Add(envRad);
             }
 
             // textures appear only once, while exported objects can appear multiple times
@@ -1357,11 +1539,19 @@ namespace JanusVR
             {
                 TextureExportData data = texturesExportedData[i];
                 string path = data.ExportedPath;
-                index.Append("\n\t\t\t\t<AssetImage id=\"" + Path.GetFileNameWithoutExtension(path) + "\" src=\"" + path + "\" />");
+                writer.WriteStartElement("AssetImage");
+                writer.WriteAttributeString("id", Path.GetFileNameWithoutExtension(path));
+                writer.WriteAttributeString("src", path);
+                writer.WriteEndElement();
             }
 
+            writer.WriteEndElement();
+            writer.WriteStartElement("Room");
+
+            float farPlane = Math.Max(farPlaneDistance, 500);
+            writer.WriteAttributeString("far_dist", ((int)farPlane).ToString(culture));
+
             TextureExportData fronttex, backtex, lefttex, righttex, uptex, downtex = null;
-            string skyboxdata = "";
 
             EditorUtility.DisplayProgressBar("Janus VR Exporter", "Rendering skybox...", 0);
 
@@ -1376,42 +1566,37 @@ namespace JanusVR
 
                 if (fronttex != null)
                 {
-                    skyboxdata += "skybox_front_id=\"" + Path.GetFileNameWithoutExtension(fronttex.ExportedPath) + "\" ";
+                    writer.WriteAttributeString("skybox_front_id", Path.GetFileNameWithoutExtension(fronttex.ExportedPath));
                 }
                 if (backtex != null)
                 {
-                    skyboxdata += "skybox_back_id=\"" + Path.GetFileNameWithoutExtension(backtex.ExportedPath) + "\" ";
+                    writer.WriteAttributeString("skybox_back_id", Path.GetFileNameWithoutExtension(backtex.ExportedPath));
                 }
                 if (lefttex != null)
                 {
-                    skyboxdata += "skybox_left_id=\"" + Path.GetFileNameWithoutExtension(lefttex.ExportedPath) + "\" ";
+                    writer.WriteAttributeString("skybox_left_id", Path.GetFileNameWithoutExtension(lefttex.ExportedPath));
                 }
                 if (righttex != null)
                 {
-                    skyboxdata += "skybox_right_id=\"" + Path.GetFileNameWithoutExtension(righttex.ExportedPath) + "\" ";
+                    writer.WriteAttributeString("skybox_right_id", Path.GetFileNameWithoutExtension(righttex.ExportedPath));
                 }
                 if (uptex != null)
                 {
-                    skyboxdata += "skybox_up_id=\"" + Path.GetFileNameWithoutExtension(uptex.ExportedPath) + "\" ";
+                    writer.WriteAttributeString("skybox_up_id", Path.GetFileNameWithoutExtension(uptex.ExportedPath));
                 }
                 if (downtex != null)
                 {
-                    skyboxdata += "skybox_down_id=\"" + Path.GetFileNameWithoutExtension(downtex.ExportedPath) + "\"";
+                    writer.WriteAttributeString("skybox_down_id", Path.GetFileNameWithoutExtension(downtex.ExportedPath));
                 }
-
-                if (skyboxdata.EndsWith(" "))
-                {
-                    skyboxdata = skyboxdata.Remove(skyboxdata.Length - 1, 1);
-                }
-                skyboxdata = " " + skyboxdata;
             }
 
-            float farPlane = Math.Max(farPlaneDistance, 500);
-            if (exported.entryPortal == null)
+            if (envIrrad != null && envRad != null)
             {
-                index.Append("\n\t\t\t</Assets>\n\t\t\t<Room far_dist=\"" + farPlane + "\"" + skyboxdata + ">");
+                writer.WriteAttributeString("cubemap_radiance_id", Path.GetFileNameWithoutExtension(envRad.ExportedPath));
+                writer.WriteAttributeString("cubemap_irradiance_id", Path.GetFileNameWithoutExtension(envIrrad.ExportedPath));
             }
-            else
+
+            if (exported.entryPortal != null)
             {
                 JanusVREntryPortal portal = exported.entryPortal;
                 Transform portalTransform = portal.transform;
@@ -1420,31 +1605,10 @@ namespace JanusVR
                 Vector3 xDir, yDir, zDir;
                 JanusUtil.GetJanusVectors(portalTransform, out xDir, out yDir, out zDir);
 
-                index.Append("\n\t\t\t</Assets>\n\t\t\t");
-
-                index.Append("<Room ");
-                index.Append("far_dist=\"" + farPlane.ToString(culture) + "\"");
-
-                if (exportSkybox)
-                {
-                    index.Append(skyboxdata + " ");
-                }
-                else
-                {
-                    index.Append(" ");
-                }
-
-                index.Append("pos=\"");
-                index.Append(JanusUtil.FormatVector3(portalPos) + "\" ");
-
-                index.Append("xdir=\"");
-                index.Append(JanusUtil.FormatVector3(xDir) + "\" ");
-
-                index.Append("ydir=\"");
-                index.Append(JanusUtil.FormatVector3(yDir) + "\" ");
-
-                index.Append("zdir=\"");
-                index.Append(JanusUtil.FormatVector3(zDir) + "\">");
+                writer.WriteAttributeString("pos", JanusUtil.FormatVector3(portalPos));
+                writer.WriteAttributeString("xdir", JanusUtil.FormatVector3(xDir));
+                writer.WriteAttributeString("ydir", JanusUtil.FormatVector3(yDir));
+                writer.WriteAttributeString("zdir", JanusUtil.FormatVector3(zDir));
             }
 
             for (int i = 0; i < exported.exportedLinks.Count; i++)
@@ -1457,22 +1621,23 @@ namespace JanusVR
                 Vector3 xDir, yDir, zDir;
                 JanusUtil.GetJanusVectors(trans, out xDir, out yDir, out zDir);
 
-                index.Append("\n\t\t\t\t<Link ");
-                index.Append("pos=\"" + JanusUtil.FormatVector3(pos) + "\" ");
-                index.Append("col=\"" + JanusUtil.FormatColor(link.Color) + "\" ");
-                index.Append("scale=\"" + JanusUtil.FormatVector3(sca) + "\" ");
-                index.Append("url=\"" + link.url + "\" ");
-                index.Append("title=\"" + link.title + "\" ");
+                writer.WriteStartElement("Link");
+                writer.WriteAttributeString("pos", JanusUtil.FormatVector3(pos));
+                writer.WriteAttributeString("col", JanusUtil.FormatColor(link.Color));
+                writer.WriteAttributeString("scale", JanusUtil.FormatVector3(sca));
+                writer.WriteAttributeString("url", link.url);
+                writer.WriteAttributeString("title", link.title);
 
                 if (link.texture != null)
                 {
                     string linkTex = Path.GetFileNameWithoutExtension(texturesExportedData.First(c => c.Texture == link.texture).ExportedPath);
-                    index.Append("thumb_id=\"" + linkTex + "\" ");
+                    writer.WriteAttributeString("thumb_id", linkTex);
                 }
 
-                index.Append("xdir=\"" + JanusUtil.FormatVector3(xDir) + "\" ");
-                index.Append("ydir=\"" + JanusUtil.FormatVector3(yDir) + "\" ");
-                index.Append("zdir=\"" + JanusUtil.FormatVector3(zDir) + "\" />");
+                writer.WriteAttributeString("xdir", JanusUtil.FormatVector3(xDir));
+                writer.WriteAttributeString("ydir", JanusUtil.FormatVector3(xDir));
+                writer.WriteAttributeString("zdir", JanusUtil.FormatVector3(zDir));
+                writer.WriteEndElement();
             }
 
             for (int i = 0; i < exported.exportedObjs.Count; i++)
@@ -1499,16 +1664,18 @@ namespace JanusVR
 
                 string meshName = meshesNames[mesh];
 
-                index.Append("\n\t\t\t\t<Object id=\"" + meshName + "\" lighting=\"true\" ");
+                writer.WriteStartElement("Object");
+                writer.WriteAttributeString("id", meshName);
+                writer.WriteAttributeString("lighting", "true");
 
                 if (!string.IsNullOrEmpty(diffuseID))
                 {
-                    index.Append("image_id=\"" + diffuseID + "\" ");
+                    writer.WriteAttributeString("image_id", diffuseID);
                 }
 
                 if (!string.IsNullOrEmpty(lmapID))
                 {
-                    index.Append("lmap_id=\"" + lmapID + "\" ");
+                    writer.WriteAttributeString("lmap_id", lmapID);
                     if (lightmapExportType == LightmapExportType.Packed ||
                         lightmapExportType == LightmapExportType.PackedSourceEXR)
                     {
@@ -1518,25 +1685,25 @@ namespace JanusVR
                         lmap.y = Mathf.Clamp(lmap.y, 0, 1);
                         lmap.z = Mathf.Clamp(lmap.z, 0, 1);
                         lmap.w = Mathf.Clamp(lmap.w, 0, 1);
-                        index.Append("lmap_sca=\"" + lmap.x.ToString(culture) + " " + lmap.y.ToString(culture) + " " + lmap.z.ToString(culture) + " " + lmap.w.ToString(culture) + "\" ");
+                        writer.WriteAttributeString("lmap_sca", JanusUtil.FormatVector4(lmap));
                     }
                 }
 
                 if (obj.Tiling != null)
                 {
                     Vector4 tiling = obj.Tiling.Value;
-                    index.Append("tile=\"" + tiling.x.ToString(culture) + " " + tiling.y.ToString(culture) + " " + tiling.z.ToString(culture) + " " + tiling.w.ToString(culture) + "\" ");
+                    writer.WriteAttributeString("tile", JanusUtil.FormatVector4(tiling));
                 }
 
                 if (obj.Col != null)
                 {
-                    index.Append("collision_id=\"" + meshName + "\" ");
+                    writer.WriteAttributeString("collision_id", meshName);
                 }
 
                 if (obj.Color != null)
                 {
                     Color objColor = obj.Color.Value;
-                    index.Append("col=\"" + JanusUtil.FormatColor(objColor) + "\" ");
+                    writer.WriteAttributeString("col", JanusUtil.FormatColor(objColor));
                 }
 
                 Transform trans = go.transform;
@@ -1555,32 +1722,25 @@ namespace JanusVR
                 Vector3 sca = trans.lossyScale;
                 sca *= uniformScale;
 
-                index.Append("pos=\"" + pos.x.ToString(culture) + " " + pos.y.ToString(culture) + " " + pos.z.ToString(culture) + "\" ");
+                writer.WriteAttributeString("pos", JanusUtil.FormatVector3(pos));
                 if (sca.x < 0 || sca.y < 0 || sca.z < 0)
                 {
-                    index.Append("cull_face=\"front\"" + "\" ");
+                    writer.WriteAttributeString("cull_face", "front");
                 }
 
-                index.Append("scale=\"");
-                index.Append(JanusUtil.FormatVector3(sca) + "\" ");
+                writer.WriteAttributeString("scale", JanusUtil.FormatVector3(sca));
+                writer.WriteAttributeString("xdir", JanusUtil.FormatVector3(xDir));
+                writer.WriteAttributeString("ydir", JanusUtil.FormatVector3(yDir));
+                writer.WriteAttributeString("zdir", JanusUtil.FormatVector3(zDir));
 
-                index.Append("xdir=\"");
-                index.Append(JanusUtil.FormatVector3(xDir) + "\" ");
-
-                index.Append("ydir=\"");
-                index.Append(JanusUtil.FormatVector3(yDir) + "\" ");
-
-                index.Append("zdir=\"");
-                index.Append(JanusUtil.FormatVector3(zDir) + "\" ");
-
-                index.Append("/>");
-
+                writer.WriteEndElement();
             }
 
-            index.Append("\n\t\t\t</Room>\n\t\t</FireBoxRoom>\n\t</body>\n</html>");
-
+            writer.WriteEndDocument();
+            writer.Close();
+            writer.Flush();
             string indexPath = Path.Combine(exportPath, "index.html");
-            File.WriteAllText(indexPath, index.ToString());
+            File.WriteAllText(indexPath, builder.ToString());
 
             EditorUtility.ClearProgressBar();
         }
