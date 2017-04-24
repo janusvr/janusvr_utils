@@ -18,7 +18,7 @@
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.5.3f1</UnityVersion>
     <RootNamespace></RootNamespace>
-    <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
+    <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -130,9 +130,6 @@
     <None Include="Assets\JanusExporter\Codebase\Shaders\LMapBaked.shader" />
     <None Include="Assets\JanusExporter\Codebase\Shaders\LMapPacked.shader" />
     <None Include="Assets\JanusExporter\Codebase\Shaders\LMapUnpacked.shader" />
-    <None Include="Assets\JanusExporter\Shaders\LMapBaked.shader" />
-    <None Include="Assets\JanusExporter\Shaders\LMapPacked.shader" />
-    <None Include="Assets\JanusExporter\Shaders\LMapUnpacked.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

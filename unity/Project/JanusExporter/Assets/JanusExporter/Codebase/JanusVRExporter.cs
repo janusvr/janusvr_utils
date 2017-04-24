@@ -568,8 +568,11 @@ namespace JanusVR
             }
         }
 
+        private bool cancelExport;
+
         private void PreExport()
         {
+            cancelExport = false;
             Clean();
 
             texturesExported = new List<Texture2D>();
@@ -590,6 +593,13 @@ namespace JanusVR
             string scenePath = EditorApplication.currentScene;
             string sceneName = Path.GetFileNameWithoutExtension(scenePath);
 #endif
+
+            if (string.IsNullOrEmpty(scenePath))
+            {
+                cancelExport = true;
+                Debug.LogError("Scene is not saved. Can't export.");
+                return;
+            }
 
             lightmapped = new Dictionary<int, List<GameObject>>();
             exported = new ExportedData();
@@ -1358,6 +1368,11 @@ namespace JanusVR
 
         private void DoExport()
         {
+            if (cancelExport)
+            {
+                return;
+            }
+
             try
             {
                 if (!Directory.Exists(exportPath))
