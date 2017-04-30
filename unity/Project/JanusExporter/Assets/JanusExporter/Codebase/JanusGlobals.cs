@@ -9,7 +9,7 @@ namespace JanusVR
 {
     public static class JanusGlobals
     {
-        public const int Version = 209;
+        public const int Version = 210;
     }
 }
 #endif

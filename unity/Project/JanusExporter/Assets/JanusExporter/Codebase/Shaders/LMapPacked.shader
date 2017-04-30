@@ -33,6 +33,7 @@
 
 			uniform float4 _LightMapUV;
 			uniform sampler2D _LightMapTex;
+			uniform float _IsLinear;
 
 			v2f vert(appdata v)
 			{
@@ -48,14 +49,22 @@
 				return o;
 			}
 
-			fixed4 frag(v2f i) : SV_Target
+			float4 frag(v2f i) : SV_Target
 			{
 				float2 tc = i.uv1;
 				tc.xy *= _LightMapUV.xy;
 				tc.xy += _LightMapUV.zw;
 				float3 lightmap = DecodeLightmap(tex2D(_LightMapTex, i.uv1));
-				float3 gamma = pow(lightmap, 0.454545);
-				return half4(gamma, 1);
+
+				if (_IsLinear > 0)
+				{
+					float3 gamma = pow(lightmap, 0.454545);
+					return float4(gamma, 1);
+				}
+				else
+				{
+					return float4(lightmap, 1);
+				}
 			}
 			ENDCG
 		}
