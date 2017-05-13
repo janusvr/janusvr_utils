@@ -10,10 +10,10 @@ namespace JanusVR.FBX
     [StructLayout(LayoutKind.Sequential)]
     public struct FbxVector2
     {
-        public double X;
-        public double Y;
+        public float X;
+        public float Y;
 
-        public FbxVector2(double x, double y)
+        public FbxVector2(float x, float y)
         {
             X = x;
             Y = y;
@@ -23,9 +23,9 @@ namespace JanusVR.FBX
         {
             StringBuilder sb = new StringBuilder(32);
             sb.Append("{X:");
-            sb.Append(this.X.ToString("F2"));
+            sb.Append(this.X.ToString("F6"));
             sb.Append(" Y:");
-            sb.Append(this.Y.ToString("F2"));
+            sb.Append(this.Y.ToString("F6"));
             sb.Append("}");
             return sb.ToString();
         }

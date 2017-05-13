@@ -5,7 +5,8 @@
 		_LightMapUV("LightMapUV", Vector) = (0,0,0,0)
 		_LightMapTex("LightMapTex", 2D) = "White" {}
 		_MainTex("MainTexture", 2D) = "White" {}
-		_Color("MainTexture", Color) = (0,0,0,0)
+		_Color("Color", Color) = (0,0,0,0)
+		_Exposure("Exposure", Float) = 0
 	}
 	SubShader
 	{
@@ -28,9 +29,9 @@
 
 			struct v2f
 			{
+				float4 vertex			: SV_POSITION;
 				float2 uv0				: TEXCOORD0;
 				float2 uv1				: TEXCOORD1;
-				float4 vertex			: SV_POSITION;
 			};
 
 			uniform float4 _LightMapUV;
@@ -38,6 +39,7 @@
 			uniform sampler2D _MainTex;
 			uniform float4 _Color;
 			uniform float _IsLinear;
+			uniform float _Exposure;
 
 			v2f vert (appdata v)
 			{
@@ -50,20 +52,31 @@
 
 				return o;
 			}
+
+			float3 exposure(float3 color, float relative_fstop)
+			{
+				return color * pow(2.0, relative_fstop);
+			}
 			
 			float4 frag (v2f i) : SV_Target
 			{
 				float3 texData = tex2D(_MainTex, i.uv0).rgb;
-				float3 lightmap = 2 * DecodeLightmap(tex2D(_LightMapTex, i.uv1));
-				float3 result = texData * lightmap * _Color.rgb;
+				float3 lightmap = DecodeLightmap(tex2D(_LightMapTex, i.uv1));
 
 				if (_IsLinear > 0)
 				{
+					texData = pow(texData, 1 / 2.2);
+					float3 color = pow(_Color.rgb, 1 / 2.2);
+					float3 result = texData * lightmap * color;
+
 					// output gamma
-					return float4(pow(result, 1 / 2.2), 1);
+					//return float4(pow(result, 1 / 2.2), 1);
+					return float4(exposure(result, _Exposure), 1);
 				}
 				else
 				{
+					float3 result = texData * lightmap * _Color.rgb;
+
 					return float4(result, 1);
 				}
 			}

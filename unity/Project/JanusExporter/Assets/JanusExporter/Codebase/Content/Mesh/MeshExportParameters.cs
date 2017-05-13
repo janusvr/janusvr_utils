@@ -14,6 +14,7 @@ namespace JanusVR
     {
         private bool switchUv;
         private bool mirror;
+        private int lightmapRes;
 
         /// <summary>
         /// If the exporter should grab the UV1 layer

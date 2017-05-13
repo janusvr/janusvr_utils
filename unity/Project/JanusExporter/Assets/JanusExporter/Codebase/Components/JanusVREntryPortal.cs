@@ -41,7 +41,7 @@ namespace JanusVR
 
         public JanusVREntryPortal()
         {
-            JanusVRExporter.AddObject(this);
+            JanusGlobals.RegisterObject(this);
         }
 
         public Vector3 GetJanusPosition()

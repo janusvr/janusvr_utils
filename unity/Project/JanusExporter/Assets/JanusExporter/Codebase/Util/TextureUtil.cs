@@ -49,32 +49,29 @@ namespace JanusVR
             data.alphaIsTransparency = importer.alphaIsTransparency;
             data.path = path;
 
-            if (!JanusVRExporter.UpdateOnlyHTML)
-            {
 #if UNITY_5_3_OR_NEWER
-                if (!importer.isReadable || importer.textureCompression != TextureImporterCompression.Uncompressed)
+            if (!importer.isReadable || importer.textureCompression != TextureImporterCompression.Uncompressed)
 #else
                 if (!importer.isReadable || importer.textureFormat != TextureImporterFormat.ARGB32)
 #endif
-                {
-                    importer.isReadable = true;
+            {
+                importer.isReadable = true;
 #if UNITY_5_3_OR_NEWER
-                    importer.textureCompression = TextureImporterCompression.Uncompressed;
+                importer.textureCompression = TextureImporterCompression.Uncompressed;
 #else
                     importer.textureFormat = TextureImporterFormat.ARGB32;
 #endif
-                    data.changed = true;
+                data.changed = true;
 
-                    AssetDatabase.Refresh();
-                    AssetDatabase.ImportAsset(path);
-                }
+                AssetDatabase.Refresh();
+                AssetDatabase.ImportAsset(path);
             }
             return data;
         }
 
         public static void UnlockTexture(TempTextureData data)
         {
-            if (data.changed && !JanusVRExporter.UpdateOnlyHTML)
+            if (data.changed)
             {
                 TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(data.path);
 
@@ -338,7 +335,7 @@ namespace JanusVR
             }
             else
             {
-                inp = input;                
+                inp = input;
             }
 
             byte[] exported;

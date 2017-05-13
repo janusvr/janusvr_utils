@@ -7,15 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Xml;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UObject = UnityEngine.Object;
-using System.Xml;
-
-#if UNITY_5_3_OR_NEWER
-using UnityEngine.SceneManagement;
-#endif
 
 namespace JanusVR
 {
@@ -25,14 +21,6 @@ namespace JanusVR
     public class JanusVRExporter : EditorWindow
     {
         private static JanusVRExporter instance;
-        private static List<IJanusObject> objects;
-
-        static JanusVRExporter()
-        {
-            objects = new List<IJanusObject>();
-        }
-
-        public static bool UpdateOnlyHTML { get; private set; }
 
         /// <summary>
         /// Singleton
@@ -40,11 +28,6 @@ namespace JanusVR
         public static JanusVRExporter Instance
         {
             get { return instance; }
-        }
-
-        public static void AddObject(IJanusObject obj)
-        {
-            objects.Add(obj);
         }
 
         /// <summary>
@@ -96,6 +79,12 @@ namespace JanusVR
         private int maxLightMapResolution;
 
         /// <summary>
+        /// How much we should expose the lightmap when converting to low dynamic range
+        /// </summary>
+        [SerializeField]
+        private float lightmapExposure;
+
+        /// <summary>
         /// If the exporter should output the materials (if disabled, lightmaps are still exported, so you can take a look at only lightmap
         /// data with a gray tone)
         /// </summary>
@@ -131,45 +120,9 @@ namespace JanusVR
         [SerializeField]
         private bool compressFiles = false;
 
-        /// <summary>
-        /// Lower case values that the exporter will consider for being the Main Texture on a shader
-        /// </summary>
-        private string[] mainTexSemantics = new string[]
-        {
-            "_maintex"
-        };
+        [NonSerialized]
+        private SceneExportData exported;
 
-        /// <summary>
-        /// Lower case values that the exporter will consider for being the Tiling
-        /// </summary>
-        private string[] tilingSemantics = new string[]
-        {
-            "_maintex_st"
-        };
-
-        /// <summary>
-        /// Lower case values that the exporter will consider for being the Color off a shader
-        /// </summary>
-        private string[] colorSemantics = new string[]
-        {
-            "_color"
-        };
-
-        /// <summary>
-        /// Lower case values that the exporter will consider for the shader using transparent textures
-        /// </summary>
-        private string[] transparentSemantics = new string[]
-        {
-            "transparent"
-        };
-
-        /// <summary>
-        /// The semantic names for all the skybox 6-sided faces
-        /// </summary>
-        private string[] skyboxTexNames = new string[]
-        {
-            "_FrontTex", "_BackTex", "_LeftTex", "_RightTex", "_UpTex", "_DownTex"
-        };
 
         private Dictionary<ExportMeshFormat, MeshExporter> meshExporters;
 
@@ -183,7 +136,6 @@ namespace JanusVR
         private Dictionary<Mesh, string> meshesNames;
         private int meshesCount;
 
-        private ExportedData exported;
 
         private bool updateOnlyHtml = false;
         private GUIStyle errorStyle;
@@ -200,25 +152,7 @@ namespace JanusVR
 
         public const int PreviewSize = 64;
 
-        internal class ExportedData
-        {
-            internal List<ExportedObject> exportedObjs;
 
-            internal List<JanusVRLink> exportedLinks;
-
-            internal JanusVREntryPortal entryPortal;
-
-            internal Cubemap environmentCubemap;
-            internal List<ExportedObject> exportedReflectionProbes;
-
-            internal ExportedData()
-            {
-                exportedObjs = new List<ExportedObject>();
-                exportedReflectionProbes = new List<ExportedObject>();
-
-                exportedLinks = new List<JanusVRLink>();
-            }
-        }
 
         public JanusVRExporter()
         {
@@ -283,34 +217,62 @@ namespace JanusVR
             exportSkyboxResolution = 1024;
 
             lightmapExportType = LightmapExportType.PackedSourceEXR;
+            lightmapExposureVisible = true;
+            lightmapExposure = 0;
+
+            scrollPos = Vector2.zero;
 
             maxLightMapResolution = 2048;
         }
 
-        private void UpdateScale()
-        {
-            for (int i = 0; i < objects.Count; i++)
-            {
-                IJanusObject obj = objects[i];
-                UObject uobj = (UObject)obj;
-                if (!uobj)
-                {
-                    objects.RemoveAt(i);
-                    i--;
-                    continue;
-                }
 
-                obj.UpdateScale(uniformScale);
+
+        public static bool NeedsLDRConversion(LightmapExportType type)
+        {
+            switch (type)
+            {
+                case LightmapExportType.BakedMaterial:
+                case LightmapExportType.Packed:
+                case LightmapExportType.Unpacked:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        [NonSerialized]
+        private Vector2 scrollPos;
+
+        [SerializeField]
+        private bool lightmapExposureVisible = true;
+
+        private void MakePreviewExportData()
+        {
+            if (exported == null)
+            {
+                exported = new SceneExportData();
+                exported.IsPreview = true;
+            }
+        }
+
+        private void PreviewRefresh()
+        {
+            if (exported != null && exported.IsPreview)
+            {
+                exported = null;
             }
         }
 
         private void OnGUI()
         {
             Rect rect = this.position;
-            GUILayout.BeginArea(new Rect(border.x, border.y, rect.width - border.width, rect.height - border.height));
+            Rect showArea = new Rect(border.x, border.y, rect.width - border.width, rect.height - border.height);
+
+            GUILayout.BeginArea(showArea);
+            scrollPos = GUILayout.BeginScrollView(scrollPos);
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Janus Exporter " + (JanusGlobals.Version / 100.0).ToString("F2"), EditorStyles.boldLabel);
+            GUILayout.Label("Janus Exporter " + (JanusGlobals.Version).ToString("F2"), EditorStyles.boldLabel);
             //if (GUILayout.Button("Update"))
             //{
             //    //JanusVRUpdater.ShowWindow();
@@ -340,7 +302,8 @@ namespace JanusVR
             if (uniformScale != scale)
             {
                 uniformScale = scale;
-                UpdateScale();
+                // update the scale on all possible Janus objects on screen
+                JanusGlobals.UpdateScale(uniformScale);
             }
 
             // Texture
@@ -365,11 +328,9 @@ namespace JanusVR
             }
             EditorGUILayout.LabelField("    Will render the Skybox into 6 textures with the specified resolution");
 
+            // Lightmap
+            GUILayout.Label("Lightmaps", EditorStyles.boldLabel);
             lightmapExportType = (LightmapExportType)EditorGUILayout.EnumPopup("Lightmap Type", lightmapExportType);
-            if (lightmapExportType != LightmapExportType.None && lightmapExportType != LightmapExportType.PackedSourceEXR)
-            {
-                maxLightMapResolution = Math.Max(4, EditorGUILayout.IntField("Max Lightmap Resolution", maxLightMapResolution));
-            }
 
             switch (lightmapExportType)
             {
@@ -381,7 +342,7 @@ namespace JanusVR
                     break;
                 case LightmapExportType.PackedSourceEXR:
                     EditorGUILayout.LabelField("    Copies the source EXR High-Dynamic Range lightmaps");
-                    EditorGUILayout.LabelField("    directly into the exported project (only on Janus 56.0)");
+                    EditorGUILayout.LabelField("    directly into the exported project (experimental)");
                     break;
                 case LightmapExportType.BakedMaterial:
                     EditorGUILayout.LabelField("    Bakes the lightmap into the material (for testing purposes)");
@@ -390,6 +351,38 @@ namespace JanusVR
                     EditorGUILayout.LabelField("    Converts the source EXR files to Low-Dynamic Range and unpacks");
                     EditorGUILayout.LabelField("    into individual textures (for testing purposes)");
                     break;
+            }
+
+            if (lightmapExportType != LightmapExportType.None && lightmapExportType != LightmapExportType.PackedSourceEXR)
+            {
+                maxLightMapResolution = Math.Max(4, EditorGUILayout.IntField("Max Lightmap Resolution", maxLightMapResolution));
+            }
+            if (NeedsLDRConversion(lightmapExportType))
+            {
+                lightmapExposure = EditorGUILayout.Slider("Lightmap Exposure", lightmapExposure, -5, 5);
+
+                lightmapExposureVisible = EditorGUILayout.Foldout(lightmapExposureVisible, "Preview Exposure");
+                if (lightmapExposureVisible)
+                {
+                    Rect last = GUILayoutUtility.GetLastRect();
+
+                    MakePreviewExportData();
+                    exported.Lightmaps.BuildPreview(lightmapExportType, lightmapExposure);
+
+                    Texture2D preview = exported.Lightmaps.Preview;
+                    if (preview)
+                    {
+                        int texSize = (int)(showArea.width * 0.4);
+                        Rect tex = GUILayoutUtility.GetRect(texSize, texSize + 20);
+
+                        GUI.Label(new Rect(tex.x + 20, tex.y, texSize, texSize), "Lightmap Preview");
+                        GUI.DrawTexture(new Rect(tex.x + 20, tex.y + 20, texSize, texSize), preview);
+                    }
+                    else
+                    {
+                        GUILayout.Label("No Lightmap Preview");
+                    }
+                }
             }
 
             GUILayout.FlexibleSpace();
@@ -443,6 +436,13 @@ namespace JanusVR
             {
                 ResetParameters();
             }
+
+            if (!string.IsNullOrEmpty(exportPath) &&
+                Directory.Exists(exportPath) &&
+                GUILayout.Button("Show In Explorer"))
+            {
+                System.Diagnostics.Process.Start(exportPath);
+            }
             EditorGUILayout.EndHorizontal();
 
             if (!string.IsNullOrEmpty(exportPath))
@@ -464,6 +464,7 @@ namespace JanusVR
                 }
             }
 
+            GUILayout.EndScrollView();
             GUILayout.EndArea();
         }
 
@@ -495,13 +496,7 @@ namespace JanusVR
             }
         }
 
-        private void AssertShader(Shader shader)
-        {
-            if (shader == null)
-            {
-                Debug.LogError("Shaders not found! Please reimport the Janus Exporter package");
-            }
-        }
+
 
         private Texture2D RenderSkyBoxSide(Vector3 direction, string name, RenderTexture tmpTex, Camera cam)
         {
@@ -540,6 +535,7 @@ namespace JanusVR
             Material skybox = RenderSettings.skybox;
             if (skybox != null)
             {
+                string[] skyboxTexNames = JanusGlobals.SkyboxTexNames;
                 for (int i = 0; i < skyboxTexNames.Length; i++)
                 {
                     if (!skybox.HasProperty(skyboxTexNames[i]))
@@ -583,18 +579,11 @@ namespace JanusVR
             meshesNames = new Dictionary<Mesh, string>();
             meshesCount = 0;
 
-#if UNITY_5_3_OR_NEWER
-            Scene scene = SceneManager.GetActiveScene();
-            GameObject[] roots = scene.GetRootGameObjects();
-            string scenePath = scene.path;
-            string sceneName = scene.name;
-#else
-            GameObject[] roots = SceneRoots().ToArray();
-            string scenePath = EditorApplication.currentScene;
-            string sceneName = Path.GetFileNameWithoutExtension(scenePath);
-#endif
+            exported = new SceneExportData();
+            exported.UpdateOnlyHTML = updateOnlyHtml;
 
-            if (string.IsNullOrEmpty(scenePath))
+            GameObject[] roots = exported.SceneRoots;
+            if (string.IsNullOrEmpty(exported.ScenePath))
             {
                 cancelExport = true;
                 Debug.LogError("Scene is not saved. Can't export.");
@@ -602,7 +591,6 @@ namespace JanusVR
             }
 
             lightmapped = new Dictionary<int, List<GameObject>>();
-            exported = new ExportedData();
 
             for (int i = 0; i < roots.Length; i++)
             {
@@ -616,6 +604,7 @@ namespace JanusVR
                 if (skybox != null)
                 {
                     bool proceed = true;
+                    string[] skyboxTexNames = JanusGlobals.SkyboxTexNames;
                     for (int i = 0; i < skyboxTexNames.Length; i++)
                     {
                         if (!skybox.HasProperty(skyboxTexNames[i]))
@@ -676,8 +665,7 @@ namespace JanusVR
                 }
             }
 
-            scenePath = Path.GetDirectoryName(scenePath);
-            string lightMapsFolder = Path.Combine(scenePath, sceneName);
+            string lightMapsFolder = exported.GetLightmapsFolder();
             DirectoryInfo lightMapsDir = new DirectoryInfo(lightMapsFolder);
 
             if (lightmapExportType != LightmapExportType.None &&
@@ -691,10 +679,12 @@ namespace JanusVR
                             // only load shader now, so if the user is not exporting lightmaps
                             // he doesn't need to have it on his project folder
                             Shader lightMapShader = Shader.Find("Hidden/LMapBaked");
-                            AssertShader(lightMapShader);
+                            JanusUtil.AssertShader(lightMapShader);
 
                             Material lightMap = new Material(lightMapShader);
                             lightMap.SetPass(0);
+                            lightMap.SetFloat("_IsLinear", PlayerSettings.colorSpace == ColorSpace.Linear ? 1 : 0);
+                            lightMap.SetFloat("_Exposure", lightmapExposure);
 
                             // export lightmaps
                             int lmap = 0;
@@ -712,7 +702,6 @@ namespace JanusVR
                                 }
 
                                 lightMap.SetTexture("_LightMapTex", texture);
-                                lightMap.SetFloat("_IsLinear", PlayerSettings.colorSpace == ColorSpace.Linear ? 1 : 0);
 
                                 for (int i = 0; i < toRender.Count; i++)
                                 {
@@ -742,7 +731,8 @@ namespace JanusVR
                                     {
                                         Material mat = mats[j];
 
-                                        lightMap.SetTexture("_MainTex", null);
+                                        lightMap.SetTexture("_MainTex", EditorGUIUtility.whiteTexture);
+                                        lightMap.SetColor("_Color", Color.white);
 
                                         Shader shader = mat.shader;
                                         int props = ShaderUtil.GetPropertyCount(shader);
@@ -753,7 +743,7 @@ namespace JanusVR
                                             ShaderUtil.ShaderPropertyType propType = ShaderUtil.GetPropertyType(shader, k);
                                             if (propType == ShaderUtil.ShaderPropertyType.TexEnv)
                                             {
-                                                if (mainTexSemantics.Contains(name.ToLower()))
+                                                if (JanusGlobals.SemanticsMainTex.Contains(name.ToLower()))
                                                 {
                                                     // main texture texture
                                                     lightMap.SetTexture("_MainTex", mat.GetTexture(name));
@@ -761,7 +751,7 @@ namespace JanusVR
                                             }
                                             else if (propType == ShaderUtil.ShaderPropertyType.Color)
                                             {
-                                                if (colorSemantics.Contains(name.ToLower()))
+                                                if (JanusGlobals.SemanticsColor.Contains(name.ToLower()))
                                                 {
                                                     lightMap.SetColor("_Color", mat.GetColor(name));
                                                 }
@@ -777,7 +767,7 @@ namespace JanusVR
                                     Texture2D tex = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.ARGB32, false, false);
                                     tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
                                     tex.name = "Lightmap" + lmap;
-                                    tex.Apply(); // send the data back to the GPU so we can draw it on the preview area
+                                    //tex.Apply(); // send the data back to the GPU so we can draw it on the preview area
 
                                     if (!texturesExported.Contains(tex))
                                     {
@@ -800,19 +790,18 @@ namespace JanusVR
                     case LightmapExportType.Packed:
                         #region Packed
                         {
-                            Shader lightMapShader = Shader.Find("Hidden/LMapPacked");
-                            AssertShader(lightMapShader);
+                            Shader exposureShader = Shader.Find("Hidden/ExposureShader");
+                            JanusUtil.AssertShader(exposureShader);
 
-                            Material lightMap = new Material(lightMapShader);
-                            lightMap.SetPass(0);
+                            Material exposureMat = new Material(exposureShader);
+                            exposureMat.SetPass(0);
+                            exposureMat.SetFloat("_IsLinear", PlayerSettings.colorSpace == ColorSpace.Linear ? 1 : 0);
+                            exposureMat.SetFloat("_Exposure", lightmapExposure);
 
-                            // just pass the textures forward
-                            // export lightmaps
                             foreach (var lightPair in lightmapped)
                             {
                                 int id = lightPair.Key;
-                                List<GameObject> toRender = lightPair.Value;
-
+                                
                                 // get the path to the lightmap file
                                 string lightMapFile = Path.Combine(lightMapsFolder, "Lightmap-" + id + "_comp_light.exr");
                                 Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(lightMapFile);
@@ -821,7 +810,7 @@ namespace JanusVR
                                     continue;
                                 }
 
-                                lightMap.SetTexture("_LightMapTex", texture);
+                                exposureMat.SetTexture("_InputTex", texture);
 
                                 // We need to access unity_Lightmap_HDR to decode the lightmap,
                                 // but we can't, so we have to render everything to a custom RenderTexture!
@@ -833,31 +822,23 @@ namespace JanusVR
                                 Graphics.SetRenderTarget(renderTexture);
                                 GL.Clear(true, true, new Color(0, 0, 0, 0)); // clear to transparent
 
-                                for (int i = 0; i < toRender.Count; i++)
-                                {
-                                    GameObject obj = toRender[i];
-                                    MeshRenderer renderer = obj.GetComponent<MeshRenderer>();
-                                    MeshFilter filter = obj.GetComponent<MeshFilter>();
-
-                                    Mesh mesh = filter.sharedMesh;
-                                    Transform trans = obj.transform;
-                                    Matrix4x4 world = Matrix4x4.TRS(trans.position, trans.rotation, trans.lossyScale);
-
-                                    lightMap.SetVector("_LightMapUV", renderer.lightmapScaleOffset);
-                                    lightMap.SetPass(0);
-                                    Graphics.DrawMeshNow(mesh, Matrix4x4.identity);
-
-                                    ExportedObject eobj = exported.exportedObjs.First(c => c.GameObject == obj);
-                                    eobj.LightMapTex = decTex;
-                                }
+                                exposureMat.SetPass(0);
+                                Graphics.DrawMeshNow(JanusResources.PlaneMesh, Matrix4x4.identity);
 
                                 decTex.ReadPixels(new Rect(0, 0, decTex.width, decTex.height), 0, 0);
-                                decTex.Apply(); // send the data back to the GPU so we can draw it on the preview area
 
                                 Graphics.SetRenderTarget(null);
                                 RenderTexture.ReleaseTemporary(renderTexture);
+
+                                List<GameObject> toRender = lightPair.Value;
+                                for (int i = 0; i < toRender.Count; i++)
+                                {
+                                    GameObject obj = toRender[i];
+                                    ExportedObject eobj = exported.exportedObjs.First(c => c.GameObject == obj);
+                                    eobj.LightMapTex = decTex;
+                                }
                             }
-                            UObject.DestroyImmediate(lightMap);
+                            UObject.DestroyImmediate(exposureMat);
                         }
                         #endregion
                         break;
@@ -893,10 +874,12 @@ namespace JanusVR
                         #region Unpacked
                         {
                             Shader lightMapShader = Shader.Find("Hidden/LMapUnpacked");
-                            AssertShader(lightMapShader);
+                            JanusUtil.AssertShader(lightMapShader);
 
                             Material lightMap = new Material(lightMapShader);
                             lightMap.SetPass(0);
+                            lightMap.SetFloat("_IsLinear", PlayerSettings.colorSpace == ColorSpace.Linear ? 1 : 0);
+                            lightMap.SetFloat("_Exposure", lightmapExposure);
 
                             // export lightmaps
                             int lmap = 0;
@@ -1049,7 +1032,7 @@ namespace JanusVR
             exported.environmentCubemap = cubemap;
         }
 
-        private void RecursiveSearch(GameObject root, ExportedData data)
+        private void RecursiveSearch(GameObject root, SceneExportData data)
         {
             if (!root.activeInHierarchy)
             {
@@ -1123,6 +1106,7 @@ namespace JanusVR
                             if (!string.IsNullOrEmpty(shader.name))
                             {
                                 string shaderLowercase = shader.name.ToLower();
+                                string[] transparentSemantics = JanusGlobals.SemanticsTransparent;
                                 for (int k = 0; k < transparentSemantics.Length; k++)
                                 {
                                     if (shaderLowercase.Contains(transparentSemantics[k]))
@@ -1141,7 +1125,7 @@ namespace JanusVR
                                 ShaderUtil.ShaderPropertyType propType = ShaderUtil.GetPropertyType(shader, k);
                                 if (propType == ShaderUtil.ShaderPropertyType.TexEnv)
                                 {
-                                    if (mainTexSemantics.Contains(name.ToLower()))
+                                    if (JanusGlobals.SemanticsMainTex.Contains(name.ToLower()))
                                     {
                                         Texture2D tex = mat.GetTexture(name) as Texture2D;
                                         if (tex == null)
@@ -1159,7 +1143,7 @@ namespace JanusVR
                                 else if (propType == ShaderUtil.ShaderPropertyType.Color)
                                 {
                                     string nameLower = name.ToLower();
-                                    if (colorSemantics.Contains(nameLower))
+                                    if (JanusGlobals.SemanticsColor.Contains(nameLower))
                                     {
                                         Color c = mat.GetColor(name);
                                         exp.Color = c;
@@ -1275,7 +1259,6 @@ namespace JanusVR
                 }
             }
             exported = null;
-            UpdateOnlyHTML = updateOnlyHtml;
         }
 
         private TextureExportData GenerateCmftRad(Cubemap cubemap, string forceName = "")
@@ -1447,9 +1430,12 @@ namespace JanusVR
                         }
                         else
                         {
-                            TextureUtil.TempTextureData data = TextureUtil.LockTexture(texture, path);
-                            tex.ExportedPath = ExportTexture(texture, expPath, tex.Format, tex.Quality, !data.alphaIsTransparency && !tex.ExportAlpha);
-                            TextureUtil.UnlockTexture(data);
+                            if (!exported.UpdateOnlyHTML)
+                            {
+                                TextureUtil.TempTextureData data = TextureUtil.LockTexture(texture, path);
+                                tex.ExportedPath = ExportTexture(texture, expPath, tex.Format, tex.Quality, !data.alphaIsTransparency && !tex.ExportAlpha);
+                                TextureUtil.UnlockTexture(data);
+                            }
                         }
                     }
                 }
@@ -1662,13 +1648,16 @@ namespace JanusVR
 
                 string diffuseID = "";
                 string lmapID = "";
+                TextureExportData lightmap = null;
+
                 if (obj.DiffuseMapTex != null)
                 {
                     diffuseID = Path.GetFileNameWithoutExtension(texturesExportedData.First(k => k.Texture == obj.DiffuseMapTex).ExportedPath);
                 }
                 if (obj.LightMapTex != null)
                 {
-                    lmapID = Path.GetFileNameWithoutExtension(texturesExportedData.First(k => k.Texture == obj.LightMapTex).ExportedPath);
+                    lightmap = texturesExportedData.First(k => k.Texture == obj.LightMapTex);
+                    lmapID = Path.GetFileNameWithoutExtension(lightmap.ExportedPath);
                 }
 
                 Mesh mesh = obj.Mesh;
@@ -1688,7 +1677,7 @@ namespace JanusVR
                     writer.WriteAttributeString("image_id", diffuseID);
                 }
 
-                if (!string.IsNullOrEmpty(lmapID))
+                if (lightmap != null)
                 {
                     writer.WriteAttributeString("lmap_id", lmapID);
                     if (lightmapExportType == LightmapExportType.Packed ||
@@ -1696,11 +1685,13 @@ namespace JanusVR
                     {
                         MeshRenderer renderer = go.GetComponent<MeshRenderer>();
                         Vector4 lmap = renderer.lightmapScaleOffset;
-                        lmap.x = Mathf.Clamp(lmap.x, 0, 1);
-                        lmap.y = Mathf.Clamp(lmap.y, 0, 1);
-                        lmap.z = Mathf.Clamp(lmap.z, 0, 1);
-                        lmap.w = Mathf.Clamp(lmap.w, 0, 1);
-                        writer.WriteAttributeString("lmap_sca", JanusUtil.FormatVector4(lmap));
+                        lmap.x = Mathf.Clamp(lmap.x, -2, 2);
+                        lmap.y = Mathf.Clamp(lmap.y, -2, 2);
+                        lmap.z = Mathf.Clamp(lmap.z, -2, 2);
+                        lmap.w = Mathf.Clamp(lmap.w, -2, 2);
+
+                        // use a higher precision output (6 cases)
+                        writer.WriteAttributeString("lmap_sca", JanusUtil.FormatVector4(lmap, 6));
                     }
                 }
 

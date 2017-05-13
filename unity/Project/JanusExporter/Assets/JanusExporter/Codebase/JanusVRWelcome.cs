@@ -37,7 +37,7 @@ namespace JanusVR
             Rect rect = this.position;
             GUILayout.BeginArea(new Rect(border.x, border.y, rect.width - border.width, rect.height - border.height));
 
-            GUILayout.Label("JanusVR Unity Exporter Version " + (JanusGlobals.Version / 100.0).ToString("F2"), EditorStyles.boldLabel);
+            GUILayout.Label("JanusVR Unity Exporter Version " + (JanusGlobals.Version).ToString("F2"), EditorStyles.boldLabel);
             GUILayout.Label("Welcome!");
             GUILayout.Label("Open the exporter window by hitting Window -> JanusVR Exporter");
             GUILayout.Label("or clicking one of the buttons below:");
