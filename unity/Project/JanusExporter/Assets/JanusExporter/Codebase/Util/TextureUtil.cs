@@ -143,8 +143,8 @@ namespace JanusVR
 
             int xscale = texture.width / width;
             int yscale = texture.height / height;
-            float xsca = xscale * 2;
-            float ysca = yscale * 2;
+            //float xsca = xscale * 2;
+            //float ysca = yscale * 2;
 
             switch (filterMode)
             {

@@ -12,11 +12,11 @@ namespace JanusVR
     [CustomEditor(typeof(JanusVREntryPortal))]
     public class JanusVREntryPortalEditor : Editor
     {
-        private JanusVREntryPortal instance;
+        //private JanusVREntryPortal instance;
 
         public void OnEnable()
         {
-            instance = (JanusVREntryPortal)target;
+            //instance = (JanusVREntryPortal)target;
         }
 
         public override void OnInspectorGUI()

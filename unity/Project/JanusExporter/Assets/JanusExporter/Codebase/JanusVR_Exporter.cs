@@ -35,7 +35,7 @@ namespace JanusVR
         public bool exportTextures = true;
         public bool autoMarkTexReadable = false;
 
-        private string lastExportFolder;
+        //private string lastExportFolder;
 
         private bool StaticBatchingEnabled()
         {
@@ -164,7 +164,7 @@ namespace JanusVR
         {
             //init stuff
             var exportFileInfo = new System.IO.FileInfo(exportPath);
-            lastExportFolder = exportFileInfo.Directory.FullName;
+            //lastExportFolder = exportFileInfo.Directory.FullName;
             string baseFileName = System.IO.Path.GetFileNameWithoutExtension(exportPath);
             EditorUtility.DisplayProgressBar("JanusVR Export", "Exporting static scene...", 0);
 
@@ -214,13 +214,13 @@ namespace JanusVR
 
             if (unifiedOBJ && generateMaterials)    //add mtllib header into monolithic obj file
             {
-                sb.AppendLine("# adapted from aaro4130 obj exporter for JanusVR export of " + Application.loadedLevelName);
+                sb.AppendLine("# adapted from aaro4130 obj exporter for JanusVR export");
                 sb.AppendLine("mtllib " + baseFileName + ".mtl");
             }
 
             // JML header information
 
-            sbJanusVR.AppendLine("<html>\n<head>\n<title>" + Application.loadedLevelName + "</title>");
+            sbJanusVR.AppendLine("<html>\n<head>\n<title>" + "SceneName" + "</title>");
             sbJanusVR.AppendLine("</head>\n<body>\n<FireBoxRoom>\n<Assets>");
 
             float maxExportProgress = (float)(sceneMeshes.Length + 1);
@@ -604,7 +604,7 @@ namespace JanusVR
                     }
                     else if (mc.GetType() == typeof(BoxCollider))
                     {
-                        BoxCollider mc2 = mf.gameObject.GetComponent<BoxCollider>();
+                        //BoxCollider mc2 = mf.gameObject.GetComponent<BoxCollider>();
                         //not dealing with boxe colliders yet KS
                     }
                 }
@@ -634,7 +634,6 @@ namespace JanusVR
 
         string ExportTexture(Texture2D t)
         {
-            string exportName = "en";
             try
             {
                 if (autoMarkTexReadable)
@@ -677,7 +676,7 @@ namespace JanusVR
                 //Debug.Log("KSexported texture : " + t.name);
                 return ("../../" + aPath);//exportName;
             }
-            catch (System.Exception ex)
+            catch
             {
                 //Debug.Log("KSCould not export texture : " + t.name + "to "+exportName);
                 return "null";

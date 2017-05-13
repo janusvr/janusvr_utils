@@ -36,7 +36,6 @@ namespace JanusVR
                 {
                     return true;
                 }
-                UObject.DestroyImmediate(Preview);
             }
 
             lastExposure = exposure;
@@ -67,7 +66,23 @@ namespace JanusVR
             exposureMat.SetFloat("_Exposure", exposure);
             exposureMat.SetFloat("_IsLinear", PlayerSettings.colorSpace == ColorSpace.Linear ? 1 : 0);
 
-            Texture2D decTex = new Texture2D(texture.width, texture.height);
+            Texture2D decTex;
+            if (Preview)
+            {
+                if (Preview.width == texture.width && Preview.height == texture.height)
+                {
+                    decTex = Preview;
+                }
+                else
+                {
+                    UObject.DestroyImmediate(Preview);
+                    decTex = new Texture2D(texture.width, texture.height);
+                }
+            }
+            else
+            {
+                decTex = new Texture2D(texture.width, texture.height);
+            }
             decTex.name = "LightmapPreview";
 
             RenderTexture renderTexture = RenderTexture.GetTemporary(texture.width, texture.height);
@@ -139,7 +154,7 @@ namespace JanusVR
 
                                 Mesh mesh = filter.sharedMesh;
                                 Transform trans = obj.transform;
-                                Matrix4x4 world = Matrix4x4.TRS(trans.position, trans.rotation, trans.lossyScale);
+                                //Matrix4x4 world = Matrix4x4.TRS(trans.position, trans.rotation, trans.lossyScale);
 
                                 lightMap.SetVector("_LightMapUV", renderer.lightmapScaleOffset);
                                 lightMap.SetPass(0);

@@ -49,12 +49,6 @@ namespace JanusVR
         private int defaultQuality;
 
         /// <summary>
-        /// The filtering mode to use when downsampling textures
-        /// </summary>
-        [SerializeField]
-        private TextureFilterMode filterMode = TextureFilterMode.Nearest;
-
-        /// <summary>
         /// The format to export all meshes in
         /// </summary>
         [SerializeField]
@@ -106,19 +100,13 @@ namespace JanusVR
         /// <summary>
         /// Exports the scene's reflection probes
         /// </summary>
-        private bool exportProbes;
+        //private bool exportProbes;
 
         /// <summary>
         /// The resolution to render the skybox to, if it's a procedural one
         /// </summary>
         [SerializeField]
-        private int exportSkyboxResolution;
-
-        /// <summary>
-        /// Compress the scene models using GZip (WIP and extremely slow)
-        /// </summary>
-        [SerializeField]
-        private bool compressFiles = false;
+        private int exportSkyboxResolution;      
 
         [NonSerialized]
         private SceneExportData exported;
@@ -263,6 +251,7 @@ namespace JanusVR
             }
         }
 
+        private LightmapPreviewWindow previewWindow;
         private void OnGUI()
         {
             Rect rect = this.position;
@@ -364,8 +353,6 @@ namespace JanusVR
                 lightmapExposureVisible = EditorGUILayout.Foldout(lightmapExposureVisible, "Preview Exposure");
                 if (lightmapExposureVisible)
                 {
-                    Rect last = GUILayoutUtility.GetLastRect();
-
                     MakePreviewExportData();
                     exported.Lightmaps.BuildPreview(lightmapExportType, lightmapExposure);
 
@@ -373,10 +360,22 @@ namespace JanusVR
                     if (preview)
                     {
                         int texSize = (int)(showArea.width * 0.4);
-                        Rect tex = GUILayoutUtility.GetRect(texSize, texSize + 20);
+                        Rect tex = GUILayoutUtility.GetRect(texSize, texSize + 30);
 
-                        GUI.Label(new Rect(tex.x + 20, tex.y, texSize, texSize), "Lightmap Preview");
-                        GUI.DrawTexture(new Rect(tex.x + 20, tex.y + 20, texSize, texSize), preview);
+                        GUI.Label(new Rect(tex.x + 20, tex.y + 5, texSize, texSize), "Lightmap Preview");
+                        GUI.DrawTexture(new Rect(tex.x + 20, tex.y + 30, texSize, texSize), preview);
+
+                        if (previewWindow)
+                        {
+                            previewWindow.Tex = preview;
+                            previewWindow.Repaint();
+                        }
+
+                        if (GUI.Button(new Rect(tex.x + texSize - 60, tex.y, 80, 20), "Preview"))
+                        {
+                            previewWindow = EditorWindow.GetWindow<LightmapPreviewWindow>();
+                            previewWindow.Show();
+                        }
                     }
                     else
                     {
@@ -967,19 +966,21 @@ namespace JanusVR
                 string path = AssetDatabase.GetAssetPath(tex);
 
                 // look for at least 1 object exported that uses us as a transparent texture
-                for (int j = 0; j < exported.exportedObjs.Count; j++)
-                {
-                    ExportedObject obj = exported.exportedObjs[j];
-                    if (obj.IsTransparent)
-                    {
-                        if (obj.DiffuseMapTex == tex ||
-                            obj.LightMapTex == tex ||
-                            obj.Texture == tex)
-                        {
-                            data.ExportAlpha = true;
-                        }
-                    }
-                }
+                data.ExportAlpha = exported.exportedObjs.Any(c => c.IsTransparent && (c.DiffuseMapTex == tex || c.LightMapTex == tex || c.Texture == tex));
+
+                //for (int j = 0; j < exported.exportedObjs.Count; j++)
+                //{
+                //    ExportedObject obj = exported.exportedObjs[j];
+                //    if (obj.IsTransparent)
+                //    {
+                //        if (obj.DiffuseMapTex == tex ||
+                //            obj.LightMapTex == tex ||
+                //            obj.Texture == tex)
+                //        {
+                //            data.ExportAlpha = true;
+                //        }
+                //    }
+                //}
 
                 data.Created = string.IsNullOrEmpty(path);
                 data.Format = this.defaultTexFormat; // start up with a default format

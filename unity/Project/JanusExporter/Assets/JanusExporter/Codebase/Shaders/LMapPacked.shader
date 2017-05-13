@@ -65,7 +65,8 @@
 
 				if (_IsLinear > 0)
 				{
-					return float4(exposure(lightmap, _Exposure), 1);
+					//return float4(exposure(lightmap, _Exposure), 1);
+					return float4(pow(lightmap, 1 / 2.2), 1);
 				}
 				else
 				{
