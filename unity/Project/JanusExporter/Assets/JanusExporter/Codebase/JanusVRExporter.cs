@@ -154,21 +154,22 @@ namespace JanusVR
 
         private void UnityConnection()
         {
-            EditorApplication.update -= UnityConnection;
+            //EditorApplication.update -= UnityConnection;
 
-            bool shownWelcome = EditorPrefs.GetBool("__JanusVR.Welcome");
-            if (!shownWelcome)
-            {
-                EditorPrefs.SetBool("__JanusVR.Welcome", true);
-                JanusVRWelcome.ShowWindow();
-            }
+            //bool shownWelcome = EditorPrefs.GetBool("__JanusVR.Welcome");
+            //if (!shownWelcome)
+            //{
+            //    EditorPrefs.SetBool("__JanusVR.Welcome", true);
+            //    JanusVRWelcome.ShowWindow();
+            //}
         }
 
         private void OnEnable()
         {
             // search for the icon file
             Texture2D icon = Resources.Load<Texture2D>("janusvricon");
-            this.titleContent = new GUIContent("Janus", icon);
+
+            this.SetWindowTitle("JanusVR", icon);
 
             errorStyle = new GUIStyle();
             errorStyle.normal.textColor = Color.red;
@@ -404,7 +405,13 @@ namespace JanusVR
                 Cubemap cubemap = exported.environmentCubemap;
                 if (cubemap == null)
                 {
+#if UNITY_5_0
+                    GUILayout.Label("Environment Probe: Not supported on Unity 5.0", errorStyle);
+#elif UNITY_5_3
+                    GUILayout.Label("Environment Probe: On Unity 5.3 can only be exported if set as cubemap on the Lighting window", errorStyle);
+#else
                     GUILayout.Label("Environment Probe: None (need baked lightmaps)", errorStyle);
+#endif
                 }
                 else
                 {
@@ -440,7 +447,7 @@ namespace JanusVR
                 Directory.Exists(exportPath) &&
                 GUILayout.Button("Show In Explorer"))
             {
-                System.Diagnostics.Process.Start(exportPath);
+                UnityUtil.StartProcess(exportPath);
             }
             EditorGUILayout.EndHorizontal();
 
@@ -665,7 +672,6 @@ namespace JanusVR
             }
 
             string lightMapsFolder = exported.GetLightmapsFolder();
-            DirectoryInfo lightMapsDir = new DirectoryInfo(lightMapsFolder);
 
             if (lightmapExportType != LightmapExportType.None &&
                 lightmapped.Count > 0)
@@ -673,7 +679,7 @@ namespace JanusVR
                 switch (lightmapExportType)
                 {
                     case LightmapExportType.BakedMaterial:
-                        #region Baked
+#region Baked
                         {
                             // only load shader now, so if the user is not exporting lightmaps
                             // he doesn't need to have it on his project folder
@@ -682,8 +688,8 @@ namespace JanusVR
 
                             Material lightMap = new Material(lightMapShader);
                             lightMap.SetPass(0);
-                            lightMap.SetFloat("_IsLinear", PlayerSettings.colorSpace == ColorSpace.Linear ? 1 : 0);
                             lightMap.SetFloat("_Exposure", lightmapExposure);
+                            lightMap.SetFloat("_IsLinear", PlayerSettings.colorSpace == ColorSpace.Linear ? 1 : 0);
 
                             // export lightmaps
                             int lmap = 0;
@@ -717,9 +723,11 @@ namespace JanusVR
                                     float height = (1 - scaleOffset.w) * scaleOffset.y;
                                     float size = Math.Max(width, height);
 
-                                    int lightMapSize = (int)(maxLightMapResolution * size);
+                                    // guarantee were not scaling stuff up
+                                    int maxLmapRes = Math.Min(maxLightMapResolution, texture.width);
+                                    int lightMapSize = (int)(maxLmapRes * size);
                                     lightMapSize = (int)Math.Pow(2, Math.Ceiling(Math.Log(lightMapSize) / Math.Log(2)));
-                                    lightMapSize = Math.Min(maxLightMapResolution, Math.Max(lightMapSize, 16));
+                                    lightMapSize = Math.Min(maxLmapRes, Math.Max(lightMapSize, 16));
 
                                     RenderTexture renderTexture = RenderTexture.GetTemporary(lightMapSize, lightMapSize, 0, RenderTextureFormat.ARGB32);
                                     Graphics.SetRenderTarget(renderTexture);
@@ -730,8 +738,12 @@ namespace JanusVR
                                     {
                                         Material mat = mats[j];
 
+                                        // clear to default
                                         lightMap.SetTexture("_MainTex", EditorGUIUtility.whiteTexture);
                                         lightMap.SetColor("_Color", Color.white);
+
+                                        // uvs
+                                        lightMap.SetVector("_LightMapUV", renderer.lightmapScaleOffset);
 
                                         Shader shader = mat.shader;
                                         int props = ShaderUtil.GetPropertyCount(shader);
@@ -745,7 +757,11 @@ namespace JanusVR
                                                 if (JanusGlobals.SemanticsMainTex.Contains(name.ToLower()))
                                                 {
                                                     // main texture texture
-                                                    lightMap.SetTexture("_MainTex", mat.GetTexture(name));
+                                                    Texture matTex = mat.GetTexture(name);
+                                                    if (matTex)
+                                                    {
+                                                        lightMap.SetTexture("_MainTex", matTex);
+                                                    }
                                                 }
                                             }
                                             else if (propType == ShaderUtil.ShaderPropertyType.Color)
@@ -757,7 +773,6 @@ namespace JanusVR
                                             }
                                         }
 
-                                        lightMap.SetVector("_LightMapUV", renderer.lightmapScaleOffset);
                                         lightMap.SetPass(0);
                                         Graphics.DrawMeshNow(mesh, world, j);
                                     }
@@ -784,18 +799,18 @@ namespace JanusVR
                             }
                             UnityEngine.Object.DestroyImmediate(lightMap);
                         }
-                        #endregion
+#endregion
                         break;
                     case LightmapExportType.Packed:
-                        #region Packed
+#region Packed
                         {
                             Shader exposureShader = Shader.Find("Hidden/ExposureShader");
                             JanusUtil.AssertShader(exposureShader);
 
                             Material exposureMat = new Material(exposureShader);
                             exposureMat.SetPass(0);
-                            exposureMat.SetFloat("_IsLinear", PlayerSettings.colorSpace == ColorSpace.Linear ? 1 : 0);
                             exposureMat.SetFloat("_Exposure", lightmapExposure);
+                            exposureMat.SetFloat("_IsLinear", PlayerSettings.colorSpace == ColorSpace.Linear ? 1 : 0);
 
                             foreach (var lightPair in lightmapped)
                             {
@@ -839,10 +854,10 @@ namespace JanusVR
                             }
                             UObject.DestroyImmediate(exposureMat);
                         }
-                        #endregion
+#endregion
                         break;
                     case LightmapExportType.PackedSourceEXR:
-                        #region Packed Source EXR
+#region Packed Source EXR
                         {
                             foreach (var lightPair in lightmapped)
                             {
@@ -867,18 +882,18 @@ namespace JanusVR
                                 texturesExported.Add(texture);
                             }
                         }
-                        #endregion
+#endregion
                         break;
                     case LightmapExportType.Unpacked:
-                        #region Unpacked
+#region Unpacked
                         {
                             Shader lightMapShader = Shader.Find("Hidden/LMapUnpacked");
                             JanusUtil.AssertShader(lightMapShader);
 
                             Material lightMap = new Material(lightMapShader);
                             lightMap.SetPass(0);
-                            lightMap.SetFloat("_IsLinear", PlayerSettings.colorSpace == ColorSpace.Linear ? 1 : 0);
                             lightMap.SetFloat("_Exposure", lightmapExposure);
+                            lightMap.SetFloat("_IsLinear", PlayerSettings.colorSpace == ColorSpace.Linear ? 1 : 0);
 
                             // export lightmaps
                             int lmap = 0;
@@ -921,13 +936,11 @@ namespace JanusVR
                                     GL.Clear(true, true, new Color(0, 0, 0, 0)); // clear to transparent
 
                                     Material[] mats = renderer.sharedMaterials;
+                                    lightMap.SetVector("_LightMapUV", renderer.lightmapScaleOffset);
+
                                     for (int j = 0; j < mats.Length; j++)
                                     {
-                                        Material mat = mats[j];
-
-                                        Shader shader = mat.shader;
-
-                                        lightMap.SetVector("_LightMapUV", renderer.lightmapScaleOffset);
+                                        //Material mat = mats[j];
                                         lightMap.SetPass(0);
                                         Graphics.DrawMeshNow(mesh, world, j);
                                     }
@@ -954,7 +967,7 @@ namespace JanusVR
                             }
                             UObject.DestroyImmediate(lightMap);
                         }
-                        #endregion
+#endregion
                         break;
                 }
             }
@@ -1012,14 +1025,18 @@ namespace JanusVR
             farPlaneDistance = sceneSize.size.magnitude * 1.3f;
 
             // find the Reflection probe for the sky, if we have one
-
+#if !UNITY_5_0
+            DirectoryInfo lightMapsDir = new DirectoryInfo(lightMapsFolder);
             Cubemap cubemap = RenderSettings.customReflection;
             if (cubemap == null)
             {
                 // search thorugh files
+#if !UNITY_5_3
                 if (lightMapsDir.Exists)
                 {
-                    FileInfo[] probes = lightMapsDir.GetFiles("ReflectionProbe-*");
+                    // on Unity 5.1 the Probe is called Skybox instead of Reflection Probe, so we search
+                    // for anything with probe in the name
+                    FileInfo[] probes = lightMapsDir.GetFiles("*Probe-*");
                     FileInfo first = probes.FirstOrDefault();
                     if (first == null)
                     {
@@ -1029,9 +1046,11 @@ namespace JanusVR
                     string probePath = Path.Combine(lightMapsFolder, first.Name);
                     cubemap = AssetDatabase.LoadAssetAtPath<Cubemap>(probePath);
                 }
+#endif
             }
             exported.environmentCubemap = cubemap;
-        }
+#endif
+            }
 
         private void RecursiveSearch(GameObject root, SceneExportData data)
         {
@@ -1168,9 +1187,9 @@ namespace JanusVR
                         toRender.Add(root);
                     }
                 }
-                else if (comp is Collider)
+                else if (comp is MeshCollider)
                 {
-                    Collider col = (Collider)comp;
+                    MeshCollider col = (MeshCollider)comp;
 
                     ExportedObject exp = data.exportedObjs.FirstOrDefault(c => c.GameObject == root);
                     if (exp == null)
@@ -1179,7 +1198,7 @@ namespace JanusVR
                         exp.GameObject = root;
                         data.exportedObjs.Add(exp);
                     }
-                    exp.Col = col;
+                    exp.MeshCol = col;
                 }
                 else if (comp is ReflectionProbe)
                 {
@@ -1316,7 +1335,8 @@ namespace JanusVR
             builder.Append(" --output0params dds,bgra8,cubemap");
             string cmd = builder.ToString();
 
-            CmftInterop.Execute(cmd);
+            // we refer by namespace so Unity never really imports CMFT on Unity 5.0
+            CMFT.CmftInterop.DoExecute(cmd);
 
             TextureExportData data = new TextureExportData();
             data.ExportedPath = name + ".dds";
@@ -1343,7 +1363,7 @@ namespace JanusVR
             string irradPath = Path.Combine(exportPath, name);
 
             string cmd = "--input \"" + fullPath + "\" --srcFaceSize " + cubemap.width + " --filter irradiance --outputNum 1 --output0 \"" + irradPath + "\" --output0params dds,bgra8,cubemap";
-            CmftInterop.Execute(cmd);
+            CMFT.CmftInterop.DoExecute(cmd);
 
             TextureExportData data = new TextureExportData();
             data.ExportedPath = name + ".dds";
@@ -1702,7 +1722,7 @@ namespace JanusVR
                     writer.WriteAttributeString("tile", JanusUtil.FormatVector4(tiling));
                 }
 
-                if (obj.Col != null)
+                if (obj.MeshCol != null)
                 {
                     writer.WriteAttributeString("collision_id", meshName);
                 }
@@ -1747,7 +1767,9 @@ namespace JanusVR
             writer.Close();
             writer.Flush();
             string indexPath = Path.Combine(exportPath, "index.html");
-            File.WriteAllText(indexPath, builder.ToString());
+
+            UnityUtil.WriteAllText(indexPath, builder.ToString());
+
 
             EditorUtility.ClearProgressBar();
         }

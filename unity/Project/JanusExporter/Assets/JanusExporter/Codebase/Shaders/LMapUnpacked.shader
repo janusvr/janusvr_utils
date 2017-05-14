@@ -57,16 +57,18 @@
 			float4 frag (v2f i) : SV_Target
 			{
 				float3 lightmap = DecodeLightmap(tex2D(_LightMapTex, i.uv1));
+				float3 exposed = exposure(lightmap, _Exposure);
 
 				if (_IsLinear > 0)
 				{
 					// output gamma
 					//return float4(pow(lightmap, 1 / 2.2), 1);
-					return float4(exposure(lightmap, _Exposure), 1);
+					//return float4(exposure(lightmap, _Exposure), 1);
+					return float4(pow(exposed, 1 / 2.2), 1);
 				}
 				else
 				{
-					return float4(lightmap, 1);
+					return float4(exposed, 1);
 				}
 			}
 			ENDCG

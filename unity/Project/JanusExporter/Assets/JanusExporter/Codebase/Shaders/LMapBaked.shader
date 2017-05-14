@@ -62,22 +62,18 @@
 			{
 				float3 texData = tex2D(_MainTex, i.uv0).rgb;
 				float3 lightmap = DecodeLightmap(tex2D(_LightMapTex, i.uv1));
+				float3 result = texData * lightmap * _Color.rgb;
+				float3 exposed = exposure(result, _Exposure);
 
 				if (_IsLinear > 0)
 				{
-					texData = pow(texData, 1 / 2.2);
-					float3 color = pow(_Color.rgb, 1 / 2.2);
-					float3 result = texData * lightmap * color;
-
 					// output gamma
 					//return float4(pow(result, 1 / 2.2), 1);
-					return float4(exposure(result, _Exposure), 1);
+					return float4(pow(exposed, 1 / 2.2), 1);
 				}
 				else
 				{
-					float3 result = texData * lightmap * _Color.rgb;
-
-					return float4(result, 1);
+					return float4(exposed, 1);
 				}
 			}
 			ENDCG

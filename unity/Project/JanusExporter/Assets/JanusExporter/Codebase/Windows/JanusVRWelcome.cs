@@ -29,7 +29,7 @@ namespace JanusVR
         {
             // search for the icon file
             Texture2D icon = Resources.Load<Texture2D>("janusvricon");
-            this.titleContent = new GUIContent("Welcome", icon);
+            this.SetWindowTitle("Welcome", icon);
         }
 
         private void OnGUI()

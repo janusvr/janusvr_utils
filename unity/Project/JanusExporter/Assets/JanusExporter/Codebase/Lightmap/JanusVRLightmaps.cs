@@ -26,18 +26,23 @@ namespace JanusVR
 
         private float lastExposure;
         private LightmapExportType lastType;
+        private ColorSpace lastColorSpace;
 
         public bool BuildPreview(LightmapExportType type, float exposure)
         {
             if (Preview)
             {
                 if (type == lastType &&
-                    exposure == lastExposure)
+                    exposure == lastExposure &&
+                    lastColorSpace == PlayerSettings.colorSpace ||
+                    parent.IsSceneUnloaded())
                 {
                     return true;
                 }
             }
 
+            // just speeds up things when the user changes color space of the project
+            lastColorSpace = PlayerSettings.colorSpace;
             lastExposure = exposure;
             lastType = type;
 
@@ -64,18 +69,18 @@ namespace JanusVR
             Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(lightMapFile);
             exposureMat.SetTexture("_InputTex", texture);
             exposureMat.SetFloat("_Exposure", exposure);
-            exposureMat.SetFloat("_IsLinear", PlayerSettings.colorSpace == ColorSpace.Linear ? 1 : 0);
+            exposureMat.SetFloat("_IsLinear", PlayerSettings.colorSpace == ColorSpace.Linear ? 2 : 0);
 
             Texture2D decTex;
             if (Preview)
             {
-                if (Preview.width == texture.width && Preview.height == texture.height)
+                if (texture.width == Preview.width &&
+                    texture.height == Preview.height)
                 {
                     decTex = Preview;
                 }
                 else
                 {
-                    UObject.DestroyImmediate(Preview);
                     decTex = new Texture2D(texture.width, texture.height);
                 }
             }
@@ -153,7 +158,7 @@ namespace JanusVR
                                 MeshFilter filter = obj.GetComponent<MeshFilter>();
 
                                 Mesh mesh = filter.sharedMesh;
-                                Transform trans = obj.transform;
+                                //Transform trans = obj.transform;
                                 //Matrix4x4 world = Matrix4x4.TRS(trans.position, trans.rotation, trans.lossyScale);
 
                                 lightMap.SetVector("_LightMapUV", renderer.lightmapScaleOffset);

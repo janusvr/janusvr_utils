@@ -1,4 +1,5 @@
-﻿#if UNITY_EDITOR
+﻿#if MTL
+#if UNITY_EDITOR
 
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace JanusVR
     {
         public MtlImporterWindow()
         {
-            this.titleContent = new GUIContent("MTL Importer");
+            this.SetWindowTitle("MTL Importer", null);
         }
 
         //[MenuItem("Assets/Import MTL")]
@@ -128,4 +129,5 @@ namespace JanusVR
         }
     }
 }
+#endif
 #endif

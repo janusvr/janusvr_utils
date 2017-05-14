@@ -51,6 +51,8 @@ namespace JanusVR
             set { col = value; }
         }
 
+        public MeshCollider MeshCol { get; set; }
+
         public Color? Color { get; set; }
 
         public Vector4? Tiling { get; set; }

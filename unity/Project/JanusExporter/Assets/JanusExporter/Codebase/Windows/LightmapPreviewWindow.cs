@@ -22,7 +22,7 @@ namespace JanusVR
         {
             // search for the icon file
             Texture2D icon = Resources.Load<Texture2D>("janusvricon");
-            this.titleContent = new GUIContent("Lightmap", icon);
+            this.SetWindowTitle("Lightmap", icon);
         }
 
         private void OnGUI()

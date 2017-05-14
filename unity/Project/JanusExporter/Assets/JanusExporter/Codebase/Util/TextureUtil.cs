@@ -20,7 +20,7 @@ namespace JanusVR
     {
         public struct TempTextureData
         {
-#if UNITY_5_3_OR_NEWER
+#if UNITY_5_5_OR_NEWER
             public TextureImporterPlatformSettings settings;
             public TextureImporterCompression textureCompression;
 #else
@@ -38,7 +38,7 @@ namespace JanusVR
             TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(path);
             TempTextureData data = new TempTextureData();
 
-#if UNITY_5_3_OR_NEWER
+#if UNITY_5_5_OR_NEWER
             TextureImporterPlatformSettings settings = importer.GetPlatformTextureSettings("Standalone");
             data.settings = settings;
             data.textureCompression = importer.textureCompression;
@@ -49,17 +49,17 @@ namespace JanusVR
             data.alphaIsTransparency = importer.alphaIsTransparency;
             data.path = path;
 
-#if UNITY_5_3_OR_NEWER
+#if UNITY_5_5_OR_NEWER
             if (!importer.isReadable || importer.textureCompression != TextureImporterCompression.Uncompressed)
 #else
-                if (!importer.isReadable || importer.textureFormat != TextureImporterFormat.ARGB32)
+            if (!importer.isReadable || importer.textureFormat != TextureImporterFormat.ARGB32)
 #endif
             {
                 importer.isReadable = true;
-#if UNITY_5_3_OR_NEWER
+#if UNITY_5_5_OR_NEWER
                 importer.textureCompression = TextureImporterCompression.Uncompressed;
 #else
-                    importer.textureFormat = TextureImporterFormat.ARGB32;
+                importer.textureFormat = TextureImporterFormat.ARGB32;
 #endif
                 data.changed = true;
 
@@ -76,7 +76,7 @@ namespace JanusVR
                 TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(data.path);
 
                 importer.isReadable = data.isReadable;
-#if UNITY_5_3_OR_NEWER
+#if UNITY_5_5_OR_NEWER
                 importer.textureCompression = data.textureCompression;
 #else
                 importer.textureFormat = data.format;

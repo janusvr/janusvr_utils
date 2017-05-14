@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEditor;
 using UnityEngine;
 
 #if UNITY_5_3_OR_NEWER
@@ -46,6 +47,16 @@ namespace JanusVR
             return Path.Combine(scenePath, SceneName);
         }
 
+        public static IEnumerable<GameObject> GetSceneRoots()
+        {
+            var prop = new HierarchyProperty(HierarchyType.GameObjects);
+            var expanded = new int[0];
+            while (prop.Next(expanded))
+            {
+                yield return prop.pptrValue as GameObject;
+            }
+        }
+
         internal SceneExportData()
         {
             exportedObjs = new List<ExportedObject>();
@@ -62,12 +73,22 @@ namespace JanusVR
             ScenePath = Scene.path;
             SceneName = Scene.name;
 #else
-            GameObject[] roots = SceneRoots().ToArray();
             ScenePath = EditorApplication.currentScene;
-            SceneName = Path.GetFileNameWithoutExtension(scenePath);
+            SceneName = Path.GetFileNameWithoutExtension(ScenePath);
+            SceneRoots = GetSceneRoots().ToArray();
 #endif
-
-          
         }
+
+        public bool IsSceneUnloaded()
+        {
+#if UNITY_5_3_OR_NEWER
+            Scene current = SceneManager.GetActiveScene();
+            return current != Scene;
+#else
+            string current = EditorApplication.currentScene;
+            return ScenePath != current;
+#endif
+        }
+
     }
 }

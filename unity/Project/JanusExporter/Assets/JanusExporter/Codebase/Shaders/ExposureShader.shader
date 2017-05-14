@@ -52,15 +52,21 @@
 			float4 frag(v2f i) : SV_Target
 			{
 				float3 lightmap = DecodeLightmap(tex2D(_InputTex, i.uv0));
+				float3 exposed = exposure(lightmap, _Exposure);
 
-				//return float4(pow(lightmap, 1 / 2.2), 1);
-				if (_IsLinear > 0)
+				if (_IsLinear > 1)
 				{
-					return float4(exposure(lightmap, _Exposure), 1);
+					// power twice on the preview window,
+					// (Unity would convert this to gamma on the GUI part)
+					return float4(pow(pow(exposed, 1 / 2.2), 1 / 2.2), 1);
+				}
+				else if (_IsLinear > 0)
+				{
+					return float4(pow(exposed, 1 / 2.2), 1);
 				}
 				else
 				{
-					return float4(lightmap, 1);
+					return float4(exposed, 1);
 				}
 			}
 			ENDCG
