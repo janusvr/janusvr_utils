@@ -112,7 +112,11 @@ function findGetParameter(parameterName) {
   document.getElementById("positionalenvtoggle").checked = parent.window.janus.getsetting('positionalenv');
   document.getElementById("positionalvoiptoggle").checked = parent.window.janus.getsetting('positionalvoip');
   document.getElementById("micalwaysontoggle").checked =  parent.window.janus.getsetting('micalwayson');
+  document.getElementById("editmodeiconstoggle").checked =  parent.window.janus.getsetting('editmodeicons');
 
+  
+  
+  
    document.getElementById("tutorialmodetoggle").checked =  parent.window.janus.getsetting('tutorialmode');
 
 
@@ -856,8 +860,6 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 
 
-
-
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="hidemenutoggle" onchange="window.janus.setsetting('hidemenu', this.checked); "  >
@@ -868,6 +870,10 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					</div>
 
 
+					
+					
+					
+					
 
 
 					<div class='header'>AUDIO</div>
@@ -1031,6 +1037,19 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<br>
 					</div>
 
+					
+					<div class='item' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="editmodeiconstoggle" onchange="window.janus.setsetting('editmodeicons', this.checked); "  >
+					<label for="editmodeiconstoggle" class="css-label">Edit Mode Icons</label>
+
+					</span>
+					<br>
+					</div>					
+					
+					
+					
+					
 					<div class='header'>SYSTEM</div>
 
 
