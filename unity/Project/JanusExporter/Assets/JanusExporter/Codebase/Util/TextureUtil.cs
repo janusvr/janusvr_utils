@@ -16,25 +16,37 @@ using UnityEngine;
 
 namespace JanusVR
 {
-    public static class TextureUtil
+    public struct TempTextureData
     {
-        public struct TempTextureData
-        {
 #if UNITY_5_5_OR_NEWER
-            public TextureImporterPlatformSettings settings;
-            public TextureImporterCompression textureCompression;
+        public TextureImporterPlatformSettings settings;
+        public TextureImporterCompression textureCompression;
 #else
             public TextureImporterFormat format;
 #endif
-            public bool isReadable;
-            public bool alphaIsTransparency;
-            public string path;
+        public bool isReadable;
+        public bool alphaIsTransparency;
+        public string path;
 
-            public bool changed;
-        };
+        public bool changed;
+        public bool empty;
+    };
 
+    public static class TextureUtil
+    {
+        public static TempTextureData LockTexture(Texture texture)
+        {
+            return LockTexture(texture, AssetDatabase.GetAssetPath(texture));
+        }
         public static TempTextureData LockTexture(Texture texture, string path)
         {
+            if (string.IsNullOrEmpty(path))
+            {
+                TempTextureData da = new TempTextureData();
+                da.empty = true;
+                return da;
+            }
+
             TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(path);
             TempTextureData data = new TempTextureData();
 
@@ -71,6 +83,11 @@ namespace JanusVR
 
         public static void UnlockTexture(TempTextureData data)
         {
+            if (data.empty)
+            {
+                return;
+            }
+
             if (data.changed)
             {
                 TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(data.path);

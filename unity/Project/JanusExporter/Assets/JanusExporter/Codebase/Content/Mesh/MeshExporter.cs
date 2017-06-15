@@ -10,7 +10,7 @@ namespace JanusVR
 {
     public abstract class MeshExporter
     {
-        public abstract void Initialize(bool lightmappingEnabled);
+        public abstract void Initialize(JanusRoom room);
 
         public abstract string GetFormat();
 

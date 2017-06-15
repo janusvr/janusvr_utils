@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -12,6 +13,54 @@ namespace JanusVR
     {
         private static string format2Cases = "F2";
         private static CultureInfo c = CultureInfo.InvariantCulture;
+
+        public static string GetImageExtension(ExportTextureFormat format)
+        {
+            switch (format)
+            {
+                case ExportTextureFormat.JPG:
+                    return ".jpg";
+                case ExportTextureFormat.PNG:
+                default:
+                    return ".png";
+            }
+        }
+
+        public static string GetWorkspacesFolder()
+        {
+            string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            return Path.Combine(documents, @"JanusVR\workspaces");
+        }
+
+        public static string GetDefaultExportPath()
+        {
+            string workspace = GetWorkspacesFolder();
+            return Path.Combine(workspace, Application.productName);
+        }
+
+        public static bool SupportsImageFormat(string format)
+        {
+            switch (format)
+            {
+                case ".png":
+                case ".jpg":
+                case ".gif":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool IgnoreReExport(string format)
+        {
+            switch (format)
+            {
+                case ".gif":
+                    return true;
+                default:
+                    return false;
+            }
+        }
 
         public static bool AssertShader(Shader shader)
         {

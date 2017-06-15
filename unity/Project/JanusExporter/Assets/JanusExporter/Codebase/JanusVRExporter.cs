@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+
 using JanusVR.FBX;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,9 @@ namespace JanusVR
         /// </summary>
         [SerializeField]
         private ExportTextureFormat defaultTexFormat;
+
+        [SerializeField]
+        private bool textureForceReExport;
 
         /// <summary>
         /// The quality to export all textures
@@ -106,7 +110,16 @@ namespace JanusVR
         /// The resolution to render the skybox to, if it's a procedural one
         /// </summary>
         [SerializeField]
-        private int exportSkyboxResolution;      
+        private int exportSkyboxResolution;
+
+        [SerializeField]
+        private bool environmentProbeExport = true;
+        [SerializeField]
+        private int environmentProbeRadResolution = 128;
+        [SerializeField]
+        private int environmentProbeIrradResolution = 32;
+        [SerializeField]
+        private ReflectionProbe environmentProbeOverride;
 
         [NonSerialized]
         private SceneExportData exported;
@@ -120,7 +133,7 @@ namespace JanusVR
         private List<TextureExportData> texturesExportedData;
 
         private List<Mesh> meshesExported;
-        private List<MeshExportData> meshesExportedData;
+        private List<BruteForceMeshExportData> meshesExportedData;
         private Dictionary<Mesh, string> meshesNames;
         private int meshesCount;
 
@@ -136,11 +149,9 @@ namespace JanusVR
         private Bounds sceneSize;
 
         [NonSerialized]
-        private Rect border = new Rect(10, 5, 20, 15);
+        private Rect border = new Rect(5, 5, 10, 10);
 
         public const int PreviewSize = 64;
-
-
 
         public JanusVRExporter()
         {
@@ -190,9 +201,7 @@ namespace JanusVR
         /// </summary>
         private void ResetParameters()
         {
-            string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string workspace = Path.Combine(documents, @"JanusVR\workspaces");
-            string proj = Path.Combine(workspace, Application.productName);
+            string proj = JanusUtil.GetDefaultExportPath();
             exportPath = proj;
 
             meshFormat = ExportMeshFormat.FBX;
@@ -232,6 +241,9 @@ namespace JanusVR
         [NonSerialized]
         private Vector2 scrollPos;
 
+        [NonSerialized]
+        private Vector2 meshScrollPos;
+
         [SerializeField]
         private bool lightmapExposureVisible = true;
 
@@ -253,6 +265,13 @@ namespace JanusVR
         }
 
         private LightmapPreviewWindow previewWindow;
+        private JanusRoom room;
+        private bool meshPreviewShow;
+        private int meshPreviewWidth;
+
+        [SerializeField]
+        private AssetObjectSearchType searchType;
+
         private void OnGUI()
         {
             Rect rect = this.position;
@@ -263,11 +282,75 @@ namespace JanusVR
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Janus Exporter " + (JanusGlobals.Version).ToString("F2"), EditorStyles.boldLabel);
-            //if (GUILayout.Button("Update"))
-            //{
-            //    //JanusVRUpdater.ShowWindow();
-            //}
             GUILayout.EndHorizontal();
+
+            // Asset Objects (Models)
+            GUILayout.Label("Asset Objects", EditorStyles.boldLabel);
+            searchType = (AssetObjectSearchType)EditorGUILayout.EnumPopup("Search Type", searchType);
+            //meshFormat = (ExportMeshFormat)EditorGUILayout.EnumPopup("Mesh Format", meshFormat);
+
+            //meshPreviewShow = EditorGUILayout.Foldout(meshPreviewShow, "Asset Objects Extracted");
+            meshPreviewShow = false;
+            if (meshPreviewShow)
+            {
+                Color defaultColor = GUI.color;
+
+                int previewHeight = 200;
+                Rect area = GUILayoutUtility.GetRect(rect.width - border.width, previewHeight);
+                Rect meshPreviewFullArea = area;
+                meshPreviewFullArea.width = meshPreviewWidth;
+                meshPreviewFullArea.height -= 20;
+                meshScrollPos = GUI.BeginScrollView(area, meshScrollPos, meshPreviewFullArea);
+
+                GUI.color = new Color(0.2f, 0.2f, 0.2f, 1f);
+                GUI.DrawTexture(new Rect(area.x + meshScrollPos.x, area.y, area.width, area.height), EditorGUIUtility.whiteTexture);
+                GUI.color = new Color(0, 0, 0, 1f);
+                GUI.DrawTexture(new Rect(area.x + meshScrollPos.x, area.y, area.width, 1), EditorGUIUtility.whiteTexture);
+                GUI.DrawTexture(new Rect(area.x + meshScrollPos.x, area.y + area.height - 1, area.width, 1), EditorGUIUtility.whiteTexture);
+                GUI.DrawTexture(new Rect(area.x + meshScrollPos.x, area.y, 1, area.height), EditorGUIUtility.whiteTexture);
+                GUI.DrawTexture(new Rect(area.x + area.width - 1 + meshScrollPos.x, area.y, 1, area.height), EditorGUIUtility.whiteTexture);
+                GUI.color = defaultColor;
+
+                if (room != null)
+                {
+                    List<RoomObject> objects = room.RoomObjects;
+                    int objUiSize = 80;
+                    int objUiBorder = 5;
+                    int columns = previewHeight / objUiSize;
+
+                    meshPreviewWidth = objects.Count * (objUiSize + objUiBorder);
+                    int rowSize = meshPreviewWidth / columns;
+                    meshPreviewWidth = rowSize + objUiSize;
+
+                    for (int i = 0; i < objects.Count; i++)
+                    {
+                        RoomObject obj = objects[i];
+                        if (obj.Preview == null)
+                        {
+                            obj.Preview = AssetPreview.GetMiniThumbnail(obj.UnityObj);
+                            objects[i] = obj;
+                        }
+
+                        float x = area.x + (i * (objUiSize + objUiBorder));
+                        int lineIndex = (int)(x / rowSize);
+                        float y = area.y + objUiBorder + (lineIndex * objUiSize);
+                        x -= lineIndex * rowSize;
+
+                        Rect display = new Rect(x, y, objUiSize, objUiSize);
+                        GUI.DrawTexture(display, obj.Preview);
+                    }
+                }
+
+                GUI.EndScrollView();
+            }
+
+            float scale = EditorGUILayout.FloatField("Uniform Scale", uniformScale);
+            if (uniformScale != scale)
+            {
+                uniformScale = scale;
+                // update the scale on all possible Janus objects on screen
+                JanusGlobals.UpdateScale(uniformScale);
+            }
 
             // Main Parameters
             GUILayout.Label("Main", EditorStyles.boldLabel);
@@ -279,27 +362,19 @@ namespace JanusVR
             if (GUILayout.Button("..."))
             {
                 // search for a folder
-                exportPath = EditorUtility.OpenFolderPanel("JanusVR Export Folder", exportPath, @"C:\");
+                string newExportPath = EditorUtility.SaveFolderPanel("JanusVR Export Folder", "", "");
+                if (!string.IsNullOrEmpty(newExportPath))
+                {
+                    exportPath = newExportPath;
+                }
             }
             EditorGUILayout.EndHorizontal();
 
-            // Models
-            GUILayout.Label("Model", EditorStyles.boldLabel);
-
-            //meshFormat = (ExportMeshFormat)EditorGUILayout.EnumPopup("Mesh Format", meshFormat);
-
-            float scale = EditorGUILayout.FloatField("Uniform Scale", uniformScale);
-            if (uniformScale != scale)
-            {
-                uniformScale = scale;
-                // update the scale on all possible Janus objects on screen
-                JanusGlobals.UpdateScale(uniformScale);
-            }
-
             // Texture
             GUILayout.Label("Texture", EditorStyles.boldLabel);
-            exportGifs = EditorGUILayout.Toggle("Export GIFs", exportGifs);
-            defaultTexFormat = (ExportTextureFormat)EditorGUILayout.EnumPopup("Textures Format", defaultTexFormat);
+            textureForceReExport = EditorGUILayout.Toggle("Force ReExport", textureForceReExport);
+            //exportGifs = EditorGUILayout.Toggle("Export GIFs", exportGifs);
+            defaultTexFormat = (ExportTextureFormat)EditorGUILayout.EnumPopup("Unsupported Textures Format", defaultTexFormat);
             if (SupportsQuality(defaultTexFormat))
             {
                 defaultQuality = EditorGUILayout.IntSlider("Textures Quality", defaultQuality, 0, 100);
@@ -317,6 +392,16 @@ namespace JanusVR
                 exportSkyboxResolution = Math.Max(4, EditorGUILayout.IntField("Skybox Render Resolution", exportSkyboxResolution));
             }
             EditorGUILayout.LabelField("    Will render the Skybox into 6 textures with the specified resolution");
+
+            // Probes
+            GUILayout.Label("Probes", EditorStyles.boldLabel);
+            environmentProbeExport = EditorGUILayout.Toggle("Export Environment Probes", exportMaterials);
+            if (environmentProbeExport)
+            {
+                environmentProbeOverride = EditorGUILayout.ObjectField(environmentProbeOverride, typeof(ReflectionProbe), true) as ReflectionProbe;
+                environmentProbeRadResolution = Math.Max(4, EditorGUILayout.IntField("Probe Radiance Resolution", environmentProbeRadResolution));
+                environmentProbeIrradResolution = Math.Max(4, EditorGUILayout.IntField("Probe Irradiance Resolution", environmentProbeIrradResolution));
+            }
 
             // Lightmap
             GUILayout.Label("Lightmaps", EditorStyles.boldLabel);
@@ -420,23 +505,23 @@ namespace JanusVR
             }
 
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Export HTML only"))
-            {
-                try
-                {
-                    updateOnlyHtml = true;
-                    PreExport();
-                    DoExport();
-                    updateOnlyHtml = false;
-                }
-                catch
-                {
-                    Clean();
-                    EditorUtility.ClearProgressBar();
+            //if (GUILayout.Button("Export HTML only"))
+            //{
+            //    try
+            //    {
+            //        updateOnlyHtml = true;
+            //        PreExport();
+            //        DoExport();
+            //        updateOnlyHtml = false;
+            //    }
+            //    catch
+            //    {
+            //        Clean();
+            //        EditorUtility.ClearProgressBar();
 
-                    Debug.Log("Error exporting");
-                }
-            }
+            //        Debug.Log("Error exporting");
+            //    }
+            //}
 
             if (GUILayout.Button("Reset Parameters"))
             {
@@ -455,23 +540,46 @@ namespace JanusVR
             {
                 if (GUILayout.Button("Full Export", GUILayout.Height(30)))
                 {
-                    //try
+                    if (lightmapExportType == LightmapExportType.Unpacked)
                     {
-                        PreExport();
-                        DoExport();
+                        Debug.LogError("Unpacked is unsupported right now.");
+                        return;
                     }
-                    //catch (Exception ex)
-                    {
-                        //Clean();
-                        EditorUtility.ClearProgressBar();
 
-                        //Debug.LogError("Error exporting: " + ex);
-                    }
+                    room = new JanusRoom();
+                    CopyParametersToRoom();
+                    room.Initialize(searchType);
+                    room.PreExport(exportPath);
+                    room.ExportAssetImages();
+                    room.ExportAssetObjects();
+                    room.WriteHtml("index.html");
+                    room.Cleanup();
+
+                    // delete room
+                    room = null;
+
+                    EditorUtility.ClearProgressBar();
                 }
             }
 
             GUILayout.EndScrollView();
             GUILayout.EndArea();
+        }
+
+        private void CopyParametersToRoom()
+        {
+            room.LightmapMaxResolution = maxLightMapResolution;
+            room.LightmapExposure = lightmapExposure;
+            room.LightmapType = lightmapExportType;
+            room.SkyboxEnabled = exportSkybox;
+            room.SkyboxResolution = exportSkyboxResolution;
+            room.TextureData = defaultQuality;
+            room.TextureFormat = defaultTexFormat;
+            room.TextureForceReExport = textureForceReExport;
+            room.UniformScale = uniformScale;
+            room.EnvironmentProbeExport = environmentProbeExport;
+            room.EnvironmentProbeIrradResolution = environmentProbeIrradResolution;
+            room.EnvironmentProbeRadResolution = environmentProbeRadResolution;
         }
 
         private string GetMeshFormat(ExportMeshFormat format)
@@ -581,7 +689,7 @@ namespace JanusVR
             texturesExportedData = new List<TextureExportData>();
 
             meshesExported = new List<Mesh>();
-            meshesExportedData = new List<MeshExportData>();
+            meshesExportedData = new List<BruteForceMeshExportData>();
             meshesNames = new Dictionary<Mesh, string>();
             meshesCount = 0;
 
@@ -679,7 +787,7 @@ namespace JanusVR
                 switch (lightmapExportType)
                 {
                     case LightmapExportType.BakedMaterial:
-#region Baked
+                        #region Baked
                         {
                             // only load shader now, so if the user is not exporting lightmaps
                             // he doesn't need to have it on his project folder
@@ -799,10 +907,10 @@ namespace JanusVR
                             }
                             UnityEngine.Object.DestroyImmediate(lightMap);
                         }
-#endregion
+                        #endregion
                         break;
                     case LightmapExportType.Packed:
-#region Packed
+                        #region Packed
                         {
                             Shader exposureShader = Shader.Find("Hidden/ExposureShader");
                             JanusUtil.AssertShader(exposureShader);
@@ -815,7 +923,7 @@ namespace JanusVR
                             foreach (var lightPair in lightmapped)
                             {
                                 int id = lightPair.Key;
-                                
+
                                 // get the path to the lightmap file
                                 string lightMapFile = Path.Combine(lightMapsFolder, "Lightmap-" + id + "_comp_light.exr");
                                 Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(lightMapFile);
@@ -854,10 +962,10 @@ namespace JanusVR
                             }
                             UObject.DestroyImmediate(exposureMat);
                         }
-#endregion
+                        #endregion
                         break;
                     case LightmapExportType.PackedSourceEXR:
-#region Packed Source EXR
+                        #region Packed Source EXR
                         {
                             foreach (var lightPair in lightmapped)
                             {
@@ -882,10 +990,10 @@ namespace JanusVR
                                 texturesExported.Add(texture);
                             }
                         }
-#endregion
+                        #endregion
                         break;
                     case LightmapExportType.Unpacked:
-#region Unpacked
+                        #region Unpacked
                         {
                             Shader lightMapShader = Shader.Find("Hidden/LMapUnpacked");
                             JanusUtil.AssertShader(lightMapShader);
@@ -967,7 +1075,7 @@ namespace JanusVR
                             }
                             UObject.DestroyImmediate(lightMap);
                         }
-#endregion
+                        #endregion
                         break;
                 }
             }
@@ -1007,7 +1115,7 @@ namespace JanusVR
             for (int i = 0; i < meshesExported.Count; i++)
             {
                 Mesh mesh = meshesExported[i];
-                MeshExportData data = new MeshExportData();
+                BruteForceMeshExportData data = new BruteForceMeshExportData();
                 data.Format = this.meshFormat;
                 data.Mesh = mesh;
 
@@ -1050,7 +1158,7 @@ namespace JanusVR
             }
             exported.environmentCubemap = cubemap;
 #endif
-            }
+        }
 
         private void RecursiveSearch(GameObject root, SceneExportData data)
         {
@@ -1453,7 +1561,7 @@ namespace JanusVR
                         {
                             if (!exported.UpdateOnlyHTML)
                             {
-                                TextureUtil.TempTextureData data = TextureUtil.LockTexture(texture, path);
+                                TempTextureData data = TextureUtil.LockTexture(texture, path);
                                 tex.ExportedPath = ExportTexture(texture, expPath, tex.Format, tex.Quality, !data.alphaIsTransparency && !tex.ExportAlpha);
                                 TextureUtil.UnlockTexture(data);
                             }
@@ -1493,7 +1601,7 @@ namespace JanusVR
             {
                 EditorUtility.DisplayProgressBar("Janus VR Exporter", "Exporting meshes...", i / (float)meshesExportedData.Count);
 
-                MeshExportData model = meshesExportedData[i];
+                BruteForceMeshExportData model = meshesExportedData[i];
                 string name = meshesNames[model.Mesh];
                 string expPath = Path.Combine(exportPath, name);
                 ExportMesh(model.Mesh, expPath, model.Format, null, switchUv);
@@ -1528,7 +1636,7 @@ namespace JanusVR
                 ExportedObject obj = exported.exportedObjs[i];
                 if (!meshWritten.Contains(obj.Mesh))
                 {
-                    MeshExportData data = meshesExportedData.FirstOrDefault(c => c.Mesh == obj.Mesh);
+                    BruteForceMeshExportData data = meshesExportedData.FirstOrDefault(c => c.Mesh == obj.Mesh);
                     if (data == null || string.IsNullOrEmpty(data.ExportedPath))
                     {
                         continue;
@@ -1787,9 +1895,9 @@ namespace JanusVR
             {
                 File.Delete(finalPath);
             }
-
+            throw new NotImplementedException();
             MeshExporter exporter = meshExporters[format];
-            exporter.Initialize(lightmapExportType != LightmapExportType.None);
+            //exporter.Initialize(room);
             exporter.ExportMesh(mesh, finalPath, new MeshExportParameters(switchUv, true));
         }
 

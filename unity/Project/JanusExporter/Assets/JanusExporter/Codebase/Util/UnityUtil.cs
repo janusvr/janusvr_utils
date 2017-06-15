@@ -7,11 +7,56 @@ using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace JanusVR
 {
     public static class UnityUtil
     {
+        public static IEnumerable<GameObject> GetSceneRoots2()
+        {
+            var prop = new HierarchyProperty(HierarchyType.GameObjects);
+            var expanded = new int[0];
+            while (prop.Next(expanded))
+            {
+                yield return prop.pptrValue as GameObject;
+            }
+        }
+
+        public static string GetLightmapsFolder()
+        {
+            string scenePath = Path.GetDirectoryName(GetScenePath());
+            return Path.Combine(scenePath, GetSceneName());
+        }
+
+        public static string GetScenePath()
+        {
+#if UNITY_5_3_OR_NEWER
+            return SceneManager.GetActiveScene().path;
+#else
+            return EditorApplication.currentScene;
+#endif
+        }
+
+        public static string GetSceneName()
+        {
+#if UNITY_5_3_OR_NEWER
+            return SceneManager.GetActiveScene().name;
+#else
+            return Path.GetFileNameWithoutExtension(EditorApplication.currentScene);
+#endif
+        }
+
+        public static GameObject[] GetSceneRoots()
+        {
+#if UNITY_5_3_OR_NEWER
+            Scene scene = SceneManager.GetActiveScene();
+            return scene.GetRootGameObjects();
+#else
+            return GetSceneRoots2().ToArray();
+#endif
+        }
+
         public static void SetWindowTitle(this EditorWindow window, string title, Texture2D icon)
         {
 #if UNITY_5_0

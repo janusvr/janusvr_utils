@@ -15,11 +15,11 @@ namespace JanusVR.FBX
     /// </summary>
     public class FbxExporter : MeshExporter
     {
-        private bool lightmappingEnabled = false;
+        private JanusRoom room;
 
-        public override void Initialize(bool lightmappingEnabled)
+        public override void Initialize(JanusRoom room)
         {
-            this.lightmappingEnabled = lightmappingEnabled;
+            this.room = room;
         }
 
         public override string GetFormat()
@@ -149,7 +149,7 @@ namespace JanusVR.FBX
 
                     if (tverts.Count == 0)
                     {
-                        if (lightmappingEnabled && i == 1)
+                        if (room.LightmapType != LightmapExportType.None && i == 1)
                         {
                             Debug.LogWarning("Lightmapping is enabled but mesh has no UV1 channel - " + mesh.name + " - Tick the Generate Lightmap UVs", mesh);
                         }
@@ -168,7 +168,8 @@ namespace JanusVR.FBX
                 }
             }
 
-            FbxExporterInterop.Export(exportPath);
+            string fullPath = Path.Combine(room.RootFolder, exportPath);
+            FbxExporterInterop.Export(fullPath);
         }
     }
 }
