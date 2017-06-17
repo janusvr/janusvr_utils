@@ -14,6 +14,18 @@ namespace JanusVR
         private static string format2Cases = "F2";
         private static CultureInfo c = CultureInfo.InvariantCulture;
 
+        public static bool SupportsQuality(ExportTextureFormat format)
+        {
+            switch (format)
+            {
+                case ExportTextureFormat.JPG:
+                    return true;
+                case ExportTextureFormat.PNG:// PNG is lossless
+                default:
+                    return false;
+            }
+        }
+
         public static string GetImageExtension(ExportTextureFormat format)
         {
             switch (format)
@@ -83,6 +95,19 @@ namespace JanusVR
             return v;
         }
 
+        public static string FormatFloat(float value, string format)
+        {
+            int ival = (int)value;
+            return value == ival ? ival.ToString(c) : value.ToString(format, c);
+        }
+
+        public static string FormatFloat(float value, int decimalPlaces)
+        {
+            string format = "F" + decimalPlaces.ToString(c);
+            int ival = (int)value;
+            return value == ival ? ival.ToString(c) : value.ToString(format, c);
+        }
+
         public static string FormatColor(Color v)
         {
             return v.r.ToString(format2Cases, c) + " " + v.g.ToString(format2Cases, c) + " " + v.b.ToString(format2Cases, c);
@@ -90,18 +115,24 @@ namespace JanusVR
 
         public static string FormatVector3(Vector3 v)
         {
-            return v.x.ToString(format2Cases, c) + " " + v.y.ToString(format2Cases, c) + " " + v.z.ToString(format2Cases, c);
+            return FormatVector3(v, JanusGlobals.DecimalCasesPosition);
+        }
+
+        public static string FormatVector3(Vector3 v, int decimalPlaces)
+        {
+            string format = "F" + decimalPlaces.ToString(c);
+            return FormatFloat(v.x, format) + " " + FormatFloat(v.y, format) + " " + FormatFloat(v.z, format);
         }
 
         public static string FormatVector4(Vector4 v)
         {
-            return v.x.ToString(format2Cases, c) + " " + v.y.ToString(format2Cases, c) + " " + v.z.ToString(format2Cases, c) + " " + v.w.ToString(format2Cases, c);
+            return FormatVector4(v, JanusGlobals.DecimalCasesPosition);
         }
 
         public static string FormatVector4(Vector4 v, int decimalPlaces)
         {
             string format = "F" + decimalPlaces.ToString(c);
-            return v.x.ToString(format, c) + " " + v.y.ToString(format, c) + " " + v.z.ToString(format, c) + " " + v.w.ToString(format, c);
+            return FormatFloat(v.x, format) + " " + FormatFloat(v.y, format) + " " + FormatFloat(v.z, format) + " " + FormatFloat(v.w, format);
         }
 
         public static void GetJanusVectors(Transform trans,

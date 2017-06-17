@@ -71,39 +71,51 @@ namespace JanusVR
                 }
                 else
                 {
-                    // the skybox is not a 6-texture skybox
-                    // lets render it to one then
-                    GameObject temp = new GameObject("__TempSkyRender");
-                    Camera cam = temp.AddComponent<Camera>();
+                    if (room.ExportOnlyHtml)
+                    {
+                        assetLeft = AddFakeTexture("Left");
+                        assetRight = AddFakeTexture("Right");
+                        assetForward = AddFakeTexture("Forward");
+                        assetBack = AddFakeTexture("Back");
+                        assetUp = AddFakeTexture("Up");
+                        assetDown = AddFakeTexture("Down");
+                    }
+                    else
+                    {
+                        // the skybox is not a 6-texture skybox
+                        // lets render it to one then
+                        GameObject temp = new GameObject("__TempSkyRender");
+                        Camera cam = temp.AddComponent<Camera>();
 
-                    cam.enabled = false;
+                        cam.enabled = false;
 
-                    int exportSkyboxResolution = room.SkyboxResolution;
-                    RenderTexture tex = new RenderTexture(exportSkyboxResolution, exportSkyboxResolution, 0);
-                    cam.targetTexture = tex;
-                    cam.clearFlags = CameraClearFlags.Skybox;
-                    cam.cullingMask = 0;
-                    cam.orthographic = true;
+                        int exportSkyboxResolution = room.SkyboxResolution;
+                        RenderTexture tex = new RenderTexture(exportSkyboxResolution, exportSkyboxResolution, 0);
+                        cam.targetTexture = tex;
+                        cam.clearFlags = CameraClearFlags.Skybox;
+                        cam.cullingMask = 0;
+                        cam.orthographic = true;
 
-                    Texture2D skyBoxLeft = RenderSkyBoxSide(Vector3.left, "Left", tex, cam);
-                    Texture2D skyBoxRight = RenderSkyBoxSide(Vector3.right, "Right", tex, cam);
-                    Texture2D skyBoxForward = RenderSkyBoxSide(Vector3.forward, "Forward", tex, cam);
-                    Texture2D skyBoxBack = RenderSkyBoxSide(Vector3.back, "Back", tex, cam);
-                    Texture2D skyBoxUp = RenderSkyBoxSide(Vector3.up, "Up", tex, cam);
-                    Texture2D skyBoxDown = RenderSkyBoxSide(Vector3.down, "Down", tex, cam);
+                        Texture2D skyBoxLeft = RenderSkyBoxSide(Vector3.left, "Left", tex, cam);
+                        Texture2D skyBoxRight = RenderSkyBoxSide(Vector3.right, "Right", tex, cam);
+                        Texture2D skyBoxForward = RenderSkyBoxSide(Vector3.forward, "Forward", tex, cam);
+                        Texture2D skyBoxBack = RenderSkyBoxSide(Vector3.back, "Back", tex, cam);
+                        Texture2D skyBoxUp = RenderSkyBoxSide(Vector3.up, "Up", tex, cam);
+                        Texture2D skyBoxDown = RenderSkyBoxSide(Vector3.down, "Down", tex, cam);
 
-                    cam.targetTexture = null;
-                    Graphics.SetRenderTarget(null);
+                        cam.targetTexture = null;
+                        Graphics.SetRenderTarget(null);
 
-                    GameObject.DestroyImmediate(tex);
-                    GameObject.DestroyImmediate(temp);
+                        GameObject.DestroyImmediate(tex);
+                        GameObject.DestroyImmediate(temp);
 
-                    assetLeft = AddTexture(skyBoxLeft);
-                    assetRight = AddTexture(skyBoxRight);
-                    assetForward = AddTexture(skyBoxForward);
-                    assetBack = AddTexture(skyBoxBack);
-                    assetUp = AddTexture(skyBoxUp);
-                    assetDown = AddTexture(skyBoxDown);
+                        assetLeft = AddTexture(skyBoxLeft);
+                        assetRight = AddTexture(skyBoxRight);
+                        assetForward = AddTexture(skyBoxForward);
+                        assetBack = AddTexture(skyBoxBack);
+                        assetUp = AddTexture(skyBoxUp);
+                        assetDown = AddTexture(skyBoxDown);
+                    }
 
                     renderedSkybox = true;
                 }
@@ -129,12 +141,26 @@ namespace JanusVR
             return image;
         }
 
+        private AssetImage AddFakeTexture(string name)
+        {
+            name = "SkyBox" + name;
+
+            AssetImage image = new AssetImage();
+            image.id = name;
+            image.src = name;
+            image.Created = true;
+            room.AddAssetImage(image);
+
+            return image;
+        }
+
         private AssetImage AddTexture(Texture2D tex)
         {
             AssetImage image = new AssetImage();
             image.id = tex.name;
             image.src = tex.name;
             image.Texture = tex;
+            image.Created = true;
             room.AddAssetImage(image);
 
             return image;
@@ -172,22 +198,7 @@ namespace JanusVR
             return cubemap;
         }
 
-        private bool IsProceduralSkybox()
-        {
-            Material skybox = RenderSettings.skybox;
-            if (skybox != null)
-            {
-                string[] skyboxTexNames = JanusGlobals.SkyboxTexNames;
-                for (int i = 0; i < skyboxTexNames.Length; i++)
-                {
-                    if (!skybox.HasProperty(skyboxTexNames[i]))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
+
 
         public override void Cleanup()
         {

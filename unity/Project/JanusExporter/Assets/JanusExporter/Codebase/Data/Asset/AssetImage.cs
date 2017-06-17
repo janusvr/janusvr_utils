@@ -13,6 +13,18 @@ namespace JanusVR
     {
         [XmlIgnore]
         public Texture2D Texture { get; set; }
+
+        [XmlIgnore]
+        public bool Created { get; set; }
+
+        public static implicit operator string(AssetImage asset)
+        {
+            if (asset == null)
+            {
+                return null;
+            }
+            return asset.id;
+        }
     }
 }
 #endif

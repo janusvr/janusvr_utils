@@ -94,6 +94,17 @@ namespace JanusVR
             {
                 name = cubemap.name + "_radiance";
             }
+
+            AssetImage data = new AssetImage();
+            data.id = name;
+            data.src = name;
+            room.AddAssetImage(data);
+
+            if (room.ExportOnlyHtml)
+            {
+                return data;
+            }
+
             string exportPath = room.RootFolder;
             string radPath = Path.Combine(exportPath, name);
 
@@ -109,6 +120,7 @@ namespace JanusVR
             string outputGammaDenominator = "1.0";
             string generateMipChain = "false";
             string numCpuProcessingThreads = "1";
+
 
             StringBuilder builder = new StringBuilder();
             builder.Append("--input \"" + fullPath + "\"");
@@ -134,10 +146,7 @@ namespace JanusVR
             // we refer by namespace so Unity never really imports CMFT on Unity 5.0
             CMFT.CmftInterop.DoExecute(cmd);
 
-            AssetImage data = new AssetImage();
-            data.id = name;
-            data.src = name;
-            room.AddAssetImage(data);
+            
             return data;
         }
         private AssetImage GenerateCmftIrrad(int size, Cubemap cubemap, string forceName = "")
@@ -158,6 +167,17 @@ namespace JanusVR
             {
                 name = cubemap.name + "_irradiance";
             }
+
+            AssetImage data = new AssetImage();
+            data.id = name;
+            data.src = name;
+            room.AddAssetImage(data);
+
+            if (room.ExportOnlyHtml)
+            {
+                return data;
+            }
+
             string exportPath = room.RootFolder;
             string irradPath = Path.Combine(exportPath, name);
 
@@ -167,10 +187,6 @@ namespace JanusVR
                 + irradPath + "\" --output0params dds,bgra8,cubemap";
             CMFT.CmftInterop.DoExecute(cmd);
 
-            AssetImage data = new AssetImage();
-            data.id = name;
-            data.src = name;
-            room.AddAssetImage(data);
             return data;
         }
     }

@@ -22,6 +22,7 @@ namespace JanusVR
         private JanusRoom room = null;
 
         private MaterialScanner materialScanner;
+        private JanusComponentExtractor compExtractor;
 
         public bool IgnoreInactiveComponents
         {
@@ -37,6 +38,7 @@ namespace JanusVR
             sceneBounds = new Bounds();
 
             materialScanner = new MaterialScanner(room);
+            compExtractor = new JanusComponentExtractor(room);
         }
 
         public override void Initialize(GameObject[] rootObjects)
@@ -49,6 +51,8 @@ namespace JanusVR
                 GameObject root = rootObjects[i];
                 RecursiveSearch(root);
             }
+
+            room.FarPlaneDistance = sceneBounds.size.magnitude * 1.3f;
         }
 
         public void RecursiveSearch(GameObject root)
@@ -62,69 +66,72 @@ namespace JanusVR
             // loop thorugh all the gameObjects components
             // to see what we can extract
             Component[] comps = root.GetComponents<Component>();
-            for (int i = 0; i < comps.Length; i++)
+            if (compExtractor.Process(comps))
             {
-                Component comp = comps[i];
-                if (!comp)
+                for (int i = 0; i < comps.Length; i++)
                 {
-                    continue;
-                }
-
-                if (comp is MeshRenderer)
-                {
-                    MeshRenderer meshRen = (MeshRenderer)comp;
-                    MeshFilter filter = comps.FirstOrDefault(c => c is MeshFilter) as MeshFilter;
-                    if (filter == null)
+                    Component comp = comps[i];
+                    if (!comp)
                     {
                         continue;
                     }
 
-                    Mesh mesh = filter.sharedMesh;
-                    if (mesh == null ||
-                        !room.CanExportObj(comps))
+                    if (comp is MeshRenderer)
                     {
-                        continue;
-                    }
-
-                    sceneBounds.Encapsulate(meshRen.bounds);
-
-                    // Only export the mesh if we never exported this one mesh
-                    BruteForceMeshExportData exp;
-                    if (!meshesToExport.TryGetValue(mesh, out exp))
-                    {
-                        exp = new BruteForceMeshExportData();
-                        exp.Mesh = mesh;
-                        // generate name
-                        string meshId = mesh.name;
-                        if (string.IsNullOrEmpty(meshId) || 
-                            meshNames.Contains(meshId))
+                        MeshRenderer meshRen = (MeshRenderer)comp;
+                        MeshFilter filter = comps.FirstOrDefault(c => c is MeshFilter) as MeshFilter;
+                        if (filter == null)
                         {
-                            meshId = "ExportedMesh" + meshNames.Count;
+                            continue;
                         }
-                        meshNames.Add(meshId);
 
-                        // keep our version of the data
-                        exp.MeshId = meshId;
-                        meshesToExport.Add(mesh, exp);
+                        Mesh mesh = filter.sharedMesh;
+                        if (mesh == null ||
+                            !room.CanExportObj(comps))
+                        {
+                            continue;
+                        }
 
-                        // but also supply the data to the Janus Room so the Html can be built
-                        AssetObject asset = new AssetObject();
-                        exp.Asset = asset;
+                        sceneBounds.Encapsulate(meshRen.bounds);
 
-                        asset.id = meshId;
-                        asset.src = meshId + ".fbx";
+                        // Only export the mesh if we never exported this one mesh
+                        BruteForceMeshExportData exp;
+                        if (!meshesToExport.TryGetValue(mesh, out exp))
+                        {
+                            exp = new BruteForceMeshExportData();
+                            exp.Mesh = mesh;
+                            // generate name
+                            string meshId = mesh.name;
+                            if (string.IsNullOrEmpty(meshId) ||
+                                meshNames.Contains(meshId))
+                            {
+                                meshId = "ExportedMesh" + meshNames.Count;
+                            }
+                            meshNames.Add(meshId);
 
-                        room.AddAssetObject(asset);
+                            // keep our version of the data
+                            exp.MeshId = meshId;
+                            meshesToExport.Add(mesh, exp);
+
+                            // but also supply the data to the Janus Room so the Html can be built
+                            AssetObject asset = new AssetObject();
+                            exp.Asset = asset;
+
+                            asset.id = meshId;
+                            asset.src = meshId + ".fbx";
+
+                            room.AddAssetObject(asset);
+                        }
+
+                        // We are brute force, so all objects become Room Objects
+                        RoomObject obj = new RoomObject();
+                        obj.id = exp.Asset.id;
+                        obj.SetUnityObj(root, room);
+                        room.AddRoomObject(obj);
+
+                        // let the material scanner process this object
+                        materialScanner.PreProcessObject(meshRen, mesh, exp.Asset, obj);
                     }
-
-                    // We are brute force, so all objects become Room Objects
-                    RoomObject obj = new RoomObject();
-                    obj.id = exp.Asset;
-                    obj.SetUnityObj(root);
-                    room.AddRoomObject(obj);
-
-                    // let the material scanner process this object
-                    materialScanner.PreProcessObject(meshRen, mesh, exp.Asset, obj);
                 }
             }
 
@@ -143,6 +150,11 @@ namespace JanusVR
 
         public override void ExportAssetObjects()
         {
+            if (room.ExportOnlyHtml)
+            {
+                return;
+            }
+
             int exported = 0;
 
             MeshExporter exporter = room.GetMeshExporter(ExportMeshFormat.FBX);

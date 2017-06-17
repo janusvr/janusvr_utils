@@ -20,12 +20,15 @@ namespace JanusVR
 
         // runtime data
         public List<RoomObject> RoomObjects { get; private set; }
+        public List<LinkObject> LinkObjects { get; private set; }
+
+        public List<JanusRoomElement> RoomElements { get; private set; }
 
         // export
         private SkyboxExporter skyboxExporter;
         private ProbeExporter probeExporter;
         private ObjectScanner objectScanner;
-        private JanusRoomWriter writer;
+        private JanusRoomWriterXml writer;
 
         private Dictionary<ExportMeshFormat, MeshExporter> meshExporters;
 
@@ -41,6 +44,7 @@ namespace JanusVR
         public bool ExportMaterials { get; set; }
         public bool SkyboxEnabled { get; set; }
         public int SkyboxResolution { get; set; }
+        public bool ExportOnlyHtml { get; set; }
 
         public bool EnvironmentProbeExport { get; set; }
         public int EnvironmentProbeRadResolution { get; set; }
@@ -57,6 +61,14 @@ namespace JanusVR
         public AssetImage CubemapRadiance { get; set; }
         public AssetImage CubemapIrradiance { get; set; }
 
+
+        public float? FarPlaneDistance { get; set; }
+
+        public Vector3? PortalPos { get; set; }
+        public Vector3? PortalXDir { get; set; }
+        public Vector3? PortalYDir { get; set; }
+        public Vector3? PortalZDir { get; set; }
+
         public JanusRoom()
         {
             UniformScale = 1;
@@ -65,16 +77,22 @@ namespace JanusVR
             AssetObjects = new List<AssetObject>();
             AssetImages = new List<AssetImage>();
 
+            RoomElements = new List<JanusRoomElement>();
             RoomObjects = new List<RoomObject>();
+            LinkObjects = new List<LinkObject>();
 
             meshExporters = new Dictionary<ExportMeshFormat, MeshExporter>();
             meshExporters.Add(ExportMeshFormat.FBX, new FbxExporter());
 
-            writer = new JanusRoomWriter(this);
+            writer = new JanusRoomWriterXml(this);
             skyboxExporter = new SkyboxExporter();
             probeExporter = new ProbeExporter();
         }
 
+        public AssetImage GetTexture(string id)
+        {
+            return AssetImages.First(c => c.id == id);
+        }
         public AssetImage TryGetTexture(string id)
         {
             return AssetImages.FirstOrDefault(c => c.id == id);
@@ -100,6 +118,13 @@ namespace JanusVR
         public void AddRoomObject(RoomObject roomObj)
         {
             RoomObjects.Add(roomObj);
+            RoomElements.Add(roomObj);
+        }
+
+        public void AddLinkObject(LinkObject linkObj)
+        {
+            LinkObjects.Add(linkObj);
+            RoomElements.Add(linkObj);
         }
 
         public void Initialize(AssetObjectSearchType type)

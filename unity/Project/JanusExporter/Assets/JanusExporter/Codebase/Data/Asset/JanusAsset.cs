@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 
 namespace JanusVR
 {
-    [Serializable]
+    [XmlRoot("JanusAsset", Namespace = "", IsNullable = false)]
     public class JanusAsset
     {
         [XmlAttribute("src")]

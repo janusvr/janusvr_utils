@@ -69,7 +69,7 @@ namespace JanusVR
                         lmap.y = Mathf.Clamp(lmap.y, -2, 2);
                         lmap.z = Mathf.Clamp(lmap.z, -2, 2);
                         lmap.w = Mathf.Clamp(lmap.w, -2, 2);
-                        rObj.lmap_sca = lmap;
+                        rObj.SetLightmap(lmap);
                     }
 
                     if (lightmapExportType != LightmapExportType.BakedMaterial)
@@ -84,7 +84,7 @@ namespace JanusVR
                             lmapImage.src = lmapId;
                             room.AddAssetImage(lmapImage);
                         }
-                        rObj.lmap_id = lmapImage;
+                        rObj.lmap_id = lmapImage.id;
                     }
                 }
             }
@@ -100,7 +100,7 @@ namespace JanusVR
                         image.id = imgId;
                         image.src = imgId;
 
-                        rObj.image_id = image;
+                        rObj.image_id = image.id;
 
                         room.AddAssetImage(image);
                     }
@@ -146,6 +146,8 @@ namespace JanusVR
                     }
                 }
 
+                rObj.col = JanusUtil.FormatColor(objColor);
+
                 if (texture != null)
                 {
                     if (textureNames.Contains(texture.name))
@@ -153,7 +155,7 @@ namespace JanusVR
                         AssetImage img = room.AssetImages.FirstOrDefault(c => c.Texture == texture);
                         if (img != null)
                         {
-                            rObj.image_id = img;
+                            rObj.image_id = img.id;
                         }
                         return;
                     }
@@ -163,7 +165,7 @@ namespace JanusVR
                     image.Texture = texture;
                     image.id = texture.name;
                     image.src = texture.name;
-                    rObj.image_id = image;
+                    rObj.image_id = image.id;
                     room.AddAssetImage(image);
                 }
             }
@@ -179,9 +181,12 @@ namespace JanusVR
             for (int i = 0; i < assetImages.Count; i++)
             {
                 AssetImage image = assetImages[i];
-                if (image.Texture)
+                if (image.Texture || (room.ExportOnlyHtml && image.Created))
                 {
-                    EditorUtility.DisplayProgressBar("Exporting main textures...", image.Texture.name, i / (float)assetImages.Count);
+                    if (image.Texture)
+                    {
+                        EditorUtility.DisplayProgressBar("Exporting main textures...", image.Texture.name, i / (float)assetImages.Count);
+                    }
                     ExportTexture(image.Texture, format, image, true);
                 }
             }
@@ -203,6 +208,18 @@ namespace JanusVR
             }
         }
 
+        private void UpdateTextureFormat(ExportTextureFormat format, AssetImage asset, string extension)
+        {
+            if (string.IsNullOrEmpty(extension))
+            {
+                asset.src = asset.src + JanusUtil.GetImageExtension(format);
+            }
+            else
+            {
+                asset.src = asset.src + extension;
+            }
+        }
+
         private void ExportTexture(Texture2D texture, ExportTextureFormat format, AssetImage asset, bool canCopy)
         {
             // force PNG if alpha??
@@ -215,6 +232,10 @@ namespace JanusVR
             if (!forceConversion && canCopy && JanusUtil.SupportsImageFormat(sourceExtension))
             {
                 asset.src = asset.src + sourceExtension;
+                if (room.ExportOnlyHtml)
+                {
+                    return;
+                }
                 string texPath = Path.Combine(rootDir, asset.src);
                 File.Copy(sourcePath, texPath, true);
             }
@@ -223,6 +244,10 @@ namespace JanusVR
                 try
                 {
                     asset.src = asset.src + JanusUtil.GetImageExtension(format);
+                    if (room.ExportOnlyHtml)
+                    {
+                        return;
+                    }
                     string texPath = Path.Combine(rootDir, asset.src);
 
                     using (Stream output = File.OpenWrite(texPath))
@@ -241,6 +266,17 @@ namespace JanusVR
 
         private void ProcessLightmapsPackedSourceEXR()
         {
+            if (room.ExportOnlyHtml)
+            {
+                foreach (var lightPair in lightmapped)
+                {
+                    int id = lightPair.Key;
+                    string imgId = "Lightmap" + id;
+                    UpdateTextureFormat(ExportTextureFormat.PNG, room.GetTexture(imgId), ".exr");
+                }
+                return;
+            }
+
             string lightMapsFolder = UnityUtil.GetLightmapsFolder();
 
             foreach (var lightPair in lightmapped)
@@ -269,8 +305,19 @@ namespace JanusVR
 
         private void ProcessLightmapsPacked()
         {
-            string lightMapsFolder = UnityUtil.GetLightmapsFolder();
             ExportTextureFormat format = room.TextureFormat;
+            if (room.ExportOnlyHtml)
+            {
+                foreach (var lightPair in lightmapped)
+                {
+                    int id = lightPair.Key;
+                    string imgId = "Lightmap" + id;
+                    UpdateTextureFormat(format, room.GetTexture(imgId), "");
+                }
+                return;
+            }
+
+            string lightMapsFolder = UnityUtil.GetLightmapsFolder();
 
             Shader exposureShader = Shader.Find("Hidden/ExposureShader");
             JanusUtil.AssertShader(exposureShader);
@@ -327,6 +374,23 @@ namespace JanusVR
         private void ProcessLightmapsUnpacked()
         {
             ExportTextureFormat format = room.TextureFormat;
+            if (room.ExportOnlyHtml)
+            {
+                foreach (var lightPair in lightmapped)
+                {
+                    int id = lightPair.Key;
+                    List<RoomObject> toRender = lightPair.Value;
+
+                    for (int i = 0; i < toRender.Count; i++)
+                    {
+                        RoomObject rObj = toRender[i];
+                        string imgId = rObj.id + "_Baked";
+                        UpdateTextureFormat(format, room.GetTexture(imgId), "");
+                    }
+                }
+                return;
+            }
+
             string lightMapsFolder = UnityUtil.GetLightmapsFolder();
 
             Shader lightMapShader = Shader.Find("Hidden/LMapUnpacked");
@@ -401,7 +465,7 @@ namespace JanusVR
                     lmap++;
 
                     // save the texture file
-                    ExportTexture(tex, format, rObj.image_id, false);
+                    ExportTexture(tex, format, room.GetTexture(rObj.image_id), false);
                     UObject.DestroyImmediate(tex);
                 }
             }
@@ -411,6 +475,24 @@ namespace JanusVR
         private void ProcessLightmapsBaked()
         {
             ExportTextureFormat format = room.TextureFormat;
+
+            if (room.ExportOnlyHtml)
+            {
+                foreach (var lightPair in lightmapped)
+                {
+                    int id = lightPair.Key;
+                    List<RoomObject> toRender = lightPair.Value;
+
+                    for (int i = 0; i < toRender.Count; i++)
+                    {
+                        RoomObject rObj = toRender[i];
+                        string imgId = rObj.id + "_Baked";
+                        UpdateTextureFormat(format, room.GetTexture(imgId), "");
+                    }
+                }
+                return;
+            }
+
             string lightMapsFolder = UnityUtil.GetLightmapsFolder();
 
             // only load shader now, so if the user is not exporting lightmaps
@@ -523,7 +605,7 @@ namespace JanusVR
                     lmap++;
 
                     // save the texture file
-                    ExportTexture(tex, format, rObj.image_id, false);
+                    ExportTexture(tex, format, room.GetTexture(rObj.image_id), false);
                     UObject.DestroyImmediate(tex);
                 }
             }

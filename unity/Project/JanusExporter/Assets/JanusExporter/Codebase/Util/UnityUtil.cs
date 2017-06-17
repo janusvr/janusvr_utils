@@ -13,6 +13,23 @@ namespace JanusVR
 {
     public static class UnityUtil
     {
+        public static bool IsProceduralSkybox()
+        {
+            Material skybox = RenderSettings.skybox;
+            if (skybox != null)
+            {
+                string[] skyboxTexNames = JanusGlobals.SkyboxTexNames;
+                for (int i = 0; i < skyboxTexNames.Length; i++)
+                {
+                    if (!skybox.HasProperty(skyboxTexNames[i]))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         public static IEnumerable<GameObject> GetSceneRoots2()
         {
             var prop = new HierarchyProperty(HierarchyType.GameObjects);

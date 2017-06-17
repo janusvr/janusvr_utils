@@ -11,6 +11,8 @@ namespace JanusVR
     public static class JanusGlobals
     {
         public const decimal Version = 2.12M;
+        public static int DecimalCasesPosition = 4;
+        public static int DecimalCasesLightmap = 6;
 
         /// <summary>
         /// Lower case values that the exporter will consider for being the Main Texture on a shader
