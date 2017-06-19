@@ -126,16 +126,6 @@ function findGetParameter(parameterName) {
     document.getElementById("hapticstoggle").checked = parent.window.janus.getsetting('haptics');
 
 
-  //set the radio buttons for posture
-  if (parent.window.janus.getsetting('seated') == false)
-	  {
-		document.getElementById("posturestandingradiobutton").checked = 1;
-	  }
-  else
-	  {
-		document.getElementById("postureseatedradiobutton").checked = 1;
-	  }
-
 
 
 
@@ -717,22 +707,6 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 				<div class="tabcontainer" id="vrtabcontainer">
 
-					<div class='header'>ROOM SCALE</div>
-
-						<div class='item' >
-						<span>
-						<!--<div>Mode:</div>-->
-							<div >
-								<input  type='radio' name="posture" class="myCheckbox" id="postureseatedradiobutton" onchange="if (this.checked == true){window.janus.setsetting('seated', true);}" >
-								<label for="postureseatedradiobutton" class="css-label-radio">Seated Mode</label>
-								- Physical and virtual orientations can vary. Controllers modify orientation.<br><hr>
-								<input  type='radio' name="posture" class="myCheckbox" id="posturestandingradiobutton" onchange="if (this.checked == true){window.janus.setsetting('seated', false);}" >
-								<label for="posturestandingradiobutton" class="css-label-radio">Standing Mode</label>
-								- Physical and virtual orientations stay constant. Controllers do not modify orientation.
-							</div>
-						</span>
-						<br>
-						</div>
 
 
 
@@ -1004,7 +978,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 
 
-					<div class='item' id="secondarycapturedevice_div">
+					<div style="display:none;" class='item' id="secondarycapturedevice_div">
 					<span>
 
 					Capture Device R: <div class="device" id="secondarycapturedevice" onclick="var arrow = (document.getElementById('secondarycapturedevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('secondarycapturedevice').innerHTML = parent.window.janus.getsetting('secondarycapturedevice') + arrow; document.getElementById('secondarycapturedevicelist').style.display = (document.getElementById('secondarycapturedevicelist').style.display == 'block')?'none':'block';"></div>
