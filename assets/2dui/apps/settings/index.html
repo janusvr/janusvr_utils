@@ -7,24 +7,24 @@
   <meta name="author" content="JanusVR Inc.">
   <script src="../../scripts/tabs.js"></script>
   <script src="../../skins/theme.js"></script>
-  
-  
+
+
   <!--Avatars Related-->
  	<link rel="stylesheet" type="text/css" href="../../skins/oneironaut/app.css" />
 	<script src="../../scripts/spyduck.js"></script>
-	<script src="avatar/main.js"></script>	
+	<script src="avatar/main.js"></script>
 
 
 
   <style>
 
   </style>
-  
+
 
 
  <script>
 
- 
+
 function findGetParameter(parameterName) {
     var result = null,
         tmp = [];
@@ -37,11 +37,11 @@ function findGetParameter(parameterName) {
     });
     return result;
 }
-  
-  function roundToTwo(num) {    
+
+  function roundToTwo(num) {
     return +(Math.round(num + "e+2")  + "e-2");
 }
-  
+
   function setDefaults() {
 
   if (findGetParameter("dashboard") == "true")
@@ -49,49 +49,49 @@ function findGetParameter(parameterName) {
   document.getElementsByTagName("body")[0].style.zoom = "200%";
    document.getElementsByTagName("body")[0].style.marginLeft = "14%";
     document.getElementsByTagName("body")[0].style.marginRight = "14%";
-  document.getElementById("windowarea").style.textAlign = "center";	 
+  document.getElementById("windowarea").style.textAlign = "center";
   document.getElementById("windowarea").style.backgroundColor = "rgba(0,0,0,0)";
-  
+
 	  // this gets all h4 tags
 	var myList = document.getElementsByClassName("item"); // get all p elements
 
 	// this loops through them until it finds one with the class 'icontitle' then it assigns the style to it
 	var i = 0;
 	while(i < myList.length) {
-		
+
 			myList[i].style.backgroundColor="#2F363B";
 			myList[i].style.borderRadius = "5px"
 			myList[i].style.margin = "5px 75px";
-		
+
 		i++;
 	}
-	
+
 	var myList = document.getElementsByClassName("header"); // get all p elements
 
 	// this loops through them until it finds one with the class 'icontitle' then it assigns the style to it
 	var i = 0;
 	while(i < myList.length) {
-		
+
 			myList[i].style.textAlign="center";
 
-		
+
 		i++;
 	}
-	
-  
-  
+
+
+
   }
-  
-  
+
+
   //set all the default booleans
   document.getElementById("multiplayertoggle").checked = parent.window.janus.getsetting('multiplayer');
-  
 
-  
-  
-  
+
+
+
+
   document.getElementById("selfavatartoggle").checked =  parent.window.janus.getsetting('selfavatar');
-  
+
   document.getElementById("invertpitchtoggle").checked =  parent.window.janus.getsetting('invertpitch');
   document.getElementById("mousepitchtoggle").checked =  parent.window.janus.getsetting('mousepitch');
   document.getElementById("gamepadtoggle").checked =  parent.window.janus.getsetting('gamepad');
@@ -111,71 +111,65 @@ function findGetParameter(parameterName) {
   document.getElementById("hidemenutoggle").checked = parent.window.janus.getsetting('hidemenu');
   document.getElementById("positionalenvtoggle").checked = parent.window.janus.getsetting('positionalenv');
   document.getElementById("positionalvoiptoggle").checked = parent.window.janus.getsetting('positionalvoip');
-  document.getElementById("micalwaysontoggle").checked =  parent.window.janus.getsetting('micalwayson');  
-  
-   document.getElementById("tutorialmodetoggle").checked =  parent.window.janus.getsetting('tutorialmode'); 
-  
-  
-   document.getElementById("performanceloggingtoggle").checked = parent.window.janus.getsetting('perflog');
-   
-  
-    document.getElementById("hapticstoggle").checked = parent.window.janus.getsetting('haptics');
-  
-  
-  //set the radio buttons for posture
-  if (parent.window.janus.getsetting('seated') == false) 
-	  {
-		document.getElementById("posturestandingradiobutton").checked = 1;
-	  }
-  else
-	  {
-		document.getElementById("postureseatedradiobutton").checked = 1;
-	  }
-    
-  
-  
+  document.getElementById("micalwaysontoggle").checked =  parent.window.janus.getsetting('micalwayson');
+  document.getElementById("editmodeiconstoggle").checked =  parent.window.janus.getsetting('editmodeicons');
 
   
+  
+  
+   document.getElementById("tutorialmodetoggle").checked =  parent.window.janus.getsetting('tutorialmode');
+
+
+   document.getElementById("performanceloggingtoggle").checked = parent.window.janus.getsetting('perflog');
+
+
+    document.getElementById("hapticstoggle").checked = parent.window.janus.getsetting('haptics');
+
+
+
+
+
+
   //set all the default values
   document.getElementById("displaynameform").value =  parent.window.janus.userid;
 
-  document.getElementById("fovslider").value =  parent.window.janus.getsetting('fov');  
+  document.getElementById("fovslider").value =  parent.window.janus.getsetting('fov');
   document.getElementById("fovslidernumber").innerHTML =  parent.window.janus.getsetting('fov');
-  
-  document.getElementById("maxmemoryslider").value =  parent.window.janus.getsetting('maxmemory');  
+
+  document.getElementById("maxmemoryslider").value =  parent.window.janus.getsetting('maxmemory');
   document.getElementById("maxmemoryslidernumber").innerHTML =  parent.window.janus.getsetting('maxmemory')+"MB";
-    
-  
-  document.getElementById("rotationspeedslider").value =  parent.window.janus.getsetting('rotationspeed');  
+
+
+  document.getElementById("rotationspeedslider").value =  parent.window.janus.getsetting('rotationspeed');
   document.getElementById("rotationspeedslidernumber").innerHTML =  parent.window.janus.getsetting('rotationspeed');
-    
-  
-  document.getElementById("volumeenvslider").value =  parent.window.janus.getsetting('volumeenv');  
+
+
+  document.getElementById("volumeenvslider").value =  parent.window.janus.getsetting('volumeenv');
   document.getElementById("volumeenvslidernumber").innerHTML =  parent.window.janus.getsetting('volumeenv');
-    
-  
-  document.getElementById("volumevoipslider").value =  parent.window.janus.getsetting('volumevoip');  
+
+
+  document.getElementById("volumevoipslider").value =  parent.window.janus.getsetting('volumevoip');
   document.getElementById("volumevoipslidernumber").innerHTML =  parent.window.janus.getsetting('volumevoip');
-    
-  
-  document.getElementById("volumemicslider").value =  parent.window.janus.getsetting('volumemic');  
+
+
+  document.getElementById("volumemicslider").value =  parent.window.janus.getsetting('volumemic');
   document.getElementById("volumemicslidernumber").innerHTML =  parent.window.janus.getsetting('volumemic');
-  
+
   document.getElementById("playbackdevice").innerHTML =  parent.window.janus.getsetting('playbackdevice') + "&#9660;";
   document.getElementById("capturedevice").innerHTML =  parent.window.janus.getsetting('capturedevice') + "&#9660;";
   document.getElementById("secondarycapturedevice").innerHTML =  parent.window.janus.getsetting('secondarycapturedevice') + "&#9660;";
   document.getElementById("playbackdevicelist").style.display = "none";
   document.getElementById("capturedevicelist").style.display = "none";
   document.getElementById("secondarycapturedevicelist").style.display = "none";
-  
+
     document.getElementById("tutorialurlform").value =  parent.window.janus.getsetting('tutorialurl');
-	
-  document.getElementById("micsensitivityslider").value =  parent.window.janus.getsetting('micsensitivity');  
+
+  document.getElementById("micsensitivityslider").value =  parent.window.janus.getsetting('micsensitivity');
   document.getElementById("micsensitivityslidernumber").innerHTML =  parent.window.janus.getsetting('micsensitivity');
 
-  
-  
-  
+
+
+
   var list = document.getElementById('playback_list');
   for (i = 0; i < parent.window.janus.playbackdevices.length; i++){
 	var itemli = document.createElement('li');
@@ -212,79 +206,79 @@ function findGetParameter(parameterName) {
   else{
 	document.getElementById("secondarycapturedevice_div").style.display = "none";
   }
-     
- 
-  document.getElementById("landingpageform").value =  parent.window.janus.getsetting('launchurl');  
- 
- 
-    document.getElementById("serverform").value =  parent.window.janus.getsetting('server');  
-	document.getElementById("rateform").value =  parent.window.janus.getsetting('rate');  	
-	document.getElementById("portform").value =  parent.window.janus.getsetting('port');  
- 
-  	document.getElementById("ipdslider").value =  roundToTwo(parent.window.janus.getsetting('ipd')*1000);  
+
+
+  document.getElementById("landingpageform").value =  parent.window.janus.getsetting('launchurl');
+
+
+    document.getElementById("serverform").value =  parent.window.janus.getsetting('server');
+	document.getElementById("rateform").value =  parent.window.janus.getsetting('rate');
+	document.getElementById("portform").value =  parent.window.janus.getsetting('port');
+
+  	document.getElementById("ipdslider").value =  roundToTwo(parent.window.janus.getsetting('ipd')*1000);
     document.getElementById("ipdslidernumber").innerHTML =  (roundToTwo(parent.window.janus.getsetting('ipd')*1000))+"mm";
-  
-  
+
+
   }
-  
+
   function setDevice(id, device){
 	if (id == "capturedevice" && device == "No device"){
 		parent.window.janus.setsetting(id, device);
 		parent.window.janus.setsetting("secondarycapturedevice", device);
-		document.getElementById(id).innerHTML = device + "&#9650;";	
-		document.getElementById("secondarycapturedevice").innerHTML = device + "&#9650;";	
-	}	
+		document.getElementById(id).innerHTML = device + "&#9650;";
+		document.getElementById("secondarycapturedevice").innerHTML = device + "&#9650;";
+	}
 	else if ((device == "No device") || (device == "Default device") || (id == "capturedevice" && parent.window.janus.getsetting("secondarycapturedevice") != device) || (id == "secondarycapturedevice" && parent.window.janus.getsetting("capturedevice") != device) || (id != "capturedevice" && id != "secondarycapturedevice")){
 		parent.window.janus.setsetting(id, device);
-		document.getElementById(id).innerHTML = device + "&#9650;";	
-	}	
+		document.getElementById(id).innerHTML = device + "&#9650;";
+	}
   }
-  
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
+
+
+
+
+
+
   window.onload = function () {
   initializeAppTheme("../../")
-  dashboardSetup() 
+  dashboardSetup()
   tabSelect("avatartabcontainer","avatartabbutton")
   window.onresize()
-  setDefaults() 
-  
+  setDefaults()
+
   populatelist()
   }
 
-  
-  
+
+
    window.onresize = function(event) { //make sure the window area stays a consistent size
 
 
- 
+
  if (document.getElementById("tabrow").offsetWidth >= 200) //if you change the 200 here, also change the min-width of the window containing it. this is to prevent flicker when vertically resizing a minimally (width) sized window
  {
-document.getElementById("windowarea").style.height = "calc(100% - "+(document.getElementsByClassName("tabrow")[0].offsetHeight+3)+"px)";	
+document.getElementById("windowarea").style.height = "calc(100% - "+(document.getElementsByClassName("tabrow")[0].offsetHeight+3)+"px)";
  }
 };
-  
 
-  
+
+
   function changename(caller) {
-  
+
   window.janus.userid=caller.value;
-  
+
   }
-  
-  
+
+
     </script>
-  
+
 
 </head>
 
@@ -309,24 +303,24 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 <div class="windowarea unselectable" id="windowarea">
 
-    			
+
 		<div  class="tabcontainer" id="avatarscontainer">
 
-    		
+
 			<div class="avatarlist" >
 				<div id="avatar_list" >
 				</div>
 			</div>
-			
-			
+
+
 			<div style="text-align:left;">
-				
+
 				<div onclick="togglePreview();" class="bottombutton previewbutton"></div>
 				<div onclick="save_avatar();" class="bottombutton savebutton"></div>
-						
+
 			</div>
-			
-		</div>	
+
+		</div>
 
 
 
@@ -335,24 +329,24 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 
 	<div class="tabcontainer" id="servertabcontainer">
-		
+
 					<div class='header'>HOMEPAGE</div>
-					
+
 					<div class='item' >
 					<span>
 					URL:<br>
 					<input  type='text' class="longerinput" id="landingpageform"  onchange="window.janus.setsetting('launchurl', this.value);"  >
-					
+
 					</span>
 
-					</div>	
-										
-		
+					</div>
+
+
 					<div class='header' > PRESENCE</div>
 
 					<div class='item' >
 					<span>
-					<input class="myCheckbox" id="multiplayertoggle" type='checkbox' onchange="window.janus.setsetting('multiplayer', this.checked); " > 
+					<input class="myCheckbox" id="multiplayertoggle" type='checkbox' onchange="window.janus.setsetting('multiplayer', this.checked); " >
 					<label for="multiplayertoggle" class="css-label">Multiplayer</label>
 
 					</span>
@@ -366,7 +360,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 
-					</div>	
+					</div>
 
 
 					<div class='item' >
@@ -376,7 +370,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 
-					</div>	
+					</div>
 
 
 
@@ -387,7 +381,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 
-					</div>	
+					</div>
 
 
 					<div class='header'>ANALYTICS</div>
@@ -405,12 +399,12 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</div>
 
-					
-					
-					
-					
-					
-					
+
+
+
+
+
+
 				<div class="tabcontainer" id="avatartabcontainer">
 					<div class='header'>VISUAL</div>
 
@@ -421,7 +415,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 
-					</div>	
+					</div>
 
 					<div class='item' >
 					<span>
@@ -432,7 +426,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<br>
 					</div>
 
-					
+
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="selfavatartoggle" onchange="window.janus.setsetting('selfavatar', this.checked); "  >
@@ -440,14 +434,14 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>				
+					</div>
 
 
 
-					
 
-					
-				<!-- 
+
+
+				<!--
 					<div class='item' >
 					<span>
 					Avatar Scale
@@ -455,13 +449,13 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 
-					</div>		
-			
-					
+					</div>
 
-					
-					
-					
+
+
+
+
+
 
 					<div class='header'>RESOURCES</div>
 
@@ -474,8 +468,8 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 
-					</div>							
-					
+					</div>
+
 
 
 
@@ -486,14 +480,14 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 
-					</div>		
-					
+					</div>
+
 					-->
-					
+
 					<div class='header'>MISC</div>
-					
-					
-					
+
+
+
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="tutorialmodetoggle"   onchange="window.janus.setsetting('tutorialmode', this.checked); " >
@@ -503,7 +497,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					</span>
 					<br>
 					</div>
-					
+
 					<div class='item' >
 					<span>
 					Tutorial URL:<br>
@@ -511,24 +505,24 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 
-					</div>	
+					</div>
 
-					
-					
+
+
 					<div class='item' >
 
 					<div class="resetavatarbutton" onclick="parent.window.janus.resetavatar()" >RESET AVATAR</div>
 
 					</div>
-									
-					
-					
+
+
+
 
 				</div>
-					
-					
-					
-			
+
+
+
+
 				<div class="tabcontainer" id="inputtabcontainer">
 					<div class='header'>DEVICE</div>
 
@@ -543,8 +537,8 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					</span>
 					<br>
 					</div>
-					
-					
+
+
 
 					<div class='item' >
 					<span>
@@ -553,24 +547,24 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>					
+					</div>
 
-	
+
 
 					<div class='item' >
 					<span>
 					Rotation Speed: <span id="rotationspeedslidernumber"></span><br>
 					<input class="myslider" type='range' id="rotationspeedslider" min="10" max="100" onchange="window.janus.setsetting('rotationspeed', this.value); document.getElementById('rotationspeedslidernumber').innerHTML=this.value;" >
-					
+
 
 					</span>
 					<br>
-					</div>		
+					</div>
 
 
-	
-					
-					
+
+
+
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="gamepadtoggle" onchange="window.janus.setsetting('gamepad', this.checked); "  >
@@ -578,16 +572,16 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>					
-					
-					
-					
-					
+					</div>
+
+
+
+
 
 
 					<div class='header'>KEY BINDINGS</div>
 
-					
+
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="portalhotkeystoggle" onchange="window.janus.setsetting('portalhotkeys', this.checked); "  >
@@ -595,23 +589,23 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>	
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
+					</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- This will come in the future!
 					<div class='item' >
 					<span>
@@ -620,7 +614,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>		
+					</div>
 
 					<div class='item' >
 					<span>
@@ -629,7 +623,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>						
+					</div>
 
 					<div class='item' >
 					<span>
@@ -638,7 +632,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>		
+					</div>
 
 					<div class='item' >
 					<span>
@@ -647,7 +641,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>			
+					</div>
 
 					<div class='item' >
 					<span>
@@ -656,7 +650,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>			
+					</div>
 
 					<div class='item' >
 					<span>
@@ -665,8 +659,8 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>			
-					
+					</div>
+
 					<div class='item' >
 					<span>
 					Spawn Portal
@@ -674,7 +668,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>				
+					</div>
 
 					<div class='item' >
 					<span>
@@ -683,59 +677,43 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>							
-					
+					</div>
+
 					-->
-					
-					
-					
-					
-					
-					
-					
-				
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 				</div>
-				
-										
-				<div class="tabcontainer" id="vrtabcontainer">	
-				
-					<div class='header'>ROOM SCALE</div>
-					
-						<div class='item' >
-						<span>
-						<!--<div>Mode:</div>-->
-							<div >
-								<input  type='radio' name="posture" class="myCheckbox" id="postureseatedradiobutton" onchange="if (this.checked == true){window.janus.setsetting('seated', true);}" >
-								<label for="postureseatedradiobutton" class="css-label-radio">Seated Mode</label>
-								- Physical and virtual orientations can vary. Controllers modify orientation.<br><hr>
-								<input  type='radio' name="posture" class="myCheckbox" id="posturestandingradiobutton" onchange="if (this.checked == true){window.janus.setsetting('seated', false);}" >
-								<label for="posturestandingradiobutton" class="css-label-radio">Standing Mode</label>								
-								- Physical and virtual orientations stay constant. Controllers do not modify orientation.
-							</div>
-						</span>
-						<br>
-						</div>											
-				
-				
-				
-				
+
+
+				<div class="tabcontainer" id="vrtabcontainer">
+
+
+
+
+
 					<div class='header'>INPUT</div>
-					
-					
+
+
 						<div class='item' >
 						<span>
 						<input class="myCheckbox" type='checkbox' id="decoupleheadtoggle" onchange="window.janus.setsetting('decouplehead', this.checked); " >
@@ -743,8 +721,8 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 						</span>
 						<br>
-						</div>					
-						
+						</div>
+
 						<div class='item' >
 						<span>
 						<input class="myCheckbox" type='checkbox' id="hapticstoggle" onchange="window.janus.setsetting('haptics', this.checked); " >
@@ -752,7 +730,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 						</span>
 						<br>
-						</div>								
+						</div>
 
 						<div class='item' >
 						<span>
@@ -761,10 +739,10 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 						</span>
 						<br>
-						</div>					
-						
-						
-						
+						</div>
+
+
+
 						<div class='item' >
 						<span>
 						<input class="myCheckbox" type='checkbox' id="leapmotionhmdtoggle" onchange="window.janus.setsetting('leapmotionhmd', this.checked); " >
@@ -772,28 +750,28 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 						</span>
 						<br>
-						</div>	
-						
-					<div class='header'>GRAPHICS</div>				
+						</div>
+
+					<div class='header'>GRAPHICS</div>
 						<div class='item' >
 						<span>
-						
+
 						Interpupillary Distance: <span id="ipdslidernumber"></span><br>
 						<input step="0.1" class="myslider" type='range' id="ipdslider" min="54" max="74" oninput="window.janus.setsetting('ipd', this.value/1000); document.getElementById('ipdslidernumber').innerHTML=this.value+'mm';" >
-						
+
 
 						</span>
 						<br>
-						</div>	
-						
-						
-				
-				</div>	
-					
-					
-					
-		
-			
+						</div>
+
+
+
+				</div>
+
+
+
+
+
 				<div class="tabcontainer" id="graphicstabcontainer">
 					<div class='header'>RENDERING</div>
 
@@ -808,18 +786,18 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					
+
 					Field of View: <span id="fovslidernumber"></span><br>
 					<input class="myslider" type='range' id="fovslider" min="50" max="120" oninput="window.janus.setsetting('fov', this.value); document.getElementById('fovslidernumber').innerHTML=this.value;" >
-					
+
 
 					</span>
 					<br>
-					</div>					
-					
-					
-					<div class='header'>CONTENT</div>					
-					
+					</div>
+
+
+					<div class='header'>CONTENT</div>
+
 
 
 					<div class='item' >
@@ -830,16 +808,16 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					</span>
 					<br>
 					</div>
-					
-					
-					
-					
-					
-				</div>					
-					
-					
-					
-					
+
+
+
+
+
+				</div>
+
+
+
+
 				<div class="tabcontainer" id="interfacetabcontainer">
 					<div class='header'>VISUAL</div>
 
@@ -853,11 +831,9 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<br>
 					</div>
 
-					
 
-					
-					
-					
+
+
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="hidemenutoggle" onchange="window.janus.setsetting('hidemenu', this.checked); "  >
@@ -865,13 +841,17 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>			
+					</div>
+
+
 					
 					
 					
 					
-					<div class='header'>AUDIO</div>					
-					
+
+
+					<div class='header'>AUDIO</div>
+
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="soundstoggle" onchange="window.janus.setsetting('sounds', this.checked); " >
@@ -881,23 +861,23 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<br>
 					</div>
 
-					
-	
+
+
 
 					<div class='item' >
 					<span>
-					
+
 					Environment Volume: <span id="volumeenvslidernumber"></span><br>
 					<input class="myslider" type='range' id="volumeenvslider" min="0" max="100" onchange="window.janus.setsetting('volumeenv', this.value); document.getElementById('volumeenvslidernumber').innerHTML=this.value;" >
-					
+
 
 					</span>
 					<br>
-					</div>		
-					
-					
-					
-					
+					</div>
+
+
+
+
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="positionalenvtoggle" onchange="window.janus.setsetting('positionalenv', this.checked); "  >
@@ -905,24 +885,24 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>	
+					</div>
 
-					
-	
+
+
 
 					<div class='item' >
 					<span>
 					Voice Chat Volume: <span id="volumevoipslidernumber"></span><br>
 					<input class="myslider" type='range' id="volumevoipslider" min="0" max="100" onchange="window.janus.setsetting('volumevoip', this.value); document.getElementById('volumevoipslidernumber').innerHTML=this.value;" >
-					
+
 
 					</span>
 					<br>
-					</div>		
-					
-					
-					
-					
+					</div>
+
+
+
+
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="positionalvoiptoggle" onchange="window.janus.setsetting('positionalvoip', this.checked); "  >
@@ -930,21 +910,21 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>	
+					</div>
 
-					
-	
+
+
 
 					<div class='item' >
 					<span>
-					
+
 					Mic Volume: <span id="volumemicslidernumber"></span><br>
 					<input class="myslider" type='range' id="volumemicslider" min="0" max="100" onchange="window.janus.setsetting('volumemic', this.value); document.getElementById('volumemicslidernumber').innerHTML=this.value;" >
-					
+
 
 					</span>
 					<br>
-					</div>		
+					</div>
 
 					<div class='item' >
 					<span>
@@ -953,11 +933,11 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					</span>
 					<br>
-					</div>	
-					
+					</div>
+
 					<div class='item' >
 					<span>
-					
+
 					Mic Sensitivity (dB): <span id="micsensitivityslidernumber"></span><br>
 					<input class="myslider" type='range' id="micsensitivityslider" min="-100" max="0" onchange="window.janus.setsetting('micsensitivity', this.value); document.getElementById('micsensitivityslidernumber').innerHTML=this.value;" >
 
@@ -968,57 +948,57 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 					<div class='item' >
 					<span>
-					
+
 					Playback Device: <div class="device" id="playbackdevice" onclick="var arrow = (document.getElementById('playbackdevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('playbackdevice').innerHTML = parent.window.janus.getsetting('playbackdevice') + arrow; document.getElementById('playbackdevicelist').style.display = (document.getElementById('playbackdevicelist').style.display == 'block')?'none':'block';"></div>
-					<div class="devicelist" id="playbackdevicelist">
+					<div class="devicelist" id="playbackdevicelist" onclick="var arrow = (document.getElementById('playbackdevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('playbackdevice').innerHTML = parent.window.janus.getsetting('playbackdevice') + arrow; document.getElementById('playbackdevicelist').style.display = (document.getElementById('playbackdevicelist').style.display == 'block')?'none':'block';">
 						<div class="device_list" id="playback_list" >
 						</div>
 					</div>
 
 					</span>
 					<br>
-					</div>	
+					</div>
 
-					
-					
+
+
 					<div class='item' >
 					<span>
-					
+
 					Capture Device<span id="capturedevicel"></span>: <div id="capturedevice" class="device" onclick="var arrow = (document.getElementById('capturedevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('capturedevice').innerHTML = parent.window.janus.getsetting('capturedevice') + arrow; document.getElementById('capturedevicelist').style.display = (document.getElementById('capturedevicelist').style.display == 'block')?'none':'block';"></div>
-					<div class="devicelist" id="capturedevicelist">
+					<div class="devicelist" id="capturedevicelist"  onclick="var arrow = (document.getElementById('capturedevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('capturedevice').innerHTML = parent.window.janus.getsetting('capturedevice') + arrow; document.getElementById('capturedevicelist').style.display = (document.getElementById('capturedevicelist').style.display == 'block')?'none':'block';">
 						<div class="device_list" id="capture_list">
 						</div>
 					</div>
-					
+
 
 					</span>
 					<br>
 					</div>
-					
-					
-					
-					
-					<div class='item' id="secondarycapturedevice_div">
+
+
+
+
+					<div style="display:none;" class='item' id="secondarycapturedevice_div">
 					<span>
-					
+
 					Capture Device R: <div class="device" id="secondarycapturedevice" onclick="var arrow = (document.getElementById('secondarycapturedevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('secondarycapturedevice').innerHTML = parent.window.janus.getsetting('secondarycapturedevice') + arrow; document.getElementById('secondarycapturedevicelist').style.display = (document.getElementById('secondarycapturedevicelist').style.display == 'block')?'none':'block';"></div>
-					<div class="devicelist" id="secondarycapturedevicelist">
+					<div class="devicelist" id="secondarycapturedevicelist" onclick="var arrow = (document.getElementById('secondarycapturedevicelist').style.display == 'block')?'&#9660;':'&#9650;'; document.getElementById('secondarycapturedevice').innerHTML = parent.window.janus.getsetting('secondarycapturedevice') + arrow; document.getElementById('secondarycapturedevicelist').style.display = (document.getElementById('secondarycapturedevicelist').style.display == 'block')?'none':'block';">
 						<div class="device_list" id="secondary_capture_list">
 						</div>
 					</div>
-					
+
 
 					</span>
 					<br>
 					</div>
-					
 
-					
-				</div>					
-										
-					
-					
-					
+
+
+				</div>
+
+
+
+
 				<div class="tabcontainer" id="developertabcontainer">
 					<div class='header'>BUILDING</div>
 
@@ -1031,8 +1011,21 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					<br>
 					</div>
 
-					<div class='header'>SYSTEM</div>					
-			
+					
+					<div class='item' >
+					<span>
+					<input class="myCheckbox" type='checkbox' id="editmodeiconstoggle" onchange="window.janus.setsetting('editmodeicons', this.checked); "  >
+					<label for="editmodeiconstoggle" class="css-label">Edit Mode Icons</label>
+
+					</span>
+					<br>
+					</div>					
+					
+					
+					
+					
+					<div class='header'>SYSTEM</div>
+
 
 					<div class='item' >
 					<span>
@@ -1045,24 +1038,24 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 
 
-			
+
 					<div class='item' >
 					<span>
-					
+
 					Maximum Memory Usage: <span id="maxmemoryslidernumber"></span><br>
 					<input class="myslider" type='range' id="maxmemoryslider" min="1024" max="8192" oninput="window.janus.setsetting('maxmemory', this.value); document.getElementById('maxmemoryslidernumber').innerHTML=this.value+'MB';" >
-					
+
 
 					</span>
 					<br>
 					</div>
-						
 
 
 
-	
-					<div class='header'>SCRIPTING</div>					
-					
+
+
+					<div class='header'>SCRIPTING</div>
+
 					<div class='item' >
 					<span>
 					<input class="myCheckbox" type='checkbox' id="jsdebuggertoggle" onchange="window.janus.setsetting('jsdebugger', this.checked); " >
@@ -1075,26 +1068,26 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 					</div>
 
 
-					
-				</div>					
-													
-					
-					
-					
-					 
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-		</div>			
+
+				</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		</div>
 
 
 
@@ -1121,7 +1114,7 @@ document.getElementById("windowarea").style.height = "calc(100% - "+(document.ge
 
 
 
-		
+
 </div>
 
 

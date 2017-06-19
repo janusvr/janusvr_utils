@@ -10,9 +10,18 @@ namespace JanusVR
 {
     public static class JanusUtil
     {
+        private static string format2Cases = "F2";
         private static CultureInfo c = CultureInfo.InvariantCulture;
 
-        
+        public static bool AssertShader(Shader shader)
+        {
+            if (shader == null)
+            {
+                Debug.LogError("Shaders not found! Please reimport the Janus Exporter package");
+                return false;
+            }
+            return true;
+        }
 
         public static Vector3 ConvertPosition(Vector3 v, float scale)
         {
@@ -27,17 +36,23 @@ namespace JanusVR
 
         public static string FormatColor(Color v)
         {
-            return v.r.ToString("F2", c) + " " + v.g.ToString("F2", c) + " " + v.b.ToString("F2", c);
+            return v.r.ToString(format2Cases, c) + " " + v.g.ToString(format2Cases, c) + " " + v.b.ToString(format2Cases, c);
         }
 
         public static string FormatVector3(Vector3 v)
         {
-            return v.x.ToString("F2", c) + " " + v.y.ToString("F2", c) + " " + v.z.ToString("F2", c);
+            return v.x.ToString(format2Cases, c) + " " + v.y.ToString(format2Cases, c) + " " + v.z.ToString(format2Cases, c);
         }
 
         public static string FormatVector4(Vector4 v)
         {
-            return v.x.ToString("F2", c) + " " + v.y.ToString("F2", c) + " " + v.z.ToString("F2", c) + " " + v.w.ToString("F2", c);
+            return v.x.ToString(format2Cases, c) + " " + v.y.ToString(format2Cases, c) + " " + v.z.ToString(format2Cases, c) + " " + v.w.ToString(format2Cases, c);
+        }
+
+        public static string FormatVector4(Vector4 v, int decimalPlaces)
+        {
+            string format = "F" + decimalPlaces.ToString(c);
+            return v.x.ToString(format, c) + " " + v.y.ToString(format, c) + " " + v.z.ToString(format, c) + " " + v.w.ToString(format, c);
         }
 
         public static void GetJanusVectors(Transform trans,

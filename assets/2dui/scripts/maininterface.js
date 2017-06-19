@@ -20,10 +20,21 @@ function updatePartyMode() {
 	{
 
 
-		
+
 		document.getElementById("partystatus").setAttribute("style","visibility: visible !important;")
 
+		//determine graphic to use
+		if (window.janus.roompartymode() == true )
+		{
+			document.getElementById("partystatus").onmousemove = function() {showtooltip('Broadcasting location.')}
+			document.getElementById("partystatus").className = "stat statisticright unselectable";
+		}
+		else
+		{
 
+			document.getElementById("partystatus").onmousemove = function() {showtooltip('Party Mode prohibited.')}
+			document.getElementById("partystatus").className = "stat statisticrightlocked unselectable";
+		}
 
 	}
 	else
@@ -199,8 +210,8 @@ function updatePartyMode() {
 	}
 	pinsound = function() {
 		document.getElementById('pinsound').play();
-	}	
-	
+	}
+
 	<!-- Menu List -->
 
 	function togglemenulist(closeornot) {
@@ -482,7 +493,7 @@ function updatePartyMode() {
 	function pinWindow(callerid,winid,pinbutton)
 	{
 		var win = document.getElementById(winid);
-		
+
 		if (win.classList.contains('pinnedwindow')) {
 			win.classList.remove('pinnedwindow');
 			pinbutton.className = "pinbutton";
@@ -492,7 +503,7 @@ function updatePartyMode() {
 			win.classList.add('pinnedwindow');
 			pinbutton.className = "pinbuttonactive";
 			}
-			
+
 		pinsound();
 
 	}
@@ -508,7 +519,7 @@ function updatePartyMode() {
 				if (callerid != "null") {
 					callerid.classList.remove("quickbarselection");
 				}
-		
+
 		var win = document.getElementById(winid);
 		if (win.getAttribute('data-persist')) {
 			if (win.style.display == 'none') {
@@ -540,7 +551,7 @@ function updatePartyMode() {
 				closesound();
 		}
 
-	
+
 	}
 
 	function shadeWindow(callerid,winid,shademe,titlebarid) {
@@ -601,7 +612,7 @@ function updatePartyMode() {
 	function hasClass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
 }
-	
+
 	function toggleWindow(callerid,width,height,title,page,spawnx,spawny,anchor, persist) { //set callerid to null if there is no element calling this function
 		anchor = anchor || Anchor.TopLeft;
 
@@ -609,11 +620,11 @@ function updatePartyMode() {
 		var winid= 'window_'+title.replace(/ /g,'&nbsp;');
 
 		if (document.getElementById(winid) != null) {
-			
-		
+
+
 			closeWindow(callerid,winid);
-			
-			
+
+
 		}
 		else
 		{
@@ -623,13 +634,13 @@ function updatePartyMode() {
 			if (callerid != "null")
 			{
 
-				
+
 				if (hasClass(callerid,"genericquickbutton"))
 				{
 				callerid.classList.add("quickbarselection");
 				}
-			
-			
+
+
 			}
 			highestwindow +=1; //increase the highest window number
 
@@ -740,7 +751,7 @@ function updatePartyMode() {
 			div2.onmousedown = function(ev) { closeWindow(callerid,winid); ev.stopPropagation() };
 
 			span.appendChild(div2);
-			
+
 			<!--Create pinbutton-->
 			var divp1 = document.createElement("div");
 			divp1.className  = "pinbutton";
@@ -892,14 +903,14 @@ function updatePartyMode() {
 	function displaynotification(index) {
 
 
-		setTimeout(function(){ 		
+		setTimeout(function(){
 			if (currentdisplay < 1)
 			{
 				document.getElementById("notifnavleft").style.visibility = "hidden";
 			}
 			else
 			{
-				document.getElementById("notifnavleft").style.visibility = "";			
+				document.getElementById("notifnavleft").style.visibility = "";
 			}
 			if (currentdisplay >= notiftext.length-1)
 			{
@@ -907,9 +918,9 @@ function updatePartyMode() {
 			}
 			else
 			{
-				document.getElementById("notifnavright").style.visibility = "";			
-			} 
-		}, 20);	
+				document.getElementById("notifnavright").style.visibility = "";
+			}
+		}, 20);
 
 		currentdisplay = index;
 		document.getElementById("notificationbg").style.backgroundColor = notifbgcolor[index];
@@ -920,7 +931,7 @@ function updatePartyMode() {
 		document.getElementById("notificationcontainer").style.visibility = "visible";
 		<!--Later executeonclick can perform an action or something-->
 	}
-	
+
 	function navnotification(direction) {
 				clickSound();
 		//0 is previous, 1 is next
@@ -928,11 +939,11 @@ function updatePartyMode() {
 		{
 			if (currentdisplay > 0){
 			displaynotification(currentdisplay-1);
-			
+
 			}
 			else
 			{
-			displaynotification(currentdisplay);	
+			displaynotification(currentdisplay);
 			}
 		}
 		else
@@ -942,14 +953,14 @@ function updatePartyMode() {
 			}
 			else
 			{
-			displaynotification(currentdisplay);	
-			}			
+			displaynotification(currentdisplay);
+			}
 		}
 	}
-	
+
 	function removenotification() {
 	closesound();
-	
+
 		if (notiftext.length <= 1)
 		{
 			hidenotification()
@@ -959,8 +970,8 @@ function updatePartyMode() {
 			notifexecute.splice(currentdisplay,1);
 			notifbgcolor.splice(currentdisplay,1);
 
-		}	
-		
+		}
+
 		else
 		{
 		//remove the associated notification entry
@@ -972,7 +983,7 @@ function updatePartyMode() {
 			 navnotification(0)
 		}
 
-		
+
 	}
 
 
@@ -1121,15 +1132,15 @@ function displayTip() {
 			else if (getCookie("fact2") != "used")
 			{
 				shownotification('Want to return to your PocketSpace? Simply press the <b>PocketSpace</b> toggle button to the left of the URL Bar!','notifications/space.png',"null","#323232");
-				setCookie("fact2","used","100000000")			
+				setCookie("fact2","used","100000000")
 			}
 			else if (getCookie("fact3") != "used")
 			{
 				shownotification('Find other people easily! Click on the <b>Parties Icon</b> in the bottom bar to meet new users.','notifications/partymode.png',"null","#323232");
-				setCookie("fact3","used","100000000")			
+				setCookie("fact3","used","100000000")
 			}
-						
-			
+
+
 
 }
 
@@ -1138,15 +1149,15 @@ function initsound() {
 		//init sounds (prevents webkit bug)
 		pinsound();
 		closesound();
-	
+
 }
 
 
 	window.onload = function() {
-		
-		
-		
-		
+
+
+
+
 		initializeMainInterfaceTheme()
 		//initializeMainInterfaceVRTheme()
 		loadVR2DUI()
@@ -1178,20 +1189,20 @@ function initsound() {
 	var previoususerid=window.janus.userid;
 	//UPDATING HUD STATUS IN REAL TIME ====================================================================================================================================
 	setInterval(function() {
-		
+
 
 
 		updatePartyMode()
 
-		
-		
-		
+
+
+
 		if (window.janus.hasFocus()) {
 
 			//if UI focused for the first time, demonstrate how to use [...] menu
 
-			
-			
+
+
 			if (tipshown != 1)
 			{
 			setTimeout(function(){ displayTip(); }, 1000);
@@ -1239,20 +1250,20 @@ function initsound() {
 
 		switch(window.janus.networkstatus) {
 		case 0:
-			
+
 			if (window.janus.roomserver == "private")
 			{
 			document.getElementById("onlinestatus").onmousemove = function() {showtooltip('This room is <b>private</b>. Nobody can see you here.')}
-			document.getElementById("onlinestatus").className = "stat statisticleftprivate";				
+			document.getElementById("onlinestatus").className = "stat statisticleftprivate";
 			}
 			else
 			{
 			document.getElementById("onlinestatus").onmousemove = function() {showtooltip('You are <b>not connected</b> to a presence server.')}
-			document.getElementById("onlinestatus").className = "stat statisticleftdisconnected";				
+			document.getElementById("onlinestatus").className = "stat statisticleftdisconnected";
 			}
-			
 
-			
+
+
 			break;
 		case 1:
 			document.getElementById("onlinestatus").onmousemove = function() {showtooltip('Attempting to connect to the <b>'+window.janus.roomserver+'</b> presence server.')}

@@ -20,7 +20,7 @@ namespace JanusVR
     {
         public struct TempTextureData
         {
-#if UNITY_5_3_OR_NEWER
+#if UNITY_5_5_OR_NEWER
             public TextureImporterPlatformSettings settings;
             public TextureImporterCompression textureCompression;
 #else
@@ -38,7 +38,7 @@ namespace JanusVR
             TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(path);
             TempTextureData data = new TempTextureData();
 
-#if UNITY_5_3_OR_NEWER
+#if UNITY_5_5_OR_NEWER
             TextureImporterPlatformSettings settings = importer.GetPlatformTextureSettings("Standalone");
             data.settings = settings;
             data.textureCompression = importer.textureCompression;
@@ -49,37 +49,34 @@ namespace JanusVR
             data.alphaIsTransparency = importer.alphaIsTransparency;
             data.path = path;
 
-            if (!JanusVRExporter.UpdateOnlyHTML)
+#if UNITY_5_5_OR_NEWER
+            if (!importer.isReadable || importer.textureCompression != TextureImporterCompression.Uncompressed)
+#else
+            if (!importer.isReadable || importer.textureFormat != TextureImporterFormat.ARGB32)
+#endif
             {
-#if UNITY_5_3_OR_NEWER
-                if (!importer.isReadable || importer.textureCompression != TextureImporterCompression.Uncompressed)
+                importer.isReadable = true;
+#if UNITY_5_5_OR_NEWER
+                importer.textureCompression = TextureImporterCompression.Uncompressed;
 #else
-                if (!importer.isReadable || importer.textureFormat != TextureImporterFormat.ARGB32)
+                importer.textureFormat = TextureImporterFormat.ARGB32;
 #endif
-                {
-                    importer.isReadable = true;
-#if UNITY_5_3_OR_NEWER
-                    importer.textureCompression = TextureImporterCompression.Uncompressed;
-#else
-                    importer.textureFormat = TextureImporterFormat.ARGB32;
-#endif
-                    data.changed = true;
+                data.changed = true;
 
-                    AssetDatabase.Refresh();
-                    AssetDatabase.ImportAsset(path);
-                }
+                AssetDatabase.Refresh();
+                AssetDatabase.ImportAsset(path);
             }
             return data;
         }
 
         public static void UnlockTexture(TempTextureData data)
         {
-            if (data.changed && !JanusVRExporter.UpdateOnlyHTML)
+            if (data.changed)
             {
                 TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(data.path);
 
                 importer.isReadable = data.isReadable;
-#if UNITY_5_3_OR_NEWER
+#if UNITY_5_5_OR_NEWER
                 importer.textureCompression = data.textureCompression;
 #else
                 importer.textureFormat = data.format;
@@ -146,8 +143,8 @@ namespace JanusVR
 
             int xscale = texture.width / width;
             int yscale = texture.height / height;
-            float xsca = xscale * 2;
-            float ysca = yscale * 2;
+            //float xsca = xscale * 2;
+            //float ysca = yscale * 2;
 
             switch (filterMode)
             {
@@ -338,7 +335,7 @@ namespace JanusVR
             }
             else
             {
-                inp = input;                
+                inp = input;
             }
 
             byte[] exported;

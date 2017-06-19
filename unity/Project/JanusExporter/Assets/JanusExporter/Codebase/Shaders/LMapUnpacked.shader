@@ -4,6 +4,7 @@
 	{
 		_LightMapUV("LightMapUV", Vector) = (0,0,0,0)
 		_LightMapTex("LightMapTex", 2D) = "White" {}
+		_Exposure("Exposure", Float) = 0
 	}
 	SubShader
 	{
@@ -19,20 +20,22 @@
 
 			struct appdata
 			{
-				float4 vertex : POSITION;
-				float2 uv0 : TEXCOORD0;
-				float2 uv1 : TEXCOORD1;
+				float4 vertex			: POSITION;
+				float2 uv0				: TEXCOORD0;
+				float2 uv1				: TEXCOORD1;
 			};
 
 			struct v2f
 			{
-				float2 uv0 : TEXCOORD0;
-				float2 uv1 : TEXCOORD1;
-				float4 vertex : SV_POSITION;
+				float4 vertex		: SV_POSITION;
+				float2 uv0			: TEXCOORD0;
+				float2 uv1			: TEXCOORD1;
 			};
 
 			uniform float4 _LightMapUV;
 			uniform sampler2D _LightMapTex;
+			uniform float _IsLinear;
+			uniform float _Exposure;
 
 			v2f vert(appdata v)
 			{
@@ -45,13 +48,28 @@
 
 				return o;
 			}
+
+			float3 exposure(float3 color, float relative_fstop)
+			{
+				return color * pow(2.0, relative_fstop);
+			}
 			
 			float4 frag (v2f i) : SV_Target
 			{
-				float3 lightmap = tex2D(_LightMapTex, i.uv1);
-				//float3 lightmap = DecodeLightmap(tex2D(_LightMapTex, i.uv1));
+				float3 lightmap = DecodeLightmap(tex2D(_LightMapTex, i.uv1));
+				float3 exposed = exposure(lightmap, _Exposure);
 
-				return float4(lightmap, 1);
+				if (_IsLinear > 0)
+				{
+					// output gamma
+					//return float4(pow(lightmap, 1 / 2.2), 1);
+					//return float4(exposure(lightmap, _Exposure), 1);
+					return float4(pow(exposed, 1 / 2.2), 1);
+				}
+				else
+				{
+					return float4(exposed, 1);
+				}
 			}
 			ENDCG
 		}

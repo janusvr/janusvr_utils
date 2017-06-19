@@ -76,7 +76,7 @@ namespace JanusVR
 
         public JanusVRLink()
         {
-            JanusVRExporter.AddObject(this);
+            JanusGlobals.RegisterObject(this);
         }
 
         public Vector3 GetJanusPosition()

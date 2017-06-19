@@ -22,8 +22,7 @@ namespace JanusVR
             {
                 if (circular != value)
                 {
-                    MeshRenderer renderer = this.GetComponent<MeshRenderer>();
-                    MeshFilter filter = this.GetComponent<MeshFilter>();
+                    MeshFilter filter = GetComponent<MeshFilter>();
                     filter.sharedMesh = JanusResources.PlaneMesh;
 
                     if (value)
@@ -41,7 +40,7 @@ namespace JanusVR
 
         public JanusVREntryPortal()
         {
-            JanusVRExporter.AddObject(this);
+            JanusGlobals.RegisterObject(this);
         }
 
         public Vector3 GetJanusPosition()
@@ -140,7 +139,7 @@ namespace JanusVR
             Material mat = Material.Instantiate(AssetDatabase.GetBuiltinExtraResource<Material>("Default-Diffuse.mat"));
             renderer.sharedMaterial = mat;
 
-            JanusVREntryPortal portal = go.AddComponent<JanusVREntryPortal>();
+            go.AddComponent<JanusVREntryPortal>();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿#if UNITY_EDITOR
+﻿#if UPDATER
+#if UNITY_EDITOR
 
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,6 @@ namespace JanusVRUpdater
         private Stopwatch timer;
         private string error;
 
-        private bool downloading;
         private bool downloaded;
         private string tempFile;
         private bool refresh;
@@ -95,7 +95,6 @@ namespace JanusVRUpdater
 
         private void CleanUp()
         {
-            downloading = false;
             downloaded = false;
             open = false;
 
@@ -141,8 +140,6 @@ namespace JanusVRUpdater
 
             status = "Downloading";
             description = "0%";
-
-            downloading = true;
 
             timer = Stopwatch.StartNew();
             tempFile = Path.GetTempFileName();
@@ -214,7 +211,6 @@ namespace JanusVRUpdater
 
         private void Client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
-            downloading = false;
             client.Dispose();
             client = null;
             timer.Stop();
@@ -269,4 +265,5 @@ namespace JanusVRUpdater
         }
     }
 }
+#endif
 #endif

@@ -16,7 +16,7 @@
     <CompilerResponseFile></CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
-    <UnityVersion>5.5.3f1</UnityVersion>
+    <UnityVersion>5.5.3p2</UnityVersion>
     <RootNamespace></RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
@@ -121,10 +121,11 @@
     <Compile Include="Assets\JanusExporter\Codebase\JanusLink.cs" />
     <Compile Include="Assets\JanusExporter\Codebase\JanusResources.cs" />
     <Compile Include="Assets\JanusExporter\Codebase\JanusVRExporter.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\JanusVRWelcome.cs" />
     <Compile Include="Assets\JanusExporter\Codebase\JanusVR_Exporter.cs" />
+    <Compile Include="Assets\JanusExporter\Codebase\Lightmap\JanusVRLightmaps.cs" />
     <Compile Include="Assets\JanusExporter\Codebase\LightmapExportType.cs" />
     <Compile Include="Assets\JanusExporter\Codebase\MeshExportData.cs" />
+    <Compile Include="Assets\JanusExporter\Codebase\SceneExportData.cs" />
     <Compile Include="Assets\JanusExporter\Codebase\TextureExportData.cs" />
     <Compile Include="Assets\JanusExporter\Codebase\TextureFilterMode.cs" />
     <Compile Include="Assets\JanusExporter\Codebase\Util\HtmlUtil.cs" />
@@ -132,9 +133,13 @@
     <Compile Include="Assets\JanusExporter\Codebase\Util\MathUtil.cs" />
     <Compile Include="Assets\JanusExporter\Codebase\Util\ReflectionUtil.cs" />
     <Compile Include="Assets\JanusExporter\Codebase\Util\TextureUtil.cs" />
+    <Compile Include="Assets\JanusExporter\Codebase\Util\UnityUtil.cs" />
+    <Compile Include="Assets\JanusExporter\Codebase\Windows\JanusVRWelcome.cs" />
+    <Compile Include="Assets\JanusExporter\Codebase\Windows\LightmapPreviewWindow.cs" />
     <Compile Include="Assets\JanusExporter\Updater\JanusVRUpdater.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\JanusExporter\Codebase\Shaders\ExposureShader.shader" />
     <None Include="Assets\JanusExporter\Codebase\Shaders\LMapBaked.shader" />
     <None Include="Assets\JanusExporter\Codebase\Shaders\LMapPacked.shader" />
     <None Include="Assets\JanusExporter\Codebase\Shaders\LMapUnpacked.shader" />

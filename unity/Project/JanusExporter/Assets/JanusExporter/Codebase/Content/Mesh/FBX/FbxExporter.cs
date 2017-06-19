@@ -9,7 +9,7 @@ using System.Text;
 using UnityEngine;
 
 namespace JanusVR.FBX
-{   
+{
     /// <summary>
     /// Class that handles exporting Unity meshes on FBX
     /// </summary>
@@ -55,7 +55,7 @@ namespace JanusVR.FBX
             FbxExporterInterop.Initialize(mesh.name);
             FbxExporterInterop.SetFBXCompatibility(1);
             FbxExporterInterop.AddMesh(mesh.name);
-          
+
             FbxVector3[] nvertices = new FbxVector3[vertices.Length];
             FbxVector3[] nnormals = new FbxVector3[triangles.Length];
 
@@ -157,6 +157,7 @@ namespace JanusVR.FBX
                     }
 
                     FbxVector2[] uv = new FbxVector2[triangles.Length];
+
                     for (int j = 0; j < triangles.Length; j++)
                     {
                         Vector2 v = tverts[triangles[j]];

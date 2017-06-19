@@ -15,7 +15,7 @@
   margin-bottom:0px;
 
   }
-  
+
   .stat {
   width:32px;
   height:32px;
@@ -23,8 +23,8 @@
   background-size:cover;
 
   }
- 
-  
+
+
 
  .quitb {
 
@@ -51,7 +51,7 @@ transition: opacity 0;
 
 
 
- 
+
   .statisticleft {
   background-image: url(icons/newstat/network-online.png);
   bottom:8px;
@@ -66,21 +66,21 @@ transition: opacity 0;
   background-image: url(icons/newstat/network-private.png);
   bottom:8px;
   left:8px;
-  } 
-  
+  }
+
     .statisticleftpending {
   background-image: url(icons/newstat/network-pending.png);
   bottom:8px;
   left:8px;
   }
-  
+
    .statisticleft2 {
   background-image: url(icons/newstat/population.png);
   bottom:8px;
   left:48px;
   }
-  
- 
+
+
   .statisticright{
   background-image: url(icons/newstat/partymode.png);
   bottom:8px;
@@ -88,7 +88,17 @@ transition: opacity 0;
    visibility:hidden;
   }
 
- 
+
+   .statisticrightlocked{
+   background-image: url(icons/newstat/partymode-locked.png);
+   bottom:8px;
+   right:48px;
+    visibility:hidden;
+   }
+
+
+
+
   .statisticright2{
   background-image: url(icons/newstat/room-locked.png);
   bottom:8px;
@@ -98,10 +108,10 @@ transition: opacity 0;
   background-image: url(icons/newstat/room-unlocked.png);
   bottom:8px;
   right:8px;
-  }  
-  
+  }
+
   .statisticleft2counter {
-  
+
   position:absolute;
   padding-left:24px;
   padding-right:16px;
@@ -118,9 +128,9 @@ transition: opacity 0;
 
 
   }
-  
-  
-  
+
+
+
 
  .avatar {
 margin-top:4px;
@@ -261,7 +271,7 @@ position: fixed;
       background-position: center;
 
   }
-  
+
   .quickbrowser {
   background-image: url("icons/glyph-04.png");
    background-repeat: no-repeat;
@@ -559,20 +569,20 @@ border-left-style:solid;
  border-top-left-radius:10px;
  bottom: 8px ;
  text-align: center;
- 
- 
+
+
  border-bottom-color:#61BE6C;
  border-bottom-width:2px;
  border-bottom-style:solid;
 
- 
- 
+
+
   position: absolute;
   left: 50%;
-  
+
    width: 300px;
   margin-left: -132px;
-  
+
   /*This margin should be half of the width of the tray*/
  }
 
@@ -626,11 +636,11 @@ overflow:visible;
 	display:block;
     bottom:-21px;
     left: 50%;
-	
+
     margin-left: -10px;
     width: 0;
 	overflow:visible;
-	
+
     height: 0;
     border-bottom: solid 18px #62BD6C;
     border-left: solid 10px transparent;
@@ -841,13 +851,13 @@ opacity:0.75;
 
    content: url("window-pin-hover.png");
 
-  }  
-  
+  }
+
   .pinnedwindow {
   opacity:1 !important;
 
   }
-  
+
     .notifbuttonleft {
 
    content: url("notif_left.png");

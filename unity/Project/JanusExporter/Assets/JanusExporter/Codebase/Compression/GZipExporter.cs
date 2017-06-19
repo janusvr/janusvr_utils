@@ -1,4 +1,5 @@
-﻿#if UNITY_EDITOR
+﻿#if GZIP
+#if UNITY_EDITOR
 
 using System;
 using System.Collections.Generic;
@@ -37,4 +38,5 @@ namespace JanusVR
         }
     }
 }
+#endif
 #endif
