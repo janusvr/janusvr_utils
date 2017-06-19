@@ -17,7 +17,7 @@ namespace JanusVR
         public FireBoxAssets Assets { get; set; }
 
         [XmlElement("Room")]
-        public FireBoxRoomRoom Room { get; set; }
+        public Room Room { get; set; }
 
         [XmlNamespaceDeclarations]
         public XmlSerializerNamespaces Namespaces
@@ -28,7 +28,7 @@ namespace JanusVR
         public FireBoxRoom()
         {
             Assets = new FireBoxAssets();
-            Room = new FireBoxRoomRoom();
+            Room = new Room();
 
             this.namespaces = new XmlSerializerNamespaces(new XmlQualifiedName[] {
                 new XmlQualifiedName("", "") // Default Namespace

@@ -6,11 +6,27 @@ using UObject = UnityEngine.Object;
 
 namespace JanusVR
 {
+    /// <summary>
+    /// Global values for JanusVR
+    /// </summary>
     public static class JanusGlobals
     {
+        /// <summary>
+        /// A list with all JanusObject components on the Unity scene
+        /// </summary>
+        private static List<IJanusObject> objects = new List<IJanusObject>();
+
         public const decimal Version = 2.12M;
-        public static int DecimalCasesPosition = 4;
-        public static int DecimalCasesLightmap = 6;
+
+        /// <summary>
+        /// Decimal cases used by default when exporting position/scale/rotation values
+        /// </summary>
+        public static int DecimalCasesForTransforms = 4;
+
+        /// <summary>
+        /// Decimal cases used by default when exporting lightmaps
+        /// </summary>
+        public static int DecimalCasesForLightmaps = 6;
 
         /// <summary>
         /// Lower case values that the exporter will consider for being the Main Texture on a shader
@@ -52,13 +68,11 @@ namespace JanusVR
             "_FrontTex", "_BackTex", "_LeftTex", "_RightTex", "_UpTex", "_DownTex"
         };
 
-        private static List<IJanusObject> objects;
-        static JanusGlobals()
-        {
-            objects = new List<IJanusObject>();
-        }
-
-
+        /// <summary>
+        /// Registers an object to be updated when the exporter needs 
+        /// (for now only when the user updates the scale)
+        /// </summary>
+        /// <param name="obj"></param>
         public static void RegisterObject(IJanusObject obj)
         {
             objects.Add(obj);

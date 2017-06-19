@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +8,9 @@ using UnityEngine.Rendering;
 
 namespace JanusVR
 {
+    /// <summary>
+    /// Component that represents the JanusVR entry portal on an Unity scene
+    /// </summary>
     public class JanusVREntryPortal : MonoBehaviour, IJanusObject
     {
         [SerializeField, HideInInspector]

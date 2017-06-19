@@ -12,3 +12,5 @@ Dev Info
 - All the methods that display a progress bar use a try/catch/finally because if it fails anywhere Unity will not hide the progress bar - locking the user out of the editor.
 
 - The conversion between Unity and Janus space is made on the RoomObject class - SetUnityObj method.
+
+- CMFT: The cmft implementation in C# uses the CLR version (thogh we call console commands, they are actually ran inside Unity's memory space, so anti-viruses should have no issues with our DLLs)

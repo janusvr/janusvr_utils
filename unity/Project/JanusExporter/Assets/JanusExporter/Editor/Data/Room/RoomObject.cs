@@ -70,22 +70,22 @@ namespace JanusVR
             yDir.x *= -1;
             zDir.x *= -1;
 
-            xdir = JanusUtil.FormatVector3(xDir, JanusGlobals.DecimalCasesPosition);
-            ydir = JanusUtil.FormatVector3(yDir, JanusGlobals.DecimalCasesPosition);
-            zdir = JanusUtil.FormatVector3(zDir, JanusGlobals.DecimalCasesPosition);
-            pos = JanusUtil.FormatVector3(position, JanusGlobals.DecimalCasesPosition);
+            xdir = JanusUtil.FormatVector3(xDir, JanusGlobals.DecimalCasesForTransforms);
+            ydir = JanusUtil.FormatVector3(yDir, JanusGlobals.DecimalCasesForTransforms);
+            zdir = JanusUtil.FormatVector3(zDir, JanusGlobals.DecimalCasesForTransforms);
+            pos = JanusUtil.FormatVector3(position, JanusGlobals.DecimalCasesForTransforms);
 
             Vector3 sca = trans.lossyScale;
             if (sca.x < 0 || sca.y < 0 || sca.z < 0)
             {
                 cull_face = "front";
             }
-            scale = JanusUtil.FormatVector3(trans.lossyScale, JanusGlobals.DecimalCasesPosition);
+            scale = JanusUtil.FormatVector3(trans.lossyScale, JanusGlobals.DecimalCasesForTransforms);
         }
 
         public void SetLightmap(Vector4 lightmap)
         {
-            lmap_sca = JanusUtil.FormatVector4(lightmap, JanusGlobals.DecimalCasesLightmap);
+            lmap_sca = JanusUtil.FormatVector4(lightmap, JanusGlobals.DecimalCasesForLightmaps);
         }
     }
 }

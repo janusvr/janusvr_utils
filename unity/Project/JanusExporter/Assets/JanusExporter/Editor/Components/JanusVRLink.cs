@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,18 +7,22 @@ using UnityEngine;
 
 namespace JanusVR
 {
+    /// <summary>
+    /// A representation of a Janus LinkObject inside Unity
+    /// </summary>
     public class JanusVRLink : MonoBehaviour, IJanusObject
     {
-        [NonSerialized]
-        public Texture2D texture;
-
-        [SerializeField, HideInInspector]
-        public MeshRenderer meshRenderer;
-
-
         [SerializeField, HideInInspector]
         private MeshFilter filter;
+        [SerializeField, HideInInspector]
+        private Color color = Color.white;
+        [SerializeField, HideInInspector]
+        private bool circular = false;
 
+        [NonSerialized]
+        public Texture2D texture;
+        [SerializeField, HideInInspector]
+        public MeshRenderer meshRenderer;
         [SerializeField, HideInInspector]
         public string url = "http://www.janusvr.com";
         [SerializeField, HideInInspector]
@@ -31,12 +33,6 @@ namespace JanusVR
         public bool draw_text = true;
         [SerializeField, HideInInspector]
         public bool auto_load = false;
-
-        [SerializeField, HideInInspector]
-        private Color color = Color.white;
-
-        [SerializeField, HideInInspector]
-        private bool circular = false;
 
         public Color Color
         {

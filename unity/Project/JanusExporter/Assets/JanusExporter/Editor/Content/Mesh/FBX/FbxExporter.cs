@@ -10,7 +10,7 @@ using UnityEngine;
 namespace JanusVR.FBX
 {
     /// <summary>
-    /// Class that handles exporting Unity meshes on FBX
+    /// Class that handles exporting Unity meshes to FBX
     /// </summary>
     public class FbxExporter : MeshExporter
     {

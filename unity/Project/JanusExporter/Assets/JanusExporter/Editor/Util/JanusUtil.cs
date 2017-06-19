@@ -114,7 +114,7 @@ namespace JanusVR
 
         public static string FormatVector3(Vector3 v)
         {
-            return FormatVector3(v, JanusGlobals.DecimalCasesPosition);
+            return FormatVector3(v, JanusGlobals.DecimalCasesForTransforms);
         }
 
         public static string FormatVector3(Vector3 v, int decimalPlaces)
@@ -125,7 +125,7 @@ namespace JanusVR
 
         public static string FormatVector4(Vector4 v)
         {
-            return FormatVector4(v, JanusGlobals.DecimalCasesPosition);
+            return FormatVector4(v, JanusGlobals.DecimalCasesForTransforms);
         }
 
         public static string FormatVector4(Vector4 v, int decimalPlaces)
