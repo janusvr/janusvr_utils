@@ -105,9 +105,10 @@ namespace JanusVR
                     break;
             }
 
-            if (lightmapExportType != LightmapExportType.BakedMaterial)
+            if (lightmapExportType != LightmapExportType.BakedMaterial &&
+                room.ExportMaterials)
             {
-                // search for textures on object
+                // search for textures/color on object
                 Texture2D texture = null;
                 Color objColor = Color.white;
 

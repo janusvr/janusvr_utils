@@ -31,19 +31,18 @@ namespace JanusVR
         private Dictionary<ExportMeshFormat, MeshExporter> meshExporters;
 
         public string RootFolder { get; private set; }
-        public LightmapExportType LightmapType { get; set; }
         public ExportTextureFormat TextureFormat { get; set; }
         public bool TextureForceReExport { get; set; }
-
-        public object TextureData { get; set; }
-        public float UniformScale { get; set; }
-        public float LightmapExposure { get; set; }
-        public int LightmapMaxResolution { get; set; }
-        public bool ExportMaterials { get; set; }
-        public bool SkyboxEnabled { get; set; }
-        public int SkyboxResolution { get; set; }
         public bool ExportOnlyHtml { get; set; }
 
+        public float LightmapExposure { get; set; }
+        public int LightmapMaxResolution { get; set; }
+        public LightmapExportType LightmapType { get; set; }
+        public bool SkyboxEnabled { get; set; }
+        public int SkyboxResolution { get; set; }
+        public object TextureData { get; set; }
+        public float UniformScale { get; set; }
+        public bool ExportMaterials { get; set; }
         public bool EnvironmentProbeExport { get; set; }
         public int EnvironmentProbeRadResolution { get; set; }
         public int EnvironmentProbeIrradResolution { get; set; }
@@ -58,7 +57,6 @@ namespace JanusVR
 
         public AssetImage CubemapRadiance { get; set; }
         public AssetImage CubemapIrradiance { get; set; }
-
 
         public float? FarPlaneDistance { get; set; }
 

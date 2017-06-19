@@ -51,12 +51,6 @@ namespace JanusVR
         private int defaultQuality;
 
         /// <summary>
-        /// The format to export all meshes in
-        /// </summary>
-        [SerializeField]
-        private ExportMeshFormat meshFormat;
-
-        /// <summary>
         /// An uniform scale to apply to the whole scene (useful for matching VR scale inside janus)
         /// </summary>
         [SerializeField]
@@ -86,17 +80,6 @@ namespace JanusVR
         /// </summary>
         [SerializeField]
         private bool exportMaterials;
-
-        /// <summary>
-        /// Export all textures that are GIFs as actual GIFs
-        /// </summary>
-        [SerializeField]
-        private bool exportGifs;
-
-        /// <summary>
-        /// Exports the scene's reflection probes
-        /// </summary>
-        //private bool exportProbes;
 
         /// <summary>
         /// The resolution to render the skybox to, if it's a procedural one
@@ -157,12 +140,10 @@ namespace JanusVR
             string proj = JanusUtil.GetDefaultExportPath();
             exportPath = proj;
 
-            meshFormat = ExportMeshFormat.FBX;
             uniformScale = 1;
             defaultTexFormat = ExportTextureFormat.JPG;
             defaultQuality = 70;
 
-            exportGifs = true;
             exportMaterials = true;
             exportSkyboxResolution = 1024;
 
@@ -202,13 +183,12 @@ namespace JanusVR
         [SerializeField]
         private bool lightmapExposureVisible = true;
 
-        private LightmapPreviewWindow previewWindow;
+        [SerializeField]
+        private AssetObjectSearchType searchType;
+
         private JanusRoom room;
         private bool meshPreviewShow;
         private int meshPreviewWidth;
-
-        [SerializeField]
-        private AssetObjectSearchType searchType;
 
         private void OnGUI()
         {
@@ -333,7 +313,7 @@ namespace JanusVR
 
             // Probes
             GUILayout.Label("Probes", EditorStyles.boldLabel);
-            environmentProbeExport = EditorGUILayout.Toggle("Export Environment Probes", exportMaterials);
+            environmentProbeExport = EditorGUILayout.Toggle("Export Environment Probes", environmentProbeExport);
             if (environmentProbeExport)
             {
                 environmentProbeOverride = EditorGUILayout.ObjectField(environmentProbeOverride, typeof(ReflectionProbe), true) as ReflectionProbe;
@@ -518,8 +498,13 @@ namespace JanusVR
 
         private void CopyParametersToRoom()
         {
-            room.LightmapMaxResolution = maxLightMapResolution;
+            room.EnvironmentProbeExport = environmentProbeExport;
+            room.EnvironmentProbeIrradResolution = environmentProbeIrradResolution;
+            room.EnvironmentProbeRadResolution = environmentProbeRadResolution;
+            room.EnvironmentProbeOverride = environmentProbeOverride;
+            room.ExportMaterials = exportMaterials;
             room.LightmapExposure = lightmapExposure;
+            room.LightmapMaxResolution = maxLightMapResolution;
             room.LightmapType = lightmapExportType;
             room.SkyboxEnabled = exportSkybox;
             room.SkyboxResolution = exportSkyboxResolution;
@@ -527,9 +512,6 @@ namespace JanusVR
             room.TextureFormat = defaultTexFormat;
             room.TextureForceReExport = textureForceReExport;
             room.UniformScale = uniformScale;
-            room.EnvironmentProbeExport = environmentProbeExport;
-            room.EnvironmentProbeIrradResolution = environmentProbeIrradResolution;
-            room.EnvironmentProbeRadResolution = environmentProbeRadResolution;
         }
     }
 }
