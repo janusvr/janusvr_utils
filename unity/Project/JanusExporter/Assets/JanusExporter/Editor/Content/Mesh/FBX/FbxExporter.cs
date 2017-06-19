@@ -1,6 +1,7 @@
 ﻿using JanusVR;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -26,37 +27,19 @@ namespace JanusVR.FBX
             return ".fbx";
         }
 
-        public override void ExportMesh(Mesh mesh, string exportPath, MeshExportParameters parameters)
+        public override void ExportMesh(MeshData mesh, string exportPath, MeshExportParameters parameters)
         {
-            if (mesh.GetTopology(0) != MeshTopology.Triangles)
-            {
-                return;
-            }
+            Vector3[] vertices = mesh.Vertices;
+            Vector3[] normals = mesh.Normals;
+            int[] triangles = mesh.Triangles;
+            Vector2[][] uvs = mesh.UV;
 
-            Vector3[] vertices = mesh.vertices;
-            Vector3[] normals = mesh.normals;
-            int[] triangles = mesh.triangles;
-
-            if (triangles == null || triangles.Length == 0)
-            {
-                Debug.LogWarning("Mesh is empty " + mesh.name, mesh);
-                return;
-            }
-
-            // check if we have all the data
-            int maximum = triangles.Max();
-            if (normals.Length < maximum)
-            {
-                Debug.LogWarning("Mesh has not enough normals - " + mesh.name, mesh);
-                return;
-            }
-
-            FbxExporterInterop.Initialize(mesh.name);
-            FbxExporterInterop.SetFBXCompatibility(1);
-            FbxExporterInterop.AddMesh(mesh.name);
+            FbxExporterInterop.Initialize(mesh.Name + "Scene");
+            FbxExporterInterop.SetFBXCompatibility(4);
+            FbxExporterInterop.BeginMesh(mesh.Name);
 
             FbxVector3[] nvertices = new FbxVector3[vertices.Length];
-            FbxVector3[] nnormals = new FbxVector3[triangles.Length];
+            FbxVector3[] nnormals = new FbxVector3[vertices.Length];
 
             if (parameters.Mirror)
             {
@@ -89,83 +72,35 @@ namespace JanusVR.FBX
                 Vector3 v = vertices[i];
                 nvertices[i] = new FbxVector3(v.x, v.y, v.z);
             }
-            for (int i = 0; i < triangles.Length; i++)
+            for (int i = 0; i < normals.Length; i++)
             {
-                Vector3 v = normals[triangles[i]];
+                Vector3 v = normals[i];
                 nnormals[i] = new FbxVector3(v.x, v.y, v.z);
             }
 
-            FbxExporterInterop.AddMaterial(new FbxVector3(0.7, 0.7, 0.7));
-            FbxExporterInterop.AddIndices(triangles, triangles.Length, 0);
+            FbxExporterInterop.EnableDefaultMaterial(mesh.Name + "Material");
             FbxExporterInterop.AddVertices(nvertices, nvertices.Length);
             FbxExporterInterop.AddNormals(nnormals, nnormals.Length);
 
-            if (parameters.SwitchUV)
+            for (int i = 0; i < uvs.Length; i++)
             {
-                List<Vector2> tverts = new List<Vector2>();
-#if UNITY_5_3_OR_NEWER
-                mesh.GetUVs(1, tverts);
-#else
-                tverts.AddRange(mesh.uv2);
-#endif
-
-                if (tverts.Count != 0)
+                Vector2[] uv = uvs[i];
+                if (uv == null || uv.Length == 0)
                 {
-                    FbxVector2[] uv = new FbxVector2[triangles.Length];
-                    for (int j = 0; j < triangles.Length; j++)
-                    {
-                        Vector2 v = tverts[triangles[j]];
-                        uv[j] = new FbxVector2(v.x, v.y);
-                    }
-
-                    FbxExporterInterop.AddTexCoords(uv, uv.Length, 0, "UV0");
+                    continue;
                 }
-            }
-            else
-            {
-                for (int i = 0; i < 4; i++)
+
+                FbxVector2[] fbxUv = new FbxVector2[uv.Length];
+                for (int j = 0; j < uv.Length; j++)
                 {
-                    List<Vector2> tverts = new List<Vector2>();
-#if UNITY_5_3_OR_NEWER
-                    mesh.GetUVs(i, tverts);
-#else
-                    switch (i)
-                    {
-                        case 0:
-                            tverts.AddRange(mesh.uv);
-                            break;
-                        case 1:
-                            tverts.AddRange(mesh.uv2);
-                            break;
-                        case 2:
-                            tverts.AddRange(mesh.uv3);
-                            break;
-                        case 3:
-                            tverts.AddRange(mesh.uv4);
-                            break;
-                    }
-#endif
-
-                    if (tverts.Count == 0)
-                    {
-                        if (room.LightmapType != LightmapExportType.None && i == 1)
-                        {
-                            Debug.LogWarning("Lightmapping is enabled but mesh has no UV1 channel - " + mesh.name + " - Tick the Generate Lightmap UVs", mesh);
-                        }
-                        continue;
-                    }
-
-                    FbxVector2[] uv = new FbxVector2[triangles.Length];
-
-                    for (int j = 0; j < triangles.Length; j++)
-                    {
-                        Vector2 v = tverts[triangles[j]];
-                        uv[j] = new FbxVector2(v.x, v.y);
-                    }
-
-                    FbxExporterInterop.AddTexCoords(uv, uv.Length, i, "UV" + i);
+                    Vector2 v = uv[j];
+                    fbxUv[j] = new FbxVector2(v.x, v.y);
                 }
+                FbxExporterInterop.AddTexCoords(fbxUv, fbxUv.Length, i, "UV" + i.ToString(CultureInfo.InvariantCulture));
             }
+
+            FbxExporterInterop.AddIndices(triangles, triangles.Length, 0);
+            FbxExporterInterop.EndMesh();
 
             string fullPath = Path.Combine(room.RootFolder, exportPath);
             FbxExporterInterop.Export(fullPath);

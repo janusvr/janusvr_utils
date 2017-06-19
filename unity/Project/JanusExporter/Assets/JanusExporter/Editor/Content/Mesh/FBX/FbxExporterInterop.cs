@@ -15,7 +15,10 @@ namespace JanusVR.FBX
         public extern static void SetFBXCompatibility(int CompatibilityVersion);
 
         [DllImport("UnityFBXExporter", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public extern static void AddMesh([MarshalAs(UnmanagedType.LPStr)] string MeshName);
+        public extern static void BeginMesh([MarshalAs(UnmanagedType.LPStr)] string MeshName);
+
+        [DllImport("UnityFBXExporter", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public extern static void EndMesh();
 
         [DllImport("UnityFBXExporter", CallingConvention = CallingConvention.Cdecl)]
         public extern static void AddVertices(FbxVector3[] Vertices, int Count);
@@ -29,8 +32,13 @@ namespace JanusVR.FBX
         [DllImport("UnityFBXExporter", CallingConvention = CallingConvention.Cdecl)]
         public extern static void AddTexCoords(FbxVector2[] TexCoords, int Count, int UVLayer, string ChannelName);
 
+        [DllImport("UnityFBXExporter", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public extern static void EnableDefaultMaterial([MarshalAs(UnmanagedType.LPStr)] string materialName);
+
         [DllImport("UnityFBXExporter", CallingConvention = CallingConvention.Cdecl)]
-        public extern static void AddMaterial(FbxVector3 DiffuseColor);
+        public extern static void SetMaterial([MarshalAs(UnmanagedType.LPStr)] string materialName,
+            FbxVector3 emissive, FbxVector3 ambient, FbxVector3 diffuse, FbxVector3 specular,
+            FbxVector3 reflection, double shininess);
 
         [DllImport("UnityFBXExporter", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public extern static void Export([MarshalAs(UnmanagedType.LPStr)] string SceneName);

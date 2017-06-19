@@ -36,6 +36,12 @@ namespace JanusVR
         private string exportPath;
 
         /// <summary>
+        /// If we should export inactive gameobjects
+        /// </summary>
+        [SerializeField]
+        private bool exportInactiveObjects;
+
+        /// <summary>
         /// The format to export all textures to
         /// </summary>
         [SerializeField]
@@ -80,6 +86,9 @@ namespace JanusVR
         /// </summary>
         [SerializeField]
         private bool exportMaterials;
+
+        [SerializeField]
+        private bool exportTextures;
 
         /// <summary>
         /// The resolution to render the skybox to, if it's a procedural one
@@ -144,8 +153,10 @@ namespace JanusVR
             defaultTexFormat = ExportTextureFormat.JPG;
             defaultQuality = 70;
 
+            exportTextures = true;
             exportMaterials = true;
             exportSkyboxResolution = 1024;
+            exportInactiveObjects = false;
 
             lightmapExportType = LightmapExportType.PackedSourceEXR;
             lightmapExposureVisible = true;
@@ -301,7 +312,10 @@ namespace JanusVR
             // Scene
             GUILayout.Label("Scene", EditorStyles.boldLabel);
 
+            exportInactiveObjects = EditorGUILayout.Toggle("Export Inactive Objects", exportInactiveObjects);
+            exportTextures = EditorGUILayout.Toggle("Export Textures", exportTextures);
             exportMaterials = EditorGUILayout.Toggle("Export Materials", exportMaterials);
+            
             EditorGUILayout.LabelField("    Useful for testing lighting results in Janus");
 
             exportSkybox = EditorGUILayout.Toggle("Export Skybox", exportSkybox);
@@ -462,15 +476,15 @@ namespace JanusVR
                         return;
                     }
 
-                    try
+                    //try
                     {
                         Export(false);
                     }
-                    catch (Exception ex)
+                    //catch (Exception ex)
                     {
-                        Debug.Log("Error exporting: " + ex.Message);
+                        //Debug.Log("Error exporting: " + ex.Message);
                     }
-                    finally
+                    //finally
                     {
                         // delete room
                         room = null;
@@ -498,11 +512,13 @@ namespace JanusVR
 
         private void CopyParametersToRoom()
         {
+            room.IgnoreInactiveObjects = !exportInactiveObjects;
             room.EnvironmentProbeExport = environmentProbeExport;
             room.EnvironmentProbeIrradResolution = environmentProbeIrradResolution;
             room.EnvironmentProbeRadResolution = environmentProbeRadResolution;
             room.EnvironmentProbeOverride = environmentProbeOverride;
             room.ExportMaterials = exportMaterials;
+            room.ExportTextures = exportTextures;
             room.LightmapExposure = lightmapExposure;
             room.LightmapMaxResolution = maxLightMapResolution;
             room.LightmapType = lightmapExportType;

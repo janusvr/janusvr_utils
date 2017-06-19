@@ -28,6 +28,7 @@ namespace JanusVR
             // copy data
             fireBoxRoom.Assets.Assets = room.AllAssets.ToArray();
             fireBoxRoom.Room.Elements = room.RoomElements.ToArray();
+            fireBoxRoom.Room.FarDistance = room.FarPlaneDistance;
 
             if (room.PortalPos != null)
             {
@@ -44,6 +45,9 @@ namespace JanusVR
             fireBoxRoom.Room.skybox_right_id = room.SkyboxRight;
             fireBoxRoom.Room.skybox_up_id = room.SkyboxUp;
             fireBoxRoom.Room.skybox_down_id = room.SkyboxDown;
+
+            fireBoxRoom.Room.cubemap_irradiance_id = room.CubemapIrradiance;
+            fireBoxRoom.Room.cubemap_radiance_id = room.CubemapRadiance;
 
             return fireBoxRoom;
         }
@@ -81,7 +85,6 @@ namespace JanusVR
             writer.Close();
             writer.Flush();
 
-            string str = builder.ToString();
             UnityUtil.WriteAllText(path, builder.ToString());
             return;
         }

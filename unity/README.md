@@ -4,6 +4,9 @@ Latest Release: v2.11
 FAQ
 
 
+Info
+- Textures: If you set textures to uncompressed the exports are going to be WAY faster as the exporter doesn't need to decompress before exporting.
+
 
 
 Dev Info

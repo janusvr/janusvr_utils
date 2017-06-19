@@ -13,6 +13,8 @@ namespace JanusVR
     {
         public abstract void Initialize(JanusRoom room);
         public abstract string GetFormat();
-        public abstract void ExportMesh(Mesh mesh, string exportPath, MeshExportParameters parameters);
+
+        //public abstract void ExportMesh(Mesh mesh, string exportPath, MeshExportParameters parameters);
+        public abstract void ExportMesh(MeshData mesh, string exportPath, MeshExportParameters parameters);
     }
 }

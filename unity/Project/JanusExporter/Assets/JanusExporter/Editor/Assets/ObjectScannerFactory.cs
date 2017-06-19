@@ -11,8 +11,12 @@ namespace JanusVR
         {
             switch (type)
             {
+                case AssetObjectSearchType.EachMesh:
+                    return new BruteForceObjectScanner();
+                case AssetObjectSearchType.PerMaterial:
+                    return new PerMaterialObjectScanner();
                 default:
-                    return new BruteForceObjectScanner(room);
+                    return null;
             }
         }
     }

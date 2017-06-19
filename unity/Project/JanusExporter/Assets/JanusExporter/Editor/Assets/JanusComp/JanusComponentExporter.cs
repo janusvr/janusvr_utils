@@ -19,58 +19,62 @@ namespace JanusVR
             return !comps.Any(c => c is JanusVREntryPortal || c is JanusVRLink);
         }
 
-        public bool Process(Component comp)
+        public void Process(Component[] comps)
         {
             float uniformScale = room.UniformScale;
 
-            if (comp is JanusVREntryPortal)
+            for (int i = 0; i < comps.Length; i++)
             {
-                JanusVREntryPortal portal = (JanusVREntryPortal)comp;
-                Transform portalTransform = portal.transform;
-
-                Vector3 portalPos = JanusUtil.ConvertPosition(portal.GetJanusPosition(), uniformScale);
-                Vector3 xDir, yDir, zDir;
-                JanusUtil.GetJanusVectors(portalTransform, out xDir, out yDir, out zDir);
-
-                room.PortalPos = portalPos;
-                room.PortalXDir = xDir;
-                room.PortalYDir = yDir;
-                room.PortalZDir = zDir;
-
-                return false;
-            }
-            else if (comp is JanusVRLink)
-            {
-                JanusVRLink link = (JanusVRLink)comp;
-
-                Transform trans = link.transform;
-                Vector3 pos = JanusUtil.ConvertPosition(link.GetJanusPosition(), uniformScale);
-                Vector3 sca = trans.localScale;
-                Vector3 xDir, yDir, zDir;
-                JanusUtil.GetJanusVectors(trans, out xDir, out yDir, out zDir);
-
-                LinkObject linkObj = new LinkObject();
-                linkObj.pos = pos;
-                linkObj.xDir = xDir;
-                linkObj.yDir = yDir;
-                linkObj.zDir = zDir;
-                linkObj.col = link.Color;
-                linkObj.scale = sca;
-                linkObj.url = link.url;
-                linkObj.title = link.title;
-                //linkObj.image_id = link.url;
-
-                Material mat = link.meshRenderer.sharedMaterial;
-                Texture tex = mat.mainTexture;
-                if (tex != null)
+                Component comp = comps[i];
+                if (!comp)
                 {
+                    continue;
                 }
 
-                room.AddLinkObject(linkObj);
-                return false;
+                if (comp is JanusVREntryPortal)
+                {
+                    JanusVREntryPortal portal = (JanusVREntryPortal)comp;
+                    Transform portalTransform = portal.transform;
+
+                    Vector3 portalPos = JanusUtil.ConvertPosition(portal.GetJanusPosition(), uniformScale);
+                    Vector3 xDir, yDir, zDir;
+                    JanusUtil.GetJanusVectors(portalTransform, out xDir, out yDir, out zDir);
+
+                    room.PortalPos = portalPos;
+                    room.PortalXDir = xDir;
+                    room.PortalYDir = yDir;
+                    room.PortalZDir = zDir;
+                }
+                else if (comp is JanusVRLink)
+                {
+                    JanusVRLink link = (JanusVRLink)comp;
+
+                    Transform trans = link.transform;
+                    Vector3 pos = JanusUtil.ConvertPosition(link.GetJanusPosition(), uniformScale);
+                    Vector3 sca = trans.localScale;
+                    Vector3 xDir, yDir, zDir;
+                    JanusUtil.GetJanusVectors(trans, out xDir, out yDir, out zDir);
+
+                    LinkObject linkObj = new LinkObject();
+                    linkObj.pos = pos;
+                    linkObj.xDir = xDir;
+                    linkObj.yDir = yDir;
+                    linkObj.zDir = zDir;
+                    linkObj.col = link.Color;
+                    linkObj.scale = sca;
+                    linkObj.url = link.url;
+                    linkObj.title = link.title;
+                    //linkObj.image_id = link.url;
+
+                    Material mat = link.meshRenderer.sharedMaterial;
+                    Texture tex = mat.mainTexture;
+                    if (tex != null)
+                    {
+                    }
+
+                    room.AddLinkObject(linkObj);
+                }
             }
-            else 
-            return true;
         }
 
         public void ProcessNewRoomObject(RoomObject rObj, Component[] comps)

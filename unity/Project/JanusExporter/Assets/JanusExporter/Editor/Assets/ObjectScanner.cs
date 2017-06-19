@@ -8,7 +8,7 @@ namespace JanusVR
 {
     public abstract class ObjectScanner
     {
-        public abstract void Initialize(GameObject[] rootObjects);
+        public abstract void Initialize(JanusRoom room, GameObject[] rootObjects);
         public abstract void ExportAssetImages();
         public abstract void ExportAssetObjects();
     }

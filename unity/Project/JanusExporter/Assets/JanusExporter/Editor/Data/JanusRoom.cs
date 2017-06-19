@@ -35,6 +35,7 @@ namespace JanusVR
         public bool TextureForceReExport { get; set; }
         public bool ExportOnlyHtml { get; set; }
 
+        public bool IgnoreInactiveObjects { get; set; }
         public float LightmapExposure { get; set; }
         public int LightmapMaxResolution { get; set; }
         public LightmapExportType LightmapType { get; set; }
@@ -42,6 +43,7 @@ namespace JanusVR
         public int SkyboxResolution { get; set; }
         public object TextureData { get; set; }
         public float UniformScale { get; set; }
+        public bool ExportTextures { get; set; }
         public bool ExportMaterials { get; set; }
         public bool EnvironmentProbeExport { get; set; }
         public int EnvironmentProbeRadResolution { get; set; }
@@ -58,7 +60,7 @@ namespace JanusVR
         public AssetImage CubemapRadiance { get; set; }
         public AssetImage CubemapIrradiance { get; set; }
 
-        public float? FarPlaneDistance { get; set; }
+        public int? FarPlaneDistance { get; set; }
 
         public Vector3? PortalPos { get; set; }
         public Vector3? PortalXDir { get; set; }
@@ -132,7 +134,7 @@ namespace JanusVR
 
                 GameObject[] root = UnityUtil.GetSceneRoots();
                 objectScanner = ObjectScannerFactory.GetObjectScanner(type, this);
-                objectScanner.Initialize(root);
+                objectScanner.Initialize(this, root);
             }
             finally
             {

@@ -16,31 +16,26 @@ namespace JanusVR
         private List<string> meshNames;
 
         private Bounds sceneBounds;
-        private bool ignoreInactiveComponents = true;
-        private JanusRoom room = null;
+        private JanusRoom room;
 
         private MaterialScanner materialScanner;
         private JanusComponentExtractor compExtractor;
 
-        public bool IgnoreInactiveComponents
+        public BruteForceObjectScanner()
         {
-            get { return ignoreInactiveComponents; }
-        }
-
-        public BruteForceObjectScanner(JanusRoom room)
-        {
-            this.room = room;
             meshesToExport = new Dictionary<Mesh, BruteForceMeshExportData>();
             // for making sure we have no conflicting names
             meshNames = new List<string>();
             sceneBounds = new Bounds();
+        }
+
+        public override void Initialize(JanusRoom room, GameObject[] rootObjects)
+        {
+            this.room = room;
 
             materialScanner = new MaterialScanner(room);
             compExtractor = new JanusComponentExtractor(room);
-        }
 
-        public override void Initialize(GameObject[] rootObjects)
-        {
             EditorUtility.DisplayProgressBar("Janus VR Exporter", "Brute force scanning for AssetObjects...", 0.0f);
 
             materialScanner.Initialize();
@@ -50,12 +45,12 @@ namespace JanusVR
                 RecursiveSearch(root);
             }
 
-            room.FarPlaneDistance = sceneBounds.size.magnitude * 1.3f;
+            room.FarPlaneDistance = (int)Math.Max(500, sceneBounds.size.magnitude * 1.3f);
         }
 
         public void RecursiveSearch(GameObject root)
         {
-            if (IgnoreInactiveComponents &&
+            if (room.IgnoreInactiveObjects &&
                 !root.activeInHierarchy)
             {
                 return;
@@ -66,15 +61,14 @@ namespace JanusVR
             Component[] comps = root.GetComponents<Component>();
             if (!compExtractor.CanExport(comps))
             {
+                compExtractor.Process(comps);
                 return;
             }
-
 
             for (int i = 0; i < comps.Length; i++)
             {
                 Component comp = comps[i];
-                if (!comp ||
-                    !compExtractor.Process(comp))
+                if (!comp)
                 {
                     continue;
                 }
@@ -90,7 +84,8 @@ namespace JanusVR
 
                     Mesh mesh = filter.sharedMesh;
                     if (mesh == null ||
-                        !room.CanExportObj(comps))
+                        !room.CanExportObj(comps) || 
+                        mesh.GetTopology(0) != MeshTopology.Triangles)
                     {
                         continue;
                     }
@@ -134,7 +129,7 @@ namespace JanusVR
                     compExtractor.ProcessNewRoomObject(obj, comps);
 
                     // let the material scanner process this object
-                    materialScanner.PreProcessObject(meshRen, mesh, exp.Asset, obj);
+                    materialScanner.PreProcessObject(meshRen, mesh, exp.Asset, obj, true);
                 }
             }
 
@@ -149,6 +144,106 @@ namespace JanusVR
         {
             // process textures
             materialScanner.ProcessTextures();
+        }
+
+        public static bool LightmapNeedsUV1(JanusRoom room)
+        {
+            return room.LightmapType == LightmapExportType.Packed ||
+                room.LightmapType == LightmapExportType.PackedSourceEXR ||
+                room.LightmapType == LightmapExportType.Unpacked;
+        }
+
+        public static bool LightmapNeedsUVOverride(JanusRoom room)
+        {
+            return room.LightmapType == LightmapExportType.BakedMaterial;
+        }
+
+        public MeshData GetMeshData(Mesh mesh)
+        {
+            return GetMeshData(this.room, mesh);
+        }
+        public static MeshData GetMeshData(JanusRoom room, Mesh mesh)
+        {
+            MeshData data = new MeshData();
+
+            Vector3[] vertices = mesh.vertices;
+            Vector3[] normals = mesh.normals;
+            int[] triangles = mesh.triangles;
+
+            data.Vertices = vertices;
+            data.Normals = normals;
+            data.Triangles = triangles;
+            data.Name = mesh.name;
+
+            if (vertices == null || vertices.Length == 0)
+            {
+                Debug.LogWarning("Mesh is empty " + mesh.name, mesh);
+                return null;
+            }
+
+            // check if we have all the data
+            int maximum = triangles.Max();
+            if (normals.Length < maximum)
+            {
+                Debug.LogWarning("Mesh has not enough normals - " + mesh.name, mesh);
+                return null;
+            }
+
+            data.UV = GetMeshUVs(room, mesh);
+            return data;
+        }
+
+        public static Vector2[][] GetMeshUVs(JanusRoom room, Mesh mesh, int fakeUvSize = 0)
+        {
+            int uvLayers = LightmapNeedsUV1(room) ? 2 : 1;
+            bool needUvOverride = LightmapNeedsUVOverride(room);
+            Vector2[][] uvs = new Vector2[uvLayers][];
+
+            for (int i = 0; i < uvLayers; i++)
+            {
+                Vector2[] array = null;
+#if !UNITY_5_3_OR_NEWER
+                List<Vector2> tverts = new List<Vector2>();
+                if (needUvOverride)
+                {
+                    mesh.GetUVs(1, tverts);
+                }
+                else
+                {
+                    mesh.GetUVs(i, tverts);
+                }
+                array = tverts.ToArray();
+#else
+                switch (i)
+                {
+                    case 0:
+                        if (needUvOverride)
+                        {
+                            array = mesh.uv2;
+                        }
+                        else
+                        {
+                            array = mesh.uv;
+                        }
+                        break;
+                    case 1:
+                        array = mesh.uv2;
+                        break;
+                }
+#endif
+                if (fakeUvSize > 0 && (array == null || array.Length == 0))
+                {
+                    array = new Vector2[fakeUvSize];
+                }
+                if (i == 1 && array == null ||
+                    array.Length == 0 &&
+                    room.LightmapType != LightmapExportType.None)
+                {
+                    Debug.LogWarning("Lightmapping is enabled but mesh has no UV1 channel - " + mesh.name + " - Tick the Generate Lightmap UVs", mesh);
+                }
+                uvs[i] = array;
+            }
+            return uvs;
         }
 
         public override void ExportAssetObjects()
@@ -167,8 +262,15 @@ namespace JanusVR
             foreach (BruteForceMeshExportData data in meshesToExport.Values)
             {
                 Mesh mesh = data.Mesh;
+
+                MeshData meshData = GetMeshData(mesh);
+                if (meshData == null)
+                {
+                    continue;
+                }
+
                 string meshId = data.MeshId;
-                exporter.ExportMesh(mesh, meshId, parameters);
+                exporter.ExportMesh(meshData, meshId, parameters);
                 exported++;
                 EditorUtility.DisplayProgressBar("Exporting meshes...", meshId + ".fbx", exported / (float)meshesToExport.Count);
             }

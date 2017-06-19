@@ -33,7 +33,7 @@ namespace JanusVR
         public string lmap_sca { get; set; }
 
         [XmlAttribute]
-        public bool lighting { get; set; }
+        public bool? lighting { get; set; }
         [XmlAttribute]
         public string col { get; set; }
         [XmlAttribute]
@@ -53,6 +53,23 @@ namespace JanusVR
         public string tiling { get; set; }
         [XmlAttribute]
         public string collision_id { get; set; }
+
+        public void SetNoUnityObj(JanusRoom room)
+        {
+            //Vector3 xDir = Vector3.right;
+            //Vector3 yDir = Vector3.up;
+            //Vector3 zDir = Vector3.forward;
+            //xDir.x *= -1;
+            //yDir.x *= -1;
+            //zDir.x *= -1;
+
+            //xdir = JanusUtil.FormatVector3(xDir, JanusGlobals.DecimalCasesForTransforms);
+            //ydir = JanusUtil.FormatVector3(yDir, JanusGlobals.DecimalCasesForTransforms);
+            //zdir = JanusUtil.FormatVector3(zDir, JanusGlobals.DecimalCasesForTransforms);
+            pos = JanusUtil.FormatVector3(Vector3.zero, JanusGlobals.DecimalCasesForTransforms);
+            scale = JanusUtil.FormatVector3(Vector3.one, JanusGlobals.DecimalCasesForTransforms);
+            lighting = room.LightmapType == LightmapExportType.None;
+        }
 
         public void SetUnityObj(GameObject obj, JanusRoom room)
         {
@@ -81,6 +98,16 @@ namespace JanusVR
                 cull_face = "front";
             }
             scale = JanusUtil.FormatVector3(trans.lossyScale, JanusGlobals.DecimalCasesForTransforms);
+
+            if (obj.isStatic &&
+                room.LightmapType != LightmapExportType.None)
+            {
+                lighting = false;
+            }
+            else
+            {
+                lighting = true;
+            }
         }
 
         public void SetLightmap(Vector4 lightmap)

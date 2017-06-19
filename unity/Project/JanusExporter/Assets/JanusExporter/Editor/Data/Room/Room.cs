@@ -9,7 +9,7 @@ namespace JanusVR
     public class Room
     {
         [XmlAttribute("far_dist")]
-        public float? FarDistance { get; set; }
+        public int? FarDistance { get; set; }
 
         [XmlElement(typeof(RoomObject), ElementName = "Object")]
         [XmlElement(typeof(LinkObject))]

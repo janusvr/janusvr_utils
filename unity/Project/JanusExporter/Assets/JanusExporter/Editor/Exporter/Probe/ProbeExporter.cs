@@ -95,9 +95,10 @@ namespace JanusVR
                 name = cubemap.name + "_radiance";
             }
 
+            // we know the format were exporting, so we set it now
             AssetImage data = new AssetImage();
             data.id = name;
-            data.src = name;
+            data.src = name + ".dds";
             room.AddAssetImage(data);
 
             if (room.ExportOnlyHtml)
@@ -170,7 +171,7 @@ namespace JanusVR
 
             AssetImage data = new AssetImage();
             data.id = name;
-            data.src = name;
+            data.src = name + ".dds";
             room.AddAssetImage(data);
 
             if (room.ExportOnlyHtml)

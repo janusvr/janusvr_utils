@@ -25,21 +25,9 @@ namespace JanusVR
 
         public void Initialize()
         {
-            LightmapExportType lightmapExportType = room.LightmapType;
-
-            switch (lightmapExportType)
-            {
-                case LightmapExportType.BakedMaterial:
-                    {
-
-                    }
-                    break;
-                default:
-                    break;
-            }
         }
 
-        public void PreProcessObject(MeshRenderer renderer, Mesh mesh, AssetObject obj, RoomObject rObj)
+        public void PreProcessObject(MeshRenderer renderer, Mesh mesh, AssetObject obj, RoomObject rObj, bool assignLightmapScale)
         {
             LightmapExportType lightmapExportType = room.LightmapType;
             ExportTextureFormat format = room.TextureFormat;
@@ -59,15 +47,18 @@ namespace JanusVR
 
                     toRender.Add(rObj);
 
-                    if (lightmapExportType == LightmapExportType.Packed ||
-                        lightmapExportType == LightmapExportType.PackedSourceEXR)
+                    if (assignLightmapScale)
                     {
-                        Vector4 lmap = renderer.lightmapScaleOffset;
-                        lmap.x = Mathf.Clamp(lmap.x, -2, 2);
-                        lmap.y = Mathf.Clamp(lmap.y, -2, 2);
-                        lmap.z = Mathf.Clamp(lmap.z, -2, 2);
-                        lmap.w = Mathf.Clamp(lmap.w, -2, 2);
-                        rObj.SetLightmap(lmap);
+                        if (lightmapExportType == LightmapExportType.Packed ||
+                            lightmapExportType == LightmapExportType.PackedSourceEXR)
+                        {
+                            Vector4 lmap = renderer.lightmapScaleOffset;
+                            lmap.x = Mathf.Clamp(lmap.x, -2, 2);
+                            lmap.y = Mathf.Clamp(lmap.y, -2, 2);
+                            lmap.z = Mathf.Clamp(lmap.z, -2, 2);
+                            lmap.w = Mathf.Clamp(lmap.w, -2, 2);
+                            rObj.SetLightmap(lmap);
+                        }
                     }
 
                     if (lightmapExportType != LightmapExportType.BakedMaterial)
@@ -155,7 +146,7 @@ namespace JanusVR
 
                 rObj.col = JanusUtil.FormatColor(objColor);
 
-                if (texture != null)
+                if (room.ExportTextures && texture != null)
                 {
                     if (textureNames.Contains(texture.name))
                     {
