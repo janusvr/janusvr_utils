@@ -13,13 +13,11 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile>
-    </CompilerResponseFile>
+    <CompilerResponseFile></CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
-    <UnityVersion>5.6.1f1</UnityVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <UnityVersion>5.6.2f1</UnityVersion>
+    <RootNamespace></RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -29,7 +27,7 @@
     <IntermediateOutputPath>Temp\UnityVS_obj\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_5_6_1;UNITY_5_6;UNITY_5;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_GENERICS;ENABLE_PVR_GI;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_RUNTIME_NAVMESH_BUILDING;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;ENABLE_NATIVE_ARRAY;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;ENABLE_VIDEO;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_EVENT_QUEUE;ENABLE_CLUSTERINPUT;ENABLE_VR;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_2_0_SUBSET;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_NATIVE_ARRAY_CHECKS;UNITY_TEAM_LICENSE;ENABLE_VSTU;UNITY_PRO_LICENSE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_5_6_2;UNITY_5_6;UNITY_5;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_GENERICS;ENABLE_PVR_GI;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_RUNTIME_NAVMESH_BUILDING;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;ENABLE_NATIVE_ARRAY;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;ENABLE_VIDEO;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_EVENT_QUEUE;ENABLE_CLUSTERINPUT;ENABLE_VR;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_2_0_SUBSET;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_NATIVE_ARRAY_CHECKS;UNITY_TEAM_LICENSE;ENABLE_VSTU;UNITY_PRO_LICENSE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -39,7 +37,7 @@
     <IntermediateOutputPath>Temp\UnityVS_obj\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DefineConstants>TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_5_6_1;UNITY_5_6;UNITY_5;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_GENERICS;ENABLE_PVR_GI;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_RUNTIME_NAVMESH_BUILDING;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;ENABLE_NATIVE_ARRAY;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;ENABLE_VIDEO;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_EVENT_QUEUE;ENABLE_CLUSTERINPUT;ENABLE_VR;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_2_0_SUBSET;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_NATIVE_ARRAY_CHECKS;UNITY_TEAM_LICENSE;ENABLE_VSTU;UNITY_PRO_LICENSE</DefineConstants>
+    <DefineConstants>TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_5_6_2;UNITY_5_6;UNITY_5;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_GENERICS;ENABLE_PVR_GI;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_RUNTIME_NAVMESH_BUILDING;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;ENABLE_NATIVE_ARRAY;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;ENABLE_VIDEO;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_EVENT_QUEUE;ENABLE_CLUSTERINPUT;ENABLE_VR;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_2_0_SUBSET;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_NATIVE_ARRAY_CHECKS;UNITY_TEAM_LICENSE;ENABLE_VSTU;UNITY_PRO_LICENSE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
@@ -83,83 +81,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\JanusExporter\Codebase\Assets\AssetObjectScanner.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Assets\AssetObjectScannerFactory.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Assets\BruteForce\BruteForceObjectScanner.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Cmft\CmftInterop.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Components\JanusVREntryPortal.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Components\JanusVRLink.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\GZipExporter.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\BlockType.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\CompressionMode.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\CopyEncoder.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\Crc32Helper.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\DeflateInput.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\DeflateStream.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\DeflateStreamAsyncResult.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\DeflaterManaged.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\FastEncoder.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\FastEncoderStatics.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\FastEncoderWindow.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\FileFormats.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\GZipDecoder.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\GZipStream.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\GZipUtils.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\HuffmanTree.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\IDeflater.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\Inflater.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\InflaterState.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\InputBuffer.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\InvalidDataException.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\Match.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\MatchState.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\OutputBuffer.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\OutputWindow.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Compression\Unity.IO.Compression\SR.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Content\Material\MtlImporterWindow.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Content\Mesh\ExportMeshFormat.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Content\Mesh\FBX\FbxExporter.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Content\Mesh\FBX\FbxExporterInterop.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Content\Mesh\FBX\FbxVector2.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Content\Mesh\FBX\FbxVector3.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Content\Mesh\MeshExportParameters.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Content\Mesh\MeshExporter.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Content\Texture\DDSExporter.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Content\Texture\ExportTextureFormat.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Data\AssetImage.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Data\AssetObject.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Assets\AssetObjectSearchType.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Data\JanusAsset.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Data\JanusRoom.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Data\JanusRoomCache.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\ExportedObject.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Interface\IJanusObject.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\JanusGlobals.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\JanusLink.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\JanusResources.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\JanusVRExporter.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\JanusVR_Exporter.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Lightmap\JanusVRLightmaps.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\LightmapExportType.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Assets\BruteForce\BruteForceMeshExportData.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\SceneExportData.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\TextureExportData.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\TextureFilterMode.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Util\HtmlUtil.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Util\JanusUtil.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Util\MathUtil.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Util\ReflectionUtil.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Util\TextureUtil.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Util\UnityUtil.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Windows\JanusVRWelcome.cs" />
-    <Compile Include="Assets\JanusExporter\Codebase\Windows\LightmapPreviewWindow.cs" />
-    <Compile Include="Assets\JanusExporter\Updater\JanusVRUpdater.cs" />
+    <Compile Include="Assets\JanusExporter\Components\IJanusObject.cs" />
+    <Compile Include="Assets\JanusExporter\Components\JanusVREntryPortal.cs" />
+    <Compile Include="Assets\JanusExporter\Components\JanusVRLink.cs" />
+    <Compile Include="Assets\JanusExporter\JanusGlobals.cs" />
+    <Compile Include="Assets\JanusExporter\JanusResources.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\JanusExporter\Codebase\Shaders\ExposureShader.shader" />
-    <None Include="Assets\JanusExporter\Codebase\Shaders\LMapBaked.shader" />
-    <None Include="Assets\JanusExporter\Codebase\Shaders\LMapPacked.shader" />
-    <None Include="Assets\JanusExporter\Codebase\Shaders\LMapUnpacked.shader" />
+    <None Include="Assets\JanusExporter\Editor\Shaders\ExposureShader.shader" />
+    <None Include="Assets\JanusExporter\Editor\Shaders\LMapBaked.shader" />
+    <None Include="Assets\JanusExporter\Editor\Shaders\LMapPacked.shader" />
+    <None Include="Assets\JanusExporter\Editor\Shaders\LMapUnpacked.shader" />
+    <None Include="Assets\JanusExporter\Editor\Shaders\UnityVC\StandardVC.shader" />
+    <None Include="Assets\JanusExporter\Editor\Shaders\UnityVC\UnityVC.cginc" />
+    <None Include="Assets\JanusExporter\Editor\Shaders\UnityVC\UnityVCShadow.cginc" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

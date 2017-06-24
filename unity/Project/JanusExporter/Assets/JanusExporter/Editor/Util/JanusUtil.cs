@@ -94,6 +94,11 @@ namespace JanusVR
             return v;
         }
 
+        public static Vector3 ConvertEulerRotation(Vector3 rot)
+        {
+            return new Vector3(rot.x, -rot.y, rot.z);
+        }
+
         public static string FormatFloat(float value, string format)
         {
             int ival = (int)value;
@@ -134,10 +139,9 @@ namespace JanusVR
             return FormatFloat(v.x, format) + " " + FormatFloat(v.y, format) + " " + FormatFloat(v.z, format) + " " + FormatFloat(v.w, format);
         }
 
-        public static void GetJanusVectors(Transform trans,
+        public static void GetJanusVectors(Quaternion rot,
             out Vector3 xDir, out Vector3 yDir, out Vector3 zDir)
         {
-            Quaternion rot = trans.rotation;
             xDir = JanusUtil.ConvertDirection(rot * Vector3.right);
             yDir = JanusUtil.ConvertDirection(rot * Vector3.up);
             zDir = JanusUtil.ConvertDirection(rot * Vector3.forward);
