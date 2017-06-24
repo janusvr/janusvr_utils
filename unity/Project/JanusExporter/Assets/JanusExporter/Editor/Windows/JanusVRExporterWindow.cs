@@ -81,6 +81,12 @@ namespace JanusVR
         private float lightmapExposure;
 
         /// <summary>
+        /// If the exporter can use euler rotations (only supported on JanusVR 59.0 and onwards)
+        /// </summary>
+        [SerializeField]
+        private bool useEulerRotations;        
+
+        /// <summary>
         /// If the exporter should output the materials (if disabled, lightmaps are still exported, so you can take a look at only lightmap
         /// data with a gray tone)
         /// </summary>
@@ -159,8 +165,9 @@ namespace JanusVR
             exportInactiveObjects = false;
 
             lightmapExportType = LightmapExportType.PackedSourceEXR;
-            lightmapExposureVisible = true;
+            //lightmapExposureVisible = true;
             lightmapExposure = 0;
+            useEulerRotations = true;
 
             scrollPos = Vector2.zero;
 
@@ -191,8 +198,8 @@ namespace JanusVR
         [NonSerialized]
         private Vector2 meshScrollPos;
 
-        [SerializeField]
-        private bool lightmapExposureVisible = true;
+        //[SerializeField]
+        //private bool lightmapExposureVisible = true;
 
         [SerializeField]
         private AssetObjectSearchType searchType;
@@ -299,6 +306,8 @@ namespace JanusVR
             }
             EditorGUILayout.EndHorizontal();
 
+            useEulerRotations = EditorGUILayout.Toggle("Use Euler Rotations (Janus 59+ only)", useEulerRotations);
+
             // Texture
             GUILayout.Label("Texture", EditorStyles.boldLabel);
             textureForceReExport = EditorGUILayout.Toggle("Force ReExport", textureForceReExport);
@@ -330,7 +339,7 @@ namespace JanusVR
             environmentProbeExport = EditorGUILayout.Toggle("Export Environment Probes", environmentProbeExport);
             if (environmentProbeExport)
             {
-                environmentProbeOverride = EditorGUILayout.ObjectField(environmentProbeOverride, typeof(ReflectionProbe), true) as ReflectionProbe;
+                environmentProbeOverride = EditorGUILayout.ObjectField("Override Probe (Optional)", environmentProbeOverride, typeof(ReflectionProbe), true) as ReflectionProbe;
                 environmentProbeRadResolution = Math.Max(4, EditorGUILayout.IntField("Probe Radiance Resolution", environmentProbeRadResolution));
                 environmentProbeIrradResolution = Math.Max(4, EditorGUILayout.IntField("Probe Irradiance Resolution", environmentProbeIrradResolution));
             }
@@ -349,10 +358,10 @@ namespace JanusVR
                     break;
                 case LightmapExportType.PackedSourceEXR:
                     EditorGUILayout.LabelField("    Copies the source EXR High-Dynamic Range lightmaps");
-                    EditorGUILayout.LabelField("    directly into the exported project (experimental)");
+                    EditorGUILayout.LabelField("    directly into the exported project");
                     break;
                 case LightmapExportType.BakedMaterial:
-                    EditorGUILayout.LabelField("    Bakes the lightmap into the material (for testing purposes)");
+                    EditorGUILayout.LabelField("    Bakes the lightmap into the material");
                     break;
                 case LightmapExportType.Unpacked:
                     EditorGUILayout.LabelField("    Converts the source EXR files to Low-Dynamic Range and unpacks");
@@ -364,11 +373,12 @@ namespace JanusVR
             {
                 maxLightMapResolution = Math.Max(4, EditorGUILayout.IntField("Max Lightmap Resolution", maxLightMapResolution));
             }
+
             if (NeedsLDRConversion(lightmapExportType))
             {
                 lightmapExposure = EditorGUILayout.Slider("Lightmap Exposure", lightmapExposure, -5, 5);
 
-                lightmapExposureVisible = EditorGUILayout.Foldout(lightmapExposureVisible, "Preview Exposure");
+                //lightmapExposureVisible = EditorGUILayout.Foldout(lightmapExposureVisible, "Preview Exposure");
                 //if (lightmapExposureVisible)
                 //{
                 //    MakePreviewExportData();
@@ -528,6 +538,7 @@ namespace JanusVR
             room.TextureFormat = defaultTexFormat;
             room.TextureForceReExport = textureForceReExport;
             room.UniformScale = uniformScale;
+            room.UseEulerRotations = useEulerRotations;
         }
     }
 }

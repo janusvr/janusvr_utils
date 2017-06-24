@@ -38,7 +38,10 @@ namespace JanusVR
 
                     Vector3 portalPos = JanusUtil.ConvertPosition(portal.GetJanusPosition(), uniformScale);
                     Vector3 xDir, yDir, zDir;
-                    JanusUtil.GetJanusVectors(portalTransform, out xDir, out yDir, out zDir);
+
+                    Quaternion rot = portalTransform.rotation;
+                    //rot.eulerAngles += new Vector3(0, 180, 0);
+                    JanusUtil.GetJanusVectors(rot, out xDir, out yDir, out zDir);
 
                     room.PortalPos = portalPos;
                     room.PortalXDir = xDir;
@@ -53,7 +56,7 @@ namespace JanusVR
                     Vector3 pos = JanusUtil.ConvertPosition(link.GetJanusPosition(), uniformScale);
                     Vector3 sca = trans.localScale;
                     Vector3 xDir, yDir, zDir;
-                    JanusUtil.GetJanusVectors(trans, out xDir, out yDir, out zDir);
+                    JanusUtil.GetJanusVectors(trans.rotation, out xDir, out yDir, out zDir);
 
                     LinkObject linkObj = new LinkObject();
                     linkObj.pos = pos;

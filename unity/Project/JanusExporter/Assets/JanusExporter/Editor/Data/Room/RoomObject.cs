@@ -46,6 +46,8 @@ namespace JanusVR
         public string ydir { get; set; }
         [XmlAttribute]
         public string zdir { get; set; }
+        [XmlAttribute]
+        public string rotation { get; set; }
 
         [XmlAttribute]
         public string cull_face { get; set; }
@@ -77,20 +79,24 @@ namespace JanusVR
 
             Transform trans = obj.transform;
             Vector3 position = trans.position;
-            position.x *= -1;
 
             Quaternion rot = trans.rotation;
-            Vector3 xDir = rot * Vector3.right;
-            Vector3 yDir = rot * Vector3.up;
-            Vector3 zDir = rot * Vector3.forward;
-            xDir.x *= -1;
-            yDir.x *= -1;
-            zDir.x *= -1;
+            if (room.UseEulerRotations)
+            {
+                Vector3 euler = JanusUtil.ConvertEulerRotation(rot.eulerAngles);
+                rotation = JanusUtil.FormatVector3(euler, JanusGlobals.DecimalCasesForTransforms);
+            }
+            else
+            {
+                Vector3 xDir = JanusUtil.ConvertDirection(rot * Vector3.right);
+                Vector3 yDir = JanusUtil.ConvertDirection(rot * Vector3.up);
+                Vector3 zDir = JanusUtil.ConvertDirection(rot * Vector3.forward);
 
-            xdir = JanusUtil.FormatVector3(xDir, JanusGlobals.DecimalCasesForTransforms);
-            ydir = JanusUtil.FormatVector3(yDir, JanusGlobals.DecimalCasesForTransforms);
-            zdir = JanusUtil.FormatVector3(zDir, JanusGlobals.DecimalCasesForTransforms);
-            pos = JanusUtil.FormatVector3(position, JanusGlobals.DecimalCasesForTransforms);
+                xdir = JanusUtil.FormatVector3(xDir, JanusGlobals.DecimalCasesForTransforms);
+                ydir = JanusUtil.FormatVector3(yDir, JanusGlobals.DecimalCasesForTransforms);
+                zdir = JanusUtil.FormatVector3(zDir, JanusGlobals.DecimalCasesForTransforms);
+            }
+            pos = JanusUtil.FormatVector3(JanusUtil.ConvertPosition(position, room.UniformScale), JanusGlobals.DecimalCasesForTransforms);
 
             Vector3 sca = trans.lossyScale;
             if (sca.x < 0 || sca.y < 0 || sca.z < 0)
