@@ -89,6 +89,18 @@ namespace JanusVR
                 {
                     rObj.collision_id = rObj.id;
                 }
+                else if (comp is BoxCollider)
+                {
+
+                }
+                else if (comp is SphereCollider)
+                {
+
+                }
+                else if (comp is CapsuleCollider)
+                {
+
+                }
             }
         }
     }

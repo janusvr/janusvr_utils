@@ -155,6 +155,8 @@ namespace JanusVR
             string proj = JanusUtil.GetDefaultExportPath();
             exportPath = proj;
 
+            searchType = AssetObjectSearchType.EachMesh;
+
             uniformScale = 1;
             defaultTexFormat = ExportTextureFormat.JPG;
             defaultQuality = 70;
@@ -163,8 +165,9 @@ namespace JanusVR
             exportMaterials = true;
             exportSkyboxResolution = 1024;
             exportInactiveObjects = false;
+            textureForceReExport = false;
 
-            lightmapExportType = LightmapExportType.PackedSourceEXR;
+            lightmapExportType = LightmapExportType.Packed;// SourceEXR;
             //lightmapExposureVisible = true;
             lightmapExposure = 0;
             useEulerRotations = true;
@@ -177,6 +180,12 @@ namespace JanusVR
             environmentProbeRadResolution = 128;
             environmentProbeIrradResolution = 32;
             environmentProbeOverride = null;
+
+            exportMaterials = true;
+            exportTextures = true;
+
+            scrollPos = Vector2.zero;
+            meshScrollPos = Vector2.zero;
         }
 
         public static bool NeedsLDRConversion(LightmapExportType type)
