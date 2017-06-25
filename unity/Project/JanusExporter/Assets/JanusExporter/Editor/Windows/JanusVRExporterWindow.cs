@@ -84,7 +84,7 @@ namespace JanusVR
         /// If the exporter can use euler rotations (only supported on JanusVR 59.0 and onwards)
         /// </summary>
         [SerializeField]
-        private bool useEulerRotations;        
+        private bool useEulerRotations;
 
         /// <summary>
         /// If the exporter should output the materials (if disabled, lightmaps are still exported, so you can take a look at only lightmap
@@ -167,7 +167,7 @@ namespace JanusVR
             exportInactiveObjects = false;
             textureForceReExport = false;
 
-            lightmapExportType = LightmapExportType.Packed;// SourceEXR;
+            lightmapExportType = LightmapExportType.PackedSourceEXR;
             //lightmapExposureVisible = true;
             lightmapExposure = 0;
             useEulerRotations = true;
@@ -176,7 +176,7 @@ namespace JanusVR
 
             maxLightMapResolution = 2048;
 
-            environmentProbeExport = false;
+            environmentProbeExport = true;
             environmentProbeRadResolution = 128;
             environmentProbeIrradResolution = 32;
             environmentProbeOverride = null;
@@ -333,7 +333,7 @@ namespace JanusVR
             exportInactiveObjects = EditorGUILayout.Toggle("Export Inactive Objects", exportInactiveObjects);
             exportTextures = EditorGUILayout.Toggle("Export Textures", exportTextures);
             exportMaterials = EditorGUILayout.Toggle("Export Materials", exportMaterials);
-            
+
             EditorGUILayout.LabelField("    Useful for testing lighting results in Janus");
 
             exportSkybox = EditorGUILayout.Toggle("Export Skybox", exportSkybox);
@@ -423,37 +423,37 @@ namespace JanusVR
 
             GUILayout.FlexibleSpace();
 
-//            if (exported != null)
-//            {
-//                // Exported
-//                GUILayout.Label("Exported", EditorStyles.boldLabel);
+            //            if (exported != null)
+            //            {
+            //                // Exported
+            //                GUILayout.Label("Exported", EditorStyles.boldLabel);
 
-//                GUILayout.Label("Scene size " + sceneSize.size);
-//                if (farPlaneDistance < 500)
-//                {
-//                    GUILayout.Label("Far Plane " + farPlaneDistance.ToString("F2") + " (Exported as 500)");
-//                }
-//                else
-//                {
-//                    GUILayout.Label("Far Plane " + farPlaneDistance.ToString("F2"));
-//                }
+            //                GUILayout.Label("Scene size " + sceneSize.size);
+            //                if (farPlaneDistance < 500)
+            //                {
+            //                    GUILayout.Label("Far Plane " + farPlaneDistance.ToString("F2") + " (Exported as 500)");
+            //                }
+            //                else
+            //                {
+            //                    GUILayout.Label("Far Plane " + farPlaneDistance.ToString("F2"));
+            //                }
 
-//                Cubemap cubemap = exported.environmentCubemap;
-//                if (cubemap == null)
-//                {
-//#if UNITY_5_0
-//                    GUILayout.Label("Environment Probe: Not supported on Unity 5.0", errorStyle);
-//#elif UNITY_5_3
-//                    GUILayout.Label("Environment Probe: On Unity 5.3 can only be exported if set as cubemap on the Lighting window", errorStyle);
-//#else
-//                    GUILayout.Label("Environment Probe: None (need baked lightmaps)", errorStyle);
-//#endif
-//                }
-//                else
-//                {
-//                    GUILayout.Label("Environment Probe: " + cubemap.width);
-//                }
-//            }
+            //                Cubemap cubemap = exported.environmentCubemap;
+            //                if (cubemap == null)
+            //                {
+            //#if UNITY_5_0
+            //                    GUILayout.Label("Environment Probe: Not supported on Unity 5.0", errorStyle);
+            //#elif UNITY_5_3
+            //                    GUILayout.Label("Environment Probe: On Unity 5.3 can only be exported if set as cubemap on the Lighting window", errorStyle);
+            //#else
+            //                    GUILayout.Label("Environment Probe: None (need baked lightmaps)", errorStyle);
+            //#endif
+            //                }
+            //                else
+            //                {
+            //                    GUILayout.Label("Environment Probe: " + cubemap.width);
+            //                }
+            //            }
 
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Export HTML only"))
@@ -540,7 +540,7 @@ namespace JanusVR
             room.ExportTextures = exportTextures;
             room.LightmapExposure = lightmapExposure;
             room.LightmapMaxResolution = maxLightMapResolution;
-            room.LightmapType = lightmapExportType;
+            room.LightmapType = Lightmapping.bakedGI ? lightmapExportType : LightmapExportType.None;
             room.SkyboxEnabled = exportSkybox;
             room.SkyboxResolution = exportSkyboxResolution;
             room.TextureData = defaultQuality;
