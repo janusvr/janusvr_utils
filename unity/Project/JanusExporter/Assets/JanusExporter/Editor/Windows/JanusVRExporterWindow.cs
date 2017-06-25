@@ -167,7 +167,7 @@ namespace JanusVR
             exportInactiveObjects = false;
             textureForceReExport = false;
 
-            lightmapExportType = LightmapExportType.Packed;// SourceEXR;
+            lightmapExportType = LightmapExportType.PackedSourceEXR;
             //lightmapExposureVisible = true;
             lightmapExposure = 0;
             useEulerRotations = true;
