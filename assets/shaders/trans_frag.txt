@@ -611,7 +611,8 @@ void main(void)
 				fogInterpolator = exp(-(iFogDensity.x * fragDistance)*(iFogDensity.x * fragDistance));
 			}
 			fogInterpolator = clamp(fogInterpolator, 0.0, 1.0);
-			lightingResult = mix(iFogCol, lightingResult, 0.5 + fogInterpolator * 0.5); //55.10
+			//lightingResult = mix(iFogCol, lightingResult, 0.5 + fogInterpolator * 0.5); //55.10
+			lightingResult = mix(iFogCol, lightingResult, fogInterpolator); //59.0
 		}
 	// END --- Fog ---
 	
