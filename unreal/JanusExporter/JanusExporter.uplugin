@@ -1,18 +1,23 @@
 {
-	"FileVersion" : 3,
-	"FriendlyName" : "Janus Exporter",
-	"Version" : 101,
-	"VersionName" : "1.01",
-	"CreatedBy" : "Janus VR, Inc.",
-	"CreatedByURL" : "http://janusvr.com",
-	"EngineVersion" : "4.12",
-	"Description" : "Janus VR Scene Exporter",
-	"Category" : "Exporter",
-	"EnabledByDefault" : true,
-	"Modules" :
-	[		
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "JanusVR Exporter",
+	"Description": "JanusVR Scene Exporter",
+	"Category": "Exporters",
+	"CreatedBy": "JanusVR, Inc",
+	"CreatedByURL": "http://janusvr.com",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"EnabledByDefault": false,
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"Installed": false,
+	"Modules": 
+	[
 		{
-			"Name" : "JanusExporterModule",
+			"Name" : "JanusExporter",
 			"Type" : "Editor"
 		}
 	]

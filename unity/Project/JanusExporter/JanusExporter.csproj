@@ -81,20 +81,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\JanusExporter\Components\IJanusObject.cs" />
-    <Compile Include="Assets\JanusExporter\Components\JanusVREntryPortal.cs" />
-    <Compile Include="Assets\JanusExporter\Components\JanusVRLink.cs" />
+    <Compile Include="Assets\JanusExporter\Codebase\Components\IJanusObject.cs" />
+    <Compile Include="Assets\JanusExporter\Codebase\Components\JanusVREntryPortal.cs" />
+    <Compile Include="Assets\JanusExporter\Codebase\Components\JanusVRLink.cs" />
     <Compile Include="Assets\JanusExporter\JanusGlobals.cs" />
     <Compile Include="Assets\JanusExporter\JanusResources.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\JanusExporter\Editor\Shaders\ExposureShader.shader" />
-    <None Include="Assets\JanusExporter\Editor\Shaders\LMapBaked.shader" />
-    <None Include="Assets\JanusExporter\Editor\Shaders\LMapPacked.shader" />
-    <None Include="Assets\JanusExporter\Editor\Shaders\LMapUnpacked.shader" />
-    <None Include="Assets\JanusExporter\Editor\Shaders\UnityVC\StandardVC.shader" />
-    <None Include="Assets\JanusExporter\Editor\Shaders\UnityVC\UnityVC.cginc" />
-    <None Include="Assets\JanusExporter\Editor\Shaders\UnityVC\UnityVCShadow.cginc" />
+    <None Include="Assets\JanusExporter\Codebase\Editor\Shaders\ExposureShader.shader" />
+    <None Include="Assets\JanusExporter\Codebase\Editor\Shaders\LMapBaked.shader" />
+    <None Include="Assets\JanusExporter\Codebase\Editor\Shaders\LMapPacked.shader" />
+    <None Include="Assets\JanusExporter\Codebase\Editor\Shaders\LMapUnpacked.shader" />
+    <None Include="Assets\JanusExporter\Codebase\Editor\Shaders\UnityVC\StandardVC.shader" />
+    <None Include="Assets\JanusExporter\Codebase\Editor\Shaders\UnityVC\UnityVC.cginc" />
+    <None Include="Assets\JanusExporter\Codebase\Editor\Shaders\UnityVC\UnityVCShadow.cginc" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
