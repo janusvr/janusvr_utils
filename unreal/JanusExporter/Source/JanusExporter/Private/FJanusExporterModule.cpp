@@ -20,7 +20,7 @@ public:
 	virtual void ShutdownModule() override;
 	// End of IModuleInterface interface
 
-	static void TriggerTool(UClass* ToolClass);
+	static void TriggerTool();
 	static void CreateToolListMenu(class FMenuBuilder& MenuBuilder);
 	static void OnToolWindowClosed(const TSharedRef<SWindow>& Window, UBaseEditorTool* Instance);
 
@@ -101,89 +101,64 @@ void FJanusExporterModule::StartupModule()
 
 void FJanusExporterModule::ShutdownModule()
 {
-	//FCoreUObjectDelegates::PreGarbageCollect.RemoveAll(this);
 	OnPreGarbageCollect();
 
 	FJanusCommands::Unregister();
 	FJanusExporterStyle::Shutdown();
 }
 
-void FJanusExporterModule::TriggerTool(UClass* ToolClass)
+void FJanusExporterModule::TriggerTool()
 {
 	// Compute centered window position based on max window size, which include when all categories are expanded
-	//const float FbxImportWindowWidth = 410.0f;
-	//const float FbxImportWindowHeight = 750.0f;
-	//const FVector2D FbxImportWindowSize = FVector2D(FbxImportWindowWidth, FbxImportWindowHeight); // Max window size it can get based on current slate
+	const float FbxImportWindowWidth = 410.0f;
+	const float FbxImportWindowHeight = 750.0f;
+	const FVector2D FbxImportWindowSize = FVector2D(FbxImportWindowWidth, FbxImportWindowHeight); // Max window size it can get based on current slate
 
-	//FSlateRect WorkAreaRect = FSlateApplicationBase::Get().GetPreferredWorkArea();
-	//FVector2D DisplayTopLeft(WorkAreaRect.Left, WorkAreaRect.Top);
-	//FVector2D DisplaySize(WorkAreaRect.Right - WorkAreaRect.Left, WorkAreaRect.Bottom - WorkAreaRect.Top);
-	//FVector2D WindowPosition = DisplayTopLeft + (DisplaySize - FbxImportWindowSize) / 2.0f;
+	FSlateRect WorkAreaRect = FSlateApplicationBase::Get().GetPreferredWorkArea();
+	FVector2D DisplayTopLeft(WorkAreaRect.Left, WorkAreaRect.Top);
+	FVector2D DisplaySize(WorkAreaRect.Right - WorkAreaRect.Left, WorkAreaRect.Bottom - WorkAreaRect.Top);
+	FVector2D WindowPosition = DisplayTopLeft + (DisplaySize - FbxImportWindowSize) / 2.0f;
 
-	//TSharedRef<SWindow> Window = SNew(SWindow)
-	//	.Title(LOCTEXT("JanusVR Exporter", "JanusVR Exporter"))
-	//	.SizingRule(ESizingRule::Autosized)
-	//	.AutoCenter(EAutoCenter::None)
-	//	.ScreenPosition(WindowPosition);
+	TSharedRef<SWindow> Window = SNew(SWindow)
+		.Title(LOCTEXT("JanusVR Exporter", "JanusVR Exporter"))
+		.SizingRule(ESizingRule::Autosized)
+		.AutoCenter(EAutoCenter::None)
+		.ScreenPosition(WindowPosition);
 
-	//TSharedPtr<SJanusExporterWindow> JanusWindow;
-	//Window->SetContent
-	//(
-	//	SAssignNew(JanusWindow, SJanusExporterWindow)
-	//);
+	TSharedPtr<SJanusExporterWindow> JanusWindow;
+	Window->SetContent
+	(
+		SAssignNew(JanusWindow, SJanusExporterWindow)
+	);
 
-	//// @todo: we can make this slow as showing progress bar later
-	//TSharedPtr<SWindow> ParentWindow;
+	// @todo: we can make this slow as showing progress bar later
+	TSharedPtr<SWindow> ParentWindow;
 
-	//if (FModuleManager::Get().IsModuleLoaded("MainFrame"))
-	//{
-	//	IMainFrameModule& MainFrame = FModuleManager::LoadModuleChecked<IMainFrameModule>("MainFrame");
-	//	ParentWindow = MainFrame.GetParentWindow();
-	//}
+	if (FModuleManager::Get().IsModuleLoaded("MainFrame"))
+	{
+		IMainFrameModule& MainFrame = FModuleManager::LoadModuleChecked<IMainFrameModule>("MainFrame");
+		ParentWindow = MainFrame.GetParentWindow();
+	}
 
-	//FSlateApplication::Get().AddModalWindow(Window, ParentWindow, false);
-
+	FSlateApplication::Get().AddModalWindow(Window, ParentWindow, false);
 	//UBaseEditorTool* ToolInstance = NewObject<UBaseEditorTool>(GetTransientPackage(), ToolClass);
 	//ToolInstance->AddToRoot();
-	//JanusWindow->SetExporterTool((UJanusExporterTool)ToolInstance);
-
-	//return;
-
-	UBaseEditorTool* ToolInstance = NewObject<UBaseEditorTool>(GetTransientPackage(), ToolClass);
-	ToolInstance->AddToRoot();
-
-	FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
-
-	TArray<UObject*> ObjectsToView;
-	ObjectsToView.Add(ToolInstance);
-
-	TSharedRef<SWindow> Window = PropertyModule.CreateFloatingDetailsView(ObjectsToView, /*bIsLockeable=*/ true);
-	Window->SetOnWindowClosed(FOnWindowClosed::CreateStatic(&FJanusExporterModule::OnToolWindowClosed, ToolInstance));
 }
 
 void FJanusExporterModule::CreateToolListMenu(class FMenuBuilder& MenuBuilder)
 {
-	for (TObjectIterator<UClass> ClassIt; ClassIt; ++ClassIt)
-	{
-		UClass* Class = *ClassIt;
-		if (!Class->HasAnyClassFlags(CLASS_Deprecated | CLASS_NewerVersionExists | CLASS_Abstract))
-		{
-			if (Class->IsChildOf(UBaseEditorTool::StaticClass()))
-			{
-				FString FriendlyName = Class->GetName();
-				FText MenuDescription = FText::Format(LOCTEXT("ToolMenuDescription", "{0}"), FText::FromString(FriendlyName));
-				FText MenuTooltip = FText::Format(LOCTEXT("ToolMenuTooltip", "Execute the {0} tool"), FText::FromString(FriendlyName));
+	FString FriendlyName = "JanusVR Exporter";
 
-				FUIAction Action(FExecuteAction::CreateStatic(&FJanusExporterModule::TriggerTool, Class));
+	FText MenuDescription = FText::Format(LOCTEXT("ToolMenuDescription", "{0}"), FText::FromString(FriendlyName));
+	FText MenuTooltip = FText::Format(LOCTEXT("ToolMenuTooltip", "Execute the {0} tool"), FText::FromString(FriendlyName));
 
-				MenuBuilder.AddMenuEntry(
-					MenuDescription,
-					MenuTooltip,
-					FSlateIcon(),
-					Action);
-			}
-		}
-	}
+	FUIAction Action(FExecuteAction::CreateStatic(&FJanusExporterModule::TriggerTool));
+
+	MenuBuilder.AddMenuEntry(
+		MenuDescription,
+		MenuTooltip,
+		FSlateIcon(),
+		Action);
 }
 
 void FJanusExporterModule::OnToolWindowClosed(const TSharedRef<SWindow>& Window, UBaseEditorTool* Instance)

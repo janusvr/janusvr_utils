@@ -12,13 +12,11 @@ class SJanusExporterWindow : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SJanusExporterWindow)
-		: _ImportUI(NULL)
-		, _FullPath()
+		: _FullPath()
 		, _MaxWindowHeight(0.0f)
 		, _MaxWindowWidth(0.0f)
 	{}
 
-		SLATE_ARGUMENT(UJanusExporterUI*, ImportUI)
 		SLATE_ARGUMENT(FText, FullPath)
 		SLATE_ARGUMENT(float, MaxWindowHeight)
 		SLATE_ARGUMENT(float, MaxWindowWidth)
@@ -26,16 +24,22 @@ public:
 
 	void Construct(const FArguments& InArgs);
 	virtual bool SupportsKeyboardFocus() const override { return true; }
-	
+
+	UJanusExporterUI* GetData();
+
 	SJanusExporterWindow()
-	{}
+	{
+		ToolData = NewObject<UJanusExporterUI>();
+	}
+
+	FReply OnBrowseDir();
+	FReply DoExport();
+	FReply ShowInExplorer();
 
 private:
-	UJanusExporterUI* ImportUI;
-	TWeakPtr< SWindow > WidgetWindow;
-	FText FullPath;
+	UJanusExporterUI* ToolData;
+	SWindow* ParentWindow;
 	float MaxWindowHeight;
 	float MaxWindowWidth;
-	//TSharedPtr< SButton > ImportButton;
 };
 
