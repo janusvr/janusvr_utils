@@ -8,6 +8,7 @@
 #include "Runtime/Engine/Public/ShadowMap.h"
 #include "Editor/UnrealEd/Public/ObjectTools.h"
 #include "Editor/UnrealEd/Public/EditorDirectories.h"
+#include "Editor/PropertyEditor/Public/PropertyEditorModule.h"
 #include "Editor/MainFrame/Public/Interfaces/IMainFrameModule.h"
 #include "Developer/DesktopPlatform/Public/DesktopPlatformModule.h"
 #include "Runtime/Core/Public/Misc/CoreMisc.h"
@@ -41,20 +42,17 @@ THIRD_PARTY_INCLUDES_START
 #include "ThirdParty/openexr/Deploy/include/ImfStdIO.h"
 #include "ThirdParty/openexr/Deploy/include/ImfChannelList.h"
 #include "ThirdParty/openexr/Deploy/include/ImfRgbaFile.h"
+#include <fbxsdk.h>
 THIRD_PARTY_INCLUDES_END
 
-#include <fbxsdk.h>
 
 #define LOCTEXT_NAMESPACE "JanusExporter"
 #define NO_CUSTOM_SOURCE 1 // remove this if you have the fixed source code that exports materials
 
-#if NO_CUSTOM_SOURCE
+// Fbx Exporter does not expose the fbxsdk parameters
 #define private public
 #include "Editor/UnrealEd/Private/FbxExporter.h"
 #undef private
-#else
-#include "Editor/UnrealEd/Private/FbxExporter.h"
-#endif
 
 struct LightmappedObjects
 {
@@ -65,6 +63,17 @@ struct LightmappedObjects
 UJanusExporterUI* SJanusExporterWindow::GetData()
 {
 	return ToolData;
+}
+
+JanusTextureFormat GetTextureFormatFromLightmap(JanusLightmapExportType LightmapType)
+{
+	switch (LightmapType)
+	{
+	case JanusLightmapExportType::PackedOpenEXR:
+		return JanusTextureFormat::OpenEXR;
+	default:
+		return JanusTextureFormat::PNG;
+	}
 }
 
 void SJanusExporterWindow::Construct(const FArguments& InArgs)
@@ -189,13 +198,22 @@ void AssembleListOfExporters(TArray<UExporter*>& OutExporters)
 	}
 }
 
-bool ExportFBX(UStaticMesh* Mesh, FString RootFolder)
+void GetMaterialExportFlags(UMaterialInterface* InMaterial, UJanusExporterUI* InExportData, bool* OutCanExportBaseColor,
+	bool* OutCanExportNormal)
 {
-	FString SelectedExportPath = RootFolder + Mesh->GetName();
+	*OutCanExportBaseColor = FMaterialUtilities::SupportsExport(EBlendMode::BLEND_Opaque, EMaterialProperty::MP_BaseColor);
+	*OutCanExportNormal = InExportData->ExportNormals &&FMaterialUtilities::SupportsExport(EBlendMode::BLEND_Opaque, EMaterialProperty::MP_Normal);
+}
+
+bool ExportFBX(UStaticMesh* Mesh, FString RootFolder, TArray<UMaterialInterface*>* Materials, UJanusExporterUI* ToolData)
+{
+	FString SelectedExportPath = FPaths::Combine(RootFolder, Mesh->GetName());
 
 	UnFbx::FFbxExporter* Exporter = UnFbx::FFbxExporter::GetInstance();
+	//UJanusFbxExporter* Exporter = UJanusFbxExporter::GetInstance();
 	Exporter->CreateDocument();
 	Exporter->ExportStaticMesh(Mesh);
+	//Exporter->ExportStaticMesh(Actor, MeshComponent, &INodeNameAdapter());
 
 #if NO_CUSTOM_SOURCE
 	FbxScene* Scene = Exporter->Scene;
@@ -217,16 +235,61 @@ bool ExportFBX(UStaticMesh* Mesh, FString RootFolder)
 		Scene->RemoveMaterial(Material);
 	}
 
-	FbxSurfaceLambert* FbxMaterial = FbxSurfaceLambert::Create(Scene, "Fbx Default Material");
-	FbxMaterial->Diffuse.Set(FbxDouble3(0.72, 0.72, 0.72));
-	Scene->AddMaterial(FbxMaterial);
+	//TArray<UMaterialInterface*> Mats = *Materials;
+	//for (int i = 0; i < Materials->Num(); i++)
+	//{
+	//	UMaterialInterface* Mat = Mats[i];
+
+	//	bool bExportedBaseColor;
+	//	bool bExportedNormal;
+	//	GetMaterialExportFlags(Mat, ToolData, &bExportedBaseColor, &bExportedNormal);
+
+	//	FbxSurfacePhong* FbxMaterial = FbxSurfacePhong::Create(Scene, TCHAR_TO_ANSI(*Mat->GetName()));
+	//	FbxMaterial->Diffuse.Set(FbxDouble3(1, 1, 1));
+	//	FbxMaterial->DiffuseFactor.Set(1.);
+	//	Scene->AddMaterial(FbxMaterial);
+
+	//	if (bExportedBaseColor)
+	//	{
+	//		// Set texture properties.
+	//		FbxFileTexture* lTexture = FbxFileTexture::Create(Scene, "Diffuse Texture");
+	//		char* textureFileName = TCHAR_TO_ANSI(*(Mat->GetName() + "_BaseColor.png"));
+
+	//		lTexture->SetFileName(textureFileName); // Resource file is in current directory.
+	//		lTexture->SetTextureUse(FbxTexture::ETextureUse::eStandard);
+	//		lTexture->SetMappingType(FbxTexture::eUV);
+	//		lTexture->SetMaterialUse(FbxFileTexture::EMaterialUse::eModelMaterial);
+	//		lTexture->SetSwapUV(false);
+	//		lTexture->SetTranslation(0.0, 0.0);
+	//		lTexture->SetScale(1.0, 1.0);
+	//		lTexture->SetRotation(0.0, 0.0);
+	//		FbxMaterial->Diffuse.ConnectSrcObject(lTexture);
+	//	}
+
+	//	if (bExportedNormal)
+	//	{
+	//		// Set texture properties.
+	//		FbxFileTexture* lTexture = FbxFileTexture::Create(Scene, "Normal Texture");
+	//		char* textureFileName = TCHAR_TO_ANSI(*(Mat->GetName() + "_Normal.png"));
+
+	//		lTexture->SetFileName(textureFileName);
+	//		lTexture->SetTextureUse(FbxTexture::ETextureUse::eBumpNormalMap);
+	//		lTexture->SetMappingType(FbxTexture::eUV);
+	//		lTexture->SetMaterialUse(FbxFileTexture::EMaterialUse::eModelMaterial);
+	//		lTexture->SetSwapUV(false);
+	//		lTexture->SetTranslation(0.0, 0.0);
+	//		lTexture->SetScale(1.0, 1.0);
+	//		lTexture->SetRotation(0.0, 0.0);
+	//		FbxMaterial->NormalMap.ConnectSrcObject(lTexture);
+	//	}
+
+	//}
 
 	FbxAxisSystem::EFrontVector FrontVector = FbxAxisSystem::eParityEven;
 	const FbxAxisSystem UnrealZUp(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eRightHanded);
 	UnrealZUp.ConvertScene(Scene);
 
 	Exporter->WriteToFile(*SelectedExportPath);
-
 	return true;
 }
 
@@ -249,7 +312,7 @@ void ExportEXR(FString& Path, Imf::Rgba* ColorData, int Width, int Height)
 
 void ExportPNG(UTexture* Texture, FString RootFolder, bool bFillAlpha = true)
 {
-	FString TexPath = RootFolder + Texture->GetName() + ".png";
+	FString TexPath = FPaths::Combine(RootFolder, Texture->GetName()) + ".png";
 
 	UTexture2D* Texture2D = (UTexture2D*)Texture;
 	TEnumAsByte<TextureCompressionSettings> Compression = Texture2D->CompressionSettings;
@@ -299,7 +362,7 @@ void ExportPNG(UTexture* Texture, FString RootFolder, bool bFillAlpha = true)
 }
 void ExportTGA(UTexture* Texture, FString RootFolder)
 {
-	FString MeshPath = RootFolder + Texture->GetName() + ".tga";
+	FString TexPath = FPaths::Combine(RootFolder + Texture->GetName()) + ".tga";
 
 	auto TransientPackage = GetTransientPackage();
 	UTextureExporterTGA* Exporter = NewObject<UTextureExporterTGA>(TransientPackage, UTextureExporterTGA::StaticClass());
@@ -309,7 +372,7 @@ void ExportTGA(UTexture* Texture, FString RootFolder)
 	UExporter::FExportToFileParams Params;
 	Params.Object = Texture;
 	Params.Exporter = Exporter;
-	Params.Filename = *MeshPath;
+	Params.Filename = *TexPath;
 	Params.InSelectedOnly = false;
 	Params.NoReplaceIdentical = false;
 	Params.Prompt = false;
@@ -405,11 +468,6 @@ void DecodeAndSaveHQLightmap(LightmappedObjects* Exported, FString RootFolder, J
 
 			const FVector2D Sca = Interaction.GetCoordinateScale();
 			const FVector2D Bias = Interaction.GetCoordinateBias();
-
-			if (Actor->GetName() == L"SM_Pillar_27")
-			{
-				int xazamCarai = -1;
-			}
 
 			int X = (int)fmin(Bias.X * Width, Width);
 			int Y = (int)fmin(Bias.Y * Height, Height);
@@ -618,14 +676,50 @@ void DecodeAndSaveLQLightmap(LightmappedObjects* Exported, FString RootFolder)
 	ExportPNG(TexPath, ColorData, Width, Height);
 }
 
-FString ExportMaterial(int maxResolution, FString& Folder, UMaterialInterface* InMaterial, JanusTextureFormat Format)
+
+
+void ExportMaterial(int maxResolution, FString& Folder, UMaterialInterface* InMaterial, JanusTextureFormat Format, UJanusExporterUI* InExportData,
+	TArray<FString>* TexturesExp, TArray<AssetImage>* AssetImages)
 {
 	check(InMaterial);
 
 	TEnumAsByte<EBlendMode> BlendMode = InMaterial->GetBlendMode();
-	bool bIsValidMaterial = FMaterialUtilities::SupportsExport(EBlendMode::BLEND_Opaque, EMaterialProperty::MP_BaseColor);
+	bool bCanExportBaseColor = FMaterialUtilities::SupportsExport(EBlendMode::BLEND_Opaque, EMaterialProperty::MP_BaseColor);
+	bool bCanExportMetallic = FMaterialUtilities::SupportsExport(EBlendMode::BLEND_Opaque, EMaterialProperty::MP_Metallic);
+	bool bCanExportRoughness = FMaterialUtilities::SupportsExport(EBlendMode::BLEND_Opaque, EMaterialProperty::MP_Roughness);
+	bool bCanExportSpecular = FMaterialUtilities::SupportsExport(EBlendMode::BLEND_Opaque, EMaterialProperty::MP_Specular);
+	bool bCanExportNormal = InExportData->ExportNormals && FMaterialUtilities::SupportsExport(EBlendMode::BLEND_Opaque, EMaterialProperty::MP_Normal);
 
-	if (bIsValidMaterial)
+	if (bCanExportNormal)
+	{
+		TArray<FColor> NormalData;
+		FIntPoint OutSize = FIntPoint(maxResolution, maxResolution);
+		FMaterialUtilities::ExportMaterialProperty(InMaterial, EMaterialProperty::MP_Normal, OutSize, NormalData);
+		int ColorElements = OutSize.X * OutSize.Y;
+
+		FString MatName = InMaterial->GetName();
+		FString Path = MatName + "_Normal";
+
+		FString fullPath = Folder + "/" + Path;
+
+		FColor* First = NormalData.GetData();
+		for (int i = 0; i < ColorElements; i++)
+		{
+			FColor Color = NormalData[i];
+			Color.A = 255;
+			First[i] = Color;
+		}
+
+		ExportPNG(fullPath, NormalData, OutSize.X, OutSize.Y);
+
+		TexturesExp->Add(Path);
+		AssetImage Asset;
+		Asset.Format = Format;
+		Asset.Path = Path;
+		AssetImages->Add(Asset);
+	}
+
+	if (bCanExportBaseColor)
 	{
 		TArray<FColor> ColorData;
 		FIntPoint OutSize = FIntPoint(maxResolution, maxResolution);
@@ -694,9 +788,13 @@ FString ExportMaterial(int maxResolution, FString& Folder, UMaterialInterface* I
 		FString fullPath = Folder + "/" + Path;
 
 		ExportPNG(fullPath, ColorData, OutSize.X, OutSize.Y);
-		return Path;
+
+		TexturesExp->Add(Path);
+		AssetImage Asset;
+		Asset.Format = Format;
+		Asset.Path = Path;
+		AssetImages->Add(Asset);
 	}
-	return "";
 }
 
 FVector ChangeSpace(FVector Vector)
@@ -721,7 +819,9 @@ FReply SJanusExporterWindow::DoExport()
 	float UniformScale = ToolData->ExportScale;
 	FString ExportPath = ToolData->ExportPath;
 	int MaterialResolution = ToolData->MaterialResolution;
-	JanusTextureFormat LightmapFormat = ToolData->LightmapFormat;
+	bool ExportNormals = ToolData->ExportNormals;
+	JanusLightmapExportType LightmapFormat = ToolData->LightmapFormat;
+	JanusTextureFormat LightmapTexFormat = GetTextureFormatFromLightmap(LightmapFormat);
 
 	TArray<UObject*> ObjectsToExport;
 
@@ -730,6 +830,7 @@ FReply SJanusExporterWindow::DoExport()
 
 	TArray<AActor*> ActorsExported;
 	TArray<UStaticMesh*> StaticMeshesExp;
+	TArray<AssetObject> StaticMeshesExported;
 	TArray<FString> TexturesExp;
 	TArray<AssetImage> AssetImages;
 	TArray<UMaterialInterface*> MaterialsExported;
@@ -759,47 +860,6 @@ FReply SJanusExporterWindow::DoExport()
 				continue;
 			}
 
-			if (!StaticMeshesExp.Contains(Mesh))
-			{
-				StaticMeshesExp.Add(Mesh);
-				ExportFBX(Mesh, Root);
-			}
-
-			int32 LMapIndex = Mesh->LightMapCoordinateIndex;
-			const FMeshMapBuildData* MeshMapBuildData = Component->GetMeshMapBuildData(Component->LODData[0]);
-
-			if (!MeshMapBuildData)
-			{
-				continue;
-			}
-
-			FLightMap* LightMap = MeshMapBuildData->LightMap;
-			if (LightMap != NULL)
-			{
-				FLightMap2D* LightMap2D = LightMap->GetLightMap2D();
-
-				// HQ
-				UTexture2D* Texture = LightMap2D->GetTexture(0); // 0 = HQ LightMap, 1 = LQ LightMap
-				FString TexName = Texture->GetName();
-				if (!LightmapsToExport.Contains(TexName))
-				{
-					LightmappedObjects Obj;
-					Obj.LightMap = LightMap2D;
-					LightmapsToExport.Add(TexName, Obj);
-				}
-				LightmapsToExport[TexName].Actors.Add(Actor);
-
-				if (!TexturesExp.Contains(TexName))
-				{
-					TexturesExp.Add(TexName);
-
-					AssetImage Asset;
-					Asset.Format = LightmapFormat;
-					Asset.Path = TexName;
-					AssetImages.Add(Asset);
-				}
-			}
-
 			TArray<UMaterialInterface*> Materials = Component->GetMaterials();
 			for (int32 j = 0; j < Materials.Num(); j++)
 			{
@@ -815,16 +875,57 @@ FReply SJanusExporterWindow::DoExport()
 				}
 
 				MaterialsExported.Add(Material);
-				FString MatExported = ExportMaterial(MaterialResolution, Root, Material, JanusTextureFormat::PNG);
+				ExportMaterial(MaterialResolution, Root, Material, JanusTextureFormat::PNG, ToolData, &TexturesExp, &AssetImages);
+			}
 
-				if (!MatExported.IsEmpty())
+			if (!StaticMeshesExp.Contains(Mesh))
+			{
+				StaticMeshesExp.Add(Mesh);
+
+				AssetObject obj;
+				obj.Mesh = Mesh;
+				obj.Component = Component;
+				StaticMeshesExported.Add(obj);
+
+				ExportFBX(Mesh, Root, &Materials, ToolData);
+			}
+
+			if (LightmapFormat == JanusLightmapExportType::PackedOpenEXR ||
+				LightmapFormat == JanusLightmapExportType::PackedLDR)
+			{
+				int32 LMapIndex = Mesh->LightMapCoordinateIndex;
+				const FMeshMapBuildData* MeshMapBuildData = Component->GetMeshMapBuildData(Component->LODData[0]);
+
+				if (!MeshMapBuildData)
 				{
-					TexturesExp.Add(MatExported);
+					continue;
+				}
 
-					AssetImage Asset;
-					Asset.Format = JanusTextureFormat::PNG;
-					Asset.Path = MatExported;
-					AssetImages.Add(Asset);
+				FLightMap* LightMap = MeshMapBuildData->LightMap;
+				if (LightMap != NULL)
+				{
+					FLightMap2D* LightMap2D = LightMap->GetLightMap2D();
+
+					// HQ
+					UTexture2D* Texture = LightMap2D->GetTexture(0); // 0 = HQ LightMap, 1 = LQ LightMap
+					FString TexName = Texture->GetName();
+					if (!LightmapsToExport.Contains(TexName))
+					{
+						LightmappedObjects Obj;
+						Obj.LightMap = LightMap2D;
+						LightmapsToExport.Add(TexName, Obj);
+					}
+					LightmapsToExport[TexName].Actors.Add(Actor);
+
+					if (!TexturesExp.Contains(TexName))
+					{
+						TexturesExp.Add(TexName);
+
+						AssetImage Asset;
+						Asset.Format = LightmapTexFormat;
+						Asset.Path = TexName;
+						AssetImages.Add(Asset);
+					}
 				}
 			}
 		}
@@ -832,7 +933,7 @@ FReply SJanusExporterWindow::DoExport()
 
 	for (auto Elem : LightmapsToExport)
 	{
-		DecodeAndSaveHQLightmap(&Elem.Value, Root, LightmapFormat, ToolData->RelativeFStops);
+		DecodeAndSaveHQLightmap(&Elem.Value, Root, LightmapTexFormat, ToolData->RelativeFStops);
 	}
 
 	// Models before textures so we can start showing the scene faster (textures take too long to load)
@@ -866,28 +967,33 @@ FReply SJanusExporterWindow::DoExport()
 			}
 
 			FString ImageID = "";
+			FString NormalID = "";
 			FString LmapID = "";
 			FVector4 LightMapSca = FVector4(0, 0, 0, 0);
 			bool HasLightmap = false;
 
-			if (Component->LODData.Num() > 0)
+			if (ToolData->LightmapFormat == JanusLightmapExportType::PackedOpenEXR ||
+				ToolData->LightmapFormat == JanusLightmapExportType::PackedLDR)
 			{
-				FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
-				const FMeshMapBuildData* MeshMapBuildData = Component->GetMeshMapBuildData(Component->LODData[0]);
-				FLightMap* LightMap = MeshMapBuildData->LightMap;
-
-				if (LightMap != NULL)
+				if (Component->LODData.Num() > 0)
 				{
-					FLightMap2D* LightMap2D = LightMap->GetLightMap2D();
-					UTexture2D* Texture = LightMap2D->GetTexture(0);
-					FString TexName = Texture->GetName();
-					LmapID = TexName;
+					FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
+					const FMeshMapBuildData* MeshMapBuildData = Component->GetMeshMapBuildData(Component->LODData[0]);
+					FLightMap* LightMap = MeshMapBuildData->LightMap;
 
-					FLightMapInteraction Interaction = LightMap2D->GetInteraction(ERHIFeatureLevel::SM5);
-					FVector2D Scale = Interaction.GetCoordinateScale();
-					FVector2D Bias = Interaction.GetCoordinateBias();
-					LightMapSca = FVector4(Scale.X, Scale.Y, Bias.X, 1 - Bias.Y - Scale.Y);
-					HasLightmap = true;
+					if (LightMap != NULL)
+					{
+						FLightMap2D* LightMap2D = LightMap->GetLightMap2D();
+						UTexture2D* Texture = LightMap2D->GetTexture(0);
+						FString TexName = Texture->GetName();
+						LmapID = TexName;
+
+						FLightMapInteraction Interaction = LightMap2D->GetInteraction(ERHIFeatureLevel::SM5);
+						FVector2D Scale = Interaction.GetCoordinateScale();
+						FVector2D Bias = Interaction.GetCoordinateBias();
+						LightMapSca = FVector4(Scale.X, Scale.Y, Bias.X, 1 - Bias.Y - Scale.Y);
+						HasLightmap = true;
+					}
 				}
 			}
 
@@ -899,8 +1005,20 @@ FReply SJanusExporterWindow::DoExport()
 				{
 					continue;
 				}
-				ImageID = Material->GetName() + "_BaseColor";
-				break;
+
+				bool bExportedBaseColor;
+				bool bExportedNormal;
+				GetMaterialExportFlags(Material, ToolData, &bExportedBaseColor, &bExportedNormal);
+
+				if (bExportedBaseColor)
+				{
+					ImageID = Material->GetName() + "_BaseColor";
+				}
+
+				if (bExportedNormal)
+				{
+					NormalID = Material->GetName() + "_Normal";
+				}
 			}
 
 			Index.Append("\n\t\t\t\t<Object ");
@@ -936,6 +1054,10 @@ FReply SJanusExporterWindow::DoExport()
 			{
 				Index.Append("image_id=\"" + ImageID + "\" ");
 			}
+			/*if (NormalID != "")
+			{
+				Index.Append("tex3=\"" + NormalID + "\" ");
+			}*/
 
 			Index.Append("js_id=\"" + Actor->GetName() + "\" ");
 
@@ -948,6 +1070,10 @@ FReply SJanusExporterWindow::DoExport()
 				//float TexelSize = 1 / 1024.0f;
 
 				Index.Append(FString::SanitizeFloat(LightMapSca.X) + " " + FString::SanitizeFloat(LightMapSca.Y) + " " + FString::SanitizeFloat(LightMapSca.Z) + " " + FString::SanitizeFloat(LightMapSca.W) + "\" ");
+			}
+			else
+			{
+				Index.Append("lighting=\"true\" ");
 			}
 
 			Index.Append("scale=\"");
@@ -982,6 +1108,13 @@ FReply SJanusExporterWindow::DoExport()
 
 FReply SJanusExporterWindow::ShowInExplorer()
 {
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+	FString ExportPath = ToolData->ExportPath;
+
+	if (PlatformFile.DirectoryExists(ExportPath.GetCharArray().GetData()))
+	{
+		FPlatformProcess::CreateProc(ExportPath.GetCharArray().GetData(), nullptr, true, false, false, nullptr, 0, nullptr, nullptr);
+	}
 	return FReply::Handled();
 }
 

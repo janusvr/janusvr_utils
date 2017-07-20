@@ -7,6 +7,7 @@
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/SWindow.h"
 #include "JanusExporterUI.h"
+//#include "JanusFbxExporter.h"
 
 class SJanusExporterWindow : public SCompoundWidget
 {
@@ -30,6 +31,7 @@ public:
 	SJanusExporterWindow()
 	{
 		ToolData = NewObject<UJanusExporterUI>();
+		//UJanusFbxExporter* Exporter = UJanusFbxExporter::GetInstance();
 	}
 
 	FReply OnBrowseDir();

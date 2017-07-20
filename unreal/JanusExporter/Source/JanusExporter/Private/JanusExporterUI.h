@@ -20,10 +20,14 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Materials, meta = (ClampMin = "32", ClampMax = "4096"))
 		int MaterialResolution = 1024;
+	//UPROPERTY(EditAnywhere, Category = Lightmaps)
+		TEnumAsByte<JanusTextureFormat> MaterialFormat = JanusTextureFormat::PNG;
+	
+	//UPROPERTY(EditAnywhere, Category = Materials)
+		bool ExportNormals = false;
 
 	UPROPERTY(EditAnywhere, Category = Lightmaps)
-		TEnumAsByte<JanusTextureFormat> LightmapFormat = JanusTextureFormat::OpenEXR;
-
+		TEnumAsByte<JanusLightmapExportType> LightmapFormat = JanusLightmapExportType::PackedOpenEXR;
 	UPROPERTY(EditAnywhere, Category = Lightmaps, meta = (ClampMin = "-5", ClampMax = "5"))
 		float RelativeFStops = 0;
 
