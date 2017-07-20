@@ -215,11 +215,7 @@ bool ExportFBX(UStaticMesh* Mesh, FString RootFolder, TArray<UMaterialInterface*
 	Exporter->ExportStaticMesh(Mesh);
 	//Exporter->ExportStaticMesh(Actor, MeshComponent, &INodeNameAdapter());
 
-#if NO_CUSTOM_SOURCE
 	FbxScene* Scene = Exporter->Scene;
-#else
-	FbxScene* Scene = Exporter->GetFbxScene();
-#endif
 	for (int i = 0; i < Scene->GetNodeCount(); i++)
 	{
 		FbxNode* Node = Scene->GetNode(i);
@@ -229,11 +225,11 @@ bool ExportFBX(UStaticMesh* Mesh, FString RootFolder, TArray<UMaterialInterface*
 		Node->LclRotation.Set(Rotation);
 	}
 
-	for (int i = 0; i < Scene->GetMaterialCount(); i++)
-	{
-		FbxSurfaceMaterial* Material = Scene->GetMaterial(i);
-		Scene->RemoveMaterial(Material);
-	}
+	//for (int i = 0; i < Scene->GetMaterialCount(); i++)
+	//{
+	//	FbxSurfaceMaterial* Material = Scene->GetMaterial(i);
+	//	Scene->RemoveMaterial(Material);
+	//}
 
 	//TArray<UMaterialInterface*> Mats = *Materials;
 	//for (int i = 0; i < Materials->Num(); i++)
@@ -282,7 +278,6 @@ bool ExportFBX(UStaticMesh* Mesh, FString RootFolder, TArray<UMaterialInterface*
 	//		lTexture->SetRotation(0.0, 0.0);
 	//		FbxMaterial->NormalMap.ConnectSrcObject(lTexture);
 	//	}
-
 	//}
 
 	FbxAxisSystem::EFrontVector FrontVector = FbxAxisSystem::eParityEven;
