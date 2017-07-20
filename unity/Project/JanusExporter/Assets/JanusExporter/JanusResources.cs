@@ -2,12 +2,43 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEditor;
 using UnityEngine;
 
 namespace JanusVR
 {
     public static class JanusResources
     {
+        private static Texture2D tempRenderTexture;
+        public static Texture2D TempRenderTexture
+        {
+            get
+            {
+                if (!tempRenderTexture)
+                {
+                    tempRenderTexture = new Texture2D(256, 256);
+                }
+                return tempRenderTexture;
+            }
+        }
+
+        private static Material exposureMaterial;
+        public static Material ExposureMaterial
+        {
+            get
+            {
+                if (!exposureMaterial)
+                {
+                    Shader exposureShader = Shader.Find("Hidden/ExposureShader");
+                    exposureMaterial = new Material(exposureShader);
+                    exposureMaterial.SetPass(0);
+                    exposureMaterial.SetFloat("_IsLinear", PlayerSettings.colorSpace == ColorSpace.Linear ? 1 : 0);
+                }
+                return exposureMaterial;
+            }
+        }
+
+
         private static Mesh planeMesh;
         public static Mesh PlaneMesh
         {

@@ -1,0 +1,1 @@
+"C:\Program Files\Epic Games\UE_4.16\Engine\Build\BatchFiles\RunUAT.bat" BuildPlugin -Plugin="E:\Dev\JanusVR\janusvr_utils\unreal\JanusExporter\JanusExporter.uplugin" -Package="E:\Dev\JanusVR\janusvr_utils\unreal\Release" -Rocket
