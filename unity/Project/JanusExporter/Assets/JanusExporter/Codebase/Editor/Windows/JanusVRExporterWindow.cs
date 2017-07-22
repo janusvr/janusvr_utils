@@ -337,11 +337,14 @@ namespace JanusVR
             // Texture
             GUILayout.Label("Texture", EditorStyles.boldLabel);
             textureForceReExport = EditorGUILayout.Toggle("Force ReExport", textureForceReExport);
-            //exportGifs = EditorGUILayout.Toggle("Export GIFs", exportGifs);
-            defaultTexFormat = (ExportTextureFormat)EditorGUILayout.EnumPopup("Unsupported Textures Format", defaultTexFormat);
-            if (JanusUtil.SupportsQuality(defaultTexFormat))
+            if (textureForceReExport)
             {
-                defaultQuality = EditorGUILayout.IntSlider("Textures Quality", defaultQuality, 0, 100);
+                //exportGifs = EditorGUILayout.Toggle("Export GIFs", exportGifs);
+                defaultTexFormat = (ExportTextureFormat)EditorGUILayout.EnumPopup("Unsupported Textures Format", defaultTexFormat);
+                if (JanusUtil.SupportsQuality(defaultTexFormat))
+                {
+                    defaultQuality = EditorGUILayout.IntSlider("Textures Quality", defaultQuality, 0, 100);
+                }
             }
 
             // Scene

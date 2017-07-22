@@ -1,12 +1,15 @@
 <html>
 <head>
     <style>
-		body{
-		  font-family: arial, sans-serif;
-		}
-		
-        table {          
+        body {
+            background-color: #282828;
+            font-family: 'Open Sans Regular',Arial, Helvetica, sans-serif;
+            color: white;
+        }
+
+        table {
             border-collapse: collapse;
+            table-layout: fixed;
             width: 100%;
         }
 
@@ -17,137 +20,325 @@
         }
 
         tr:nth-child(even) {
-            background-color: #dddddd;
+            background-color: #1d1d1d;
+        }
+
+        #outline {
+            float: left;
+            width: 17%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            background-color: #4b4b4b;
+            height: 100%;
+        }
+
+        .inOutline {
+            margin-left: 6%;
+        }
+
+        #documentation {
+            margin-left: 17%;
+        }
+
+        .paragraph {
+            margin-left: 1%;
+        }
+
+        .firstColumn {
+            width: 30%;
+        }
+
+        .rlRmvLink,
+        .rlRmvLink:link,
+        .rlRmvLink:visited,
+        .rlRmvLink:active,
+        .rlRmvLink:hover {
+            color: white;
+            text-decoration: none;
+        }
+
+        .links,
+        .links:link,
+        .links:visited,
+        .links:active {
+            color: white;
+            text-decoration: underline;
+        }
+
+            .links:hover {
+                color: #757575
+            }
+
+        .menu:link,
+        .menu:visited,
+        .menu:active {
+            color: #FF9901;
+            text-decoration: none;
+        }
+
+        .menu:hover {
+            color: #FF9901;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <p><b>1. If you want to export lightmaps, make sure your scene is using only Baked GI, not Precomputed Realtime GI.</b></p>
-    <br>
-    <img src="step1.png" />
-    <br>
+    <div id="outline">
+        <div class="inOutline">
+            <a class="rlRmvLink" href="#download"><div class="menu"><h5>Download</h5></div></a>
+            <div class="inOutline">
+                <a class="rlRmvLink" href="#importingGithub"><div class="menu"><h5>Github Source</h5></div></a>
+                <a class="rlRmvLink" href="#importingPkg"><div class="menu"><h5>Unity Package</h5></div></a>
+            </div>
+            <a class="rlRmvLink" href="#beforexporting"><div class="menu"><h5>Before Exporting</h5></div></a>
+            <a class="rlRmvLink" href="#docStep"><div class="menu"><h5>Documentation</h5></div></a>
+            <div class="inOutline">
+                <a class="rlRmvLink" href="#docStep1"><div class="menu"><h5>Exporter Window Parameters</h5></div></a>
+                <a class="rlRmvLink" href="#docStep2"><div class="menu"><h5>Exporter Window Actions</h5></div></a>
+                <div class="inOutline">
+                    <a class="rlRmvLink" href="#docStep21"><div class="menu"><h5>Export HTML Only</h5></div></a>
+                    <a class="rlRmvLink" href="#docStep22"><div class="menu"><h5>Reset Parameters</h5></div></a>
+                    <a class="rlRmvLink" href="#docStep23"><div class="menu"><h5>Full Export</h5></div></a>
+                </div>
+                <a class="rlRmvLink" href="#docStep3"><div class="menu"><h5>Lightmap Options</h5></div></a>
+                <a class="rlRmvLink" href="#docStep4"><div class="menu"><h5>Custom Components</h5></div></a>
+                <div class="inOutline">
+                    <a class="rlRmvLink" href="#docStep41"><div class="menu"><h5>Room Entry Portal</h5></div></a>
+                    <a class="rlRmvLink" href="#docStep42"><div class="menu"><h5>Link</h5></div></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="documentation">
+        <a name="download" />
+        <h2>Download the JanusVR Exporter</h2>
+        <div class="paragraph">
+            <p>You can get the exporter by 1 of 2 ways:</p>
+            <a name="importingGithub" />
+            <h3>Github Source</h3>
+            <div class="paragraph">
+                <p>The JanusVR Unity Exporter is in constant development in the JanusVR Utils Github page: <a class="links" href="https://github.com/JamesMcCrae/janusvr_utils">https://github.com/JamesMcCrae/janusvr_utils</a> </p>
+                <p>You can find the exporter project source code in the folder "unity/Project/JanusExporter", or <a class="links" href="https://github.com/JamesMcCrae/janusvr_utils/tree/master/unity/Project/JanusExporter">here</a></p>
+                <h4>Importing The JanusVR Exporter from Git</h4>
+                <div class="paragraph">
+                    <p>1. Install git if you haven't</p>
+                    <p>2. git clone https://github.com/JamesMcCrae/janusvr_utils </p>
+                    <p>3. Copy the folder "unity/Project/JanusExporter/Assets/JanusExporter" to your project</p>
+                    <br />
+                </div>
+            </div>
 
-    <p><b>2. Import the JanusVR Package by going on "Assets/Import Package/Custom Package"</b></p>
-    <br>
-    <img src="step2.png" />
-    <br>
-    <img src="step3.png" />
-    <br>
-	
-	<p><b>3. Open the exporter by hitting Window -> Janus VR Exporter</b></p>
-	<br>
-	<img src="step4.png" />
-	<br>
+            <a name="importingPkg" />
+            <h3>Unity Package</h3>
+            <div class="paragraph">
+                <p>Download the latest release of the JanusVR Exporter by going to the <a class="links" href="https://github.com/JamesMcCrae/janusvr_utils/releases">JanusVR Utils GitHub Releases page</a></p>
 
-    <p><b>4. Exporter Options</b></p>
-	<img src="step5.png" />
-	<br>
-    <table>
-        <tr>
-            <th>Option</th>
-            <th>Description
-            <th>
-        </tr>
-        <tr>
-            <td>Export Path</td>
-            <td>The folder were exporting the scene to</td>
-        </tr>
-        <tr>
-            <td>Mesh format</td>
-            <td>The format were going to export all meshes to (only FBX right now).</td>
-        </tr>
-		 <tr>
-            <td>Uniform Scale</td>
-            <td>A uniform scale to transform the entire scene.</td>
-        </tr>
-		<tr>
-            <td>Export GIFs</td>
-            <td>If the export should export GIFs. If false, the GIFs get reprocessed to the texture format and only the first frame is exported.</td>
-        </tr>
-        <tr>
-            <td>Texture Format</td>
-            <td>
-				The format to export all textures. Supported formats are PNG and JPG. If the object needs alpha information inside the texture the format will be overriden to PNG always.
-				<br>
-				<b>Texture Quality:</b> Only available when using lossy texture formats, like JPG.
-			</td>
-        </tr>       
-        <tr>
-            <td>Export Materials</td>
-            <td>If the exporter should output the materials (if disabled, lightmaps are still exported, so you can take a look at only lightmap data with a gray tone)</td>
-        </tr>
-        <tr>
-            <td>Export Skybox</td>
-            <td>Exports the scene's skybox</td>
-        </tr>
-        <tr>
-            <td><a href="#lightmap">Lightmap Type</a></td>
-            <td>The type of lightmaps you want to export</td>
-        </tr>
-        <tr>
-            <td>Max Lightmap Resolution</td>
-            <td>The maximum resolution a lightmap atlas can have</td>
-        </tr>
-    </table>
-	<br>
-	
-    <p><b>4.1. Export HTML only</b></p>
-    <p>This button is intended for when you have already exported the entire scene, but made a change that doesnt impact the already exported models/textures (like changing the position of an object in the scene).</p>
-	<br>
-	<p><b>4.2. Reset Parameters</b></p>
-    <p>Resets all parameters to their default values.</p>
-	<br>	
-	<p><b>4.3. Full Export</b></p>
-    <p>Exports the entire scene - models, textures and the html file - to the output directory.</p>
-	<br>	
-	
-	<a name="lightmap" />
-	<p><b>4. Lightmap Options</b>
-	<br>
-	<table>
-		<tr>
-			<th>Option</th>
-			<th>Description</th>
-		</tr>
-		<tr>
-			<td>None</td>
-			<td>No lightmaps are exported.</td>
-		</tr>
-		<tr>
-			<td>Packed</td>
-			<td>Packed into multiple atlases.</td>
-		</tr>
-		<tr>
-			<td>Packed Source EXR</td>
-			<td>The optimal type of lightmaps: everything is exported straight out from Unity, packed into multiple atlases with HDR support.</td>
-		</tr>
-		<tr>
-			<td>Unpacked</td>
-			<td>Unpacks the atlases into smaller textures, so no objects share the same lightmap texture. Consumes more memory with no gain. (Exists only for compatibility/debugging purposes)</td>
-		</tr>
-		<tr>
-			<td>Baked</td>
-			<td>Bakes the lightmap into the object material. Consumes too much memory while making the main material look poor. (Exists only for compatibility/debugging purposes)</td>
-		</tr>
-	</table>
-	
-	<a name="components" />
-	<p><b>4. Components</b>
-	<br>	
-	<table>
-		<tr>
-			<th>Option</th>
-			<th>Description</th>
-		</tr>
-		<tr>
-			<td>GameObject -> JanusVR -> Room Entry Portal</td>
-			<td>Makes an entry portal on your Unity scene. You can position the portal and move it around, and this is going to be the entrance to your JanusVR room.</td>
-		</tr>
-		<tr>
-			<td>GameObject -> JanusVR -> Link</td>
-			<td>Makes a link portal on your Unity scene. You can set up the URL, title and all other options, and this is going to be exported as a Link portal to JanusVR.</td>
-		</tr>
-	</table>
-	
+                <h4>Importing The JanusVR Exporter</h4>
+                <div class="paragraph">
+                    <p><b>1. Import the JanusVR Package by going on "Assets/Import Package/Custom Package"</b></p>
+                    <img src="step1.png" />
+
+                    <p><b>2. Select the package you downloaded</b></p>
+                    <p>If you already had the JanusExporter installed, make sure to completely delete the JanusExporter folder in your project before importing the latest version.</p>
+                    <img src="step2.png" />
+                    <br>
+
+                    <p><b>3. Open the exporter by hitting Window -> Janus VR Exporter</b></p>
+                    <img src="step3.png" />
+                    <br>
+
+                    <p><b>4. Dock the JanusVR Exporter window somewhere in your working area</b></p>
+                    <img src="step4.png" />
+                    <br>
+                </div>
+            </div>
+        </div>
+
+
+
+        <a name="beforexporting" />
+        <h2>Before Exporting</h2>
+        <div class="paragraph">
+            <ul>
+                <li>
+                    Lightmap Settings:
+                    <ul>
+                        <li>Baked Global Illumination: Checked</li>
+                        <li>Lighting Mode: Subtractive (Unity 5.6+)</li>
+                        <li>Lightmapper: Enlighten (Unity 5.6+)</li>
+                    </ul>
+                    <img src="staticlmaps.png" />
+                </li>
+                <li>
+                    Lightmap Optimization:
+                    <ul>
+                        <li>Realtime Global Illumination: Unchecked (faster lightmap build times as we cant export realtime lightmaps)</li>
+                    </ul>
+                </li>
+            </ul>
+            <br>
+        </div>
+
+        <a name="docStep" />
+        <h2>Documentation</h2>
+
+        <a name="docStep1" />
+        <div class="paragraph">
+            <h3>Exporter Window Parameters</h3>
+            <div class="paragraph">
+                <table>
+                    <tr>
+                        <th class="firstColumn">Asset Objects</th>
+                        <th>Description
+                    </tr>
+                    <tr>
+                        <td>Search Type</td>
+                        <td>The algorithm to use to extract the model files.</td>
+                    </tr>
+                    <tr>
+                        <td>Uniform Scale</td>
+                        <td>A uniform scale to preprocess models.</td>
+                    </tr>
+                </table>
+                <br />
+                <table>
+                    <tr>
+                        <th class="firstColumn">Main</th>
+                        <th>Description
+                    </tr>
+                    <tr>
+                        <td>Export Path</td>
+                        <td>The folder were exporting the scene to</td>
+                    </tr>
+                    <tr>
+                        <td>Use Euler Rotations</td>
+                        <td>If we should export the HTML using Euler rotation instead of using vector directions (only supported on Janus 59+)</td>
+                    </tr>
+                </table>
+                <br />
+
+                <table>
+                    <tr>
+                        <th class="firstColumn">Texture</th>
+                        <th>Description
+                    </tr>
+                    <tr>
+                        <td>Force ReExport</td>
+                        <td>If we should force exporting all textures to the desingated texture format.</td>
+                    </tr>
+                    <tr>
+                        <td>Unsupported Textures Format</td>
+                        <td>If force reexport is checked all material textures will be exported using the specified format.</td>
+                    </tr>
+                    <tr>
+                        <td>Textures Quality</td>
+                        <td>If the unsupported format is a lossy format, choose the quality here</td>
+                    </tr>
+                </table>
+                <br />
+
+                <table>
+                    <tr>
+                        <th class="firstColumn">Scene</th>
+                        <th>Description
+                    </tr>
+                    <tr>
+                        <td>Export Inactive Objects</td>
+                        <td>If we should export inactive game objects</td>
+                    </tr>
+                    <tr>
+                        <td>Export Dynamic Objects</td>
+                        <td>If we should export objects that are set as dynamic (i.e. not static)</td>
+                    </tr>
+                    <tr>
+                        <td>Export Textures</td>
+                        <td>If we should export textures</td>
+                    </tr>
+                    <tr>
+                        <td>Export Materials</td>
+                        <td>If the exporter should output the materials (if disabled, lightmaps are still exported, so you can take a look at only lightmap data with a gray tone)</td>
+                    </tr>
+                    <tr>
+                        <td>Export Skybox</td>
+                        <td>Exports the scene's skybox</td>
+                    </tr>
+                </table>
+            </div>
+            <br />
+
+            <a name="docStep2" />
+            <h3>Exporter Window Actions</h3>
+            <div class="paragraph">
+                <a name="docStep21"></a>
+                <h4>Export HTML only</h4>
+                <div class="paragraph">
+                    <p>This button is intended for when you have already exported the entire scene, but made a change that doesnt impact the already exported models/textures (like changing the position of an object in the scene).</p>
+                </div>
+
+                <a name="docStep22"></a>
+                <h4>Reset Parameters</h4>
+                <div class="paragraph">
+                    <p>Resets all parameters to their default values.</p>
+                </div>
+
+                <a name="docStep23"></a>
+                <h4>Full Export</h4>
+                <div class="paragraph">
+                    <p>Exports the entire scene - models, textures and the html file - to the output directory.</p>
+                </div>
+                <br>
+            </div>
+
+            <a name="docStep3" />
+            <h3>Lightmap Options</h3>
+            <div class="paragraph">
+                <table>
+                    <tr>
+                        <th class="firstColumn">Option</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>None</td>
+                        <td>No lightmaps are exported.</td>
+                    </tr>
+                    <tr>
+                        <td>Packed</td>
+                        <td>Packed into multiple atlases.</td>
+                    </tr>
+                    <tr>
+                        <td>Packed Source EXR</td>
+                        <td>The optimal type of lightmaps: everything is exported straight out from Unity, packed into multiple atlases with HDR support.</td>
+                    </tr>
+                    <tr>
+                        <td>Unpacked</td>
+                        <td>Unpacks the atlases into smaller textures, so no objects share the same lightmap texture. Consumes more memory with no gain. (Exists only for compatibility/debugging purposes)</td>
+                    </tr>
+                    <tr>
+                        <td>Baked</td>
+                        <td>Bakes the lightmap into the object material. Consumes too much memory while making the main material look poor. (Exists only for compatibility/debugging purposes)</td>
+                    </tr>
+                </table>
+            </div>
+            <br />
+
+            <a name="docStep4" />
+            <h3>Custom Components</h3>
+            <div class="paragraph">
+                <a name="docStep41" />
+                <h4>Room Entry Portal</h4>
+                <div class="paragraph">
+                    <p>GameObject -> JanusVR -> Room Entry Portal</p>
+                    <p>Makes an entry portal on your Unity scene. You can position the portal and move it around, and this is going to be the entrance to your JanusVR room.</p>
+                </div>
+                <a name="docStep42" />
+                <h4>Link</h4>
+                <div class="paragraph">
+                    <p>GameObject -> JanusVR -> Link</p>
+                    <p>Makes a link portal on your Unity scene. You can set up the URL, title and all other options, and this is going to be exported as a Link portal to JanusVR.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
