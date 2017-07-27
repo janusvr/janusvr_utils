@@ -40,6 +40,8 @@ namespace JanusVR
         public float LightmapRelFStops { get; set; }
         public int LightmapMaxResolution { get; set; }
         public LightmapExportType LightmapType { get; set; }
+        public LightmapTextureFormat LightmapTextureFormat { get; set; }
+        public int LightmapTextureQuality { get; set; }
         public bool SkyboxEnabled { get; set; }
         public int SkyboxResolution { get; set; }
         public object TextureData { get; set; }

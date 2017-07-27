@@ -51,7 +51,7 @@ namespace JanusVR
         /// The format to export all textures to
         /// </summary>
         [SerializeField]
-        private ExportTextureFormat defaultTexFormat;
+        private ExportTextureFormat exportedTexturesFormat;
 
         [SerializeField]
         private bool textureForceReExport;
@@ -73,6 +73,18 @@ namespace JanusVR
         /// </summary>
         [SerializeField]
         private LightmapExportType lightmapExportType;
+
+        /// <summary>
+        /// The format that you want to export the lightmaps in
+        /// </summary>
+        [SerializeField]
+        private LightmapTextureFormat lightmapTextureFormat;
+
+        /// <summary>
+        /// If using a lossy lightmap format, the quality to set it to
+        /// </summary>
+        [SerializeField]
+        private int lightmapTextureQuality;
 
         /// <summary>
         /// The maximum resolution a lightmap atlas can have
@@ -141,6 +153,7 @@ namespace JanusVR
 
             errorStyle = new GUIStyle();
             errorStyle.normal.textColor = Color.red;
+            builtLightmapExposure = false;
         }
 
         [MenuItem("Window/JanusVR Exporter")]
@@ -164,7 +177,7 @@ namespace JanusVR
             searchType = AssetObjectSearchType.EachMesh;
 
             uniformScale = 1;
-            defaultTexFormat = ExportTextureFormat.JPG;
+            exportedTexturesFormat = ExportTextureFormat.JPG;
             defaultQuality = 70;
 
             exportTextures = true;
@@ -174,7 +187,10 @@ namespace JanusVR
             exportDynamicGameObjects = true;
             textureForceReExport = false;
 
-            lightmapExportType = LightmapExportType.PackedSourceEXR;
+            lightmapExportType = LightmapExportType.Packed;
+            lightmapTextureFormat = LightmapTextureFormat.EXR;
+            lightmapTextureQuality = 70;
+
             lightmapExposureVisible = true;
             builtLightmapExposure = false;
             lightmapRelFStops = 0;
@@ -196,16 +212,14 @@ namespace JanusVR
             meshScrollPos = Vector2.zero;
         }
 
-        public static bool NeedsLDRConversion(LightmapExportType type)
+        public static bool NeedsLDRConversion(LightmapTextureFormat format)
         {
-            switch (type)
+            switch (format)
             {
-                case LightmapExportType.BakedMaterial:
-                case LightmapExportType.Packed:
-                case LightmapExportType.Unpacked:
-                    return true;
-                default:
+                case LightmapTextureFormat.EXR:
                     return false;
+                default:
+                    return true;
             }
         }
 
@@ -218,7 +232,7 @@ namespace JanusVR
         [SerializeField]
         private bool lightmapExposureVisible = true;
         [SerializeField]
-        private bool builtLightmapExposure= true;
+        private bool builtLightmapExposure = true;
 
         [SerializeField]
         private AssetObjectSearchType searchType;
@@ -337,14 +351,10 @@ namespace JanusVR
             // Texture
             GUILayout.Label("Texture", EditorStyles.boldLabel);
             textureForceReExport = EditorGUILayout.Toggle("Force ReExport", textureForceReExport);
-            if (textureForceReExport)
+            exportedTexturesFormat = (ExportTextureFormat)EditorGUILayout.EnumPopup("Exported Textures Format", exportedTexturesFormat);
+            if (JanusUtil.SupportsQuality(exportedTexturesFormat))
             {
-                //exportGifs = EditorGUILayout.Toggle("Export GIFs", exportGifs);
-                defaultTexFormat = (ExportTextureFormat)EditorGUILayout.EnumPopup("Unsupported Textures Format", defaultTexFormat);
-                if (JanusUtil.SupportsQuality(defaultTexFormat))
-                {
-                    defaultQuality = EditorGUILayout.IntSlider("Textures Quality", defaultQuality, 0, 100);
-                }
+                defaultQuality = EditorGUILayout.IntSlider("Exported Textures Quality", defaultQuality, 0, 100);
             }
 
             // Scene
@@ -385,11 +395,7 @@ namespace JanusVR
                     EditorGUILayout.LabelField("    No lightmaps are going to be exported");
                     break;
                 case LightmapExportType.Packed:
-                    EditorGUILayout.LabelField("    Converts the source EXR files to Low-Dynamic Range");
-                    break;
-                case LightmapExportType.PackedSourceEXR:
-                    EditorGUILayout.LabelField("    Copies the source EXR High-Dynamic Range lightmaps");
-                    EditorGUILayout.LabelField("    directly into the exported project");
+                    EditorGUILayout.LabelField("    Uses the source lightmap files from Unity without any atlas changes");
                     break;
                 case LightmapExportType.BakedMaterial:
                     EditorGUILayout.LabelField("    Bakes the lightmap into the material");
@@ -400,12 +406,23 @@ namespace JanusVR
                     break;
             }
 
-            if (lightmapExportType != LightmapExportType.None && lightmapExportType != LightmapExportType.PackedSourceEXR)
+            if (lightmapExportType != LightmapExportType.None)
+            {
+                lightmapTextureFormat = (LightmapTextureFormat)EditorGUILayout.EnumPopup("Lightmap Format", lightmapTextureFormat);
+                if (lightmapTextureFormat != LightmapTextureFormat.EXR &&
+                    JanusUtil.SupportsQuality(lightmapTextureFormat))
+                {
+                    lightmapTextureQuality = EditorGUILayout.IntSlider("Lightmap Textures Quality", lightmapTextureQuality, 0, 100);
+                }
+            }
+
+            // cant scale if theres no lightmap and if its EXR (for now)
+            if (lightmapExportType != LightmapExportType.None && lightmapTextureFormat != LightmapTextureFormat.EXR)
             {
                 maxLightMapResolution = Math.Max(4, EditorGUILayout.IntField("Max Lightmap Resolution", maxLightMapResolution));
             }
 
-            if (NeedsLDRConversion(lightmapExportType))
+            if (NeedsLDRConversion(lightmapTextureFormat))
             {
                 float newFStop = EditorGUILayout.Slider("Lightmap Relative F-Stops", lightmapRelFStops, -5, 5);
                 bool update = false;
@@ -572,10 +589,12 @@ namespace JanusVR
             room.LightmapRelFStops = lightmapRelFStops;
             room.LightmapMaxResolution = maxLightMapResolution;
             room.LightmapType = Lightmapping.bakedGI ? lightmapExportType : LightmapExportType.None;
+            room.LightmapTextureFormat = lightmapTextureFormat;
+            room.LightmapTextureQuality = lightmapTextureQuality;
             room.SkyboxEnabled = exportSkybox;
             room.SkyboxResolution = exportSkyboxResolution;
             room.TextureData = defaultQuality;
-            room.TextureFormat = defaultTexFormat;
+            room.TextureFormat = exportedTexturesFormat;
             room.TextureForceReExport = textureForceReExport;
             room.UniformScale = uniformScale;
             room.UseEulerRotations = useEulerRotations;
