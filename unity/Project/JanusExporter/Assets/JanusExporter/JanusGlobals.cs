@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +18,7 @@ namespace JanusVR
         /// </summary>
         private static List<IJanusObject> objects = new List<IJanusObject>();
 
-        public const decimal Version = 2.12M;
+        public const decimal Version = 2.13M;
 
         /// <summary>
         /// Decimal cases used by default when exporting position/scale/rotation values
@@ -96,3 +98,4 @@ namespace JanusVR
         }
     }
 }
+#endif

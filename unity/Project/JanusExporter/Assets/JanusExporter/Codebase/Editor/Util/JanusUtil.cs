@@ -13,6 +13,19 @@ namespace JanusVR
         private static string format2Cases = "F2";
         private static CultureInfo c = CultureInfo.InvariantCulture;
 
+        public static bool SupportsQuality(LightmapTextureFormat format)
+        {
+            switch (format)
+            {
+                case LightmapTextureFormat.JPG:
+                    return true;
+                case LightmapTextureFormat.PNG:// PNG is lossless
+                case LightmapTextureFormat.EXR:// EXR is lossless (for our purposes here)
+                default:
+                    return false;
+            }
+        }
+
         public static bool SupportsQuality(ExportTextureFormat format)
         {
             switch (format)

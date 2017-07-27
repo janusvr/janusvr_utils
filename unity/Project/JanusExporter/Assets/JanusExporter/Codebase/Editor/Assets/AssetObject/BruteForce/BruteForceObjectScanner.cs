@@ -155,7 +155,6 @@ namespace JanusVR
         public static bool LightmapNeedsUV1(JanusRoom room)
         {
             return room.LightmapType == LightmapExportType.Packed ||
-                room.LightmapType == LightmapExportType.PackedSourceEXR ||
                 room.LightmapType == LightmapExportType.Unpacked;
         }
 

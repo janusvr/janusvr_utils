@@ -20,7 +20,7 @@ namespace JanusVR
         Packed,
 
         // PackedSource: Exports exactly the HDR lighting data straight from Unity with no modifications
-        PackedSourceEXR,
+        //PackedSourceEXR,
 
         // Unpacked: Exports all lightmaps, but 
         // each object gets its own texture instead of sharing one.

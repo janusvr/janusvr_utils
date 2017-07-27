@@ -49,8 +49,7 @@ namespace JanusVR
 
                     if (assignLightmapScale)
                     {
-                        if (lightmapExportType == LightmapExportType.Packed ||
-                            lightmapExportType == LightmapExportType.PackedSourceEXR)
+                        if (lightmapExportType == LightmapExportType.Packed)
                         {
                             Vector4 lmap = renderer.lightmapScaleOffset;
                             lmap.x = Mathf.Clamp(lmap.x, -2, 2);
@@ -172,6 +171,7 @@ namespace JanusVR
         public void ProcessTextures()
         {
             LightmapExportType lightmapExportType = room.LightmapType;
+            LightmapTextureFormat lightmapTextureFormat = room.LightmapTextureFormat;
             ExportTextureFormat format = room.TextureFormat;
 
             // export everything that has already been loaded
@@ -195,13 +195,20 @@ namespace JanusVR
                     ProcessLightmapsBaked();
                     break;
                 case LightmapExportType.Packed:
-                    ProcessLightmapsPacked();
+                    {
+                        switch (lightmapTextureFormat)
+                        {
+                            case LightmapTextureFormat.EXR:
+                                ProcessLightmapsPackedSourceEXR();
+                                break;
+                            default:
+                                ProcessLightmapsPacked();
+                                break;
+                        }
+                    }
                     break;
                 case LightmapExportType.Unpacked:
                     ProcessLightmapsUnpacked();
-                    break;
-                case LightmapExportType.PackedSourceEXR:
-                    ProcessLightmapsPackedSourceEXR();
                     break;
             }
         }
