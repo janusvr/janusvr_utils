@@ -6,19 +6,31 @@
         <script src="../../scripts/listgen.js"></script>
         
         <script>
-                    window.onload = function() {
-       
-		generateList("bookmarks")
-        setTimeout(function(){generateList("bookmarks")}, 250);    
+        
+		var interval;
+		
+		function populateScreen() {
+		
+			if (typeof window.janus.bookmarks != "undefined")			
+				{
+					generateList("bookmarks");
+					clearInterval(interval);
+
+				}		
+		
+		}
+		
+		window.onload = function() {
+
+		 interval = setInterval(function(){ populateScreen() }, 250);  
 		
 		
+		}
 		
 
 		
-		
-        
-        }
-        
+
+
 		
             
         </script>
