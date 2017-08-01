@@ -6,23 +6,44 @@
         <script src="../../scripts/listgen.js"></script>
         
         <script>
-                    window.onload = function() {
-	
-        parent.window.janus.updatepopulardata("?orderBy=weight&desc=true&limit=50");
-        populatePopularObject();
-		generateList("popular")
-		
-        setTimeout(
-        function(){
-        generateList("popular")
-        },2500);
-     
+       
 
-            
-         setInterval(
-        function(){
-        populatePopularObject();
-        },5000);
+		var interval;
+		
+		function populateScreen() {
+		
+			if (typeof window.janus.populardata != "undefined")			
+				{	
+					
+					generateList("popular");
+					clearInterval(interval);
+				
+				}		
+		
+		}
+		
+		function populateObject() {
+
+			if (typeof window.janus.updatepopulardata != "undefined")			
+				{	
+					
+					populatePopularObject();
+					clearInterval(interval2);
+				
+				}		
+		   		
+		}
+		
+
+	   window.onload = function() {
+	
+  
+
+		interval = setInterval(function(){ populateScreen() }, 250);  
+		 interval2 = setInterval(function(){ populateScreen() }, 250);  
+		 
+		
+           		
                        
 
         
