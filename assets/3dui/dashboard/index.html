@@ -158,11 +158,13 @@ function toggleScrollButtons(state) {
 		<ul class="panel">
 		
 			<!--<li class="panelbutton vestabutton" onmousedown="document.getElementById('dashdisplay').src='apps/vesta/index.html'; setClass(this); setWidth('100%');"></li>-->
+			<li class="panelbutton settingsbutton" onmousedown="document.getElementById('dashdisplay').src='../../2dui/apps/settings/index.html?dashboard=true'; setClass(this); setWidth('100%'); toggleScrollButtons('none')"></li>	
+			
 			<li class="panelbutton popularbutton " onmousedown="document.getElementById('dashdisplay').src='apps/popular/index.html'; setClass(this); setWidth('100%'); toggleScrollButtons('')"></li>
 			<li class="panelbutton partiesbutton" onmousedown="document.getElementById('dashdisplay').src='apps/parties/index.html'; setClass(this); setWidth('100%'); toggleScrollButtons('')"></li>
 			<li class="panelbutton bookmarksbutton selected" onmousedown="document.getElementById('dashdisplay').src='apps/bookmarks/index.html'; setClass(this); setWidth('100%'); toggleScrollButtons('')"></li>
 			<li class="panelbutton quitbutton selected" onmousedown="document.getElementById('dashdisplay').src='apps/quit/index.html'; setClass(this); setWidth('100%'); toggleScrollButtons('')"></li>
-				
+
 		</ul>
 	    
 		<div onmousedown="keepScroll(-250)" id="upscroll" onmouseup="stopScroll()" onmouseout="stopScroll()"  class="cardoption upscrollbutton"  >&#9650;</div>
@@ -173,7 +175,6 @@ function toggleScrollButtons(state) {
          		<!--<div class="cardoption partybutton" onclick="togglePartySetting();" id="cardoption">HOST PARTY</div>-->
 	
 
-		<li class="panelbutton settingsbutton" onmousedown="document.getElementById('dashdisplay').src='../../2dui/apps/settings/index.html?dashboard=true'; setClass(this); setWidth('100%'); toggleScrollButtons('none')"></li>	
 
 	</body>
 
