@@ -8,7 +8,8 @@
         <script>
        
 
-		var interval;
+		var interval,interval2;
+		
 		
 		function populateScreen() {
 		
@@ -17,8 +18,11 @@
 					
 					generateList("popular");
 					clearInterval(interval);
-				
-				}		
+
+		
+					
+				}
+
 		
 		}
 		
@@ -29,20 +33,18 @@
 					
 					populatePopularObject();
 					clearInterval(interval2);
-				
+					interval = setInterval(function(){ populateScreen() }, 250);  
+					
 				}		
-		   		
+	   		
 		}
 		
 
 	   window.onload = function() {
 	
   
+					interval2 = setInterval(function(){ populateObject() }, 250);  
 
-		interval = setInterval(function(){ populateScreen() }, 250);  
-		 interval2 = setInterval(function(){ populateScreen() }, 250);  
-		 
-		
            		
                        
 
