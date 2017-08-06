@@ -150,16 +150,11 @@ background-repeat: no-repeat;
 
 
 .settingsbutton {
-background-image: url('../images/settingshover.png');
+background-image: url('../images/settings.png');
 background-position:center;
 background-size: 96px 96px;
 background-repeat: no-repeat;
-padding-left:32px;
-padding-right:32px;
-right:8px;
-position:absolute;
-top:0px;
-background-color:rgba(0,0,0,0);
+
 }
 .settingsbutton:hover {
 background-image: url('../images/settingshover.png');
