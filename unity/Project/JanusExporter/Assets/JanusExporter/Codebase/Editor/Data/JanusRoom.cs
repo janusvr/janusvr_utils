@@ -53,6 +53,8 @@ namespace JanusVR
         public int EnvironmentProbeIrradResolution { get; set; }
         public ReflectionProbe EnvironmentProbeOverride { get; set; }
         public bool UseEulerRotations { get; set; }
+        public bool ExportNavigationMesh { get; set; }
+
 
         public AssetImage SkyboxFront { get; set; }
         public AssetImage SkyboxBack { get; set; }

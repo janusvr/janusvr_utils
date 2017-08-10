@@ -45,6 +45,16 @@ namespace JanusVR
             return Path.Combine(scenePath, GetSceneName());
         }
 
+        public static bool HasActiveScene()
+        {
+#if UNITY_5_3_OR_NEWER
+            Scene current = SceneManager.GetActiveScene();
+            return !string.IsNullOrEmpty(current.name);
+#else
+            return !string.IsNullOrEmpty(EditorApplication.currentScene);
+#endif
+        }
+
         public static string GetScenePath()
         {
 #if UNITY_5_3_OR_NEWER

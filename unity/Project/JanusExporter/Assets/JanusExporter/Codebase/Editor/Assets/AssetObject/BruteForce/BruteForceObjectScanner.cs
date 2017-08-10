@@ -20,6 +20,7 @@ namespace JanusVR
 
         private MaterialScanner materialScanner;
         private JanusComponentExtractor compExtractor;
+        private NavMeshScanner navMeshScanner;
 
         public BruteForceObjectScanner()
         {
@@ -35,10 +36,35 @@ namespace JanusVR
 
             materialScanner = new MaterialScanner(room);
             compExtractor = new JanusComponentExtractor(room);
+            navMeshScanner = new NavMeshScanner(room);
 
             EditorUtility.DisplayProgressBar("Janus VR Exporter", "Brute force scanning for AssetObjects...", 0.0f);
 
             materialScanner.Initialize();
+            navMeshScanner.Initialize();
+
+            AssetObject navMeshObj = navMeshScanner.GetNavMeshAsset();
+            if (navMeshObj != null)
+            {
+                BruteForceMeshExportData exported = new BruteForceMeshExportData();
+                exported.Mesh = navMeshObj.Mesh;
+
+                string meshId = "NavMesh";
+                meshNames.Add(meshId);
+
+                // keep our version of the data
+                exported.MeshId = meshId;
+                meshesToExport.Add(exported.Mesh, exported);
+
+                // but also supply the data to the Janus Room so the Html can be built
+                exported.Asset = navMeshObj;
+
+                navMeshObj.id = meshId;
+                navMeshObj.src = meshId + ".fbx";
+
+                room.AddAssetObject(navMeshObj);
+            }
+
             for (int i = 0; i < rootObjects.Length; i++)
             {
                 GameObject root = rootObjects[i];
@@ -77,14 +103,14 @@ namespace JanusVR
                 {
                     MeshRenderer meshRen = (MeshRenderer)comp;
                     MeshFilter filter = comps.FirstOrDefault(c => c is MeshFilter) as MeshFilter;
-                    if (filter == null)
+                    if (filter == null || !meshRen.enabled)
                     {
                         continue;
                     }
 
                     Mesh mesh = filter.sharedMesh;
                     if (mesh == null ||
-                        !room.CanExportObj(comps) || 
+                        !room.CanExportObj(comps) ||
                         mesh.GetTopology(0) != MeshTopology.Triangles)
                     {
                         continue;
@@ -135,7 +161,7 @@ namespace JanusVR
                     compExtractor.ProcessNewRoomObject(obj, comps);
 
                     // let the material scanner process this object
-                    materialScanner.PreProcessObject(meshRen, mesh, exp.Asset, obj, true);
+                    materialScanner.PreProcessObject(meshRen, mesh, exp.Asset, obj, true, 0);
                 }
             }
 
@@ -190,8 +216,8 @@ namespace JanusVR
             int maximum = triangles.Max();
             if (normals.Length < maximum)
             {
-                Debug.LogWarning("Mesh has not enough normals - " + mesh.name, mesh);
-                return null;
+                Debug.LogWarning("Mesh has not enough normals - " + mesh.name + " - Ignoring normals", mesh);
+                data.Normals = null;
             }
 
             string meshPath = AssetDatabase.GetAssetPath(mesh);
@@ -254,7 +280,7 @@ namespace JanusVR
                     array.Length == 0 &&
                     room.LightmapType != LightmapExportType.None)
                 {
-                    Debug.LogWarning("Lightmapping is enabled but mesh has no UV1 channel - " + mesh.name + " - Tick the Generate Lightmap UVs", mesh);
+                    Debug.LogWarning("Lightmapping is enabled but mesh " + mesh.name + " has no UV1 channel - Tick the Generate Lightmap UVs", mesh);
                 }
                 uvs[i] = array;
             }

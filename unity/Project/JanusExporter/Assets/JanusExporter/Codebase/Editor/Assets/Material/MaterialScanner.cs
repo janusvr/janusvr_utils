@@ -27,7 +27,7 @@ namespace JanusVR
         {
         }
 
-        public void PreProcessObject(MeshRenderer renderer, Mesh mesh, AssetObject obj, RoomObject rObj, bool assignLightmapScale)
+        public void PreProcessObject(MeshRenderer renderer, Mesh mesh, AssetObject obj, RoomObject rObj, bool assignLightmapScale, int subMesh)
         {
             LightmapExportType lightmapExportType = room.LightmapType;
             ExportTextureFormat format = room.TextureFormat;
@@ -103,41 +103,44 @@ namespace JanusVR
                 Color objColor = Color.white;
 
                 Material[] mats = renderer.sharedMaterials;
-                for (int j = 0; j < mats.Length; j++)
+                if (mats.Length > 0)
                 {
-                    Material mat = mats[j];
+                    Material mat = mats[subMesh];
 
-                    Vector2 sca = mat.mainTextureScale;
-                    Vector2 off = mat.mainTextureOffset;
-                    if (sca != Vector2.one || off != Vector2.zero)
+                    if (mat)
                     {
-                        rObj.tiling = JanusUtil.FormatVector4(new Vector4(sca.x, sca.y, off.x, off.y));
-                    }
-
-                    Shader shader = mat.shader;
-                    int props = ShaderUtil.GetPropertyCount(shader);
-                    for (int k = 0; k < props; k++)
-                    {
-                        string name = ShaderUtil.GetPropertyName(shader, k);
-
-                        ShaderUtil.ShaderPropertyType propType = ShaderUtil.GetPropertyType(shader, k);
-                        if (propType == ShaderUtil.ShaderPropertyType.TexEnv)
+                        Vector2 sca = mat.mainTextureScale;
+                        Vector2 off = mat.mainTextureOffset;
+                        if (sca != Vector2.one || off != Vector2.zero)
                         {
-                            if (JanusGlobals.SemanticsMainTex.Contains(name.ToLower()))
+                            rObj.tiling = JanusUtil.FormatVector4(new Vector4(sca.x, sca.y, off.x, off.y));
+                        }
+
+                        Shader shader = mat.shader;
+                        int props = ShaderUtil.GetPropertyCount(shader);
+                        for (int k = 0; k < props; k++)
+                        {
+                            string name = ShaderUtil.GetPropertyName(shader, k);
+
+                            ShaderUtil.ShaderPropertyType propType = ShaderUtil.GetPropertyType(shader, k);
+                            if (propType == ShaderUtil.ShaderPropertyType.TexEnv)
                             {
-                                // main texture texture
-                                Texture matTex = mat.GetTexture(name);
-                                if (matTex is Texture2D)
+                                if (JanusGlobals.SemanticsMainTex.Contains(name.ToLower()))
                                 {
-                                    texture = (Texture2D)matTex;
+                                    // main texture texture
+                                    Texture matTex = mat.GetTexture(name);
+                                    if (matTex is Texture2D)
+                                    {
+                                        texture = (Texture2D)matTex;
+                                    }
                                 }
                             }
-                        }
-                        else if (propType == ShaderUtil.ShaderPropertyType.Color)
-                        {
-                            if (JanusGlobals.SemanticsColor.Contains(name.ToLower()))
+                            else if (propType == ShaderUtil.ShaderPropertyType.Color)
                             {
-                                objColor = mat.GetColor(name);
+                                if (JanusGlobals.SemanticsColor.Contains(name.ToLower()))
+                                {
+                                    objColor = mat.GetColor(name);
+                                }
                             }
                         }
                     }

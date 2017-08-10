@@ -18,7 +18,7 @@ namespace JanusVR
         /// </summary>
         private static List<IJanusObject> objects = new List<IJanusObject>();
 
-        public const decimal Version = 2.13M;
+        public const decimal Version = 2.14M;
 
         /// <summary>
         /// Decimal cases used by default when exporting position/scale/rotation values
