@@ -55,6 +55,8 @@ namespace JanusVR
         public string tiling { get; set; }
         [XmlAttribute]
         public string collision_id { get; set; }
+        [XmlAttribute]
+        public string mat_id { get; set; }
 
         public void SetNoUnityObj(JanusRoom room)
         {

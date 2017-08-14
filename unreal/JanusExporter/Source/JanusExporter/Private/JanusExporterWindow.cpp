@@ -24,7 +24,6 @@
 #include "Runtime/Engine/Public/HitProxies.h"
 #include "Runtime/Engine/Public/MaterialShared.h"
 #include "Developer/MaterialUtilities/Public/MaterialUtilities.h"
-
 #include "Editor/UnrealEd/Private/StaticLightingSystem/StaticLightingPrivate.h"
 #include "LightMap.h"
 #include "Engine/MapBuildDataRegistry.h"
@@ -42,9 +41,8 @@ THIRD_PARTY_INCLUDES_START
 #include "ThirdParty/openexr/Deploy/include/ImfStdIO.h"
 #include "ThirdParty/openexr/Deploy/include/ImfChannelList.h"
 #include "ThirdParty/openexr/Deploy/include/ImfRgbaFile.h"
-#include <fbxsdk.h>
+#include "ThirdParty/FBX/2016.1.1/include/fbxsdk.h"
 THIRD_PARTY_INCLUDES_END
-
 
 #define LOCTEXT_NAMESPACE "JanusExporter"
 #define NO_CUSTOM_SOURCE 1 // remove this if you have the fixed source code that exports materials
@@ -974,6 +972,11 @@ FReply SJanusExporterWindow::DoExport()
 				{
 					FStaticMeshComponentLODInfo* LODInfo = &Component->LODData[0];
 					const FMeshMapBuildData* MeshMapBuildData = Component->GetMeshMapBuildData(Component->LODData[0]);
+					if (MeshMapBuildData == NULL)
+					{
+						continue;
+					}
+
 					FLightMap* LightMap = MeshMapBuildData->LightMap;
 
 					if (LightMap != NULL)
@@ -1074,19 +1077,19 @@ FReply SJanusExporterWindow::DoExport()
 			Index.Append("scale=\"");
 			Index.Append(FString::SanitizeFloat(Sca.X) + " " + FString::SanitizeFloat(Sca.Y) + " " + FString::SanitizeFloat(Sca.Z) + "\" ");
 
-			/*Index.Append("rotation=\"");
+			Index.Append("rotation=\"");
 			FVector RotEuler = Rot.Euler();
 			RotEuler = FVector(RotEuler.X, RotEuler.Z, RotEuler.Y);
-			Index.Append(FString::SanitizeFloat(RotEuler.X) + " " + FString::SanitizeFloat(RotEuler.Y) + " " + FString::SanitizeFloat(RotEuler.Z) + "\" ");*/
+			Index.Append(FString::SanitizeFloat(RotEuler.X) + " " + FString::SanitizeFloat(RotEuler.Y) + " " + FString::SanitizeFloat(RotEuler.Z) + "\" ");
 
-			Index.Append("xdir=\"");
+			/*Index.Append("xdir=\"");
 			Index.Append(FString::SanitizeFloat(XDir.X) + " " + FString::SanitizeFloat(XDir.Y) + " " + FString::SanitizeFloat(XDir.Z) + "\" ");
 
 			Index.Append("ydir=\"");
 			Index.Append(FString::SanitizeFloat(YDir.X) + " " + FString::SanitizeFloat(YDir.Y) + " " + FString::SanitizeFloat(YDir.Z) + "\" ");
 
 			Index.Append("zdir=\"");
-			Index.Append(FString::SanitizeFloat(ZDir.X) + " " + FString::SanitizeFloat(ZDir.Y) + " " + FString::SanitizeFloat(ZDir.Z) + "\" ");
+			Index.Append(FString::SanitizeFloat(ZDir.X) + " " + FString::SanitizeFloat(ZDir.Y) + " " + FString::SanitizeFloat(ZDir.Z) + "\" ");*/
 
 
 			Index.Append("/>");

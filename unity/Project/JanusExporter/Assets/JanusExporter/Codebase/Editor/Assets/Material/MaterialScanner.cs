@@ -95,78 +95,109 @@ namespace JanusVR
                     break;
             }
 
+            Material[] mats = renderer.sharedMaterials;
             if (lightmapExportType != LightmapExportType.BakedMaterial &&
                 room.ExportMaterials)
             {
                 // search for textures/color on object
-                Texture2D texture = null;
-                Color objColor = Color.white;
-
-                Material[] mats = renderer.sharedMaterials;
-                if (mats.Length > 0)
+                for (int i = 0; i < mats.Length; i++)
                 {
-                    Material mat = mats[subMesh];
-
-                    if (mat)
+                    Material mat = mats[i];
+                    if (room.TryGetMaterial(mat.name) == null)
                     {
-                        Vector2 sca = mat.mainTextureScale;
-                        Vector2 off = mat.mainTextureOffset;
-                        if (sca != Vector2.one || off != Vector2.zero)
-                        {
-                            rObj.tiling = JanusUtil.FormatVector4(new Vector4(sca.x, sca.y, off.x, off.y));
-                        }
+                        AssetMaterial assetMat = new AssetMaterial();
+                        assetMat.id = mat.name;
+                        room.AddAssetMaterial(assetMat);
 
                         Shader shader = mat.shader;
-                        int props = ShaderUtil.GetPropertyCount(shader);
-                        for (int k = 0; k < props; k++)
-                        {
-                            string name = ShaderUtil.GetPropertyName(shader, k);
 
-                            ShaderUtil.ShaderPropertyType propType = ShaderUtil.GetPropertyType(shader, k);
-                            if (propType == ShaderUtil.ShaderPropertyType.TexEnv)
-                            {
-                                if (JanusGlobals.SemanticsMainTex.Contains(name.ToLower()))
-                                {
-                                    // main texture texture
-                                    Texture matTex = mat.GetTexture(name);
-                                    if (matTex is Texture2D)
-                                    {
-                                        texture = (Texture2D)matTex;
-                                    }
-                                }
-                            }
-                            else if (propType == ShaderUtil.ShaderPropertyType.Color)
-                            {
-                                if (JanusGlobals.SemanticsColor.Contains(name.ToLower()))
-                                {
-                                    objColor = mat.GetColor(name);
-                                }
-                            }
+                        Texture2D diffuseTexture;
+                        Color? objColor;
+                        ExtractFromMaterial(mat, out objColor, out diffuseTexture);
+
+                        AssetImage image = RegisterImage(diffuseTexture);
+                        assetMat.tex0 = image;
+                        assetMat.col = JanusUtil.FormatColor(objColor.Value);
+
+                        rObj.mat_id = assetMat.id;
+                    }
+                }
+            }
+            else
+            {
+                if (mats.Length > 0)
+                {
+                    Material mat = mats[0];
+                    if (mat != null)
+                    {
+                        Texture2D diffuseTexture;
+                        Color? objColor;
+                        ExtractFromMaterial(mat, out objColor, out diffuseTexture);
+                        if (objColor != null)
+                        {
+                            rObj.col = JanusUtil.FormatColor(objColor.Value);
+                        }
+
+                        AssetImage image = RegisterImage(diffuseTexture);
+                        rObj.image_id = image;
+                    }
+                }
+            }
+        }
+
+        private AssetImage RegisterImage(Texture2D texture)
+        {
+            if (!texture)
+            {
+                return null;
+            }
+
+            if (textureNames.Contains(texture.name))
+            {
+                AssetImage img = room.AssetImages.FirstOrDefault(c => c.Texture == texture);
+                return img;
+            }
+            textureNames.Add(texture.name);
+
+            AssetImage image = new AssetImage();
+            image.Texture = texture;
+            image.id = texture.name;
+            image.src = texture.name;
+            room.AddAssetImage(image);
+            return image;
+        }
+
+        private void ExtractFromMaterial(Material mat, out Color? objColor, out Texture2D diffuseTexture)
+        {
+            Shader shader = mat.shader;
+
+            diffuseTexture = null;
+            objColor = null;
+
+            int props = ShaderUtil.GetPropertyCount(shader);
+            for (int k = 0; k < props; k++)
+            {
+                string name = ShaderUtil.GetPropertyName(shader, k);
+
+                ShaderUtil.ShaderPropertyType propType = ShaderUtil.GetPropertyType(shader, k);
+                if (propType == ShaderUtil.ShaderPropertyType.TexEnv)
+                {
+                    if (JanusGlobals.SemanticsMainTex.Contains(name.ToLower()))
+                    {
+                        // main texture texture
+                        Texture matTex = mat.GetTexture(name);
+                        if (matTex is Texture2D)
+                        {
+                            diffuseTexture = (Texture2D)matTex;
                         }
                     }
                 }
-
-                rObj.col = JanusUtil.FormatColor(objColor);
-
-                if (room.ExportTextures && texture != null)
+                else if (propType == ShaderUtil.ShaderPropertyType.Color)
                 {
-                    if (textureNames.Contains(texture.name))
+                    if (JanusGlobals.SemanticsColor.Contains(name.ToLower()))
                     {
-                        AssetImage img = room.AssetImages.FirstOrDefault(c => c.Texture == texture);
-                        if (img != null)
-                        {
-                            rObj.image_id = img.id;
-                        }
-                        return;
+                        objColor = mat.GetColor(name);
                     }
-                    textureNames.Add(texture.name);
-
-                    AssetImage image = new AssetImage();
-                    image.Texture = texture;
-                    image.id = texture.name;
-                    image.src = texture.name;
-                    rObj.image_id = image.id;
-                    room.AddAssetImage(image);
                 }
             }
         }

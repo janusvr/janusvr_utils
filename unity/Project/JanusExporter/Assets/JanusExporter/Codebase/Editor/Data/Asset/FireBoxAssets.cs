@@ -11,6 +11,7 @@ namespace JanusVR
     {
         [XmlElement(typeof(AssetImage))]
         [XmlElement(typeof(AssetObject))]
+        [XmlElement(typeof(AssetMaterial))]
         public JanusAsset[] Assets { get; set; }
     }
 }

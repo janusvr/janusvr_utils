@@ -15,6 +15,7 @@ namespace JanusVR
         public List<JanusAsset> AllAssets { get; private set; }
         public List<AssetObject> AssetObjects { get; private set; }
         public List<AssetImage> AssetImages { get; private set; }
+        public List<AssetMaterial> AssetMaterials { get; private set; }
 
         // runtime data
         public List<RoomObject> RoomObjects { get; private set; }
@@ -80,6 +81,7 @@ namespace JanusVR
             AllAssets = new List<JanusAsset>();
             AssetObjects = new List<AssetObject>();
             AssetImages = new List<AssetImage>();
+            AssetMaterials = new List<AssetMaterial>();
 
             RoomElements = new List<JanusRoomElement>();
             RoomObjects = new List<RoomObject>();
@@ -91,6 +93,11 @@ namespace JanusVR
             writer = new JanusRoomWriterXml(this);
             skyboxExporter = new SkyboxExporter();
             probeExporter = new ProbeExporter();
+        }
+
+        public AssetMaterial TryGetMaterial(string id)
+        {
+            return AssetMaterials.FirstOrDefault(c => c.id == id);
         }
 
         public AssetImage GetTexture(string id)
@@ -105,6 +112,12 @@ namespace JanusVR
         public bool CanExportObj(Component[] comps)
         {
             return !comps.Any(c => (c is JanusVREntryPortal) || (c is JanusVRLink));
+        }
+
+        public void AddAssetMaterial(AssetMaterial assetMat)
+        {
+            AllAssets.Add(assetMat);
+            AssetMaterials.Add(assetMat);
         }
 
         public void AddAssetObject(AssetObject assetObj)
