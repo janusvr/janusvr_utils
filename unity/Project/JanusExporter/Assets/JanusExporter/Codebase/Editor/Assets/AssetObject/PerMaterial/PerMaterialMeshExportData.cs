@@ -8,6 +8,7 @@ namespace JanusVR
 {
     public class PerMaterialMeshExportData
     {
+        public bool LightmapEnabled { get; set; }
         public RoomObject Object { get; set; }
         public List<PerMaterialMeshExportDataObj> Meshes { get; set; }
         public AssetObject Asset { get; set; }

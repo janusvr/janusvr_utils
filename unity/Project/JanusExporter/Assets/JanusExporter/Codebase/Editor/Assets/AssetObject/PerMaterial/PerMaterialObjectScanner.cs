@@ -193,7 +193,7 @@ namespace JanusVR
                 uint vStart = mesh.GetIndexStart(obj.MaterialId);
                 uint vEnd = vStart + mesh.GetIndexCount(obj.MaterialId);
                 Dictionary<int, int> added = new Dictionary<int, int>();
-                Vector2[][] uvs = BruteForceObjectScanner.GetMeshUVs(room, mesh, vertices.Length);
+                Vector2[][] uvs = BruteForceObjectScanner.GetMeshUVs(room, mesh, obj.LightmapEnabled, vertices.Length);
 
                 for (uint j = vStart; j < vEnd; j++)
                 {

@@ -56,6 +56,9 @@ namespace JanusVR
         [SerializeField]
         private bool textureForceReExport;
 
+        [SerializeField]
+        private bool exportMaterialColorsAsTextures;
+
         /// <summary>
         /// The quality to export all textures
         /// </summary>
@@ -187,7 +190,7 @@ namespace JanusVR
             defaultQuality = 70;
 
             exportTextures = true;
-            exportMaterials = true;
+            //exportMaterials = true;
             exportSkyboxResolution = 1024;
             exportInactiveObjects = false;
             exportDynamicGameObjects = true;
@@ -217,6 +220,8 @@ namespace JanusVR
 
             scrollPos = Vector2.zero;
             meshScrollPos = Vector2.zero;
+
+            exportMaterialColorsAsTextures = true;
         }
 
         public static bool NeedsLDRConversion(LightmapTextureFormat format)
@@ -363,6 +368,7 @@ namespace JanusVR
             {
                 defaultQuality = EditorGUILayout.IntSlider("Exported Textures Quality", defaultQuality, 0, 100);
             }
+            exportMaterialColorsAsTextures = EditorGUILayout.Toggle("Export Material Color as 2x2 Texture", exportMaterialColorsAsTextures);
 
             // Scene
             GUILayout.Label("Scene", EditorStyles.boldLabel);
@@ -602,7 +608,7 @@ namespace JanusVR
             room.EnvironmentProbeIrradResolution = environmentProbeIrradResolution;
             room.EnvironmentProbeRadResolution = environmentProbeRadResolution;
             room.EnvironmentProbeOverride = environmentProbeOverride;
-            room.ExportMaterials = exportMaterials;
+            //room.ExportMaterials = exportMaterials;
             room.ExportTextures = exportTextures;
             room.LightmapRelFStops = lightmapRelFStops;
             room.LightmapMaxResolution = maxLightMapResolution;
@@ -616,6 +622,7 @@ namespace JanusVR
             room.TextureForceReExport = textureForceReExport;
             room.UniformScale = uniformScale;
             room.UseEulerRotations = useEulerRotations;
+            room.ExportMaterialColorsAsTextures = exportMaterialColorsAsTextures;
         }
     }
 }

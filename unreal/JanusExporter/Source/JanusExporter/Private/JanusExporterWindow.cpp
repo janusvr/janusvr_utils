@@ -52,6 +52,8 @@ THIRD_PARTY_INCLUDES_END
 #include "Editor/UnrealEd/Private/FbxExporter.h"
 #undef private
 
+//#define LEGACYDIR 1
+
 struct LightmappedObjects
 {
 	TArray<AActor*> Actors;
@@ -1077,20 +1079,21 @@ FReply SJanusExporterWindow::DoExport()
 			Index.Append("scale=\"");
 			Index.Append(FString::SanitizeFloat(Sca.X) + " " + FString::SanitizeFloat(Sca.Y) + " " + FString::SanitizeFloat(Sca.Z) + "\" ");
 
-			Index.Append("rotation=\"");
-			FVector RotEuler = Rot.Euler();
-			RotEuler = FVector(RotEuler.X, RotEuler.Z, RotEuler.Y);
-			Index.Append(FString::SanitizeFloat(RotEuler.X) + " " + FString::SanitizeFloat(RotEuler.Y) + " " + FString::SanitizeFloat(RotEuler.Z) + "\" ");
-
-			/*Index.Append("xdir=\"");
+#ifdef LEGACYDIR
+			Index.Append("xdir=\"");
 			Index.Append(FString::SanitizeFloat(XDir.X) + " " + FString::SanitizeFloat(XDir.Y) + " " + FString::SanitizeFloat(XDir.Z) + "\" ");
 
 			Index.Append("ydir=\"");
 			Index.Append(FString::SanitizeFloat(YDir.X) + " " + FString::SanitizeFloat(YDir.Y) + " " + FString::SanitizeFloat(YDir.Z) + "\" ");
 
 			Index.Append("zdir=\"");
-			Index.Append(FString::SanitizeFloat(ZDir.X) + " " + FString::SanitizeFloat(ZDir.Y) + " " + FString::SanitizeFloat(ZDir.Z) + "\" ");*/
-
+			Index.Append(FString::SanitizeFloat(ZDir.X) + " " + FString::SanitizeFloat(ZDir.Y) + " " + FString::SanitizeFloat(ZDir.Z) + "\" ");
+#else
+			Index.Append("rotation=\"");
+			FVector RotEuler = Rot.Euler();
+			RotEuler = FVector(RotEuler.X, 180 - RotEuler.Z, RotEuler.Y);
+			Index.Append(FString::SanitizeFloat(RotEuler.X) + " " + FString::SanitizeFloat(RotEuler.Y) + " " + FString::SanitizeFloat(RotEuler.Z) + "\" ");
+#endif
 
 			Index.Append("/>");
 		}

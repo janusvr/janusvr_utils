@@ -14,6 +14,7 @@ namespace JanusVR
         private JanusRoom room;
         private List<string> textureNames;
         private Dictionary<int, List<RoomObject>> lightmapped;
+        private List<string> colors;
 
         public MaterialScanner(JanusRoom room)
         {
@@ -21,6 +22,7 @@ namespace JanusVR
 
             textureNames = new List<string>();
             lightmapped = new Dictionary<int, List<RoomObject>>();
+            colors = new List<string>();
         }
 
         public void Initialize()
@@ -100,34 +102,34 @@ namespace JanusVR
                 room.ExportMaterials)
             {
                 // search for textures/color on object
-                for (int i = 0; i < mats.Length; i++)
-                {
-                    Material mat = mats[i];
-                    if (room.TryGetMaterial(mat.name) == null)
-                    {
-                        AssetMaterial assetMat = new AssetMaterial();
-                        assetMat.id = mat.name;
-                        room.AddAssetMaterial(assetMat);
+                //for (int i = 0; i < mats.Length; i++)
+                //{
+                //    Material mat = mats[i];
+                //    if (room.TryGetMaterial(mat.name) == null)
+                //    {
+                //        AssetMaterial assetMat = new AssetMaterial();
+                //        assetMat.id = mat.name;
+                //        room.AddAssetMaterial(assetMat);
 
-                        Shader shader = mat.shader;
+                //        Shader shader = mat.shader;
 
-                        Texture2D diffuseTexture;
-                        Color? objColor;
-                        ExtractFromMaterial(mat, out objColor, out diffuseTexture);
+                //        Texture2D diffuseTexture;
+                //        Color? objColor;
+                //        ExtractFromMaterial(mat, out objColor, out diffuseTexture);
 
-                        AssetImage image = RegisterImage(diffuseTexture);
-                        assetMat.tex0 = image;
-                        assetMat.col = JanusUtil.FormatColor(objColor.Value);
+                //        AssetImage image = RegisterImage(diffuseTexture);
+                //        assetMat.tex0 = image;
+                //        assetMat.col = JanusUtil.FormatColor(objColor.Value);
 
-                        rObj.mat_id = assetMat.id;
-                    }
-                }
+                //        rObj.mat_id = assetMat.id;
+                //    }
+                //}
             }
             else
             {
-                if (mats.Length > 0)
+                if (mats.Length > subMesh)
                 {
-                    Material mat = mats[0];
+                    Material mat = mats[subMesh];
                     if (mat != null)
                     {
                         Texture2D diffuseTexture;
@@ -199,6 +201,21 @@ namespace JanusVR
                         objColor = mat.GetColor(name);
                     }
                 }
+            }
+
+            if (diffuseTexture == null && room.ExportMaterialColorsAsTextures && objColor.HasValue)
+            {
+                // render the color to a 2x2 texture we can show in Janus as the diffuse
+                diffuseTexture = new Texture2D(2, 2, TextureFormat.RGB24, false, false);
+
+                Color objCol = objColor.Value;
+                diffuseTexture.SetPixels(new Color[] { objCol, objCol, objCol, objCol });
+                diffuseTexture.Apply();
+
+                string colorName = "ExportedColor" + colors.Count;
+                colors.Add(colorName);
+                diffuseTexture.name = colorName;
+                objColor = null;
             }
         }
 

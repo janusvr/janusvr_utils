@@ -8,6 +8,7 @@ namespace JanusVR
 {
     public class BruteForceMeshExportData
     {
+        public bool LightmapEnabled { get; set; }
         public Mesh Mesh { get; set; }
         public string MeshId { get; set; }
         public AssetObject Asset { get; set; }

@@ -8,6 +8,7 @@ namespace JanusVR
 {
     public struct PerMaterialMeshExportDataObj
     {
+        public bool LightmapEnabled { get; set; }
         public int MaterialId { get; set; }
         public Mesh Mesh { get; set; }
         public Transform Transform { get; set; }

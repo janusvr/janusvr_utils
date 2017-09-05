@@ -12,11 +12,11 @@ namespace JanusVR
 {
     public class NavMeshScanner
     {
-        private JanusRoom room;
+        //private JanusRoom room;
 
         public NavMeshScanner(JanusRoom room)
         {
-            this.room = room;
+            //this.room = room;
         }
 
         public void Initialize()
