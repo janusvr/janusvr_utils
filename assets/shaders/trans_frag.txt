@@ -278,7 +278,7 @@ void main(void)
 			tc.xy += iTiling.zw;
 			
 			albedoTexel = texture(iTexture0, tc) * iDiffuse;
-			if (iUseTexture[0].x == 1)
+			if (iUseTexture[0].x == 1 || iUseTexture[0].x == 3)
 			{
 				albedoTexel = pow(albedoTexel, vec4(2.2, 2.2, 2.2, 1.0));
 			}
