@@ -132,8 +132,10 @@ void main(void)
 	iPositionCamera = (iModelViewMatrix * vec4(blend_pos, 1)).xyz;   
 	iNormalWorld = (iTransposeInverseModelMatrix * vec4(iNormal, 0.0)).xyz;  
 	iNormalCamera = (iTransposeInverseModelViewMatrix * vec4(iNormal, 0.0)).xyz; 
-	iTexCoord0 = vec2(aTexCoord0.x, 1.0 - aTexCoord0.y);
-	iTexCoord1 = vec2(aTexCoord1.x, 1.0 - aTexCoord1.y);
+	float ty0 = ((iUseTexture[0].x == 3.0 || iUseTexture[0].x == 4.0) ? aTexCoord0.y : 1.0 - aTexCoord0.y);
+	float ty1 = ((iUseTexture[0].x == 3.0 || iUseTexture[0].x == 4.0) ? aTexCoord1.y : 1.0 - aTexCoord1.y);
+	iTexCoord0 = vec2(aTexCoord0.x, ty0);
+	iTexCoord1 = vec2(aTexCoord1.x, ty1);
 	iColor = aColor;
 	gl_Position = iModelViewProjectionMatrix * vec4(blend_pos, 1);  
 }
