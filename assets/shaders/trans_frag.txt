@@ -639,7 +639,7 @@ void main(void)
 		out_color = lightingResult;
 
 		// Assosiate the color with it's alpha so that the result is composited correctly by the pre-multiplied blendfunc.
-		out_color.rgb *= out_color.a;
+		//out_color.rgb *= out_color.a;
 		
 		// Add the emissive component to the pre-multiplied result, this will cause it to blend additively in the framebuffer
 		out_color.rgb += emission.rgb;
