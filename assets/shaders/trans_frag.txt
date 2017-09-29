@@ -417,8 +417,11 @@ void main(void)
 			}
 		}
 		vec4 iColor_disasosiated = vec4(iColor.rgb / iColor.aaa, iColor.a);
+		vec4 albedoTexel_disasosiated = vec4(albedoTexel.rgb / albedoTexel.aaa, albedoTexel.a);
+		vec4 lmapAlbedo_disasosiated = vec4(lmapAlbedo.rgb / lmapAlbedo.aaa, lmapAlbedo.a);
 		//vec4 albedo = lmapAlbedo * albedoTexel * iConstColour * iDiffuse * iColor_disasosiated;
-		vec4 albedo = lmapAlbedo * albedoTexel * iConstColour * iDiffuse * iColor_disasosiated;
+		vec4 albedo = lmapAlbedo_disasosiated * albedoTexel_disasosiated * iConstColour * iDiffuse * iColor_disasosiated;
+
 		// END --- Lightmap Albedo ---
 
 		if (iUseLighting.x == 1.0)
@@ -641,26 +644,30 @@ void main(void)
 		// Add the emissive component to the pre-multiplied result, this will cause it to blend additively in the framebuffer
 		out_color.rgb += emission.rgb;
 
-		//out_color = vec4(vec3(indirectSpecularLight), 1.0);
-		/*if((gl_FragCoord.x / (iResolution.x * 0.5)) <= 0.25)
+		/*//out_color = vec4(vec3(indirectSpecularLight), 1.0);
+		if((gl_FragCoord.x / (iResolution.x * 0.5)) <= 0.25)
 		{
-			out_color = linearTosRGB(albedoTexel);
+			out_color = linearTosRGB(lightingResult);
+			out_color.a = 1.0;
 		}
 		else if((gl_FragCoord.x / (iResolution.x * 0.5)) <= 0.5)
 		{
-			out_color = linearTosRGB(iConstColour);
+			out_color = linearTosRGB(albedoTexel.aaaa);
+			out_color.a = 1.0;
 		}
 		else if((gl_FragCoord.x / (iResolution.x * 0.5)) <= 0.75)
 		{
 			// This texture wouldn't be sRGB but I treat it like it is so that it'll match the colors
 			// you would see when viewing the texture in non-sRGB mode in normal desktop viewers
-			out_color = linearTosRGB(iDiffuse);
+			out_color = linearTosRGB(out_color.aaaa);
+			out_color.a = 1.0;
 		}
 		else if((gl_FragCoord.x / (iResolution.x * 0.5)) <= 1.0)
 		{
 			// This texture wouldn't be sRGB but I treat it like it is so that it'll match the colors
 			// you would see when viewing the texture in non-sRGB mode in normal desktop viewers
-			out_color = linearTosRGB(iColor);
+			out_color = linearTosRGB(albedoTexel);
+			out_color.a = 1.0;
 		}*/
 	// END --- Fragment Shader Outputs ---
 }
