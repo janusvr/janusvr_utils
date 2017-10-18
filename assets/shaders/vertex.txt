@@ -68,7 +68,7 @@ layout(location = 7) in vec3 aBlendV2;
 layout(location = 8) in vec3 aBlendN0;
 layout(location = 9) in vec3 aBlendN1;
 layout(location = 10) in vec3 aBlendN2;
-layout(location = 11) in vec4 aSkelAnimIndexes;
+layout(location = 11) in uvec4 aSkelAnimIndexes;
 layout(location = 12) in vec4 aSkelAnimWeights;
 
 // Vertex Shader Ouputs
@@ -89,43 +89,30 @@ void main(void)
 	vec3 blend_norm = aNormal;
 
 	//skeletal animation
-
 	if (iUseSkelAnim.x == 1)
-	{
-		int index = int(aSkelAnimIndexes.x);     
-		if (index >= 0)
+	{   
+		if (aSkelAnimWeights.x > 0.0)
 		{
-			blend_pos = (iSkelAnimJoints[index] * position).xyz * aSkelAnimWeights.x;
-			blend_norm = (iSkelAnimJoints[index] * vec4(aNormal, 0.0)).xyz * aSkelAnimWeights.x;
+			blend_pos = (iSkelAnimJoints[aSkelAnimIndexes.x] * position).xyz * aSkelAnimWeights.x;
+			blend_norm = (iSkelAnimJoints[aSkelAnimIndexes.x] * vec4(aNormal, 0.0)).xyz * aSkelAnimWeights.x;
 		}
-       
-		index = int(aSkelAnimIndexes.y);        
-		if (index >= 0) {
-			blend_pos += (iSkelAnimJoints[index] * position).xyz * aSkelAnimWeights.y;
-			blend_norm += (iSkelAnimJoints[index] * vec4(aNormal, 0.0)).xyz * aSkelAnimWeights.y;
+            
+		if (aSkelAnimWeights.y > 0.0) {
+			blend_pos += (iSkelAnimJoints[aSkelAnimIndexes.y] * position).xyz * aSkelAnimWeights.y;
+			blend_norm += (iSkelAnimJoints[aSkelAnimIndexes.y] * vec4(aNormal, 0.0)).xyz * aSkelAnimWeights.y;
 		}
-		
-		index = int(aSkelAnimIndexes.z);        
-		if (index >= 0) {
-			blend_pos += (iSkelAnimJoints[index] * position).xyz * aSkelAnimWeights.z;
-			blend_norm += (iSkelAnimJoints[index] * vec4(aNormal, 0.0)).xyz * aSkelAnimWeights.z;
+		       
+		if (aSkelAnimWeights.z > 0.0) {
+			blend_pos += (iSkelAnimJoints[aSkelAnimIndexes.z] * position).xyz * aSkelAnimWeights.z;
+			blend_norm += (iSkelAnimJoints[aSkelAnimIndexes.z] * vec4(aNormal, 0.0)).xyz * aSkelAnimWeights.z;
 		}
-    
-		index = int(aSkelAnimIndexes.w);        
-		if (index >= 0) {
-			blend_pos += (iSkelAnimJoints[index] * position).xyz * aSkelAnimWeights.w;
-			blend_norm += (iSkelAnimJoints[index] * vec4(aNormal, 0.0)).xyz * aSkelAnimWeights.w;
+          
+		if (aSkelAnimWeights.w > 0.0) {
+			blend_pos += (iSkelAnimJoints[aSkelAnimIndexes.w] * position).xyz * aSkelAnimWeights.w;
+			blend_norm += (iSkelAnimJoints[aSkelAnimIndexes.w] * vec4(aNormal, 0.0)).xyz * aSkelAnimWeights.w;
 		}
 	}
-	else
-	{    
-		blend_pos += (aBlendV0 - position.xyz) * iBlend.x;
-		blend_norm += (aBlendN0 - aNormal.xyz) * iBlend.x;
-		blend_pos += (aBlendV1 - position.xyz) * iBlend.y;
-		blend_norm += (aBlendN1 - aNormal.xyz) * iBlend.y;
-		blend_pos += (aBlendV2 - position.xyz) * iBlend.z;
-		blend_norm += (aBlendN2 - aNormal.xyz) * iBlend.z;
-	}
+
 	iPosition = blend_pos.xyz;
 	iNormal = normalize(blend_norm);
 	iPositionWorld = (iModelMatrix * vec4(blend_pos, 1)).xyz;  
