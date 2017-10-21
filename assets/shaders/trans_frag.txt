@@ -277,14 +277,6 @@
 
 void main(void)
 {	
-	// BEGIN --- Clipping plane test ---
-		if (iUseClipPlane.x == 1 
-			&& dot(iPositionWorld, iClipPlane.xyz) < iClipPlane.w)
-		{
-			discard;
-		}
-	// END --- Clipping plane test ---
-	
 	// BEGIN --- Conditional Discards ---
 		vec4 albedoTexel = vec4(1.0, 1.0, 1.0, 1.0);
 

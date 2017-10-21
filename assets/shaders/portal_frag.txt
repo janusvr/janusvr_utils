@@ -127,12 +127,6 @@ vec4 sRGBToLinear(vec4 sRGB)
 
 void main(void)
 {
-	//clipping plane part of shader
-	if (iUseClipPlane.x == 1 && dot(iPositionWorld, iClipPlane.xyz) < iClipPlane.w)
-	{
-		discard;
-	} 
-
 	if (iUseTexture[0].x == 1)
 	{
 		out_color = iConstColour * sRGBToLinear(texture(iTexture0, iTexCoord0.xy));
@@ -163,11 +157,5 @@ void main(void)
 	if (iUseTexture[0].y == 1)
 	{
 		out_color.a *= texture(iTexture1, iTexCoord0.xy).a;
-	}
-	// Pre-multiply the output by the alpha for correct blending
-	//out_color.rgb *= out_color.a;
-	if (out_color.a == 0.0)
-	{
-		discard;
 	}
 }

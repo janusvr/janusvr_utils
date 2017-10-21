@@ -62,12 +62,6 @@ layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aTexCoord0;
 layout(location = 3) in vec2 aTexCoord1;
 layout(location = 4) in vec4 aColor;
-layout(location = 5) in vec3 aBlendV0;
-layout(location = 6) in vec3 aBlendV1;
-layout(location = 7) in vec3 aBlendV2;
-layout(location = 8) in vec3 aBlendN0;
-layout(location = 9) in vec3 aBlendN1;
-layout(location = 10) in vec3 aBlendN2;
 layout(location = 11) in uvec4 aSkelAnimIndexes;
 layout(location = 12) in vec4 aSkelAnimWeights;
 
@@ -124,5 +118,6 @@ void main(void)
 	iTexCoord0 = vec2(aTexCoord0.x, ty0);
 	iTexCoord1 = vec2(aTexCoord1.x, ty1);
 	iColor = aColor;
-	gl_Position = iModelViewProjectionMatrix * vec4(blend_pos, 1);  
+	gl_Position = iModelViewProjectionMatrix * vec4(blend_pos, 1);
+	gl_ClipDistance[0] = dot(iPositionWorld, vec3(iClipPlane.xyz)) - iClipPlane.w;
 }
