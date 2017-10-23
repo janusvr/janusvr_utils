@@ -79,32 +79,40 @@ smooth out vec4 iColor;
 void main(void) 
 {
 	vec4 position = vec4(aPosition, 1.0);
-	vec3 blend_pos = position.xyz;
-	vec3 blend_norm = aNormal;
+	vec3 blend_pos = vec3(0.0);
+	vec3 blend_norm = vec3(0.0);
 
 	//skeletal animation
-	if (iUseSkelAnim.x == 1)
+	if (iUseSkelAnim.x == 1.0)
 	{   
-		if (aSkelAnimWeights.x > 0.0)
+		if (aSkelAnimIndexes.x <= 128u)
 		{
-			blend_pos = (iSkelAnimJoints[aSkelAnimIndexes.x] * position).xyz * aSkelAnimWeights.x;
-			blend_norm = (iSkelAnimJoints[aSkelAnimIndexes.x] * vec4(aNormal, 0.0)).xyz * aSkelAnimWeights.x;
+			blend_pos += (iSkelAnimJoints[aSkelAnimIndexes.x] * position).xyz * aSkelAnimWeights.x;
+			blend_norm += (iSkelAnimJoints[aSkelAnimIndexes.x] * vec4(aNormal, 0.0)).xyz * aSkelAnimWeights.x;
 		}
-            
-		if (aSkelAnimWeights.y > 0.0) {
+		
+		if (aSkelAnimIndexes.y <= 128u)
+		{
 			blend_pos += (iSkelAnimJoints[aSkelAnimIndexes.y] * position).xyz * aSkelAnimWeights.y;
 			blend_norm += (iSkelAnimJoints[aSkelAnimIndexes.y] * vec4(aNormal, 0.0)).xyz * aSkelAnimWeights.y;
 		}
-		       
-		if (aSkelAnimWeights.z > 0.0) {
+		
+		if (aSkelAnimIndexes.z <= 128u)
+		{
 			blend_pos += (iSkelAnimJoints[aSkelAnimIndexes.z] * position).xyz * aSkelAnimWeights.z;
 			blend_norm += (iSkelAnimJoints[aSkelAnimIndexes.z] * vec4(aNormal, 0.0)).xyz * aSkelAnimWeights.z;
 		}
-          
-		if (aSkelAnimWeights.w > 0.0) {
+		
+		if (aSkelAnimIndexes.w <= 128u)
+		{
 			blend_pos += (iSkelAnimJoints[aSkelAnimIndexes.w] * position).xyz * aSkelAnimWeights.w;
 			blend_norm += (iSkelAnimJoints[aSkelAnimIndexes.w] * vec4(aNormal, 0.0)).xyz * aSkelAnimWeights.w;
 		}
+	}
+	else
+	{
+		blend_pos = position.xyz;
+		blend_norm = aNormal;
 	}
 
 	iPosition = blend_pos.xyz;
@@ -119,5 +127,5 @@ void main(void)
 	iTexCoord1 = vec2(aTexCoord1.x, ty1);
 	iColor = aColor;
 	gl_Position = iModelViewProjectionMatrix * vec4(blend_pos, 1);
-	gl_ClipDistance[0] = dot(iPositionWorld, vec3(iClipPlane.xyz)) - iClipPlane.w;
+	gl_ClipDistance[0] = (iUseClipPlane.x == 1.0) ? dot(iPositionWorld, vec3(iClipPlane.xyz)) - iClipPlane.w : 1.0;
 }
