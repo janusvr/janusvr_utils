@@ -158,4 +158,6 @@ void main(void)
 	{
 		out_color.a *= texture(iTexture1, iTexCoord0.xy).a;
 	}
+	
+	out_color.rgb *= out_color.a;
 }
