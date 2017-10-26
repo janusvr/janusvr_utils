@@ -408,8 +408,8 @@ void main(void)
 		}
 		vec4 iColor_disasosiated = vec4(iColor.rgb / iColor.aaa, iColor.a);
 		vec4 albedoTexel_disasosiated = vec4(albedoTexel.rgb / albedoTexel.aaa, albedoTexel.a);
-		vec4 lmapAlbedo_disasosiated = vec4(lmapAlbedo.rgb / lmapAlbedo.aaa, lmapAlbedo.a);
-		vec4 albedo = lmapAlbedo_disasosiated * albedoTexel_disasosiated * iConstColour * iDiffuse * iColor_disasosiated;
+		vec4 albedo = vec4(lmapAlbedo.rgb, 1.0) * vec4(occlusion.rgb, 1.0) * albedoTexel_disasosiated * iConstColour * iDiffuse * iColor_disasosiated;
+		float lighting_modulator = lmapAlbedo.a * occlusion.a;
 
 		// END --- Lightmap Albedo ---
 		
@@ -534,8 +534,8 @@ void main(void)
 				}
 			// END --- SURFACE LIGHTING LOOP ---
 			diffuse *= LambertianDiffuse(albedo.rgb);
-			accumulatedLight_diffuse.rgb += occlusion.a * diffuse;
-			accumulatedLight_specular.rgb += occlusion.a * specular;
+			accumulatedLight_diffuse.rgb += lighting_modulator * diffuse;
+			accumulatedLight_specular.rgb += lighting_modulator * specular;
 			//accumulatedLight.rgb += occlusion.a * (diffuse + specular);
 		// END --- Light Accumulation ---
 			
@@ -572,23 +572,23 @@ void main(void)
 			{
 				if (linearRoughness == 0.001)
 				{
-					indirectSpecularLight = pow(textureLod(iCubeTexture1, fixedLookup, 0.0).rgb, vec3(2.2));
+					indirectSpecularLight = sRGBToLinear(textureLod(iCubeTexture1, fixedLookup, 0.0)).rgb;
 				}
 				else
 				{
-					indirectSpecularLight = pow(textureLod(iCubeTexture1, fixedLookup, mipMapIndex).rgb, vec3(2.2));
+					indirectSpecularLight = sRGBToLinear(textureLod(iCubeTexture1, fixedLookup, mipMapIndex)).rgb;
 				}
 			}
 			envBRDF = EnvBRDFApprox(f0, linearRoughness, NdotV);
 			indirectSpecular = envBRDF * indirectSpecularLight;
-			accumulatedLight_diffuse.rgb += occlusion.a * indirectDiffuse;
-			accumulatedLight_specular.rgb += occlusion.a * indirectSpecular;
+			accumulatedLight_diffuse.rgb += lighting_modulator * indirectDiffuse;
+			accumulatedLight_specular.rgb += lighting_modulator * indirectSpecular;
 			//accumulatedLight.rgb += (indirectDiffuse + indirectSpecular) * occlusion.rgb;
 		// END --- Indirect Specular ---
 		}
 		else
 		{
-			accumulatedLight_diffuse.rgb += albedo.rgb * occlusion.rgb;
+			accumulatedLight_diffuse.rgb = albedo.rgb;
 		}
 	// END --- Lighting ---
 
@@ -640,26 +640,26 @@ void main(void)
 		//out_color = vec4(vec3(indirectSpecularLight), 1.0);
 		/*if((gl_FragCoord.x / (iResolution.x * 0.5)) <= 0.25)
 		{
-			out_color = linearTosRGB(texture(iTexture0, iTexCoord0));
+			out_color = linearTosRGB(vec4(occlusion.rgb, 1.0));
 			out_color.a = 1.0;
 		}
 		else if((gl_FragCoord.x / (iResolution.x * 0.5)) <= 0.5)
 		{
-			out_color = linearTosRGB(texture(iTexture0, iTexCoord0).aaaa);
+			out_color = linearTosRGB(occlusion.aaaa);
 			out_color.a = 1.0;
 		}
 		else if((gl_FragCoord.x / (iResolution.x * 0.5)) <= 0.75)
 		{
 			// This texture wouldn't be sRGB but I treat it like it is so that it'll match the colors
 			// you would see when viewing the texture in non-sRGB mode in normal desktop viewers
-			out_color = linearTosRGB(vec4(indirectDiffuseLight + indirectSpecularLight, 1.0));
+			out_color = linearTosRGB(vec4(lmapAlbedo.rgb, 1.0));
 			out_color.a = 1.0;
 		}
 		else if((gl_FragCoord.x / (iResolution.x * 0.5)) <= 1.0)
 		{
 			// This texture wouldn't be sRGB but I treat it like it is so that it'll match the colors
 			// you would see when viewing the texture in non-sRGB mode in normal desktop viewers
-			out_color = linearTosRGB(vec4(indirectSpecularLight, 1.0));
+			out_color = linearTosRGB(vec4(lmapAlbedo.aaa, 1.0));
 			out_color.a = 1.0;
 		}*/
 	// END --- Fragment Shader Outputs ---
