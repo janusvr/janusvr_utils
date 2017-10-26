@@ -387,9 +387,7 @@ void main(void)
 			}
 			float ddx_ddy = length(fwidth(normalizedViewNormal));
 			roughnessFactorGeometric = pow(clamp(ddx_ddy, 0.0, 1.0), 2) * 0.03;
-		// END --- Normal mapping ---
-						
-		vec4 accumulatedLight = vec4(0.0, 0.0, 0.0, 0.0);
+		// END --- Normal mapping ---	
 			
 		// BEGIN --- Lightmap Albedo ---
 		vec4 lmapAlbedo = vec4(1.0, 1.0, 1.0, 1.0);
@@ -414,7 +412,9 @@ void main(void)
 		vec4 albedo = lmapAlbedo_disasosiated * albedoTexel_disasosiated * iConstColour * iDiffuse * iColor_disasosiated;
 
 		// END --- Lightmap Albedo ---
-
+		
+		vec4 accumulatedLight_diffuse = vec4(0.0, 0.0, 0.0, albedo.a);
+		vec4 accumulatedLight_specular = vec4(0.0, 0.0, 0.0, 0.0);
 		if (iUseLighting.x == 1.0)
 		{
 		// BEGIN --- Roughness mapping ---
@@ -458,7 +458,6 @@ void main(void)
 		// END --- Specular ---
 		
 		// BEGIN --- Light Accumulation ---
-			accumulatedLight = vec4(0.0, 0.0, 0.0, albedo.a);
 			V = mat3(iInverseViewMatrix) * normalize(-iPositionCamera);
 			NdotV = clamp(dot(N, V), 0.0, 1.0);
 			// BEGIN --- SURFACE LIGHTING LOOP ---
@@ -535,7 +534,9 @@ void main(void)
 				}
 			// END --- SURFACE LIGHTING LOOP ---
 			diffuse *= LambertianDiffuse(albedo.rgb);
-			accumulatedLight.rgb += occlusion.a * (diffuse + specular);
+			accumulatedLight_diffuse.rgb += occlusion.a * diffuse;
+			accumulatedLight_specular.rgb += occlusion.a * specular;
+			//accumulatedLight.rgb += occlusion.a * (diffuse + specular);
 		// END --- Light Accumulation ---
 			
 		// BEGIN --- Indirect Diffuse ---
@@ -580,13 +581,19 @@ void main(void)
 			}
 			envBRDF = EnvBRDFApprox(f0, linearRoughness, NdotV);
 			indirectSpecular = envBRDF * indirectSpecularLight;
-			accumulatedLight.rgb += (indirectDiffuse + indirectSpecular) * occlusion.rgb;
+			accumulatedLight_diffuse.rgb += occlusion.a * indirectDiffuse;
+			accumulatedLight_specular.rgb += occlusion.a * indirectSpecular;
+			//accumulatedLight.rgb += (indirectDiffuse + indirectSpecular) * occlusion.rgb;
 		// END --- Indirect Specular ---
+		}
+		else
+		{
+			accumulatedLight_diffuse.rgb += albedo.rgb * occlusion.rgb;
 		}
 	// END --- Lighting ---
 
 	// BEGIN --- Lighting Composition ---
-		vec4 lightingResult = (iUseLighting.x == 1.0) ? accumulatedLight : albedo * occlusion;	
+		//vec4 lightingResult = (iUseLighting.x == 1.0) ? accumulatedLight : albedo * occlusion;	
 	// END --- Lighting Composition  ---
 	
 	// BEGIN --- Fog ---
@@ -609,8 +616,8 @@ void main(void)
 				fogInterpolator = exp(-(iFogDensity.x * fragDistance)*(iFogDensity.x * fragDistance));
 			}
 			fogInterpolator = clamp(fogInterpolator, 0.0, 1.0);
-			//lightingResult = mix(iFogCol, lightingResult, 0.5 + fogInterpolator * 0.5); //55.10
-			lightingResult = mix(iFogCol, lightingResult, fogInterpolator); //59.0
+			accumulatedLight_diffuse.rgb = mix(iFogCol.rgb, accumulatedLight_diffuse.rgb, fogInterpolator);
+			accumulatedLight_specular.rgb = mix(iFogCol.rgb, accumulatedLight_specular.rgb, fogInterpolator);
 		}
 	// END --- Fog ---
 	
@@ -622,13 +629,13 @@ void main(void)
 	// END --- Temporal Noise ---
 	
 	// START --- Fragment Shader Outputs ---
-		out_color = lightingResult;
+		out_color = accumulatedLight_diffuse;
 
 		// Assosiate the color with it's alpha so that the result is composited correctly by the pre-multiplied blendfunc.
-		out_color.rgb *= out_color.a;
+		out_color.rgb *= accumulatedLight_diffuse.a;
 		
 		// Add the emissive component to the pre-multiplied result, this will cause it to blend additively in the framebuffer
-		out_color.rgb += emission.rgb;
+		out_color.rgb += accumulatedLight_specular.rgb + emission.rgb;
 
 		//out_color = vec4(vec3(indirectSpecularLight), 1.0);
 		/*if((gl_FragCoord.x / (iResolution.x * 0.5)) <= 0.25)
