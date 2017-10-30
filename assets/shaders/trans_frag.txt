@@ -127,7 +127,7 @@
 			bvec4 cutoff = lessThan(linear, vec4(0.0031308));
 			vec4 higher = vec4(1.055) * pow(linear, vec4(1.0 / 2.4)) - vec4(0.055);
 			vec4 lower = linear * vec4(12.92);
-			return vec4(mix(higher, lower, cutoff).rgb, linear.a);
+			return mix(higher, lower, cutoff);
 		}
 		
 		vec4 sRGBToLinear(vec4 sRGB)
@@ -135,7 +135,7 @@
 			bvec4 cutoff = lessThan(sRGB, vec4(0.04045));
 			vec4 higher = pow((sRGB + vec4(0.055)) / vec4(1.055), vec4(2.4));
 			vec4 lower = sRGB / vec4(12.92);
-			return vec4(mix(higher, lower, cutoff).rgb, sRGB.a);
+			return mix(higher, lower, cutoff);
 		}
 	// END --- Tonemap and Gamma correction ---
 // END --- PBR Helper Functions ---
@@ -289,7 +289,9 @@ void main(void)
 			albedoTexel = texture(iTexture0, tc);
 			if (iUseTexture[0].x == 1 || iUseTexture[0].x == 3)
 			{
+				float alpha = albedoTexel.a;
 				albedoTexel = sRGBToLinear(albedoTexel);
+				albedoTexel.a = alpha;
 			}
 
 			if (iChromaKeyColour.a > 0.9  && albedoTexel.rgb == iChromaKeyColour.rgb)
@@ -408,8 +410,9 @@ void main(void)
 		}
 		vec4 iColor_disasosiated = vec4(iColor.rgb / iColor.aaa, iColor.a);
 		vec4 albedoTexel_disasosiated = vec4(albedoTexel.rgb / albedoTexel.aaa, albedoTexel.a);
-		vec4 albedo = vec4(lmapAlbedo.rgb, 1.0) * vec4(occlusion.rgb, 1.0) * albedoTexel_disasosiated * iConstColour * iDiffuse * iColor_disasosiated;
-		float lighting_modulator = lmapAlbedo.a * occlusion.a;
+		vec4 albedo = albedoTexel_disasosiated * iConstColour * iDiffuse * iColor_disasosiated;
+		vec3 diffuse_lighting_modulator = lmapAlbedo.rgb * occlusion.rgb;
+		vec3 specular_lighting_modulator = vec3(lmapAlbedo.a * occlusion.a);
 
 		// END --- Lightmap Albedo ---
 		
@@ -534,8 +537,8 @@ void main(void)
 				}
 			// END --- SURFACE LIGHTING LOOP ---
 			diffuse *= LambertianDiffuse(albedo.rgb);
-			accumulatedLight_diffuse.rgb += lighting_modulator * diffuse;
-			accumulatedLight_specular.rgb += lighting_modulator * specular;
+			accumulatedLight_diffuse.rgb += diffuse_lighting_modulator * diffuse;
+			accumulatedLight_specular.rgb += specular_lighting_modulator * specular;
 			//accumulatedLight.rgb += occlusion.a * (diffuse + specular);
 		// END --- Light Accumulation ---
 			
@@ -550,7 +553,7 @@ void main(void)
 			{
 				fixedLookup = roomSpaceNormal;
 				fixedLookup.z = -fixedLookup.z;
-				indirectDiffuseLight = pow(textureLod(iCubeTexture2, fixedLookup, 0.0).rgb, vec3(2.2));
+				indirectDiffuseLight = sRGBToLinear(textureLod(iCubeTexture2, fixedLookup, 0.0)).rgb;
 			}
 			indirectDiffuse = albedo.rgb * indirectDiffuseLight;
 		// END --- Indirect Diffuse ---
@@ -581,14 +584,14 @@ void main(void)
 			}
 			envBRDF = EnvBRDFApprox(f0, linearRoughness, NdotV);
 			indirectSpecular = envBRDF * indirectSpecularLight;
-			accumulatedLight_diffuse.rgb += lighting_modulator * indirectDiffuse;
-			accumulatedLight_specular.rgb += lighting_modulator * indirectSpecular;
+			accumulatedLight_diffuse.rgb += diffuse_lighting_modulator * indirectDiffuse;
+			accumulatedLight_specular.rgb += specular_lighting_modulator * indirectSpecular;
 			//accumulatedLight.rgb += (indirectDiffuse + indirectSpecular) * occlusion.rgb;
 		// END --- Indirect Specular ---
 		}
 		else
 		{
-			accumulatedLight_diffuse.rgb = albedo.rgb;
+			accumulatedLight_diffuse.rgb += albedo.rgb * diffuse_lighting_modulator.rgb;
 		}
 	// END --- Lighting ---
 
@@ -638,28 +641,14 @@ void main(void)
 		out_color.rgb += accumulatedLight_specular.rgb + emission.rgb;
 
 		//out_color = vec4(vec3(indirectSpecularLight), 1.0);
-		/*if((gl_FragCoord.x / (iResolution.x * 0.5)) <= 0.25)
+		/*if ((gl_FragCoord.x / iResolution.x) <= 0.25)
 		{
-			out_color = linearTosRGB(vec4(occlusion.rgb, 1.0));
+			out_color.rgb = accumulatedLight_specular.rgb;
 			out_color.a = 1.0;
 		}
-		else if((gl_FragCoord.x / (iResolution.x * 0.5)) <= 0.5)
+		else if((gl_FragCoord.x / iResolution.x)  <= 0.5)
 		{
-			out_color = linearTosRGB(occlusion.aaaa);
-			out_color.a = 1.0;
-		}
-		else if((gl_FragCoord.x / (iResolution.x * 0.5)) <= 0.75)
-		{
-			// This texture wouldn't be sRGB but I treat it like it is so that it'll match the colors
-			// you would see when viewing the texture in non-sRGB mode in normal desktop viewers
-			out_color = linearTosRGB(vec4(lmapAlbedo.rgb, 1.0));
-			out_color.a = 1.0;
-		}
-		else if((gl_FragCoord.x / (iResolution.x * 0.5)) <= 1.0)
-		{
-			// This texture wouldn't be sRGB but I treat it like it is so that it'll match the colors
-			// you would see when viewing the texture in non-sRGB mode in normal desktop viewers
-			out_color = linearTosRGB(vec4(lmapAlbedo.aaa, 1.0));
+			out_color.rgb = accumulatedLight_diffuse.rgb;
 			out_color.a = 1.0;
 		}*/
 	// END --- Fragment Shader Outputs ---
