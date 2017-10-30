@@ -12,6 +12,7 @@ room_4_narrow
 room_4_wide
 room_box_small
 room_box_medium
+room_box_large
 room1_new
 room_plane
 room_plane2
