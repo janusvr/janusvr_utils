@@ -72,5 +72,7 @@ void main (void)
 	{
 		out_color = vec4(0.0,0.0,0.0, 1.0);
 	}
-	gl_FragDepth = 1.0f;
+	// iUseLighting is repurposed here to tell us if we are using reversed floating point depth buffers or not
+	// reversed floating point depth requires a 0 clear vs the standard 1 clear.
+	gl_FragDepth = (iUseLighting.x == 1.0) ? 0.0f : 1.0f;
 }
