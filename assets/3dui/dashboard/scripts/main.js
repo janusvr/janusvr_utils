@@ -24,12 +24,16 @@ function populateBookmarks() {
 
 }
 
-function populateParty() {
+function populateParty(force) {
 
-  if (typeof window.janus.partymodedata != "undefined" && window.janus.partymodedata.length > 0)
+  if ( ( (typeof window.janus.partymodedata != "undefined") && (window.janus.partymodedata.length > 0) ) || (force == 1) )
     {
+
       refreshPartymode();
+      window.janus.updatepartymodedata();
       clearInterval(intervalParty);
+      intervalParty = setInterval(function(){ populateParty(1) }, 15000);
+
 
     }
 
