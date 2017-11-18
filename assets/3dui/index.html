@@ -27,7 +27,7 @@
 
 <!--Dashboard.-->
 <assetwebsurface width="1612" height="540" show_url_bar="false" id="site" src="dashboard/index.html" />
-<AssetWebSurface id="vesta_users" src="http://vesta.janusvr.com/janus-server/" show_url_bar="false" />
+
 
 <!--Portals behind the user.-->
 <AssetImage id="browseportal" src="kportal-36.png" />
@@ -66,29 +66,22 @@
 <Object id="tronplane"  xdir="0.000001 0 -1" zdir="1 0 0.000001" pos="0 -0.35  0" scale="4 5 4" draw_layer="-2" />
 
 <!-- Flag counter -->
-<Image id="flagcounter" js_id="12" pos="-4 2.5 -4.9" lighting="false" />
+<Image scale="0.001 0.001 0.001" id="flagcounter" js_id="12" pos="-4 2.5 -4.9" lighting="false" />
 
 <!--Pocketspace geometry.-->
 <Object id="Xart"  pos="0 0 6.5" xdir="0.000001 0 -1" zdir="1 0 0.000001" scale="1 1 1" lighting="false" draw_layer="1"/>
 
 <!--Portals behind the user.-->
-<Link  pos="-2 0 -5" xdir="1 0 0.000002" zdir="-0.000002 0 1" scale="1.5 3 1" col="#40c080" thumb_id="buildportal" url="http://reddit.com/r/vrsites/" draw_glow="false" draw_text="false" />
-<Link  pos="0 0 -5" xdir="1 0 0.000002" zdir="-0.000002 0 1" scale="1.5 3 1" col="#40c080" thumb_id="socialportal" url="http://www.janusvr.com/newlobby/index.html" draw_glow="false" draw_text="false" />
-<Link  pos="2 0 -5" xdir="1 0 0.000002" zdir="-0.000002 0 1" scale="1.5 3 1" col="#40c080" thumb_id="browseportal" url="http://demos.janusvr.com/karan/sandbox/index.html" draw_glow="false" draw_text="false" />
+<Link  pos="0 0.16 -5.14" xdir="1 0 0.000002" zdir="-0.000002 0 1" scale="8 3 1" col="#40c080" thumb_id="socialportal" url="https://vesta.janusvr.com/" draw_glow="false" draw_text="false" />
 
 <!--Dashboard geometry.-->
 <Object locked="true" id="screen"    pos="0 -0.04 -6.7" xdir="0 0 1" ydir="0 1 0" zdir="-1 0 0" lighting="false"  websurface_id="site"  />
 
-<!-- Vesta users -->
-<Object id="plane" websurface_id="vesta_users" pos="-3.75 1.5 -4.8" scale="1.5 1.2 1" lighting="false" />
 
-<!--Mirrors-->
-
-<Link pos="0 0 -5.15" xdir="1 0 0.000003" zdir="-0.000003 0 1" scale="11.5 4 1" col="#4080c0"  url="" auto_load="true" draw_glow="false" draw_text="false" mirror="true" active="false" />
 
 <!--Mirror darkness.-->
-<Object id="plane" col="#ddffffff" pos="0 1 -5" xdir="0 1 -0.000001" ydir="1 0 0.000002" zdir="0.000002 -0.000001 -1" scale="5 14 4" lighting="false" collision_id="plane" image_id="mirror" draw_layer="2" />
-<Object id="plane" col="#000000" pos="0 1 5.1" xdir="0.00001 1 0.000001" ydir="-1 0.00001 0.000005" zdir="0.000005 -0.000001 -1" scale="5 14 4" lighting="false" collision_id="plane"  />
+<Object id="plane" col="#ddffffff" pos="0 1 -5.1" xdir="0 1 -0.000001" ydir="-1 0 0.000002" zdir="0.000002 -0.000001 1" scale="5 12.5 4" lighting="false" collision_id="plane" image_id="mirror" draw_layer="2" />
+<Object id="plane" col="#000000" pos="0 1 5.1" xdir="0.00001 1 0.000001" ydir="-1 0.00001 0.000005" zdir="0.000005 -0.000001 -1" scale="5 12.5 4" lighting="false" collision_id="plane"  />
 
 </Room>
 </FireBoxRoom>

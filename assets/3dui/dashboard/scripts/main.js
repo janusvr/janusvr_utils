@@ -24,12 +24,17 @@ function populateBookmarks() {
 
 }
 
-function populateParty() {
+function populateParty(force) {
 
-  if (typeof window.janus.partymodedata != "undefined" && window.janus.partymodedata.length > 0)
+  if ( ( (typeof window.janus.partymodedata != "undefined") && (window.janus.partymodedata.length > 0) ) || (force == 1) )
     {
+
       refreshPartymode();
+
+      window.janus.updatepartymodedata();
       clearInterval(intervalParty);
+      intervalParty = setInterval(function(){ populateParty(1) }, 15000);
+
 
     }
 
@@ -123,7 +128,7 @@ function refreshBookmarks() {
       var url = window.janus.bookmarks[i].url;
 
 
-      document.getElementById("3DList").innerHTML += "<div class='tile bookmarks' onclick='window.janus.launchurl(\""+url+"\",0)' style='background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)) ,url(\""+thumb+"\") no-repeat center/cover;' ><div class='infoHolder'>"+strip(title)+"</div></div>";
+      document.getElementById("3DList").innerHTML += "<div class='tile bookmarks' onclick='window.janus.launchurl(\""+url+"\",0)' style='background: url(\""+thumb+"\") no-repeat center/cover;' ><div class='infoHolder'>"+strip(title)+"</div></div>";
 
     }
 
@@ -172,7 +177,7 @@ function refreshPopular() {
       var url = window.janus.populardata[i].roomUrl;
 
 
-      document.getElementById("popularList").innerHTML += "<div class='tile popular' onclick='window.janus.launchurl(\""+url+"\",0)' style='background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)) ,url(\""+thumb+"\") no-repeat center/cover;' ><div class='infoHolder'>"+strip(title)+"</div></div>";
+      document.getElementById("popularList").innerHTML += "<div class='tile popular' onclick='window.janus.launchurl(\""+url+"\",0)' style='background: url(\""+thumb+"\") no-repeat center/cover;' ><div class='infoHolder'>"+strip(title)+"</div></div>";
 
     }
 

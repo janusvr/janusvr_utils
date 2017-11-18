@@ -150,11 +150,11 @@
         border-color: #465158;
         position:relative;
         box-sizing: border-box;
+        opacity: 0.75;
       }
 
       .tile:hover {
-        filter: brightness(1.5);
-        -webkit-filter: brightness(1.5);
+        opacity: 1;
         cursor: pointer;
       }
 
