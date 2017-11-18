@@ -294,6 +294,12 @@ void main(void)
 				albedoTexel.a = alpha;
 			}
 			
+			if (albedoTexel.a == 0.0)
+			{
+				// Discard if below 0.5
+				discard;
+			}
+			
 			if (iChromaKeyColour.a > 0.9  && albedoTexel.rgb == iChromaKeyColour.rgb)
 			{
 				discard;
