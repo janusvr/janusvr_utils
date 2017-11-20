@@ -159,5 +159,30 @@ void main(void)
 		out_color.a *= texture(iTexture1, iTexCoord0.xy).a;
 	}
 	
+	vec4 fog_color = vec4(1.0, 1.0, 1.0, 1.0);
+	if (iFogEnabled.x == 1.0)
+	{
+		//compute length from eye to fragment
+		float fragDistance = length(iPositionCamera);   
+		//compute blend value
+		float fogInterpolator;
+		if (iFogMode.x == 0.0)
+		{
+			fogInterpolator = (iFogEnd.x - fragDistance) / (iFogEnd.x - iFogStart.x);
+		}
+		else if (iFogMode.x == 1.0)
+		{
+			fogInterpolator = exp(-iFogDensity.x * fragDistance);
+		}
+		else
+		{
+			fogInterpolator = exp(-(iFogDensity.x * fragDistance)*(iFogDensity.x * fragDistance));
+		}
+		fogInterpolator = clamp(fogInterpolator, 0.0, 1.0);
+		fog_color = mix(iFogCol.rgba, vec4(1.0,1.0,1.0,1.0), fogInterpolator);
+	}
+	
+	out_color.rgb *= fog_color.rgb;
+	
 	out_color.rgb *= out_color.a;
 }

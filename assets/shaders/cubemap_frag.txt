@@ -65,13 +65,18 @@ void main (void)
 {
 	if (iUseTexture[2].z == 1.0)
 	{
-		out_color = vec4(texture(iCubeTexture0, iTexCoord0).rgb, 1.0);
-		out_color.rgb = pow(out_color.rgb, vec3(2.2));
+		out_color = vec4(texture(iCubeTexture0, normalize(iTexCoord0)).rgb, 1.0);
 	}
 	else
 	{
 		out_color = vec4(0.0,0.0,0.0, 1.0);
 	}
+	if (iFogEnabled.x == 1.0)
+	{
+		// Fog is blended on top before output
+		out_color.rgb *= iFogCol.rgb;	
+	}
+	
 	// iUseLighting is repurposed here to tell us if we are using reversed floating point depth buffers or not
 	// reversed floating point depth requires a 0 clear vs the standard 1 clear.
 	gl_FragDepth = (iUseLighting.x == 1.0) ? 0.0f : 1.0f;

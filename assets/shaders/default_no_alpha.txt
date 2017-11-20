@@ -290,7 +290,7 @@ void main(void)
 			if (iUseTexture[0].x == 1 || iUseTexture[0].x == 3)
 			{
 				float alpha = albedoTexel.a;
-				albedoTexel = sRGBToLinear(albedoTexel);
+				albedoTexel = (albedoTexel);
 				albedoTexel.a = alpha;
 			}
 		}
@@ -301,7 +301,7 @@ void main(void)
 		vec4 emission = iEmission;
 		if (iUseTexture[1].z == 1.0)
 		{
-			emission += vec4(sRGBToLinear(texture(iTexture6, iTexCoord0.xy)).rgb, 0.0);
+			emission += vec4((texture(iTexture6, iTexCoord0.xy)).rgb, 0.0);
 		}
 	// END --- Emissive ---
 	
@@ -309,7 +309,7 @@ void main(void)
 		vec4 occlusion = iAmbient;
 		if (iUseTexture[1].y == 1.0)
 		{
-			occlusion = sRGBToLinear(texture(iTexture5, iTexCoord1.xy));
+			occlusion = (texture(iTexture5, iTexCoord1.xy));
 		}
 	// END --- Occlusion ---
 
@@ -395,7 +395,7 @@ void main(void)
 			lmapAlbedo = texture(iTexture8, tc);
 			if (iUseTexture[2].r == 1.0)
 			{
-				lmapAlbedo = sRGBToLinear(lmapAlbedo);
+				lmapAlbedo = (lmapAlbedo);
 			}
 		}
 		vec4 iColor_disasosiated = vec4(iColor.rgb / iColor.aaa, iColor.a);
@@ -442,7 +442,7 @@ void main(void)
 		// BEGIN --- Specular ---
 			if (iUseTexture[0].y == 1.0)
 			{
-				f0 = sRGBToLinear(texture(iTexture1, iTexCoord0.xy)).rgb;
+				f0 = (texture(iTexture1, iTexCoord0.xy)).rgb;
 			}
 			else
 			{
@@ -543,7 +543,7 @@ void main(void)
 			{
 				fixedLookup = roomSpaceNormal;
 				fixedLookup.z = -fixedLookup.z;
-				indirectDiffuseLight = sRGBToLinear(textureLod(iCubeTexture2, fixedLookup, 0.0)).rgb;
+				indirectDiffuseLight = (textureLod(iCubeTexture2, fixedLookup, 0.0)).rgb;
 			}
 			indirectDiffuse = albedo.rgb * indirectDiffuseLight;
 		// END --- Indirect Diffuse ---
@@ -565,11 +565,11 @@ void main(void)
 			{
 				if (linearRoughness == 0.001)
 				{
-					indirectSpecularLight = sRGBToLinear(textureLod(iCubeTexture1, fixedLookup, 0.0)).rgb;
+					indirectSpecularLight = (textureLod(iCubeTexture1, fixedLookup, 0.0)).rgb;
 				}
 				else
 				{
-					indirectSpecularLight = sRGBToLinear(textureLod(iCubeTexture1, fixedLookup, mipMapIndex)).rgb;
+					indirectSpecularLight = (textureLod(iCubeTexture1, fixedLookup, mipMapIndex)).rgb;
 				}
 			}
 			envBRDF = EnvBRDFApprox(f0, linearRoughness, NdotV);
@@ -590,6 +590,7 @@ void main(void)
 	// END --- Lighting Composition  ---
 	
 	// BEGIN --- Fog ---
+		vec4 fog_color = vec4(1.0,1.0,1.0,1.0);
 		if (iFogEnabled.x == 1.0)
 		{
 			//compute length from eye to fragment
@@ -609,8 +610,7 @@ void main(void)
 				fogInterpolator = exp(-(iFogDensity.x * fragDistance)*(iFogDensity.x * fragDistance));
 			}
 			fogInterpolator = clamp(fogInterpolator, 0.0, 1.0);
-			accumulatedLight_diffuse.rgb = mix(iFogCol.rgb, accumulatedLight_diffuse.rgb, fogInterpolator);
-			accumulatedLight_specular.rgb = mix(iFogCol.rgb, accumulatedLight_specular.rgb, fogInterpolator);
+			fog_color = mix(iFogCol.rgba, vec4(1.0,1.0,1.0,1.0), fogInterpolator);
 		}
 	// END --- Fog ---
 	
@@ -629,6 +629,9 @@ void main(void)
 		
 		// Add the emissive component to the pre-multiplied result, this will cause it to blend additively in the framebuffer
 		out_color.rgb += accumulatedLight_specular.rgb + emission.rgb;
+		
+		// Fog is blended on top before output
+		out_color.rgb *= fog_color.rgb;	
 
 		//out_color = vec4(vec3(indirectSpecularLight), 1.0);
 		/*if ((gl_FragCoord.x / iResolution.x) <= 0.25)
@@ -641,7 +644,8 @@ void main(void)
 			out_color.rgb = accumulatedLight_diffuse.rgb;
 			out_color.a = 1.0;
 		}*/
-		/*out_color.b = 0.0;
-		out_color.g = 0.0;*/
+		/*out_color.r = 0.5;
+		out_color.g = 0.0;
+		out_color.b = 0.0;*/
 	// END --- Fragment Shader Outputs ---
 }

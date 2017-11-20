@@ -67,5 +67,15 @@ void main()
 	iTexCoord0 = vec3(aPosition.x, aPosition.y, -aPosition.z);
 	
 	// Clip-space position
-	gl_Position = iModelViewProjectionMatrix * vec4(aPosition,1.0);
+	vec4 position_clip = iModelViewProjectionMatrix * vec4(aPosition,1.0);
+	if (iUseLighting.x == 1.0)
+	{
+		position_clip.z = 0;
+	}
+	else
+	{
+		position_clip = position_clip.xyzz;
+	}
+	
+	gl_Position = position_clip;
 }
