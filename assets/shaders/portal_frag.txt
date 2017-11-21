@@ -129,7 +129,7 @@ void main(void)
 {
 	if (iUseTexture[0].x == 1)
 	{
-		out_color = iConstColour * sRGBToLinear(texture(iTexture0, iTexCoord0.xy));
+		out_color = iConstColour * texture(iTexture0, iTexCoord0.xy);
 	}
 	else
 	{
