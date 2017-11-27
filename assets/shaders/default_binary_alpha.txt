@@ -140,6 +140,72 @@
 	// END --- Tonemap and Gamma correction ---
 // END --- PBR Helper Functions ---
 
+// BEGIN --- Hashed Alpha
+	// Credit: http://cwyman.org/papers/i3d17_hashedAlpha.pdf
+	
+	float mipMapLevel(in vec2 texture_coordinate)
+	{
+		vec2  dx_vtc        = dFdx(texture_coordinate);
+		vec2  dy_vtc        = dFdy(texture_coordinate);
+		float delta_max_sqr = max(dot(dx_vtc, dx_vtc), dot(dy_vtc, dy_vtc));
+		return 0.5 * log2(delta_max_sqr);
+	}
+	
+	float hash(in vec2 value)
+	{
+		return fract(1.0e4 * sin(17.0 * value.x + 0.1 * value.y) *
+		(0.1 + abs(sin(13.0 * value.y + value.x)))
+		);
+	}
+	
+	float hash3D(in vec3 value)
+	{
+		return hash(vec2(hash(value.xy), value.z));
+	}
+	
+	float distanceBlendingValue(in vec2 texCoords)
+	{
+		float normalizedLod = min(min(mipMapLevel(texCoords), 6) * 0.16666666666666666666666666666667, 1.0);
+		vec2 dTex = vec2(length(dFdx(texCoords.xy)), length(dFdy(texCoords.xy)));
+		float aniso = max(dTex.x / dTex.y, dTex.y / dTex.x);
+		float anisotropicScaledLod = aniso * normalizedLod;
+		
+		float quadraticAnisotropicScaledLod = anisotropicScaledLod * anisotropicScaledLod;
+		
+		return quadraticAnisotropicScaledLod;
+	}
+	
+	float calculateAlphaThreshold(in vec3 objectSpacePosition)
+	{
+		float g_HashScale = 1.0; 
+		float maxDeriv = max(length(dFdx(objectSpacePosition.xyz)),
+		length(dFdy(objectSpacePosition.xyz)));
+		float pixScale = 1.0 /(g_HashScale * maxDeriv);
+		// Find two nearest log-discretized noise scales
+		vec2 pixScales = vec2(exp2(floor(log2(pixScale))),
+		exp2(ceil(log2(pixScale))));
+		// Compute alpha thresholds at our two noise scales
+		vec2 alpha=vec2(hash3D(floor(pixScales.x * objectSpacePosition.xyz)),
+		hash3D(floor(pixScales.y * objectSpacePosition.xyz)));
+		// Factor to interpolate lerp with
+		float lerpFactor = fract(log2(pixScale));
+		// Interpolate alpha threshold from noise at two scales
+		float x = (1 - lerpFactor) * alpha.x + lerpFactor * alpha.y;
+		// Pass into CDF to compute uniformly distrib threshold
+		float a = min(lerpFactor, 1-lerpFactor);
+		vec3 cases = vec3(x * x / (2 * a * (1 - a))
+		, (x - 0.5 * a) / (1 - a)
+		, 1.0 - ((1 - x) * (1 - x) / (2 * a * (1 - a))));
+		// Find our final, uniformly distributed alpha threshold
+		float alphaThreshold = (x < (1 - a)) ?
+		((x < a) ? cases.x : cases.y) :
+		cases.z;
+		// Avoids alphaThreshold == 0. Could also do alphaThreshold =1-alphaThreshold
+		alphaThreshold = clamp(alphaThreshold, 1.0e-6, 1.0);
+		return alphaThreshold;
+	}
+// END --- Hashed Alpha
+
 // BEGIN --- Normal Encode ---
 	vec4 encodeNormal(vec3 viewSpaceNormal)
 	{
@@ -293,10 +359,13 @@ void main(void)
 				albedoTexel = (albedoTexel);
 				albedoTexel.a = alpha;
 			}
-			
-			if (albedoTexel.a < 0.5)
+			float alphaDistanceBlendValue = 1.0 - clamp(distanceBlendingValue(iTexCoord0.xy), 0.0, 1.0);
+			float alphaHash = clamp(calculateAlphaThreshold(iPosition.xyz), 0.0, 1.0);
+			float modulatedThreshold = (alphaHash - 1.0) * alphaDistanceBlendValue;
+			float alphaDiscardThreshold = 0.5 + modulatedThreshold;
+			if (albedoTexel.a < alphaDiscardThreshold)
 			{
-				// Discard if below 0.5
+				// Discard if below alphaDiscardThreshold
 				discard;
 			}
 			else
