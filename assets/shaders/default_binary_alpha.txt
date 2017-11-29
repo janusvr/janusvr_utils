@@ -166,43 +166,71 @@
 	float distanceBlendingValue(in vec2 texCoords)
 	{
 		float normalizedLod = min(min(mipMapLevel(texCoords), 6) * 0.16666666666666666666666666666667, 1.0);
-		vec2 dTex = vec2(length(dFdx(texCoords.xy)), length(dFdy(texCoords.xy)));
-		float aniso = max(dTex.x / dTex.y, dTex.y / dTex.x);
-		float anisotropicScaledLod = aniso * normalizedLod;
-		
-		float quadraticAnisotropicScaledLod = anisotropicScaledLod * anisotropicScaledLod;
-		
-		return quadraticAnisotropicScaledLod;
+		float quadraticScaledLod = normalizedLod * normalizedLod;
+		return quadraticScaledLod;
 	}
 	
-	float calculateAlphaThreshold(in vec3 objectSpacePosition)
+	float anisoHashAlpha(in vec3 objectSpacePosition)
 	{
-		float g_HashScale = 1.0; 
-		float maxDeriv = max(length(dFdx(objectSpacePosition.xyz)),
-		length(dFdy(objectSpacePosition.xyz)));
-		float pixScale = 1.0 /(g_HashScale * maxDeriv);
-		// Find two nearest log-discretized noise scales
-		vec2 pixScales = vec2(exp2(floor(log2(pixScale))),
-		exp2(ceil(log2(pixScale))));
-		// Compute alpha thresholds at our two noise scales
-		vec2 alpha=vec2(hash3D(floor(pixScales.x * objectSpacePosition.xyz)),
-		hash3D(floor(pixScales.y * objectSpacePosition.xyz)));
-		// Factor to interpolate lerp with
-		float lerpFactor = fract(log2(pixScale));
-		// Interpolate alpha threshold from noise at two scales
-		float x = (1 - lerpFactor) * alpha.x + lerpFactor * alpha.y;
-		// Pass into CDF to compute uniformly distrib threshold
-		float a = min(lerpFactor, 1-lerpFactor);
-		vec3 cases = vec3(x * x / (2 * a * (1 - a))
-		, (x - 0.5 * a) / (1 - a)
-		, 1.0 - ((1 - x) * (1 - x) / (2 * a * (1 - a))));
-		// Find our final, uniformly distributed alpha threshold
-		float alphaThreshold = (x < (1 - a)) ?
-		((x < a) ? cases.x : cases.y) :
-		cases.z;
-		// Avoids alphaThreshold == 0. Could also do alphaThreshold =1-alphaThreshold
-		alphaThreshold = clamp(alphaThreshold, 1.0e-6, 1.0);
-		return alphaThreshold;
+		//////  Anisotropic version
+		float alphaCompare = 0.5;
+		float hashScale = 1.0; 
+        // Find the discretized derivatives of our coordinates
+        vec3 anisoDeriv = max(abs(dFdx(objectSpacePosition)), abs(dFdy(objectSpacePosition)));
+        vec3 anisoScales = vec3(0.707 / (hashScale * anisoDeriv.x),
+                                    0.707 / (hashScale * anisoDeriv.y),
+                                    0.707 / (hashScale * anisoDeriv.z));
+        // Find log-discretized noise scales
+        vec3 scaleFlr = vec3(exp2(floor(log2(anisoScales.x))),
+                                 exp2(floor(log2(anisoScales.y))),
+                                 exp2(floor(log2(anisoScales.z))));
+        vec3 scaleCeil = vec3(exp2(ceil(log2(anisoScales.x))),
+                                  exp2(ceil(log2(anisoScales.y))),
+                                  exp2(ceil(log2(anisoScales.z))));
+        // Compute alpha thresholds at our two noise scales
+        vec2 alpha = vec2(hash3D(floor(scaleFlr * objectSpacePosition)),
+                              hash3D(floor(scaleCeil * objectSpacePosition)));
+        // Factor to linearly interpolate with
+        vec3 fractLoc = vec3(fract(log2(anisoScales.x)),
+                                 fract(log2(anisoScales.y)),
+                                 fract(log2(anisoScales.z)));
+        vec2 toCorners = vec2(length(fractLoc), 
+                                  length(vec3(1.0f, 1.0f, 1.0f) - fractLoc));
+        float lerpFactor = toCorners.x / (toCorners.x + toCorners.y);
+        // Interpolate alpha threshold from noise at two scales
+        float x = (1 - lerpFactor) * alpha.x + lerpFactor * alpha.y;
+        // Pass into CDF to compute uniformly distrib threshold
+        float a = min(lerpFactor, 1 - lerpFactor);
+        vec3 cases = vec3(x * x / (2 * a * (1 - a)), (x - 0.5 * a) / (1 - a), 1.0 - ((1 - x) * (1 - x) / (2 * a * (1 - a))));
+        // Find our final, uniformly distributed alpha threshold
+        alphaCompare = (x < (1 - a)) ? ((x < a) ? cases.x : cases.y) : cases.z;
+        alphaCompare = clamp(alphaCompare, 1.0e-6, 1.0);
+		return alphaCompare;
+	}
+	
+	float isoHashAlpha(in vec3 objectSpacePosition)
+	{
+		//////  Anisotropic version
+		float alphaCompare = 0.5;
+		float hashScale = 1.0; 
+        // Find the discretized derivatives of our coordinates
+        float maxDeriv = max(length(dFdx(objectSpacePosition)), length(dFdy(objectSpacePosition)));
+        float pixScale = 1.0 / (hashScale * maxDeriv);
+        // Find two nearest log-discretized noise scales
+        vec2 pixScales = vec2(exp2(floor(log2(pixScale))), exp2(ceil(log2(pixScale))));
+        // Compute alpha thresholds at our two noise scales
+        vec2 alpha = vec2(hash3D(floor(pixScales.x * objectSpacePosition)), hash3D(floor(pixScales.y * objectSpacePosition)));
+        // Factor to interpolate lerp with
+        float lerpFactor = fract(log2(pixScale));
+        // Interpolate alpha threshold from noise at two scales
+        float x = (1 - lerpFactor) * alpha.x + lerpFactor * alpha.y;
+        float a = min(lerpFactor, 1 - lerpFactor);
+        // Pass into CDF to compute uniformly distrib threshold
+        vec3 cases = vec3(x * x / (2 * a * (1 - a)), (x - 0.5 * a) / (1 - a), 1.0 - ((1 - x) * (1 - x) / (2 * a * (1 - a))));
+        // Find our final, uniformly distributed alpha threshold
+        alphaCompare = (x < (1 - a)) ? ((x < a) ? cases.x : cases.y) : cases.z;
+        alphaCompare = clamp(alphaCompare, 1.0e-6, 1.0);
+		return alphaCompare;
 	}
 // END --- Hashed Alpha
 
@@ -345,7 +373,6 @@ void main(void)
 {	
 	// BEGIN --- Conditional Discards ---
 		vec4 albedoTexel = vec4(1.0, 1.0, 1.0, 1.0);
-
 		if (iUseTexture[0].x > 0) 
 		{			
 			vec2 tc = iTexCoord0;
@@ -360,9 +387,8 @@ void main(void)
 				albedoTexel.a = alpha;
 			}
 			float alphaDistanceBlendValue = 1.0 - clamp(distanceBlendingValue(iTexCoord0.xy), 0.0, 1.0);
-			float alphaHash = clamp(calculateAlphaThreshold(iPosition.xyz), 0.0, 1.0);
-			float modulatedThreshold = (alphaHash - 1.0) * alphaDistanceBlendValue;
-			float alphaDiscardThreshold = 0.5 + modulatedThreshold;
+			float alphaHash = anisoHashAlpha(iPosition.xyz);
+			float alphaDiscardThreshold = mix(0.5, alphaHash, alphaDistanceBlendValue);
 			if (albedoTexel.a < alphaDiscardThreshold)
 			{
 				// Discard if below alphaDiscardThreshold
@@ -714,14 +740,19 @@ void main(void)
 		out_color.rgb *= fog_color.rgb;	
 
 		//out_color = vec4(vec3(indirectSpecularLight), 1.0);
-		/*if ((gl_FragCoord.x / iResolution.x) <= 0.25)
+		/*if ((gl_FragCoord.x / iResolution.x) <= (0.25 * 0.5))
 		{
-			out_color.rgb = accumulatedLight_specular.rgb;
+			out_color.rgb = vec3(alphaHash);
 			out_color.a = 1.0;
 		}
-		else if((gl_FragCoord.x / iResolution.x)  <= 0.5)
+		else if((gl_FragCoord.x / iResolution.x)  <= (0.5 * 0.5))
 		{
-			out_color.rgb = accumulatedLight_diffuse.rgb;
+			out_color.rgb = vec3(alphaDistanceBlendValue);
+			out_color.a = 1.0;
+		}
+		else if((gl_FragCoord.x / iResolution.x)  <= (0.75 * 0.5))
+		{
+			out_color.rgb = vec3(alphaDiscardThreshold);
 			out_color.a = 1.0;
 		}*/
 		/*out_color.r = 0.0;
