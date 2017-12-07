@@ -527,7 +527,7 @@ void main(void)
 				}
 			// END --- SURFACE LIGHTING LOOP ---
 			diffuse *= LambertianDiffuse(albedo.rgb);
-			accumulatedLight_diffuse.rgb += diffuse_lighting_modulator * diffuse;
+			accumulatedLight_diffuse.rgb += diffuse;
 			accumulatedLight_specular.rgb += specular_lighting_modulator * specular;
 			//accumulatedLight.rgb += occlusion.a * (diffuse + specular);
 		// END --- Light Accumulation ---
@@ -622,26 +622,36 @@ void main(void)
 	// END --- Temporal Noise ---
 	
 	// START --- Fragment Shader Outputs ---
-		out_color = accumulatedLight_diffuse;
+		out_color = accumulatedLight_diffuse + accumulatedLight_specular;
 
 		// Assosiate the color with it's alpha so that the result is composited correctly by the pre-multiplied blendfunc.
 		out_color.rgb *= accumulatedLight_diffuse.a;
 		
 		// Add the emissive component to the pre-multiplied result, this will cause it to blend additively in the framebuffer
-		out_color.rgb += accumulatedLight_specular.rgb + emission.rgb;
+		out_color.rgb += emission.rgb;
 		
 		// Fog is blended on top before output
 		out_color.rgb *= fog_color.rgb;	
 
 		//out_color = vec4(vec3(indirectSpecularLight), 1.0);
-		/*if ((gl_FragCoord.x / iResolution.x) <= 0.25)
+		/*if ((gl_FragCoord.x / iResolution.x) <= 0.125)
 		{
-			out_color.rgb = accumulatedLight_specular.rgb;
+			out_color.rgb = vec3(specular_lighting_modulator * indirectSpecular.rgb);
+			out_color.a = 1.0;
+		}
+		else if((gl_FragCoord.x / iResolution.x)  <= 0.25)
+		{
+			out_color.rgb = vec3(roughness);
+			out_color.a = 1.0;
+		}
+		else if((gl_FragCoord.x / iResolution.x)  <= 0.375)
+		{
+			out_color.rgb = vec3(roughnessFactorGeometric);
 			out_color.a = 1.0;
 		}
 		else if((gl_FragCoord.x / iResolution.x)  <= 0.5)
 		{
-			out_color.rgb = accumulatedLight_diffuse.rgb;
+			out_color.rgb = vec3(roughness + roughnessFactorGeometric);
 			out_color.a = 1.0;
 		}*/
 		/*out_color.r = 0.5;
