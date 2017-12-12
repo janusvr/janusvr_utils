@@ -319,6 +319,8 @@ void main(void)
 			float linearRoughness = 0.0;
 			float roughnessFactorGeometric = 0.0;
 			float roughnessFactorTexture = 0.0;
+			float mipMapIndex = 0;
+			vec3 fixedLookup = vec3(0.0);
 			vec3 indirectDiffuseLight = vec3(0.0);
 			vec3 indirectSpecularLight = vec3(0.0);
 			vec3 f0 = vec3(0.0);
@@ -422,9 +424,9 @@ void main(void)
 			{
 				if (iShininess.r < 511.0)
 				{
-					// Remap [1,511] into [4,2044] then to [2,2042] then map that into [0,1] linear smoothness
+					// Remap [1,511] into [4,2044] then to [2,2042] then map that into [0,1] smoothness
 					roughness = (log2(clamp(4 * iShininess.r - 2, 2, 2048)) - 1.0) * 0.1;
-					// Convert from [0,1] smoothness to linear roughness
+					// Convert from [0,1] smoothness to roughness
 					roughness = 1.0 - roughness;
 				}
 				else
@@ -432,9 +434,11 @@ void main(void)
 					roughness = 0.0;
 				}
 			}
-			// Square the roughness to make it perceptually linear
+			// Make surfaces rougher in areas of high normal variance to mitigate specular aliasing
 			roughness = roughness + roughnessFactorGeometric;
-			linearRoughness = roughness * roughness + roughnessFactorGeometric;
+			// Square the roughness to make it perceptually linear
+			linearRoughness = roughness * roughness;
+			// Clamp roughness to a min of 0.001 to avoid tiny subpixel highlights which alias badly
 			roughness = clamp(roughness, 0.001, 1.0);
 			linearRoughness = clamp(linearRoughness, 0.001, 1.0);
 		// END --- Roughness mapping ---
@@ -633,31 +637,17 @@ void main(void)
 		// Fog is blended on top before output
 		out_color.rgb *= fog_color.rgb;
 
-		/*if ((gl_FragCoord.x / iResolution.x) <= 0.5)
+		/*if ((gl_FragCoord.y / iResolution.y) <= 0.25)
 		{
-			out_color = accumulatedLight_diffuse + accumulatedLight_specular;
-
-			// Assosiate the color with it's alpha so that the result is composited correctly by the pre-multiplied blendfunc.
-			out_color.rgb *= accumulatedLight_diffuse.a;
-			
-			// Add the emissive component to the pre-multiplied result, this will cause it to blend additively in the framebuffer
-			out_color.rgb += emission.rgb;
-			
-			// Fog is blended on top before output
-			out_color.rgb *= fog_color.rgb;	
+			out_color.rgb = (textureLod(iCubeTexture1, fixedLookup, mipMapIndex)).rgb;
 		}
-		else if((gl_FragCoord.x / iResolution.x)  <= 1.0)
+		else if((gl_FragCoord.y/ iResolution.y)  <= 0.5)
 		{
-			out_color = accumulatedLight_diffuse;
-
-			// Assosiate the color with it's alpha so that the result is composited correctly by the pre-multiplied blendfunc.
-			out_color.rgb *= accumulatedLight_diffuse.a;
-			
-			// Add the emissive component to the pre-multiplied result, this will cause it to blend additively in the framebuffer
-			out_color.rgb += accumulatedLight_specular.rgb + emission.rgb;
-			
-			// Fog is blended on top before output
-			out_color.rgb *= fog_color.rgb;	
+			out_color.rgb = sRGBToLinear(vec4(linearRoughness)).rgb;
+		}
+		else if((gl_FragCoord.y/ iResolution.y)  <= 0.75)
+		{
+			out_color.rgb = specular_lighting_modulator.rgb;
 		}*/
 		/*out_color.r = 0.5;
 		out_color.g = 0.0;
