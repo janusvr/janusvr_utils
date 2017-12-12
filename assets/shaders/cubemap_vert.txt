@@ -78,4 +78,5 @@ void main()
 	}
 	
 	gl_Position = position_clip;
+	gl_ClipDistance[0] = 1.0;
 }
