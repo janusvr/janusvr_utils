@@ -31,6 +31,7 @@ uniform vec4 iFogStart;
 uniform vec4 iFogEnd;
 uniform vec4 iFogCol;
 uniform mat4 iRoomMatrix;
+uniform vec4 iLightmapScale;
 
 uniform mat4 iMiscObjectData;
 uniform vec4 iConstColour;
@@ -54,6 +55,7 @@ uniform vec4 iDiffuse;
 uniform vec4 iSpecular;
 uniform vec4 iShininess;
 uniform vec4 iUseTexture[4];
+uniform vec4 iTiling;
 
 
 // Vertex Shader Inputs/Attributes
@@ -124,7 +126,13 @@ void main(void)
 	float ty0 = ((iUseTexture[0].x == 3.0 || iUseTexture[0].x == 4.0) ? aTexCoord0.y : 1.0 - aTexCoord0.y);
 	float ty1 = ((iUseTexture[0].x == 3.0 || iUseTexture[0].x == 4.0) ? aTexCoord1.y : 1.0 - aTexCoord1.y);
 	iTexCoord0 = vec2(aTexCoord0.x, ty0);
+	iTexCoord0.xy *= iTiling.xy;
+	iTexCoord0.xy += iTiling.zw;
 	iTexCoord1 = vec2(aTexCoord1.x, ty1);
+	iTexCoord1.y = 1 - iTexCoord1.y;
+	iTexCoord1.xy *= iLightmapScale.xy;
+	iTexCoord1.xy += iLightmapScale.zw;
+	iTexCoord1.y = 1 - iTexCoord1.y;
 	iColor = aColor;
 	gl_Position = iModelViewProjectionMatrix * vec4(blend_pos, 1);
 	gl_ClipDistance[0] = (iUseClipPlane.x == 1.0) ? dot(iPositionWorld, vec3(iClipPlane.xyz)) - iClipPlane.w : 1.0;

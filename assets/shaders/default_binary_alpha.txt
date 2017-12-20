@@ -374,19 +374,9 @@ void main(void)
 	// BEGIN --- Conditional Discards ---
 		vec4 albedoTexel = vec4(1.0, 1.0, 1.0, 1.0);
 		if (iUseTexture[0].x > 0) 
-		{			
-			vec2 tc = iTexCoord0;
-			tc.xy *= iTiling.xy;
-			tc.xy += iTiling.zw;
-			
-			albedoTexel = texture(iTexture0, tc);
-			if (iUseTexture[0].x == 1 || iUseTexture[0].x == 3)
-			{
-				float alpha = albedoTexel.a;
-				albedoTexel = (albedoTexel);
-				albedoTexel.a = alpha;
-			}
-			float alphaDistanceBlendValue = 1.0 - clamp(distanceBlendingValue(iTexCoord0.xy), 0.0, 1.0);
+		{					
+			albedoTexel = texture(iTexture0, iTexCoord0);
+			float alphaDistanceBlendValue = 1.0 - clamp(distanceBlendingValue(iTexCoord0), 0.0, 1.0);
 			float alphaHash = anisoHashAlpha(iPosition.xyz);
 			float alphaDiscardThreshold = mix(0.5, alphaHash, alphaDistanceBlendValue);
 			
@@ -425,16 +415,12 @@ void main(void)
 		vec4 emission = iEmission;
 		if (iUseTexture[1].z == 1.0)
 		{
-			emission += vec4((texture(iTexture6, iTexCoord0.xy)).rgb, 0.0);
+			emission += vec4((texture(iTexture6, iTexCoord0)).rgb, 0.0);
 		}
 	// END --- Emissive ---
 	
 	// BEGIN --- Occlusion ---
-		vec4 occlusion = iAmbient;
-		if (iUseTexture[1].y == 1.0)
-		{
-			occlusion = (texture(iTexture5, iTexCoord1.xy));
-		}
+		vec4 occlusion = (iUseTexture[1].y == 1.0) ? texture(iTexture5, iTexCoord1) : iAmbient;
 	// END --- Occlusion ---
 
 	// BEGIN --- Lighting ---		
@@ -479,14 +465,14 @@ void main(void)
 			if (iUseTexture[0].w == 1.0)
 			{
 				// Fetch object space normal [0.0,1.0] range per channel
-				vec3 normalTexel = texture(iTexture3, iTexCoord0.xy).rgb;
+				vec3 normalTexel = texture(iTexture3, iTexCoord0).rgb;
 				// Store the length for roughness modulation then normalize it
 				normalLength = length(normalTexel);
 				normalizedNormalTexel = normalTexel / normalLength;
 				// Convert normal into [-1.0, 1.0] range per channel
 				normalizedNormalTexel = normalTexel * 255.0 / 127.0 - 128.0 / 127.0;
 				// Convert normal into object-space
-				objectSpaceNormal = tangentSpaceToObjectSpaceNormal(iPosition, iTexCoord0.xy, iNormal, normalizedNormalTexel);
+				objectSpaceNormal = tangentSpaceToObjectSpaceNormal(iPosition, iTexCoord0, iNormal, normalizedNormalTexel);
 				//mat3 tbnMatrix = mat3(normalize(iTangent), normalize(iBitangent), normalize(iNormal));
 				//mat3 tbnMatrix = mat3(vec3(0.0, 0.0, 1.0), vec3(0.0, 1.0, 0.0), normalize(iNormal));
 				//objectSpaceNormal = tbnMatrix * normalizedNormalTexel;
@@ -501,27 +487,13 @@ void main(void)
 				normalizedViewNormal = iNormalCamera / normalLength;
 				N = normalize(iNormalWorld);
 			}
-			float ddx_ddy = length(fwidth(normalizedViewNormal));
-			roughnessFactorGeometric = pow(clamp(ddx_ddy, 0.0, 1.0), 2) * 0.03;
+			vec3 ddx = dFdx(normalizedViewNormal);
+			vec3 ddy = dFdy(normalizedViewNormal);
+			roughnessFactorGeometric = pow(clamp(max(dot(ddx, ddx), dot(ddy, ddy)), 0.0, 1.0), 0.66);
 		// END --- Normal mapping ---	
 			
 		// BEGIN --- Lightmap Albedo ---
-		vec4 lmapAlbedo = vec4(1.0, 1.0, 1.0, 1.0);
-		if (iUseTexture[2].r > 0)
-		{
-			vec2 tc = iTexCoord1.xy;
-
-			tc.y = 1 - tc.y;
-			tc.xy *= iLightmapScale.xy;
-			tc.xy += iLightmapScale.zw;
-			tc.y = 1 - tc.y;
-			
-			lmapAlbedo = texture(iTexture8, tc);
-			if (iUseTexture[2].r == 1.0)
-			{
-				lmapAlbedo = (lmapAlbedo);
-			}
-		}
+		vec4 lmapAlbedo = (iUseTexture[2].r > 0) ? texture(iTexture8, iTexCoord1) : vec4(1.0, 1.0, 1.0, 1.0);
 		vec4 iColor_disasosiated = vec4(iColor.rgb / iColor.aaa, iColor.a);
 		vec4 albedoTexel_disasosiated = vec4(albedoTexel.rgb / albedoTexel.aaa, albedoTexel.a);
 		vec4 albedo = albedoTexel_disasosiated * iConstColour * iDiffuse * iColor_disasosiated;
@@ -540,7 +512,7 @@ void main(void)
 			if (iUseTexture[0].z == 1.0)
 			{
 				// Convert from [0,1] smoothness stored in the texture
-				roughness = 1.0 - texture(iTexture2, iTexCoord0.xy).r;
+				roughness = 1.0 - texture(iTexture2, iTexCoord0).r;
 			}
 			else
 			{
@@ -556,22 +528,20 @@ void main(void)
 					roughness = 0.0;
 				}
 			}
+			// Make surfaces rougher in areas of high normal variance to mitigate specular aliasing
+			// This is interpolated in so that it is stronger on less rough surfaces that are more 
+			// likely to exibit geometric aliasing.
+			roughnessFactorGeometric = pow(roughnessFactorGeometric, 1 / roughness);
+			roughness = mix(roughness + roughnessFactorGeometric, roughness, roughness);
 			// Square the roughness to make it perceptually linear
-			roughness = roughness + roughnessFactorGeometric;
-			linearRoughness = roughness * roughness + roughnessFactorGeometric;
+			linearRoughness = roughness * roughness;
+			// Clamp roughness to a min of 0.001 to avoid tiny subpixel highlights which alias badly
 			roughness = clamp(roughness, 0.001, 1.0);
 			linearRoughness = clamp(linearRoughness, 0.001, 1.0);
 		// END --- Roughness mapping ---
 			
 		// BEGIN --- Specular ---
-			if (iUseTexture[0].y == 1.0)
-			{
-				f0 = texture(iTexture1, iTexCoord0.xy).rgb;
-			}
-			else
-			{
-				f0 = iSpecular.rgb;
-			}
+			f0.rgb = (iUseTexture[0].y == 1.0) ? texture(iTexture1, iTexCoord0).rgb : iSpecular.rgb;
 		// END --- Specular ---
 		
 		// BEGIN --- Light Accumulation ---
@@ -656,52 +626,61 @@ void main(void)
 			//accumulatedLight.rgb += occlusion.a * (diffuse + specular);
 		// END --- Light Accumulation ---
 			
-		// BEGIN --- Indirect Diffuse ---
-			vec3 roomSpaceNormal = inverse(mat3(iRoomMatrix)) * N;
-			vec3 fixedLookup;
-			if(iUseTexture[3].x == 0.0)
+		// BEGIN --- Indirect Lighting ---
+			// Lightmaps contain per-texel indirect diffuse information so using the env probe is redundant
+			if (iUseTexture[2].r == 0.0)
 			{
-				indirectDiffuseLight = max(SphericalHarmonicLighting(normalize(roomSpaceNormal)).ggg, vec3(0.10, 0.10, 0.10));
+				// BEGIN --- Indirect Diffuse ---
+					vec3 roomSpaceNormal = inverse(mat3(iRoomMatrix)) * N;
+					vec3 fixedLookup;
+					if(iUseTexture[3].x == 0.0)
+					{
+						indirectDiffuseLight = max(SphericalHarmonicLighting(normalize(roomSpaceNormal)).ggg, vec3(0.10, 0.10, 0.10));
+					}
+					else
+					{
+						fixedLookup = roomSpaceNormal;
+						fixedLookup.z = -fixedLookup.z;
+						indirectDiffuseLight = (textureLod(iCubeTexture2, fixedLookup, 0.0)).rgb;
+					}
+					indirectDiffuse = albedo.rgb * indirectDiffuseLight;
+					accumulatedLight_diffuse.rgb += diffuse_lighting_modulator * indirectDiffuse;
+				// END --- Indirect Diffuse ---
 			}
 			else
 			{
-				fixedLookup = roomSpaceNormal;
+				accumulatedLight_diffuse.rgb += albedo.rgb * diffuse_lighting_modulator.rgb;
+			}
+			
+			// BEGIN --- Indirect Specular ---
+				float NUM_MIP_LEVELS = 9.0;
+				float BASE_MIP_SIZE = 256.0;
+				float mipMapIndex = cubeMipFromRoughness(roughness, NUM_MIP_LEVELS - 1);
+				mipMapIndex = clamp(mipMapIndex, 1.0, NUM_MIP_LEVELS - 1);
+				vec3 worldSpaceReflection = reflect(-V, N);
+				vec3 roomSpaceReflection = inverse(mat3(iRoomMatrix)) * worldSpaceReflection;
+				fixedLookup = roomSpaceReflection;
 				fixedLookup.z = -fixedLookup.z;
-				indirectDiffuseLight = (textureLod(iCubeTexture2, fixedLookup, 0.0)).rgb;
-			}
-			indirectDiffuse = albedo.rgb * indirectDiffuseLight;
-		// END --- Indirect Diffuse ---
-		
-		// BEGIN --- Indirect Specular ---
-			float NUM_MIP_LEVELS = 9.0;
-			float BASE_MIP_SIZE = 256.0;
-			float mipMapIndex = cubeMipFromRoughness(roughness, NUM_MIP_LEVELS - 1);
-			mipMapIndex = clamp(mipMapIndex, 1.0, NUM_MIP_LEVELS - 1);
-			vec3 worldSpaceReflection = reflect(-V, N);
-			vec3 roomSpaceReflection = inverse(mat3(iRoomMatrix)) * worldSpaceReflection;
-			fixedLookup = roomSpaceReflection;
-			fixedLookup.z = -fixedLookup.z;
-			if(iUseTexture[2].w == 0.0)
-			{
-				indirectSpecularLight = max(SphericalHarmonicLighting(roomSpaceReflection).ggg, vec3(0.05, 0.05, 0.05));
-			}
-			else
-			{
-				if (linearRoughness == 0.001)
+				if(iUseTexture[2].w == 0.0)
 				{
-					indirectSpecularLight = (textureLod(iCubeTexture1, fixedLookup, 0.0)).rgb;
+					indirectSpecularLight = max(SphericalHarmonicLighting(roomSpaceReflection).ggg, vec3(0.05, 0.05, 0.05));
 				}
 				else
 				{
-					indirectSpecularLight = (textureLod(iCubeTexture1, fixedLookup, mipMapIndex)).rgb;
+					if (linearRoughness == 0.001)
+					{
+						indirectSpecularLight = (textureLod(iCubeTexture1, fixedLookup, 0.0)).rgb;
+					}
+					else
+					{
+						indirectSpecularLight = (textureLod(iCubeTexture1, fixedLookup, mipMapIndex)).rgb;
+					}
 				}
-			}
-			envBRDF = EnvBRDFApprox(f0, linearRoughness, NdotV);
-			indirectSpecular = envBRDF * indirectSpecularLight;
-			accumulatedLight_diffuse.rgb += diffuse_lighting_modulator * indirectDiffuse;
-			accumulatedLight_specular.rgb += specular_lighting_modulator * indirectSpecular;
-			//accumulatedLight.rgb += (indirectDiffuse + indirectSpecular) * occlusion.rgb;
-		// END --- Indirect Specular ---
+				envBRDF = EnvBRDFApprox(f0, linearRoughness, NdotV);
+				indirectSpecular = envBRDF * indirectSpecularLight;
+				accumulatedLight_specular.rgb += specular_lighting_modulator * indirectSpecular;
+			// END --- Indirect Specular ---
+		// END --- Indirect Lighting ---
 		}
 		else
 		{
