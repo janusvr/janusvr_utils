@@ -164,7 +164,7 @@ function refreshPartymode() {
 function refreshPopular() {
 
     //Populate list with now available window.janus.bookmarks array.
-
+    var blacklist_urls = ['https://vesta.janusvr.com/popular/all/1', 'https://vesta.janusvr.com/recent/all/1', 'https://www.reddit.com/r/VRsites/', 'https://www.youtube.com', 'https://www.janusvr.com/newlobby/index.html', 'https://vesta.janusvr.com/sandbox', 'https://janusvr.com/help', 'https://vesta.janusvr.com/chat', 'https://janusvr.com/help/' ];
     emptyElement(document.getElementById("popularList"));
 
     for (var i=0;i<window.janus.populardata.length;i++)
@@ -177,7 +177,10 @@ function refreshPopular() {
       var url = window.janus.populardata[i].roomUrl;
 
 
-      document.getElementById("popularList").innerHTML += "<div class='tile popular' onclick='window.janus.launchurl(\""+url+"\",0)' style='background: url(\""+thumb+"\") no-repeat center/cover;' ><div class='infoHolder'>"+strip(title)+"</div></div>";
+      if (blacklist_urls.indexOf(url) === -1)
+	  {
+        document.getElementById("popularList").innerHTML += "<div class='tile popular' onclick='window.janus.launchurl(\""+url+"\",0)' style='background: url(\""+thumb+"\") no-repeat center/cover;' ><div class='infoHolder'>"+strip(title)+"</div></div>";
+      }
 
     }
 
