@@ -531,7 +531,7 @@ void main(void)
 				mipMapIndex = clamp(mipMapIndex, 1.0, NUM_MIP_LEVELS - 1);
 				vec3 worldSpaceReflection = reflect(-V, N);
 				vec3 roomSpaceReflection = inverse(mat3(iRoomMatrix)) * worldSpaceReflection;
-				fixedLookup = roomSpaceReflection;
+				vec3 fixedLookup = roomSpaceReflection;
 				fixedLookup.z = -fixedLookup.z;
 				if(iUseTexture[2].w == 0.0)
 				{
