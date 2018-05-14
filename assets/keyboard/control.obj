@@ -1,6 +1,5 @@
 # Blender v2.79 (sub 0) OBJ File: 'virtualkeyboardsinglelayer.blend'
 # www.blender.org
-mtllib ctrl.mtl
 o ctrl
 v -0.762745 0.652261 -0.490186
 v -0.714981 0.537129 -0.459490

@@ -1,6 +1,5 @@
 # Blender v2.79 (sub 0) OBJ File: 'virtualkeyboardsinglelayer.blend'
 # www.blender.org
-mtllib question.mtl
 o question
 v 0.393788 0.773819 -0.862276
 v 0.376646 0.652261 -0.824742
