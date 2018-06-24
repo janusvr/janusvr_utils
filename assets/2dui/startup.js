@@ -1,1 +1,0 @@
-registerApp('inventory');
