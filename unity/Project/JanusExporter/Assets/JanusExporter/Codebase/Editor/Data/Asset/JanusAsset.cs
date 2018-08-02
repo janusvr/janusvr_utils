@@ -15,6 +15,8 @@ namespace JanusVR
         [XmlAttribute("id")]
         public string id { get; set; }
 
+       
+
         public override string ToString()
         {
             return string.Format("src: {0}, id: {1}", src, id);

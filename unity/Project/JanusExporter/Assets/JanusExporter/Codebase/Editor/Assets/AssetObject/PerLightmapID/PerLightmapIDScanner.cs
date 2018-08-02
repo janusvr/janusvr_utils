@@ -96,6 +96,7 @@ namespace JanusVR
                     if (!meshesToExport.TryGetValue(lmapId, out data))
                     {
                         data = new PerMaterialMeshExportData();
+                        data.LightmapEnabled = true;
                         meshesToExport.Add(lmapId, data);
 
                         AssetObject asset = new AssetObject();
@@ -114,6 +115,7 @@ namespace JanusVR
                     }
 
                     PerMaterialMeshExportDataObj dObj = new PerMaterialMeshExportDataObj();
+                    dObj.LightmapEnabled = true;
                     dObj.Mesh = mesh;
                     dObj.Transform = root.transform;
                     dObj.Renderer = meshRen;
@@ -206,7 +208,7 @@ namespace JanusVR
                     allTriangles.Add(tri + start);
                 }
 
-                Vector2[][] uvs = BruteForceObjectScanner.GetMeshUVs(room, mesh, vertices.Length);
+                Vector2[][] uvs = BruteForceObjectScanner.GetMeshUVs(room, mesh, obj.LightmapEnabled, vertices.Length);
                 for (int j = 0; j < allUVs.Count; j++)
                 {
                     List<Vector2> uvLayer = allUVs[j];

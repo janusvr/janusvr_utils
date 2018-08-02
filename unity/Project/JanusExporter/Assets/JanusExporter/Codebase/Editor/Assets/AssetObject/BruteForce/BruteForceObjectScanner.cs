@@ -20,6 +20,7 @@ namespace JanusVR
 
         private MaterialScanner materialScanner;
         private JanusComponentExtractor compExtractor;
+        private NavMeshScanner navMeshScanner;
 
         public BruteForceObjectScanner()
         {
@@ -35,10 +36,36 @@ namespace JanusVR
 
             materialScanner = new MaterialScanner(room);
             compExtractor = new JanusComponentExtractor(room);
+            navMeshScanner = new NavMeshScanner(room);
 
             EditorUtility.DisplayProgressBar("Janus VR Exporter", "Brute force scanning for AssetObjects...", 0.0f);
 
             materialScanner.Initialize();
+            navMeshScanner.Initialize();
+
+            AssetObject navMeshObj = navMeshScanner.GetNavMeshAsset();
+            if (navMeshObj != null)
+            {
+                BruteForceMeshExportData exported = new BruteForceMeshExportData();
+                exported.LightmapEnabled = false;
+                exported.Mesh = navMeshObj.Mesh;
+                
+                string meshId = "NavMesh";
+                meshNames.Add(meshId);
+
+                // keep our version of the data
+                exported.MeshId = meshId;
+                meshesToExport.Add(exported.Mesh, exported);
+
+                // but also supply the data to the Janus Room so the Html can be built
+                exported.Asset = navMeshObj;
+
+                navMeshObj.id = meshId;
+                navMeshObj.src = meshId + ".fbx";
+
+                room.AddAssetObject(navMeshObj);
+            }
+
             for (int i = 0; i < rootObjects.Length; i++)
             {
                 GameObject root = rootObjects[i];
@@ -77,14 +104,14 @@ namespace JanusVR
                 {
                     MeshRenderer meshRen = (MeshRenderer)comp;
                     MeshFilter filter = comps.FirstOrDefault(c => c is MeshFilter) as MeshFilter;
-                    if (filter == null)
+                    if (filter == null || !meshRen.enabled)
                     {
                         continue;
                     }
 
                     Mesh mesh = filter.sharedMesh;
                     if (mesh == null ||
-                        !room.CanExportObj(comps) || 
+                        !room.CanExportObj(comps) ||
                         mesh.GetTopology(0) != MeshTopology.Triangles)
                     {
                         continue;
@@ -103,6 +130,7 @@ namespace JanusVR
                     if (!meshesToExport.TryGetValue(mesh, out exp))
                     {
                         exp = new BruteForceMeshExportData();
+                        exp.LightmapEnabled = true;
                         exp.Mesh = mesh;
                         // generate name
                         string meshId = mesh.name;
@@ -135,7 +163,7 @@ namespace JanusVR
                     compExtractor.ProcessNewRoomObject(obj, comps);
 
                     // let the material scanner process this object
-                    materialScanner.PreProcessObject(meshRen, mesh, exp.Asset, obj, true);
+                    materialScanner.PreProcessObject(meshRen, mesh, exp.Asset, obj, true, 0);
                 }
             }
 
@@ -163,11 +191,11 @@ namespace JanusVR
             return room.LightmapType == LightmapExportType.BakedMaterial;
         }
 
-        public MeshData GetMeshData(Mesh mesh)
+        public MeshData GetMeshData(Mesh mesh, bool lightmapEnabled)
         {
-            return GetMeshData(this.room, mesh);
+            return GetMeshData(this.room, lightmapEnabled, mesh);
         }
-        public static MeshData GetMeshData(JanusRoom room, Mesh mesh)
+        public static MeshData GetMeshData(JanusRoom room, bool lightmapEnabled, Mesh mesh)
         {
             MeshData data = new MeshData();
 
@@ -179,6 +207,7 @@ namespace JanusVR
             data.Normals = normals;
             data.Triangles = triangles;
             data.Name = mesh.name;
+            data.Lightmapped = lightmapEnabled;
 
             if (vertices == null || vertices.Length == 0)
             {
@@ -190,8 +219,11 @@ namespace JanusVR
             int maximum = triangles.Max();
             if (normals.Length < maximum)
             {
-                Debug.LogWarning("Mesh has not enough normals - " + mesh.name, mesh);
-                return null;
+                if (mesh.name != "NavMesh")// quick and dirty hack, so it doesnt warn for the navmesh
+                {
+                    Debug.LogWarning("Mesh has not enough normals - " + mesh.name + " - Ignoring normals", mesh);
+                }
+                data.Normals = null;
             }
 
             string meshPath = AssetDatabase.GetAssetPath(mesh);
@@ -204,11 +236,11 @@ namespace JanusVR
                 }
             }
 
-            data.UV = GetMeshUVs(room, mesh);
+            data.UV = GetMeshUVs(room, mesh, lightmapEnabled);
             return data;
         }
 
-        public static Vector2[][] GetMeshUVs(JanusRoom room, Mesh mesh, int fakeUvSize = 0)
+        public static Vector2[][] GetMeshUVs(JanusRoom room, Mesh mesh, bool lightmapEnabled, int fakeUvSize = 0)
         {
             int uvLayers = LightmapNeedsUV1(room) ? 2 : 1;
             bool needUvOverride = LightmapNeedsUVOverride(room);
@@ -250,11 +282,11 @@ namespace JanusVR
                 {
                     array = new Vector2[fakeUvSize];
                 }
-                if (i == 1 && array == null ||
+                if (lightmapEnabled && (i == 1 && array == null ||
                     array.Length == 0 &&
-                    room.LightmapType != LightmapExportType.None)
+                    room.LightmapType != LightmapExportType.None))
                 {
-                    Debug.LogWarning("Lightmapping is enabled but mesh has no UV1 channel - " + mesh.name + " - Tick the Generate Lightmap UVs", mesh);
+                    Debug.LogWarning("Lightmapping is enabled but mesh " + mesh.name + " has no UV1 channel - Tick the Generate Lightmap UVs", mesh);
                 }
                 uvs[i] = array;
             }
@@ -278,7 +310,7 @@ namespace JanusVR
             {
                 Mesh mesh = data.Mesh;
 
-                MeshData meshData = GetMeshData(mesh);
+                MeshData meshData = GetMeshData(mesh, data.LightmapEnabled);
                 if (meshData == null)
                 {
                     continue;

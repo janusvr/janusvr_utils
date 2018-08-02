@@ -129,7 +129,12 @@ namespace JanusVR
 
         public static string FormatColor(Color v)
         {
-            return v.r.ToString(format2Cases, c) + " " + v.g.ToString(format2Cases, c) + " " + v.b.ToString(format2Cases, c);
+            string rgb = v.r.ToString(format2Cases, c) + " " + v.g.ToString(format2Cases, c) + " " + v.b.ToString(format2Cases, c);
+            if (v.a < 1.0f)
+            {
+                return rgb + " " + v.a.ToString(format2Cases, c);
+            }
+            return rgb;
         }
 
         public static string FormatVector3(Vector3 v)
@@ -162,6 +167,6 @@ namespace JanusVR
             zDir = JanusUtil.ConvertDirection(rot * Vector3.forward);
         }
 
-       
+
     }
 }

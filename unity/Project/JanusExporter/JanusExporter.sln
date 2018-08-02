@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2015
+# Visual Studio 2017
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JanusExporter", "JanusExporter.csproj", "{6ED893AD-ABE4-74D5-4468-11838B81D1E7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JanusExporter.Editor", "JanusExporter.Editor.csproj", "{398EE5F4-84B0-4D75-EA62-C590149F4466}"

@@ -77,12 +77,6 @@ namespace JanusVR
                         continue;
                     }
 
-                    Material mat = meshRen.sharedMaterial;
-                    if (!mat)
-                    {
-                        continue;
-                    }
-
                     if (!room.ExportDynamicGameObjects &&
                          !root.isStatic)
                     {
@@ -91,35 +85,48 @@ namespace JanusVR
 
                     sceneBounds.Encapsulate(meshRen.bounds);
 
-                    PerMaterialMeshExportData data;
-                    if (!meshesToExport.TryGetValue(mat, out data))
+                    Material[] materials = meshRen.sharedMaterials;
+
+                    for (int j = 0; j < materials.Length; j++)
                     {
-                        data = new PerMaterialMeshExportData();
-                        meshesToExport.Add(mat, data);
+                        Material mat = materials[j];
+                        if (!mat)
+                        {
+                            continue;
+                        }
 
-                        AssetObject asset = new AssetObject();
-                        data.Asset = asset;
+                        PerMaterialMeshExportData data;
+                        if (!meshesToExport.TryGetValue(mat, out data))
+                        {
+                            data = new PerMaterialMeshExportData();
+                            meshesToExport.Add(mat, data);
 
-                        asset.id = mat.name;
-                        asset.src = mat.name + ".fbx";
-                        room.AddAssetObject(asset);
+                            AssetObject asset = new AssetObject();
+                            data.Asset = asset;
 
-                        RoomObject obj = new RoomObject();
-                        data.Object = obj;
-                        obj.id = mat.name;
-                        obj.SetNoUnityObj(room);
+                            asset.id = mat.name;
+                            asset.src = mat.name + ".fbx";
+                            room.AddAssetObject(asset);
 
-                        room.AddRoomObject(obj);
-                        compExtractor.ProcessNewRoomObject(obj, comps);
+                            RoomObject obj = new RoomObject();
+                            data.Object = obj;
+                            obj.id = mat.name;
+                            obj.SetNoUnityObj(room);
+
+                            room.AddRoomObject(obj);
+                            //compExtractor.ProcessNewRoomObject(obj, comps);
+                        }
+                        compExtractor.ProcessNewRoomObject(data.Object, comps);
+
+                        materialScanner.PreProcessObject(meshRen, mesh, data.Asset, data.Object, false, j);
+
+                        PerMaterialMeshExportDataObj dObj = new PerMaterialMeshExportDataObj();
+                        dObj.MaterialId = j;
+                        dObj.Mesh = mesh;
+                        dObj.Transform = root.transform;
+                        dObj.Renderer = meshRen;
+                        data.Meshes.Add(dObj);
                     }
-
-                    materialScanner.PreProcessObject(meshRen, mesh, data.Asset, data.Object, false);
-
-                    PerMaterialMeshExportDataObj dObj = new PerMaterialMeshExportDataObj();
-                    dObj.Mesh = mesh;
-                    dObj.Transform = root.transform;
-                    dObj.Renderer = meshRen;
-                    data.Meshes.Add(dObj);
                 }
             }
 
@@ -170,13 +177,6 @@ namespace JanusVR
                     Debug.LogWarning("Mesh is empty " + mesh.name, mesh);
                     return null;
                 }
-                // check if we have all the data
-                int maximum = triangles.Max();
-                if (normals.Length < maximum)
-                {
-                    Debug.LogWarning("Mesh has not enough normals - " + mesh.name, mesh);
-                    return null;
-                }
 
                 string meshPath = AssetDatabase.GetAssetPath(mesh);
                 if (!string.IsNullOrEmpty(meshPath))
@@ -188,54 +188,49 @@ namespace JanusVR
                     }
                 }
 
-                int start = allVertices.Count;
-
                 Vector3 localScale = trans.localScale;
-                //trans.localScale = localScale * meshData.Scale;
 
-                // transform vertices and normals
-                for (int j = 0; j < vertices.Length; j++)
+                uint vStart = mesh.GetIndexStart(obj.MaterialId);
+                uint vEnd = vStart + mesh.GetIndexCount(obj.MaterialId);
+                Dictionary<int, int> added = new Dictionary<int, int>();
+                Vector2[][] uvs = BruteForceObjectScanner.GetMeshUVs(room, mesh, obj.LightmapEnabled, vertices.Length);
+
+                for (uint j = vStart; j < vEnd; j++)
                 {
-                    Vector3 vertex = vertices[j];
-                    Vector3 normal = normals[j];
+                    int tri = triangles[j];
+
+                    int vertexIndex;
+                    if (added.TryGetValue(tri, out vertexIndex))
+                    {
+                        allTriangles.Add(vertexIndex);
+                        continue;
+                    }
+
+                    Vector3 vertex = vertices[tri];
+                    Vector3 normal = normals[tri];
+
+                    allTriangles.Add(allVertices.Count);
+                    added.Add(tri, allVertices.Count);
+
                     Vector3 vWorldSpace = trans.TransformPoint(vertex);
                     Vector3 nWorldSpace = trans.TransformDirection(normal);
                     allVertices.Add(vWorldSpace);
                     allNormals.Add(nWorldSpace);
-                }
 
-                //trans.localScale = localScale;
-
-                for (int j = 0; j < triangles.Length; j++)
-                {
-                    // offset the triangle indexes
-                    int tri = triangles[j];
-                    allTriangles.Add(tri + start);
-                }
-
-                Vector2[][] uvs = BruteForceObjectScanner.GetMeshUVs(room, mesh, vertices.Length);
-                for (int j = 0; j < allUVs.Count; j++)
-                {
-                    List<Vector2> uvLayer = allUVs[j];
-                    if (j == 1)
+                    for (int k = 0; k < allUVs.Count; k++)
                     {
-                        // recalculate lightmap UVs
-                        Vector4 lmap = obj.Renderer.lightmapScaleOffset;
-                        Vector2[] uv = uvs[j];
-
-                        for (int k = 0; k < uv.Length; k++)
+                        List<Vector2> uvLayer = allUVs[k];
+                        Vector2[] uv = uvs[k];
+                        Vector2 tvert = uv[tri];
+                        if (k == 1)
                         {
-                            Vector2 tvert = uv[k];
+                            Vector4 lmap = obj.Renderer.lightmapScaleOffset;
                             tvert.x *= lmap.x;
                             tvert.y *= lmap.y;
                             tvert.x += lmap.z;
                             tvert.y += lmap.w;
-                            uvLayer.Add(tvert);
                         }
-                    }
-                    else
-                    {
-                        uvLayer.AddRange(uvs[j]);
+                        uvLayer.Add(tvert);
                     }
                 }
             }

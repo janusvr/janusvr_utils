@@ -109,6 +109,9 @@
     <Reference Include="UnityEditor.Android.Extensions">
       <HintPath>Library\UnityAssemblies\UnityEditor.Android.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEditor.PS4.Extensions">
+      <HintPath>Library\UnityAssemblies\UnityEditor.PS4.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor.WebGL.Extensions">
       <HintPath>Library\UnityAssemblies\UnityEditor.WebGL.Extensions.dll</HintPath>
     </Reference>
@@ -155,6 +158,7 @@
     <Compile Include="Assets\JanusExporter\Codebase\Editor\Content\Mesh\MeshExportParameters.cs" />
     <Compile Include="Assets\JanusExporter\Codebase\Editor\Content\Mesh\MeshExporter.cs" />
     <Compile Include="Assets\JanusExporter\Codebase\Editor\Content\Texture\ExportTextureFormat.cs" />
+    <Compile Include="Assets\JanusExporter\Codebase\Editor\Content\Texture\LightmapTextureFormat.cs" />
     <Compile Include="Assets\JanusExporter\Codebase\Editor\Content\Texture\TextureFilterMode.cs" />
     <Compile Include="Assets\JanusExporter\Codebase\Editor\Data\Asset\AssetImage.cs" />
     <Compile Include="Assets\JanusExporter\Codebase\Editor\Data\Asset\AssetObject.cs" />

@@ -48,10 +48,13 @@ namespace JanusVR.FBX
                     Vector3 v = vertices[i];
                     vertices[i] = new Vector3(-v.x, v.y, v.z);
                 }
-                for (int i = 0; i < normals.Length; i++)
+                if (normals != null)
                 {
-                    Vector3 v = normals[i];
-                    normals[i] = new Vector3(-v.x, v.y, v.z);
+                    for (int i = 0; i < normals.Length; i++)
+                    {
+                        Vector3 v = normals[i];
+                        normals[i] = new Vector3(-v.x, v.y, v.z);
+                    }
                 }
 
                 // change triangles order
@@ -67,20 +70,23 @@ namespace JanusVR.FBX
                 }
             }
 
+            FbxExporterInterop.EnableDefaultMaterial(mesh.Name + "Material");
             for (int i = 0; i < vertices.Length; i++)
             {
                 Vector3 v = vertices[i];
                 nvertices[i] = new FbxVector3(v.x, v.y, v.z);
             }
-            for (int i = 0; i < normals.Length; i++)
-            {
-                Vector3 v = normals[i];
-                nnormals[i] = new FbxVector3(v.x, v.y, v.z);
-            }
-
-            FbxExporterInterop.EnableDefaultMaterial(mesh.Name + "Material");
             FbxExporterInterop.AddVertices(nvertices, nvertices.Length);
-            FbxExporterInterop.AddNormals(nnormals, nnormals.Length);
+
+            if (normals != null)
+            {
+                for (int i = 0; i < normals.Length; i++)
+                {
+                    Vector3 v = normals[i];
+                    nnormals[i] = new FbxVector3(v.x, v.y, v.z);
+                }
+                FbxExporterInterop.AddNormals(nnormals, nnormals.Length);
+            }
 
             for (int i = 0; i < uvs.Length; i++)
             {

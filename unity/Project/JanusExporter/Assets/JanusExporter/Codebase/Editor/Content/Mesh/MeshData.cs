@@ -8,6 +8,7 @@ namespace JanusVR
 {
     public class MeshData
     {
+        public bool Lightmapped { get; set; }
         public string Name { get; set; }
         public Vector3[] Vertices { get; set; }
         public Vector3[] Normals { get; set; }

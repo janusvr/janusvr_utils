@@ -56,6 +56,9 @@ namespace JanusVR
         [SerializeField]
         private bool textureForceReExport;
 
+        [SerializeField]
+        private bool exportMaterialColorsAsTextures;
+
         /// <summary>
         /// The quality to export all textures
         /// </summary>
@@ -91,6 +94,12 @@ namespace JanusVR
         /// </summary>
         [SerializeField]
         private int maxLightMapResolution;
+
+        /// <summary>
+        /// The maximum resolution a lightmap atlas can have
+        /// </summary>
+        [SerializeField]
+        private bool exportNavigationMesh;
 
         /// <summary>
         /// How many f-stops we will change the image by
@@ -181,11 +190,12 @@ namespace JanusVR
             defaultQuality = 70;
 
             exportTextures = true;
-            exportMaterials = true;
+            //exportMaterials = true;
             exportSkyboxResolution = 1024;
             exportInactiveObjects = false;
             exportDynamicGameObjects = true;
             textureForceReExport = false;
+            exportNavigationMesh = true;
 
             lightmapExportType = LightmapExportType.Packed;
             lightmapTextureFormat = LightmapTextureFormat.EXR;
@@ -210,6 +220,8 @@ namespace JanusVR
 
             scrollPos = Vector2.zero;
             meshScrollPos = Vector2.zero;
+
+            exportMaterialColorsAsTextures = true;
         }
 
         public static bool NeedsLDRConversion(LightmapTextureFormat format)
@@ -356,12 +368,14 @@ namespace JanusVR
             {
                 defaultQuality = EditorGUILayout.IntSlider("Exported Textures Quality", defaultQuality, 0, 100);
             }
+            exportMaterialColorsAsTextures = EditorGUILayout.Toggle("Export Material Color as 2x2 Texture", exportMaterialColorsAsTextures);
 
             // Scene
             GUILayout.Label("Scene", EditorStyles.boldLabel);
 
             exportInactiveObjects = EditorGUILayout.Toggle("Export Inactive Objects", exportInactiveObjects);
             exportDynamicGameObjects = EditorGUILayout.Toggle("Export Dynamic Objects", exportDynamicGameObjects);
+            exportNavigationMesh = EditorGUILayout.Toggle("Export Navigation Mesh", exportNavigationMesh);
 
             exportTextures = EditorGUILayout.Toggle("Export Textures", exportTextures);
             exportMaterials = EditorGUILayout.Toggle("Export Materials", exportMaterials);
@@ -422,48 +436,51 @@ namespace JanusVR
                 maxLightMapResolution = Math.Max(4, EditorGUILayout.IntField("Max Lightmap Resolution", maxLightMapResolution));
             }
 
-            if (NeedsLDRConversion(lightmapTextureFormat))
+            if (UnityUtil.HasActiveScene()) // this needs an active scene, as we load lightmaps
             {
-                float newFStop = EditorGUILayout.Slider("Lightmap Relative F-Stops", lightmapRelFStops, -5, 5);
-                bool update = false;
-                if (Math.Abs(newFStop - lightmapRelFStops) > 0.0001f)
+                if (NeedsLDRConversion(lightmapTextureFormat))
                 {
-                    lightmapRelFStops = newFStop;
-                    update = true;
-                }
-
-                lightmapExposureVisible = EditorGUILayout.Foldout(lightmapExposureVisible, "Preview Exposure");
-                if (lightmapExposureVisible)
-                {
-                    if (update || !builtLightmapExposure)
+                    float newFStop = EditorGUILayout.Slider("Lightmap Relative F-Stops", lightmapRelFStops, -5, 5);
+                    bool update = false;
+                    if (Math.Abs(newFStop - lightmapRelFStops) > 0.0001f)
                     {
-                        builtLightmapExposure = MaterialScanner.ProcessExposure(0, lightmapRelFStops);
+                        lightmapRelFStops = newFStop;
+                        update = true;
                     }
 
-                    if (builtLightmapExposure)
+                    lightmapExposureVisible = EditorGUILayout.Foldout(lightmapExposureVisible, "Preview Exposure");
+                    if (lightmapExposureVisible)
                     {
-                        Texture2D preview = JanusResources.TempRenderTexture;
-                        int texSize = (int)(showArea.width * 0.4);
-                        Rect tex = GUILayoutUtility.GetRect(texSize, texSize + 30);
+                        if (update || !builtLightmapExposure)
+                        {
+                            builtLightmapExposure = MaterialScanner.ProcessExposure(0, lightmapRelFStops);
+                        }
 
-                        GUI.Label(new Rect(tex.x + 20, tex.y + 5, texSize, texSize), "Lightmap Preview");
-                        GUI.DrawTexture(new Rect(tex.x + 20, tex.y + 30, texSize, texSize), preview);
+                        if (builtLightmapExposure)
+                        {
+                            Texture2D preview = JanusResources.TempRenderTexture;
+                            int texSize = (int)(showArea.width * 0.4);
+                            Rect tex = GUILayoutUtility.GetRect(texSize, texSize + 30);
 
-                        //if (previewWindow)
-                        //{
-                        //    previewWindow.Tex = preview;
-                        //    previewWindow.Repaint();
-                        //}
+                            GUI.Label(new Rect(tex.x + 20, tex.y + 5, texSize, texSize), "Lightmap Preview");
+                            GUI.DrawTexture(new Rect(tex.x + 20, tex.y + 30, texSize, texSize), preview);
 
-                        //if (GUI.Button(new Rect(tex.x + texSize - 60, tex.y, 80, 20), "Preview"))
-                        //{
-                        //    previewWindow = EditorWindow.GetWindow<LightmapPreviewWindow>();
-                        //    previewWindow.Show();
-                        //}
-                    }
-                    else
-                    {
-                        GUILayout.Label("No Lightmap Preview");
+                            //if (previewWindow)
+                            //{
+                            //    previewWindow.Tex = preview;
+                            //    previewWindow.Repaint();
+                            //}
+
+                            //if (GUI.Button(new Rect(tex.x + texSize - 60, tex.y, 80, 20), "Preview"))
+                            //{
+                            //    previewWindow = EditorWindow.GetWindow<LightmapPreviewWindow>();
+                            //    previewWindow.Show();
+                            //}
+                        }
+                        else
+                        {
+                            GUILayout.Label("No Lightmap Preview");
+                        }
                     }
                 }
             }
@@ -538,7 +555,13 @@ namespace JanusVR
                 {
                     if (lightmapExportType == LightmapExportType.Unpacked)
                     {
-                        Debug.LogError("Unpacked is unsupported right now.");
+                        Debug.LogError("Unpacked is unsupported right now.", this);
+                        return;
+                    }
+
+                    if (!UnityUtil.HasActiveScene())
+                    {
+                        Debug.LogError("You need an active scene to be able to export!", this);
                         return;
                     }
 
@@ -580,11 +603,12 @@ namespace JanusVR
         {
             room.IgnoreInactiveObjects = !exportInactiveObjects;
             room.ExportDynamicGameObjects = exportDynamicGameObjects;
+            room.ExportNavigationMesh = exportNavigationMesh;
             room.EnvironmentProbeExport = environmentProbeExport;
             room.EnvironmentProbeIrradResolution = environmentProbeIrradResolution;
             room.EnvironmentProbeRadResolution = environmentProbeRadResolution;
             room.EnvironmentProbeOverride = environmentProbeOverride;
-            room.ExportMaterials = exportMaterials;
+            //room.ExportMaterials = exportMaterials;
             room.ExportTextures = exportTextures;
             room.LightmapRelFStops = lightmapRelFStops;
             room.LightmapMaxResolution = maxLightMapResolution;
@@ -598,6 +622,7 @@ namespace JanusVR
             room.TextureForceReExport = textureForceReExport;
             room.UniformScale = uniformScale;
             room.UseEulerRotations = useEulerRotations;
+            room.ExportMaterialColorsAsTextures = exportMaterialColorsAsTextures;
         }
     }
 }
